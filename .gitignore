@@ -9,7 +9,7 @@ LFB/*/*/video*.json
 LFB/dataset_feature/*.pkl
 LFB/dataset_feature/*/*.pkl
 
-OUTPUTS/*
+
 OUTPUTS/expts/*.txt/local/logs/events.out.tfevents.*
 
 R2A2/dataset/*
