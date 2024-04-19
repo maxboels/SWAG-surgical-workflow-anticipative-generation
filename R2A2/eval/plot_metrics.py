@@ -41,10 +41,10 @@ def plot_box_plot_figure(predicted_segments, data_dict,
     # plt.show()
 
 def plot_figure(planning_length, data_dict, 
-                                title='Planning Evaluation', 
-                                x_axis_title='Future Predictions (in minutes)',
-                                y_axis_title='Cummulative Mean Accuracy',
-                                file_name='planning_evaluation.png'):
+                title='Planning Evaluation', 
+                x_axis_title='Future Predictions (in minutes)',
+                y_axis_title='Cummulative Mean Accuracy',
+                file_name='planning_evaluation.png'):
     # Increase font size
     plt.rcParams.update({'font.size': 18})
 

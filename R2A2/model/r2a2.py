@@ -11,35 +11,35 @@ import math
 from typing import List
 
 class TokenPoolerCumMax(nn.Module):
-    def __init__(self, dim: int = 512, pool_dim: int = 64, frames_per_token: int = 60, 
+    def __init__(self, dim: int = 512, pooling_dim: int = 64, frames_per_token: int = 60, 
                  relu_norm: bool = True, **kwargs):
         super().__init__()
         self.dim = dim
-        self.pool_dim = pool_dim
+        self.pooling_dim = pooling_dim
         self.frames_per_token = frames_per_token
         
         if relu_norm:
             self.linear_reduction = nn.Sequential(
-                nn.Linear(dim, pool_dim),
+                nn.Linear(dim, pooling_dim),
                 nn.ReLU(),
-                nn.LayerNorm(pool_dim) # replace LayerNorm with Sonething for the Temporality
+                nn.LayerNorm(pooling_dim) # replace LayerNorm with Sonething for the Temporality
             )
         else:
             self.linear_reduction = nn.Sequential(
-                nn.Linear(dim, pool_dim),
+                nn.Linear(dim, pooling_dim),
                 nn.Sigmoid()
             )
         
         self.linear_expand = nn.Sequential(
-            nn.Linear(pool_dim, dim),
+            nn.Linear(pooling_dim, dim),
             nn.ReLU(),
             nn.LayerNorm(dim)
         )
     
     def forward(self, x):
         batch_size, seq_len, _ = x.size()
-        num_tokens = seq_len // self.frames_per_token
-        x = x.view(batch_size, num_tokens, self.frames_per_token, self.dim)
+        num_ctx_tokens = seq_len // self.frames_per_token
+        x = x.view(batch_size, num_ctx_tokens, self.frames_per_token, self.dim)
         x = self.linear_reduction(x)
         x, _ = torch.max(x, dim=2)
         x = self.linear_expand(x)
@@ -47,27 +47,27 @@ class TokenPoolerCumMax(nn.Module):
 
 class TokenPoolerTopK(nn.Module):
     """ Association is All You Need """
-    def __init__(self, dim: int = 512, pool_dim: int = 64, top_k: int = 50, 
+    def __init__(self, dim: int = 512, pooling_dim: int = 64, top_k: int = 50, 
                  relu_norm: bool = True, **kwargs):
         super().__init__()
         self.dim = dim
-        self.pool_dim = pool_dim
+        self.pooling_dim = pooling_dim
         self.top_k = top_k
 
         if relu_norm:
             self.linear_reduction = nn.Sequential(
-                nn.Linear(dim, pool_dim),
+                nn.Linear(dim, pooling_dim),
                 nn.ReLU(),
-                nn.LayerNorm(pool_dim) # replace LayerNorm with Sonething for the Temporality
+                nn.LayerNorm(pooling_dim) # replace LayerNorm with Sonething for the Temporality
             )
         else:
             self.linear_reduction = nn.Sequential(
-                nn.Linear(dim, pool_dim),
+                nn.Linear(dim, pooling_dim),
                 nn.Sigmoid()
             )
         
         self.linear_expand = nn.Sequential(
-            nn.Linear(pool_dim, dim),
+            nn.Linear(pooling_dim, dim),
             nn.ReLU(),
             nn.LayerNorm(dim))
     
@@ -278,6 +278,9 @@ class R2A2(nn.Module):
         past_dim: int = 512,
         pres_dim: int = 512,
         num_classes: int = 7,
+        num_future_tokens: int = 30,
+        frames_per_token: int = 60,
+        pooling_dim: int = 64,
         key_recorder: TargetConf = None,
         fusion_head: TargetConf = None,
         encoder: TargetConf = None,
@@ -297,15 +300,9 @@ class R2A2(nn.Module):
         self.past_dim = past_dim
         self.present_length = present_length
         self.past_sampling_rate = past_sampling_rate
+        self.num_future_tokens = num_future_tokens     # 60 if 30 frames per tokens to get 30 minutes
+        self.frames_per_token = frames_per_token
 
-        # --------------- select params manualy --------------------------------
-        self.context_length = 3000                  # compare with baseline: 1500
-        self.num_tokens = 100                        # compare with baseline: 25
-        self.num_steps = 60                         # 60 if 30 frames per tokens to get 30 minutes
-        #------------------------------------------------------------------------
-
-        # derived params
-        self.frames_per_token = self.context_length // self.num_tokens
 
         # other params
         self.relu_norm = True
@@ -338,12 +335,12 @@ class R2A2(nn.Module):
         self.fusion_head1 = hydra.utils.instantiate(fusion_head, _recursive_=False)
 
         if self.pooling_method == "cum_max":
-            self.tokens_pooler = TokenPoolerCumMax(dim=512, pool_dim=64, frames_per_token=self.frames_per_token,
+            self.tokens_pooler = TokenPoolerCumMax(dim=512, pooling_dim=pooling_dim, frames_per_token=self.frames_per_token,
                                                    relu_norm=self.relu_norm)
         elif self.pooling_method == "top_k":
-            self.tokens_pooler = TokenPoolerTopK(dim=512, pool_dim=64, top_k=50, relu_norm=self.relu_norm)
+            self.tokens_pooler = TokenPoolerTopK(dim=512, pooling_dim=pooling_dim, top_k=50, relu_norm=self.relu_norm)
         elif self.pooling_method == "key_recorder":
-            self.tokens_pooler = KeyRecorder(dim=512, reduc_dim=64, sampling_rate=10, local_size=20,
+            self.tokens_pooler = KeyRecorder(dim=512, reduc_dim=pooling_dim, sampling_rate=10, local_size=20,
                                              relu_norm=self.relu_norm)
         else:
             raise ValueError(f"Pooling method {self.pooling_method} not implemented.")
@@ -451,7 +448,7 @@ class R2A2(nn.Module):
             iters_time = []
             frames_cls_preds = []
             inputs_embeds = enc_out
-            for _ in range(self.num_steps):
+            for _ in range(self.num_future_tokens):
                 start_time = time.time()
                 next_frames = self.frame_decoder(inputs_embeds=inputs_embeds)
                 iters_time.append(time.time() - start_time) # measure time per iteration

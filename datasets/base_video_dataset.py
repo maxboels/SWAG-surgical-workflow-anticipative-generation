@@ -84,9 +84,8 @@ class SelectDataset():
         return self.df
 
 
-
 class Medical_Dataset(Dataset):
-        def __init__(self, dataframe, train_mode='train', dataset_name="cholec80", video_indices=None,
+        def __init__(self, cfg, dataframe, train_mode='train', dataset_name="cholec80", video_indices=None,
                     transform=None, device=None, logger=None, **kwargs):
             self.df = dataframe
             self.label_type = ['one']
@@ -100,12 +99,11 @@ class Medical_Dataset(Dataset):
             self.debug = False
             self.dataset_name = dataset_name                                # autolaparo21, cholec80, cholect50
             self.num_classes = 7                                            # AutoLapro: 7, Cholec80: 7
-            self.feats_dim = 64                                             # AutoLapro: 32, Cholec80: 64, CholecT50: ?
             self.attn_window_size = 20
-            self.ctx_length = 3000                                          # 3000 or 1500 frames
-            self.num_tokens = 100                                            # Compression Tokens: 100 or 50 tokens for curr and next frames
-            self.num_future_tokens = 60                                     # 60 or 30 tokens (num auto-regressive steps)
-            self.frames_per_tokens = self.ctx_length // self.num_tokens     # 60 or 30 frames per token
+            self.ctx_length = cfg.ctx_length                                          # 3000 or 1500 frames
+            self.num_ctx_tokens = cfg.num_ctx_tokens                                            # Compression Tokens: 100 or 50 tokens for curr and next frames
+            self.num_future_tokens = cfg.num_future_tokens                                     # 60 or 30 tokens (num auto-regressive steps)
+            self.frames_per_tokens = self.ctx_length // self.num_ctx_tokens     # 60 or 30 frames per token
             #----------------- end select arguments-----------------
             self.reduc_feats_folder = "train_targets_x_mp/"
             self.num_next_labels = 6
@@ -122,7 +120,6 @@ class Medical_Dataset(Dataset):
                 "dataset_name": self.dataset_name,
                 "reduc_feats_folder": self.reduc_feats_folder,
                 "num_classes": self.num_classes,
-                "feats_dim": self.feats_dim,
                 "num_next_labels": self.num_next_labels,
                 "last_seg_class": self.last_seg_class,
                 "predict_next_phase": self.predict_next_phase,
@@ -307,18 +304,18 @@ class Medical_Dataset(Dataset):
                     self.video_lengths.append(len(df_video))
 
                 #-----------------mb added-----------------
-                if self.get_target_feats:
-                    # load video_targets features from .h5 file
-                    file_path = self.key_feats_path + f"video_{video_indx-1}.h5"
-                    if os.path.exists(file_path):
-                        video_target_feats = torch.tensor(h5py.File(file_path, 'r')['data'][:, :self.feats_dim], dtype=torch.float32).to(self.device)
-                        print(f"[DATASET] video idx: {video_indx} reduced feats (read): {video_target_feats.size()}")
-                        self.target_feats.append(video_target_feats)
-                    else:
-                        video_target_feats = torch.zeros((video_lenth, self.feats_dim)).to(self.device)
-                        self.target_feats.append(video_target_feats)
-                        print(f"[DATASET] video idx: {video_indx} reduced feats (not found -> zeros): {video_target_feats.size()}")                    
-                #-----------------mb added end-----------------
+                # if self.get_target_feats:
+                #     # load video_targets features from .h5 file
+                #     file_path = self.key_feats_path + f"video_{video_indx-1}.h5"
+                #     if os.path.exists(file_path):
+                #         video_target_feats = torch.tensor(h5py.File(file_path, 'r')['data'][:, :self.feats_dim], dtype=torch.float32).to(self.device)
+                #         print(f"[DATASET] video idx: {video_indx} reduced feats (read): {video_target_feats.size()}")
+                #         self.target_feats.append(video_target_feats)
+                #     else:
+                #         video_target_feats = torch.zeros((video_lenth, self.feats_dim)).to(self.device)
+                #         self.target_feats.append(video_target_feats)
+                #         print(f"[DATASET] video idx: {video_indx} reduced feats (not found -> zeros): {video_target_feats.size()}")                    
+                # #-----------------mb added end-----------------
 
 
                 with torch.no_grad():
@@ -389,7 +386,7 @@ class Medical_Dataset(Dataset):
                 starts = max(remainder, frame_idx - self.ctx_length + 1*self.frames_per_tokens)
             elif self.curr_frames_tgt == "local":
                 # self.frames_per_tokens = 1
-                self.num_tokens = self.attn_window_size
+                self.num_ctx_tokens = self.attn_window_size
                 ends = frame_idx +1
                 starts = max(0, frame_idx - self.attn_window_size)
             else:
@@ -398,13 +395,13 @@ class Medical_Dataset(Dataset):
             curr_frames_tgt = video_targets[starts: ends: self.frames_per_tokens].to(self.device)
             print(f"[DATASET] curr_frames_tgt: {curr_frames_tgt.size()}")
             print(f"[DATASET] curr_frames_tgt: {torch.arange(starts, ends, self.frames_per_tokens)}")
-            missing = self.num_tokens - curr_frames_tgt.size(0)
+            missing = self.num_ctx_tokens - curr_frames_tgt.size(0)
             if missing > 0:
                 curr_frames_tgt = torch.cat((self.minus_one_tgt[:missing], curr_frames_tgt), 0)
             data_now['curr_frames_tgt'] = curr_frames_tgt.to(self.device).long()
             print(f"[DATASET] curr_frames_tgt: {curr_frames_tgt.size()}")
 
-            assert curr_frames_tgt.size(0) == self.num_tokens, f"curr_frames_tgt size not equal to num_tokens: {curr_frames_tgt.size(0)}"
+            assert curr_frames_tgt.size(0) == self.num_ctx_tokens, f"curr_frames_tgt size not equal to num_ctx_tokens: {curr_frames_tgt.size(0)}"
             
             if self.train_mode == 'train':
 
@@ -417,20 +414,20 @@ class Medical_Dataset(Dataset):
                     starts = max(0, frame_idx - self.attn_window_size)
                     ends = frame_idx
                     # self.frames_per_tokens = 1
-                    self.num_tokens = self.attn_window_size
+                    self.num_ctx_tokens = self.attn_window_size
                 else:
                     raise ValueError("next_frames_tgt not found")
                 print(f"[DATASET] next_frames_tgt starts: {starts} ends: {ends}")
                 next_frames_tgt = video_targets[starts: ends: self.frames_per_tokens].to(self.device)
                 print(f"[DATASET] next_frames_tgt: {next_frames_tgt.size()}")
                 print(f"[DATASET] next_frames_tgt: {torch.arange(starts, ends, self.frames_per_tokens)}")
-                missing = self.num_tokens - next_frames_tgt.size(0)
+                missing = self.num_ctx_tokens - next_frames_tgt.size(0)
                 if missing > 0:
                     next_frames_tgt = torch.cat((self.minus_one_tgt[:missing], next_frames_tgt), 0)
                 data_now['next_frames_tgt'] = next_frames_tgt.to(self.device).long()
                 print(f"[DATASET] next_frames_tgt: {next_frames_tgt.size()}")
 
-                assert next_frames_tgt.size(0) == self.num_tokens, f"next_frames_tgt size not equal to num_tokens: {next_frames_tgt.size(0)}"
+                assert next_frames_tgt.size(0) == self.num_ctx_tokens, f"next_frames_tgt size not equal to num_ctx_tokens: {next_frames_tgt.size(0)}"
 
             # ----------------- INFERENCE LABELS -----------------
             else:

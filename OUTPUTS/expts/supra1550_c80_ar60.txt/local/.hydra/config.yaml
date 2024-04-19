@@ -77,6 +77,9 @@ model:
       past_dim: 512
       pres_dim: 512
       num_classes: 7
+      num_future_tokens: ${num_future_tokens}
+      frames_per_token: ${frames_per_token}
+      pooling_dim: ${pooling_dim}
       key_recorder:
         _target_: R2A2.model.key_recorder.KeyRecorder
         dim: 512
@@ -279,9 +282,19 @@ run_id: 0
 seed: 42
 cwd: ${hydra:runtime.cwd}
 sync_bn: false
-test_only: false
 data_parallel: true
 dist_backend: nccl
+test_only: false
+dataset_name: cholec80
+pooling_dim: 64
+train_start: 1
+train_end: 41
+test_start: 41
+test_end: 81
+ctx_length: 1500
+num_ctx_tokens: 50
+frames_per_token: 30
+num_future_tokens: 60
 pytorch:
   video_backend: video_reader
 train:
@@ -313,6 +326,7 @@ eval:
   batch_size: 64
   eval_fn:
     _target_: func.train.evaluate
+    num_future_tokens: ${num_future_tokens}
     store: false
     store_endpoint: logits
     only_run_featext: false

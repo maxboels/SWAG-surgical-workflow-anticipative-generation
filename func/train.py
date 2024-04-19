@@ -42,10 +42,10 @@ from omegaconf import OmegaConf
 from models import base_model
 from common import scheduler, utils, transforms as T
 from common.log import MetricLogger, setup_tbx, get_default_loggers
-from datasets.data import get_dataset
-from notebooks import utils as nb_utils
+# from datasets.data import get_dataset
+# from notebooks import utils as nb_utils
 from datasets.base_video_dataset import Medical_Dataset, SelectDataset
-from models.ResNet import resnet_lstm
+# from models.ResNet import resnet_lstm
 from sklearn import metrics
 __all__ = ['main', 'evaluate', 'train_one_epoch', 'initial_setup']
 RESULTS_SAVE_DIR = 'results'  # Don't put a "/" at the end, will add later
@@ -93,47 +93,9 @@ def store_checkpoint(fpaths: Union[str, Sequence[str]], model, optimizer,
         logging.info('Storing ckpt at epoch %f to %s', epoch, fpath)
         utils.save_on_master(checkpoint, fpath)
 
-
-# def _store_video_logs(data, key, step_id, print_large_freq, metric_logger):
-#     """
-#     Args:
-#         data[key] -> video (B, #clips, 3, T, H, W)
-#     """
-#     if metric_logger.tb_writer is None:
-#         return
-#     if step_id % print_large_freq != 0:
-#         return
-#     if key not in data:
-#         return
-#     video = data[key]
-#     if video.ndim != 6:
-#         return
-#     ## Store the videos
-#     # Swap dims to get N*#clips,T,C,H,W format used by tensorboard
-#     video = torch.flatten(video, 0, 1)
-#     vid_log = torch.transpose(video, 1, 2)
-#     vid_log = vid_log - vid_log.min()
-#     vid_log = vid_log / vid_log.max()
-#     kwargs = {}
-#     if 'video_info' in data:
-#         # Can't specify different frame rate for videos, so use the min
-#         kwargs['fps'] = max(
-#             data['video_info']['video_fps'].min().cpu().numpy().tolist(), 4)
-#     metric_logger.tb_writer.add_video(key, vid_log, step_id, **kwargs)
-
-
-# def _store_scalar_logs(name, val, step_id, print_freq, metric_logger):
-#     if metric_logger.tb_writer is None:
-#         return
-#     if step_id % print_freq != 0:
-#         return
-#     metric_logger.tb_writer.add_scalar(name, val, step_id)
-
-
 def _get_memory_usage_gb():
     mem = psutil.virtual_memory()
     return mem.used / (1024**3)
-
 
 def train_one_epoch(
         model,
@@ -381,12 +343,12 @@ def evaluate(
         tb_writer,
         logger,
         epoch: float,  # Can be a partial epoch
+        num_future_tokens: int,
         store=False,
         store_endpoint='logits',
         only_run_featext=False):
     # -----------------select params----------------- #
     num_classes = 7
-    num_ar_steps = 60                           # 30 steps x 60sec/tokens = 30 minutes
     # -----------------select params----------------- #
 
     all_videos_results = OrderedDict()
@@ -413,8 +375,8 @@ def evaluate(
         # init new video buffers
         video_frame_rec     = np.full((video_length, 1), -1)
         video_tgts_rec      = np.full((video_length, 1), -1)
-        video_frame_preds   = np.full((video_length, num_ar_steps), -1)
-        video_tgts_preds    = np.full((video_length, num_ar_steps), -1)
+        video_frame_preds   = np.full((video_length, num_future_tokens), -1)
+        video_tgts_preds    = np.full((video_length, num_future_tokens), -1)
         video_seg_preds     = np.full((video_length, 1), -1)
         video_tgts_preds_seg = np.full((video_length, 1), -1)
         
@@ -549,22 +511,29 @@ def evaluate(
         f.write(',\n')
     
 
-    # PLOTTING SECTION
-    x_values = np.arange(1, num_ar_steps+1).tolist()         # FIXME: Keep range to 30minutes and vary the iters per minute
+    # PLOTTING
+    future_minutes = 30                         # NOTE: this is a fixed parameter for all experiments
+    step_size = future_minutes / num_future_tokens
+
+    # plot the mean accuracy over the videos
+    x_values = np.arange(1, future_minutes+1, step_size).tolist() 
+    x_values = np.arange(1, num_future_tokens+1).tolist()         # FIXME: Keep range to 30minutes and vary the iters per minute
     y_values = {"Cholec80": all_videos_mean_acc_future}
-    plot_figure(x_values, y_values, 
-                title='Planning Evaluation (mean. acc.)', x_axis_title='Predicted Sequence Length',
+    plot_figure(x_values, y_values,
+                title=f'Planning Evaluation (mean. acc. {np.nanmean(all_videos_mean_acc_future):.2f})',
+                x_axis_title='Predicted Sequence Length',
                 y_axis_title='Cummulative Mean Accuracy', file_name='planning_evaluation_mean_acc.png')
     
     # plot the mean accuracy over the videos
-    x_values = np.arange(1, num_ar_steps+1).tolist()        # FIXME: Keep range to 30minutes and vary the iters per minute
+    x_values = np.arange(1, num_future_tokens+1, step_size).tolist()        # FIXME: Keep range to 30minutes and vary the iters per minute
     y_values = {"Cholec80": all_videos_mean_cum_acc_future}
     plot_figure(x_values, y_values,
-                title='Planning Evaluation (cumm. acc.)', x_axis_title='Predicted Sequence Length',
+                title=f'Planning Evaluation (cumm. acc. {np.nanmean(all_videos_mean_cum_acc_future):.2f})',
+                x_axis_title='Predicted Sequence Length',
                 y_axis_title='Mean Accuracy', file_name='planning_evaluation_mean_cumm_acc.png')
     
     # plot box plots (keeping the video-level information)
-    x_values = np.arange(1, num_ar_steps+1).tolist()        # FIXME: same
+    x_values = np.arange(1, num_future_tokens+1, step_size).tolist()        # FIXME: same
     y_values = {"Cholec80": all_videos_acc_future}
     plot_box_plot_figure(x_values, y_values,
                          file_name='plot_acc_pred_box.png', 
@@ -917,9 +886,9 @@ def main(cfg):
     #     dataset_train = torch.utils.data.ConcatDataset(datasets_train)
     
     # ------------- SELECT VIDEOS MANNUALLY -------------
-    dataset_name = 'cholec80'
-    train_videos_ids = np.arange(1, 41).tolist() # 1-40 ( last is not included)
-    test_videos_ids  = np.arange(41, 81).tolist() # 41-80 ( last is not included)
+    dataset_name = cfg.dataset_name # 'cholec80'
+    train_videos_ids = np.arange(cfg.train_start, cfg.train_end).tolist() # 1, 41).tolist() # 1-40 ( last is not included)
+    test_videos_ids  = np.arange(cfg.test_start, cfg.test_end).tolist() # 41, 81).tolist() # 41-80 ( last is not included)
     # --------------------------------------------------
 
     # read dataframe once
@@ -927,7 +896,7 @@ def main(cfg):
     dataframe = dataset.get_dataframe()
     
     # process dataframe
-    dataset_train = Medical_Dataset(
+    dataset_train = Medical_Dataset(cfg,
         dataframe=dataframe,
         train_mode='train',
         dataset_name=dataset_name,
@@ -937,7 +906,7 @@ def main(cfg):
         logger=logger)
 
     datasets_test = [
-        Medical_Dataset(
+        Medical_Dataset(cfg,
             dataframe=dataframe,
             train_mode='test',
             dataset_name=dataset_name,
@@ -989,6 +958,8 @@ def main(cfg):
     logger.info('[MAIN] Number of parameters: %d', num_params)
     logger.info('[MAIN] Number of samples: %d', num_samples)
     logger.info('[MAIN] Data-to-Parameter-Ratio is ideally between [1:1 to 10:1]: %f', num_params / num_samples)
+    if num_params / num_samples < 1 or num_params / num_samples > 10:
+        logger.warning('[MAIN] Data-to-Parameter-Ratio is outside the interval [1:1 to 10:1]')
     
     if cfg.opt.classifier_only:
         assert len(cfg.opt.lr_wd) == 1
@@ -1095,7 +1066,11 @@ def main(cfg):
     if cfg.test_only:
         logger.info("Starting test_only")
         hydra.utils.call(cfg.eval.eval_fn, train_eval_op, device, 1,
-                                    dataloaders_test, tb_writer, logger, 1)
+                        dataloaders_test, 
+                        tb_writer, 
+                        logger, 
+                        1, 
+                        cfg.eval.eval_fn.num_future_tokens)
         return
 
     logger.info("Start training")
@@ -1142,7 +1117,8 @@ def main(cfg):
                 dataloaders_test, 
                 tb_writer, 
                 logger,
-                epoch + 1)
+                epoch + 1,
+                cfg.eval.eval_fn.num_future_tokens)
         else:
             acc1 = 0
         if acc1 >= best_acc1:
