@@ -515,12 +515,11 @@ def evaluate(
     
 
     # PLOTTING
-    future_minutes = 30                         # NOTE: this is a fixed parameter for all experiments
+    future_minutes = 30 # fixed parameter for all experiments
     step_size = future_minutes / num_future_tokens
+    x_values = np.arange(1, future_minutes+1, step_size).tolist()
 
     # plot the mean accuracy over the videos
-    x_values = np.arange(1, future_minutes+1, step_size).tolist() 
-    x_values = np.arange(1, num_future_tokens+1).tolist()         # FIXME: Keep range to 30minutes and vary the iters per minute
     y_values = {"Cholec80": all_videos_mean_acc_future}
     plot_figure(x_values, y_values,
                 title=f'Planning Evaluation (mean. acc. {np.nanmean(all_videos_mean_acc_future):.2f})',
@@ -528,7 +527,6 @@ def evaluate(
                 y_axis_title='Cummulative Mean Accuracy', file_name='planning_evaluation_mean_acc.png')
     
     # plot the mean accuracy over the videos
-    x_values = np.arange(1, num_future_tokens+1, step_size).tolist()        # FIXME: Keep range to 30minutes and vary the iters per minute
     y_values = {"Cholec80": all_videos_mean_cum_acc_future}
     plot_figure(x_values, y_values,
                 title=f'Planning Evaluation (cumm. acc. {np.nanmean(all_videos_mean_cum_acc_future):.2f})',
@@ -536,7 +534,6 @@ def evaluate(
                 y_axis_title='Mean Accuracy', file_name='planning_evaluation_mean_cumm_acc.png')
     
     # plot box plots (keeping the video-level information)
-    x_values = np.arange(1, num_future_tokens+1, step_size).tolist()        # FIXME: same
     y_values = {"Cholec80": all_videos_acc_future}
     plot_box_plot_figure(x_values, y_values,
                          file_name='plot_acc_pred_box.png', 
@@ -554,17 +551,8 @@ def evaluate(
         "acc_fut": np.nanmean(all_videos_mean_acc_future)
     }
 
-
     return accuracies, step_now+1
 
-
-# TODO: edit score and f1 score at different overlap levels
-# eval_metrics["mean_video_acc"] = cum_acc/count
-# eval_metrics['recall_phase'] = metrics.recall_score(label_phase, pred_phase, average='macro')
-# eval_metrics['precision_phase'] = metrics.precision_score(label_phase, pred_phase, average='macro')
-# eval_metrics['jaccard_phase'] = metrics.jaccard_score(label_phase, pred_phase, average='macro')
-#val_precision_each_phase = metrics.precision_score(val_all_labels_phase, val_all_preds_phase, average=None)
-#val_recall_each_phase = metrics.recall_score(val_all_labels_phase, val_all_preds_phase, average=None)
 
 def evaluate_and_save_metrics(
         eval_type,

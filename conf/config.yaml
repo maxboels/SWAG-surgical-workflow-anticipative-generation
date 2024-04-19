@@ -12,8 +12,11 @@ data_parallel: true
 dist_backend: nccl
 
 # ----------------------Select parameters for experiments ----------------
+
+# run mode
 test_only: false
 
+# dataset
 dataset_name: cholec80
 pooling_dim: 64
 train_start: 1
@@ -21,10 +24,20 @@ train_end: 41       # last not included
 test_start: 41
 test_end: 81        # last not included
 
+# model size i.e. capacity (small, base, large)
+vocab_size: 100   # l:200 / base:100 / xs:50
+n_emdb: 256       # base (l):512 / base:256 / s:128 / xs:64
+n_layer: 4        # base (l):8 / m:6 / base:4 / xs:2
+n_head: 8         # base:8 / m:6 / s:4 / xs:2
+
+# compression
 ctx_length: 1500
 num_ctx_tokens: 50
 frames_per_token: 30      # equals ctx_length / num_ctx_tokens = frames_per_token
 num_future_tokens: 60
+
+# other params
+
 # ---------------------- end select params ----------------------------
 
 
@@ -114,37 +127,6 @@ model:
   classifier_on_past: false
   future_predictor:
     _target_: models.future_prediction.AVTh
-    informer:
-      _target_: Informer2020.models.model.Informer
-      enc_in: 768
-      dec_in: 768
-      c_out: 512
-      seq_len: 96
-      label_len: 48
-      out_len: 1
-      factor: 5
-      d_model: 512
-      n_heads: 8
-      e_layers: 2
-      d_layers: 2
-      d_ff: 1024
-      dropout: 0.1
-      attn: full
-      embed: fixed
-      freq: "h"
-      activation: gelu
-      output_attention: false
-      distil: false
-      mix: true
-    decoder:
-      _target_: R2A2.model.r2a2.TransformerDecoder
-      input_dim: 512
-      d_model: 512
-      n_heads: 4
-      num_layers: 2
-      dim_ff: 1024
-      dropout: 0.1
-      activation: relu
     r2a2_model:
       _target_: R2A2.model.r2a2.R2A2
       decoder_type: ar_causal
@@ -158,6 +140,11 @@ model:
       num_future_tokens: ${num_future_tokens}
       frames_per_token: ${frames_per_token}
       pooling_dim: ${pooling_dim}
+      gpt_cfg:
+        vocab_size: ${vocab_size}
+        n_emdb: ${n_emdb}
+        n_layer: ${n_layer}
+        n_head: ${n_head}
       key_recorder:
         _target_: R2A2.model.key_recorder.KeyRecorder
         dim: 512
@@ -170,9 +157,6 @@ model:
       fusion_head:
         _target_: R2A2.model.r2a2.FusionHead
         dim: 512
-      fusion_head_segment:
-        _target_: R2A2.model.r2a2.FusionHeadSegment
-        dim: 512
       encoder:
         _target_: R2A2.model.r2a2.TransformerEncoder
         input_length: 20
@@ -180,7 +164,7 @@ model:
         d_model: 512
         n_heads: 4
         num_layers: 2
-        dim_ff: 2048
+        dim_ff: 1024
         dropout: 0.3
         activation: relu
         reshape_output: false
@@ -188,40 +172,10 @@ model:
         _target_: R2A2.model.r2a2.TransformerDecoder
         input_dim: 512
         d_model: 512
-        n_heads: 8
+        n_heads: 4
         num_layers: 2
         dim_ff: 1024
         dropout: 0.1
-        activation: relu
-      present_decoder:
-        _target_: R2A2.model.r2a2.TransformerDecoder
-        input_length: 20
-        input_dim: 512
-        d_model: 512
-        n_heads: 4
-        num_layers: 1
-        dim_ff: 2048
-        dropout: 0.3
-        activation: relu
-      future_decoder:
-        _target_: R2A2.model.r2a2.TransformerDecoder
-        input_length: 20
-        input_dim: 512
-        d_model: 512
-        n_heads: 4
-        num_layers: 1
-        dim_ff: 2048
-        dropout: 0.3
-        activation: relu
-      present_ar_decoder:
-        _target_: R2A2.model.r2a2.TransformerDecoder
-        input_length: 20
-        input_dim: 512
-        d_model: 512
-        n_heads: 4
-        num_layers: 1
-        dim_ff: 2048
-        dropout: 0.3
         activation: relu
       informer:
         _target_: Informer2020.models.model.Informer
@@ -245,34 +199,6 @@ model:
         output_attention: false
         distil: false
         mix: true
-      anticipation_decoder:
-        _target_: R2A2.model.r2a2.TransformerDecoder
-        input_length: 20
-        input_dim: 512
-        d_model: 512
-        n_heads: 4
-        num_layers: 1
-        dim_ff: 2048
-        dropout: 0.3
-        activation: relu
-      long_term_context:
-        _target_: R2A2.model.ltc.ltcontext.LTC
-        input_dim: 768
-        num_classes: 7
-        attn_cfg:
-          num_attn_heads: 1
-          dropout: 0.2
-        ltc_cfg:
-          model_dim: 64 # default 64
-          num_stages: 4
-          num_layers: 9
-          conv_dilation_factor: 2
-          windowed_attn_w: 64 # default 64
-          long_term_attn_g: 64 # default 64
-          use_instance_norm: true
-          dropout_prob: 0.2
-          channel_masking_prob: 0.3
-          dim_reduction: 2.0
 
 opt:
   # Not using an overall LR anymore, since everything is now defined per

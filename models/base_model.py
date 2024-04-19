@@ -24,8 +24,7 @@ class BaseModel(nn.Module):
         if model_cfg.intermediate_featdim is None:
             model_cfg.intermediate_featdim = backbone_dim
 
-        self.future_predictor = hydra.utils.instantiate(
-            model_cfg.future_predictor,
+        self.future_predictor = hydra.utils.instantiate(model_cfg.future_predictor,
             in_features=model_cfg.intermediate_featdim,
             _recursive_=False)
         # Projection layer

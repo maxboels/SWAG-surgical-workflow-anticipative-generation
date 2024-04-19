@@ -281,17 +281,12 @@ class R2A2(nn.Module):
         num_future_tokens: int = 30,
         frames_per_token: int = 60,
         pooling_dim: int = 64,
+        gpt_cfg: dict = None,
         key_recorder: TargetConf = None,
         fusion_head: TargetConf = None,
         encoder: TargetConf = None,
         decoder: TargetConf = None,
         informer: TargetConf = None,
-        long_term_context: TargetConf = None,
-        present_decoder: TargetConf = None,
-        future_decoder: TargetConf = None,
-        present_ar_decoder: TargetConf = None,
-        anticipation_decoder: TargetConf = None,
-        gpt2_config: dict = None,
         **kwargs
     ):
         super().__init__()
@@ -315,12 +310,8 @@ class R2A2(nn.Module):
         self.fixed_ctx_length = False
         # -----------------------------------------------------------------------
 
-        self.projection = nn.Sequential(
-            nn.Linear(512, 64),
-            nn.ReLU(),
-            nn.LayerNorm(64),
-            nn.Linear(64, 1),
-        )
+        self.proj_layer = nn.Linear(pres_dim, gpt_cfg.n_embd)
+
         self.future_durations = nn.Sequential(
             nn.Linear(512, 64),
             nn.ReLU(),
@@ -347,29 +338,30 @@ class R2A2(nn.Module):
 
         # Action Triplets
         self.curr_frames_classifier = nn.Linear(pres_dim, num_classes)
-        self.next_action_classifier = nn.Linear(pres_dim, num_classes)
+        self.next_action_classifier = nn.Linear(gpt_cfg.n_embd, num_classes)
 
         # Phases
-        self.phase_proj = nn.Linear(pres_dim, 128)
-        self.next_phase_classifier = nn.Linear(128, num_classes)
+        if level == "segment" or multiscale:
+            self.phase_proj = nn.Linear(pres_dim, 128)
+            self.next_phase_classifier = nn.Linear(128, num_classes)
 
         if self.decoder_type == "ar_causal":
             if self.frame_level or self.multiscale:
                 # TODO: Ablations change vocab size 
-                config = GPT2Config(vocab_size=100,             # number of different tokens (classes) that can be represented by the inputs_ids
-                                    n_positions=1024,           # number of positional embeddings
-                                    n_embd=512,                 # embedding dimension
-                                    n_layer=8,                  # number of layers
-                                    n_head=8,                   # number of heads in the multi-head attention models
-                                    use_cache=True)             # whether to use cache for the model
+                config = GPT2Config(vocab_size=gpt_cfg.vocab_size,          # number of different tokens (classes) that can be represented by the inputs_ids
+                                    n_positions=256,                        # number of positional embeddings
+                                    n_embd=gpt_cfg.n_emdb,                  # embedding dimension
+                                    n_layer=gpt_cfg.n_layer,                # try l:8 / m:6 / s:4 / xs:2
+                                    n_head=gpt_cfg.n_head,                  # same
+                                    use_cache=True)                         # whether to use cache for the model
                 self.frame_decoder = GPT2Model(config)
             
             if self.segment_level or self.multiscale:
                 # Phase Decoder
                 config_phase = GPT2Config(vocab_size=100, 
-                                        n_positions=1024, 
+                                        n_positions=256, 
                                         n_embd=128, 
-                                        n_layer=8, 
+                                        n_layer=gpt_cfg.n_layer, 
                                         n_head=8, 
                                         use_cache=True)
                 self.long_term_decoder = GPT2Model(config_phase)
@@ -432,7 +424,8 @@ class R2A2(nn.Module):
             # So it should predict if new phase features activations are going to appear in the next frames.
 
             if level == "frame" or multiscale:
-                next_action = self.frame_decoder(inputs_embeds=enc_out)  # next frame-level prediction
+                dec_in = self.proj_layer(enc_out)
+                next_action = self.frame_decoder(inputs_embeds=dec_in)  # next frame-level prediction
                 next_frames_cls = self.next_action_classifier(next_action.last_hidden_state)
                 outputs["next_frames"] = next_frames_cls
 
@@ -447,19 +440,19 @@ class R2A2(nn.Module):
             # TODO: TRY WITH FIXED CONTEXT WINDOW TO PREVENT LATENCY DURING INFERENCE
             iters_time = []
             frames_cls_preds = []
-            inputs_embeds = enc_out
+            dec_in = self.proj_layer(enc_out)
             for _ in range(self.num_future_tokens):
                 start_time = time.time()
-                next_frames = self.frame_decoder(inputs_embeds=inputs_embeds)
+                next_frames = self.frame_decoder(inputs_embeds=dec_in)
                 iters_time.append(time.time() - start_time) # measure time per iteration
                 next_frame_embed = next_frames.last_hidden_state[:, -1:, :]
                 next_frame_cls = self.next_action_classifier(next_frame_embed)
                 frames_cls_preds.append(next_frame_cls)
                 # shift the input sequence by one frame if fixed context length
                 if self.fixed_ctx_length:
-                    inputs_embeds = inputs_embeds[:, 1:]
-                inputs_embeds = torch.cat((inputs_embeds, next_frame_embed), dim=1)
-                print(f"[R2A2] inputs_embeds: {inputs_embeds.shape}")
+                    dec_in = dec_in[:, 1:]
+                dec_in = torch.cat((dec_in, next_frame_embed), dim=1)
+                print(f"[R2A2] dec_in: {dec_in.shape}")
             outputs["future_frames"] = torch.cat(frames_cls_preds, dim=1)
             outputs["iters_time"] = iters_time
             print(f"[R2A2] future_frames: {outputs['future_frames'].shape}")

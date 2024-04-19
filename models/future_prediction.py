@@ -87,49 +87,15 @@ class AVTh(nn.Module):
             informer_mix: bool = True,
 
             # new args by Maxence Boels
-            informer: TargetConf = None,
-            decoder: TargetConf = None,
+            # informer: TargetConf = None,
+            # decoder: TargetConf = None,
             r2a2_model: TargetConf = None,
-            r2a2_main_head: TargetConf = None,
-            r2a2_heatmap_head: TargetConf = None,
+            # r2a2_main_head: TargetConf = None,
+            # r2a2_heatmap_head: TargetConf = None,
             **kwargs,
             ):
         super().__init__()
-        key_feature_length = 64
-        self.assign_to_centroids = assign_to_centroids
-        if self.assign_to_centroids:
-            # Since we will be assign the features
-            assert in_features != 1
-            self.assigner = KmeansAssigner(assign_to_centroids)
-            assert self.assigner.num_clusters == num_cluster_centers
-        else:
-            self.future_pred_loss = None
-        self.return_past_too = return_past_too
-        self.drop_last_n = drop_last_n
 
-        self.quantize_before_rollout = quantize_before_rollout
-        self.orders = [1,1,1,2,3,4,5,6]
-
-        #-----------------select params method-----------------#
-        # keep r2d2 as default even for skit reproduction
-        # self.forward_method = "r2d2" # options: skit_x_ant, skit_v_ant, r2d2_x_ant, r2d2_v_ant
-        self.fusion_method = "add_separate" # options: add, add_forget, add_sub, add_sub_mul, add_sub_mul_div, add_cat, add_sub_mul_cat, add_sub_mul_2
-        self.pooling_method = "key_recorder" # options: clean_pooling, key_recorder
-        self.future_model = "mlp" # options: decoder, mlp
-        #-----------------shared-----------------#
-        self.projection = nn.Sequential(
-            nn.Linear(512,64),
-            nn.ReLU(),
-            nn.LayerNorm(64),
-            nn.Linear(64,1),
-        )
-
-        self.future_query = nn.Embedding(1, 512)
-
-        self.present_classifier = nn.Linear(512,7)
-        self.present_preanticip_classifier = nn.Linear(512,7)
-
-        #-----------------r2d2-----------------#
         self.r2a2_model = hydra.utils.instantiate(r2a2_model, _recursive_=False)
         
     def forward(self, obs_video, train_mode=True):
