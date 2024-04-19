@@ -1,0 +1,363 @@
+expt_name: "default"
+# Just set to multiple values to run the same config multiple times. Just there
+# to take into account random variation
+run_id: 0
+seed: 42
+# A common place, so can be overriden in notebooks, which don't support ":"
+# interpolation
+cwd: ${hydra:runtime.cwd}
+
+sync_bn: false
+
+test_only: false
+
+# Set this to force data parallel training. Num nodes should be 1.
+data_parallel: true
+
+dist_backend: nccl
+
+pytorch:
+  # This only works with the compiled version of torchvision, and might have
+  # some memory issues?
+  video_backend: "video_reader"
+
+
+dataset:
+  train_on_one_video: false
+  train_targets: ${train_eval_op.train_targets}
+  pad_mask: true
+  mix_actions: false
+  num_flash: 1
+  eval_targets: rec
+  num_classes: 7
+  anticip_time: 8 # start the future frames at this time
+  num_target_seg: ${train_eval_op.train_loss_acc.num_future_targets}
+  video_long_length: ${mat.past_length}
+  video_short_length: ${mat.present_length}
+  future_video_length: ${mat.num_ant_queries}
+  frame_weights: false
+  use_multi_class_labels_past_future: false
+  use_heatmap: false
+  use_softlabels: false
+  use_time_stamp: false
+  use_future_class_and_duration: false
+  rel_distance: "none"
+
+
+train:
+  fn: 'train'  # Which file in func/ directory to use for training !!!!!
+  batch_size: 64
+  # This can have structure as follows:
+  # <module name in model>:<module name in ckpt>:<path to ckpt> <>...
+  # By default also supports just the <path to ckpt>
+  # But the more complex structure can be used to init separate parts of model
+  # using diff checkpoints. By default if only 2 elements are specified with :,
+  # module_name_in_ckpt is assumed to be null
+  init_from_model: null
+  # Total epochs to train for
+  num_epochs: 30
+  # Evaluate within training, every these many epochs
+  eval_freq: 1
+  # Shuffle data at train time
+  shuffle_data: true
+  # Store the best performing checkpoint
+  store_best: false
+  train_one_epoch_fn:
+    _target_: func.train.train_one_epoch
+    print_freq: 20
+    print_large_freq: 1000  # How often to write images/videos summary
+    grad_clip_params: ${opt.grad_clip}  # DO NOT CHANGE HERE, change in opt
+    # Set the following to store models every so many epochs. By default
+    # will only store the last checkpoint and the best checkpoint.
+    save_freq: null
+    # Num of minutes to save at, same as above -- must set save_intermediate
+    # true to save like this
+    save_freq_min: 60  # At least save every 60 mins
+    # Whether or not to save the intermediate models
+    save_intermediates: false
+    loss_wts:
+      cls_one: 1.0
+      pred: 1.0
+      feat: 1.0
+      # Past predictions, default 0 to be backward compatible
+      past_cls_action: 0.0
+      past_cls_verb: 0.0
+      past_cls_noun: 0.0
+
+
+evaluate:
+  _target_: func.train.evaluate
+  eval_types: ${train_eval_op.eval_types}
+  batch_size: 64
+
+train_eval_op:
+  _target_: func.train_eval_ops.TrainEvalOps
+  train_targets: [recognition, anticipation]
+  eval_types: ["recogntion"]
+  train_loss_acc:
+    _target_: func.train_eval_ops.TrainLossAcc
+    device: cuda
+    balance_classes: false
+    target_pos_weights: true
+    delay: 0
+    anticip_time: 0
+    rec_targets: local
+    enc_target_idx: 32
+    num_present_targets: 20
+    num_future_targets: 20
+    future_target: 0
+    past_sampling_rate: ${mat.past_sampling_rate}
+    present_length: ${mat.present_length}
+    ce_mse_past:
+      _target_: loss_fn.ce_mse_consistency.CEConsistencyMSE
+      ignore_idx: -1
+      mse_fraction: 0.10 # paper uses 0.15
+      mse_clip_val: 2.0 # 16.0 in the paper but 48 classes
+      num_classes: 7
+    ce_mse_present:
+      _target_: loss_fn.ce_mse_consistency.CEConsistencyMSE
+      ignore_idx: -1
+      mse_fraction: 0.50 # paper uses 0.15
+      mse_clip_val: 2.0 # 16.0 in the paper but 48 classes
+      num_classes: 7
+  eval_pred_target:
+    _target_: func.train_eval_ops.Evaluation
+    eval_idx: -1
+    num_eval_vids: 40
+
+mat:
+  _target_: models.future_prediction_exp18_mat.MAT
+  forward_method: recognition_ltc_kr
+  input_dim: 768
+  past_length: 3200
+  past_sampling_rate: 1
+  present_length: ${train_eval_op.train_loss_acc.num_present_targets} # 20
+  num_ant_queries: ${train_eval_op.train_loss_acc.num_future_targets} # 20
+  past_dim: 512
+  pres_dim: 512
+  n_heads: 4
+  dim_ff: 2048
+  dropout: 0.3
+  cross_attention: false
+  causal_decoder: true
+  return_key_feats: false
+  segment_level_supervision: false
+  past_module: none
+  present_module: none
+  use_informer: false
+  use_ltc: false
+  present_future_module: false
+  present_past_module: false
+  fuse_past_present_future: false
+  anticipate_store_retrieve: false
+  shared_classifier: true
+  anticipation_none: false
+  anticipate_present: false
+  anticipate_future: false
+  future_present_module: none
+  classifier_module: none
+  key_recorder:
+    _target_: models.key_recorder.KeyRecorder
+    dim: 512
+    reduc_dim: 64
+    sampling_rate: 10
+    local_size: 20
+    pooling_method: max_abs
+  fusion_head:
+    _target_: models.future_prediction_exp18_mat.FusionHead
+    dim: 512
+  fusion_head_segment:
+    _target_: models.future_prediction_exp18_mat.FusionHeadSegment
+    dim: 512
+  encoder:
+    _target_: models.future_prediction_exp18_mat.TransformerEncoder
+    input_length: 20
+    input_dim: 768
+    d_model: 512
+    n_heads: 4
+    num_layers: 2
+    dim_ff: 2048
+    dropout: 0.3
+    activation: relu
+    reshape_output: false
+  decoder:
+    _target_: models.future_prediction_exp18_mat.TransformerDecoder
+    input_length: 20
+    input_dim: 512
+    d_model: 512
+    n_heads: 4
+    num_layers: 2
+    dim_ff: 1024
+    dropout: 0.1
+    activation: relu
+  present_decoder:
+    _target_: models.future_prediction_exp18_mat.TransformerDecoder
+    input_length: 20
+    input_dim: 512
+    d_model: 512
+    n_heads: 4
+    num_layers: 1
+    dim_ff: 2048
+    dropout: 0.3
+    activation: relu
+  future_decoder:
+    _target_: models.future_prediction_exp18_mat.TransformerDecoder
+    input_length: 20
+    input_dim: 512
+    d_model: 512
+    n_heads: 4
+    num_layers: 1
+    dim_ff: 2048
+    dropout: 0.3
+    activation: relu
+  present_ar_decoder:
+    _target_: models.future_prediction_exp18_mat.TransformerDecoder
+    input_length: 20
+    input_dim: 512
+    d_model: 512
+    n_heads: 4
+    num_layers: 1
+    dim_ff: 2048
+    dropout: 0.3
+    activation: relu
+  informer:
+    _target_: Informer2020.models.model.Informer
+    enc_in: 768
+    dec_in: 768
+    c_out: 512
+    seq_len: 96
+    label_len: 48
+    out_len: 1
+    factor: 5
+    d_model: 512
+    n_heads: 8
+    e_layers: 2
+    d_layers: 2
+    d_ff: 1024
+    dropout: 0.1
+    attn: full
+    embed: fixed
+    freq: "h"
+    activation: gelu
+    output_attention: false
+    distil: false
+    mix: true
+  anticipation_decoder:
+    _target_: models.future_prediction_exp18_mat.TransformerDecoder
+    input_length: 20
+    input_dim: 512
+    d_model: 512
+    n_heads: 4
+    num_layers: 1
+    dim_ff: 2048
+    dropout: 0.3
+    activation: relu
+
+  long_term_context:
+    _target_: LTContext.ltc.model.ltcontext.LTC
+    input_dim: 768
+    num_classes: 7
+    attn_cfg:
+      num_attn_heads: 1
+      dropout: 0.2
+    ltc_cfg:
+      model_dim: 128 # default 64
+      num_stages: 4
+      num_layers: 9
+      conv_dilation_factor: 2
+      windowed_attn_w: 32 # default 64
+      long_term_attn_g: 32 # default 64
+      use_instance_norm: true
+      dropout_prob: 0.2
+      channel_masking_prob: 0.3
+      dim_reduction: 2.0
+
+
+  past_present_fusion:
+    _target_: models.future_prediction_exp18_mat.PastPresentFusion
+    dim: 512
+  past_present_future_fusion:
+    _target_: models.future_prediction_exp18_mat.PastPresentFutureFusion
+    dim: 512
+  present_future_decoder:
+    _target_: models.future_prediction_exp18_mat.TransformerDecoder
+    input_dim: 512
+    d_model: 512
+    n_heads: 4
+    num_layers: 1
+    dim_ff: 2048
+    dropout: 0.3
+    activation: relu
+  present_past_decoder:
+    _target_: models.future_prediction_exp18_mat.TransformerDecoder
+    input_dim: 512
+    d_model: 512
+    n_heads: 4
+    num_layers: 1
+    dim_ff: 2048
+    dropout: 0.3
+    activation: relu
+  present_future_classifiers:
+    _target_: models.future_prediction_exp18_mat.PresentFutureClassifiers
+    dim: 512
+    key_feats_dim: 32
+    num_classes: 7
+  present_past_classifiers:
+    _target_: models.future_prediction_exp18_mat.PresentPastClassifiers
+    dim: 512
+    key_feats_dim: 32
+    num_classes: 7
+  present_anticipation_classifier:
+    _target_: models.future_prediction_exp18_mat.PresentAnticipationClassifier
+    dim: 512
+    num_classes: 7
+
+opt:
+  lr_wd: [[__all__, 0.0003, 1.0e-05]]
+  scale_lr_by_bs: false
+  classifier_only: false
+  bias_bn_wd_scale: 1.0  # Scale the WD for bias and BN layers by this amount
+  grad_clip:
+    max_norm: null  # By default, no clipping
+    norm_type: 2
+  warmup:
+    _target_: common.scheduler.Warmup
+    init_lr_ratio: 0.0  # Warmup from this ratio of the orig LRs
+    num_epochs: 3
+  optimizer:
+    _target_: torch.optim.SGD
+    momentum: 0.9
+    nesterov: true
+  scheduler:
+    _target_: common.scheduler.CosineLR
+    num_epochs: ${minus:${train.num_epochs},${opt.warmup.num_epochs}}
+    eta_min: 1.0e-07
+
+
+defaults:
+  - train_eval_op: basic_mat
+  - train_eval_op/train_loss_acc: basic_mat
+  - opt/optimizer: sgd
+  - model/mat: mat
+
+  - override hydra/launcher: submitit_slurm
+  - override hydra/job_logging: colorlog
+  - override hydra/hydra_logging: colorlog
+
+hydra:
+  job:
+    name: "AVT"
+  launcher:
+    timeout_min: 2880
+    cpus_per_task: 10
+    gpus_per_node: 8
+    tasks_per_node: ${hydra.launcher.gpus_per_node}
+    mem_gb: 450
+    nodes: 1
+
+  run:
+    dir: ./outputs/  # Specified in the launch script
+  sweep:
+    dir: ${hydra.run.dir}
+    # Output sub directory for sweep runs.
+    subdir: ${hydra.job.num}  # ${hydra.job.override_dirname}

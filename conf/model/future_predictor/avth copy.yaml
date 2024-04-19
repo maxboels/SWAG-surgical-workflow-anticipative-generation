@@ -1,0 +1,120 @@
+# @package _group_
+
+_target_: models.future_prediction.AVTh
+r2a2_model:
+  _target_: R2A2.model.r2a2.R2A2
+  forward_method: anticipative_recognition_ltc_decoder_segments
+  input_dim: 768
+  num_ant_queries: 1
+  past_dim: 512
+  pres_dim: 512
+  key_recorder:
+    _target_: R2A2.model.key_recorder.KeyRecorder
+    dim: 512
+    reduc_dim: 32
+    sampling_rate: 10
+    local_size: 20
+    pooling_method: max_abs
+  fusion_head:
+    _target_: R2A2.model.r2a2.FusionHead
+    dim: 512
+  fusion_head_segment:
+    _target_: R2A2.model.r2a2.FusionHeadSegment
+    dim: 512
+  encoder:
+    _target_: R2A2.model.r2a2.TransformerEncoder
+    input_length: 20
+    input_dim: 768
+    d_model: 512
+    n_heads: 4
+    num_layers: 2
+    dim_ff: 2048
+    dropout: 0.3
+    activation: relu
+    reshape_output: false
+  decoder:
+    _target_: R2A2.model.r2a2.TransformerDecoder
+    input_length: 20
+    input_dim: 512
+    d_model: 512
+    n_heads: 4
+    num_layers: 2
+    dim_ff: 1024
+    dropout: 0.1
+    activation: relu
+  present_decoder:
+    _target_: R2A2.model.r2a2.TransformerDecoder
+    input_length: 20
+    input_dim: 512
+    d_model: 512
+    n_heads: 4
+    num_layers: 1
+    dim_ff: 2048
+    dropout: 0.3
+    activation: relu
+  future_decoder:
+    _target_: R2A2.model.r2a2.TransformerDecoder
+    input_length: 20
+    input_dim: 512
+    d_model: 512
+    n_heads: 4
+    num_layers: 1
+    dim_ff: 2048
+    dropout: 0.3
+    activation: relu
+  present_ar_decoder:
+    _target_: R2A2.model.r2a2.TransformerDecoder
+    input_length: 20
+    input_dim: 512
+    d_model: 512
+    n_heads: 4
+    num_layers: 1
+    dim_ff: 2048
+    dropout: 0.3
+    activation: relu
+  informer:
+    _target_: R2A2.model.informer.model.Informer
+    enc_in: 512
+    dec_in: 512
+    factor: 5
+    d_model: 512
+    n_heads: 4
+    e_layers: 2
+    d_layers: 2
+    d_ff: 512 # 1024
+    dropout: 0.1 # yang uses 0.1
+    attn: full
+    embed: fixed
+    freq: "h"
+    activation: relu
+    output_attention: false
+    distil: false
+    mix: true # double check
+  anticipation_decoder:
+    _target_: R2A2.model.r2a2.TransformerDecoder
+    input_length: 20
+    input_dim: 512
+    d_model: 512
+    n_heads: 4
+    num_layers: 1
+    dim_ff: 2048
+    dropout: 0.3
+    activation: relu
+  long_term_context:
+    _target_: R2A2.model.ltc.ltcontext.LTC
+    input_dim: 768
+    num_classes: 7
+    attn_cfg:
+      num_attn_heads: 1
+      dropout: 0.2
+    ltc_cfg:
+      model_dim: 128 # default 64
+      num_stages: 4
+      num_layers: 9
+      conv_dilation_factor: 2
+      windowed_attn_w: 32 # default 64
+      long_term_attn_g: 32 # default 64
+      use_instance_norm: true
+      dropout_prob: 0.2
+      channel_masking_prob: 0.3
+      dim_reduction: 2.0

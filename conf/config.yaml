@@ -1,0 +1,357 @@
+expt_name: "default"
+# Just set to multiple values to run the same config multiple times. Just there
+# to take into account random variation
+run_id: 0
+seed: 42
+# A common place, so can be overriden in notebooks, which don't support ":"
+# interpolation
+cwd: ${hydra:runtime.cwd}
+
+sync_bn: false
+
+test_only: false
+
+# Set this to force data parallel training. Num nodes should be 1.
+data_parallel: true
+
+dist_backend: nccl
+
+pytorch:
+  # This only works with the compiled version of torchvision, and might have
+  # some memory issues?
+  video_backend: "video_reader"
+
+train:
+  fn: 'train'  # Which file in func/ directory to use for training
+  batch_size: 16
+  # This can have structure as follows:
+  # <module name in model>:<module name in ckpt>:<path to ckpt> <>...
+  # By default also supports just the <path to ckpt>
+  # But the more complex structure can be used to init separate parts of model
+  # using diff checkpoints. By default if only 2 elements are specified with :,
+  # module_name_in_ckpt is assumed to be null
+  init_from_model: null
+  # Total epochs to train for
+  num_epochs: 45
+  # Evaluate within training, every these many epochs
+  eval_freq: 1
+  # Shuffle data at train time
+  shuffle_data: true
+  # Store the best performing checkpoint
+  store_best: false
+  train_one_epoch_fn:
+    _target_: func.train.train_one_epoch
+    print_freq: 10
+    print_large_freq: 1000  # How often to write images/videos summary
+    grad_clip_params: ${opt.grad_clip}  # DO NOT CHANGE HERE, change in opt
+    # Set the following to store models every so many epochs. By default
+    # will only store the last checkpoint and the best checkpoint.
+    save_freq: null
+    # Num of minutes to save at, same as above -- must set save_intermediate
+    # true to save like this
+    save_freq_min: 60  # At least save every 60 mins
+    # Whether or not to save the intermediate models
+    save_intermediates: false
+    loss_wts:
+      cls_one: 1.0
+      pred: 1.0
+      feat: 1.0
+      # Past predictions, default 0 to be backward compatible
+      past_cls_action: 0.0
+      past_cls_verb: 0.0
+      past_cls_noun: 0.0
+
+
+eval:
+  batch_size: null  # Will automatically figure out from train if null
+  eval_fn:
+    _target_: func.train.evaluate
+    store: false
+    store_endpoint: logits
+    only_run_featext: false
+
+model:
+  backbone_dim: 2048
+  # Use the backbone dim if null. Don't use the interpolation since the
+  # backbone dim might be updated in the code
+  intermediate_featdim: null
+  backbone_last_n_modules_to_drop: 2  # Avg pool and linear layer
+  dropout: 0.0
+  # Set to a number to project the temp_agg and future features to this
+  # dimension using a MLP before applying the NCE loss.
+  # Note this is also applied when doing L2 regression loss, so the name is a
+  # bit of a misnomer.
+  project_dim_for_nce: null
+  # Set to true to also add a regression head -- that is used for dense
+  # anticipation when predicting the duration of an action
+  add_regression_head: False
+  bn:
+    eps: 0.001
+    mom: 0.1
+  # Set this to true if you want to have the same temporal aggregated feat
+  # dim as from the original backbone (backbone_dim). This will add a linear
+  # layer to get that. It's useful when training future predictive models,
+  # with future feat avg as the target.
+  same_temp_agg_dim: false
+  # Set this to true to use the class mappings to get the other predictions
+  # eg, verb/noun from action, instead of adding additional linear layers
+  # Only applicable when predicting multiple output classes
+  use_cls_mappings: false
+  # Apply the classifier on the past predictions too
+  classifier_on_past: false
+  future_predictor:
+    _target_: models.future_prediction.AVTh
+    informer:
+      _target_: Informer2020.models.model.Informer
+      enc_in: 768
+      dec_in: 768
+      c_out: 512
+      seq_len: 96
+      label_len: 48
+      out_len: 1
+      factor: 5
+      d_model: 512
+      n_heads: 8
+      e_layers: 2
+      d_layers: 2
+      d_ff: 1024
+      dropout: 0.1
+      attn: full
+      embed: fixed
+      freq: "h"
+      activation: gelu
+      output_attention: false
+      distil: false
+      mix: true
+    decoder:
+      _target_: R2A2.model.r2a2.TransformerDecoder
+      input_dim: 512
+      d_model: 512
+      n_heads: 4
+      num_layers: 2
+      dim_ff: 1024
+      dropout: 0.1
+      activation: relu
+    r2a2_model:
+      _target_: R2A2.model.r2a2.R2A2
+      decoder_type: ar_causal
+      input_dim: 768
+      present_length: 20
+      num_ant_queries: 6
+      past_sampling_rate: 10
+      past_dim: 512
+      pres_dim: 512
+      num_classes: 7
+      key_recorder:
+        _target_: R2A2.model.key_recorder.KeyRecorder
+        dim: 512
+        reduc_dim: 64
+        sampling_rate: 10
+        local_size: 20
+        pooling_method: max_abs
+        return_max_now_reduc: true
+        reduction: linear_relu
+      fusion_head:
+        _target_: R2A2.model.r2a2.FusionHead
+        dim: 512
+      fusion_head_segment:
+        _target_: R2A2.model.r2a2.FusionHeadSegment
+        dim: 512
+      encoder:
+        _target_: R2A2.model.r2a2.TransformerEncoder
+        input_length: 20
+        input_dim: 768
+        d_model: 512
+        n_heads: 4
+        num_layers: 2
+        dim_ff: 2048
+        dropout: 0.3
+        activation: relu
+        reshape_output: false
+      decoder:
+        _target_: R2A2.model.r2a2.TransformerDecoder
+        input_dim: 512
+        d_model: 512
+        n_heads: 8
+        num_layers: 2
+        dim_ff: 1024
+        dropout: 0.1
+        activation: relu
+      present_decoder:
+        _target_: R2A2.model.r2a2.TransformerDecoder
+        input_length: 20
+        input_dim: 512
+        d_model: 512
+        n_heads: 4
+        num_layers: 1
+        dim_ff: 2048
+        dropout: 0.3
+        activation: relu
+      future_decoder:
+        _target_: R2A2.model.r2a2.TransformerDecoder
+        input_length: 20
+        input_dim: 512
+        d_model: 512
+        n_heads: 4
+        num_layers: 1
+        dim_ff: 2048
+        dropout: 0.3
+        activation: relu
+      present_ar_decoder:
+        _target_: R2A2.model.r2a2.TransformerDecoder
+        input_length: 20
+        input_dim: 512
+        d_model: 512
+        n_heads: 4
+        num_layers: 1
+        dim_ff: 2048
+        dropout: 0.3
+        activation: relu
+      informer:
+        _target_: Informer2020.models.model.Informer
+        enc_in: 768
+        dec_in: 768
+        c_out: 512
+        seq_len: 96
+        label_len: 48
+        out_len: 1
+        factor: 5
+        d_model: 512
+        n_heads: 8
+        e_layers: 2
+        d_layers: 2
+        d_ff: 1024
+        dropout: 0.1
+        attn: full
+        embed: fixed
+        freq: "h"
+        activation: gelu
+        output_attention: false
+        distil: false
+        mix: true
+      anticipation_decoder:
+        _target_: R2A2.model.r2a2.TransformerDecoder
+        input_length: 20
+        input_dim: 512
+        d_model: 512
+        n_heads: 4
+        num_layers: 1
+        dim_ff: 2048
+        dropout: 0.3
+        activation: relu
+      long_term_context:
+        _target_: R2A2.model.ltc.ltcontext.LTC
+        input_dim: 768
+        num_classes: 7
+        attn_cfg:
+          num_attn_heads: 1
+          dropout: 0.2
+        ltc_cfg:
+          model_dim: 64 # default 64
+          num_stages: 4
+          num_layers: 9
+          conv_dilation_factor: 2
+          windowed_attn_w: 64 # default 64
+          long_term_attn_g: 64 # default 64
+          use_instance_norm: true
+          dropout_prob: 0.2
+          channel_masking_prob: 0.3
+          dim_reduction: 2.0
+
+opt:
+  # Not using an overall LR anymore, since everything is now defined per
+  # module.
+  # Use a list format to specify per-layer LRs and WD. The first element is
+  # module_name ("__all__" => all params), LR and WD.
+  # Note that if there is any overlap between parameters, those params
+  # will get updated that many number of times as they appear in the list.
+  # It WILL NOT take the last options as highest precedence. (TODO future)
+  # The first term can also be a list, to give it a bunch of modules to set
+  # the same LR and WD for.
+  lr_wd: [[__all__, 0.1, 0.0001]]
+  # Set this to true to also scale the LR by the batch size (normally it will
+  # be scaled by the #replicas, so the LR is specified per given batch size).
+  # This allows to further specify a LR per batch element (useful when doing
+  # sweeps over batch size).
+  scale_lr_by_bs: false
+  # Set this to true to only train the last classifier layer.
+  # Also, will set all BN layers to not compute mean/var at runtime.
+  classifier_only: false
+  bias_bn_wd_scale: 1.0  # Scale the WD for bias and BN layers by this amount
+  grad_clip:
+    max_norm: null  # By default, no clipping
+    norm_type: 2
+  warmup:
+    _target_: common.scheduler.Warmup
+    init_lr_ratio: 0.0  # Warmup from this ratio of the orig LRs
+    num_epochs: 0  # Warmup for this many epochs (will take out of total epochs)
+
+moco:
+  _target_: moco.moco.builder.MoCo
+  dim: 128
+  K: 65536
+  m: 0.999
+  T: 0.2  # From moco-v2
+  mlp: true  # From moco-v2
+
+defaults:
+  - train_eval_op: basic
+  - train_eval_op/cls_loss_acc_fn: basic
+  - train_eval_op/reg_criterion: mse
+  - opt/optimizer: sgd
+  - model/backbone: r2plus1d_34
+  - model/temporal_aggregator: mean
+  - model/future_predictor: identity
+  - model/temporal_aggregator_after_future_pred: identity
+  - model/classifier: linear
+  - opt/scheduler: warmup_multi_step
+  # Any keys with dataset_train prefix, like dataset_train2, etc, will all
+  # be used for training by concatentating all those datasets. So you can
+  # use multiple datasets in training by adding
+  # +dataseset_train2=hmdb51/train to the command line config.
+  # Note that this only works with standard datasets, ConcatDataset can't
+  # handle overly customized datasets as we use in EpicKitchens
+  # - dataset@dataset_train: epic_kitchens100/anticipation_train
+  # Any keys with the dataset_eval prefix, will all be evaluated on separately.
+  # The postfix will be used to identify which dataset the results are on.
+  # So, you can use > 1 evaluation datasets that way, by adding it in the
+  # command line config, like +dataset_eval2=hmdb51/val
+  # - dataset@dataset_eval: epic_kitchens100/anticipation_val
+  - data@data_train: default
+  - data@data_eval: default
+  # Load any common dataset files, that will be used to create other dataset
+  # elements.
+  # - dataset/epic_kitchens/common
+  # - dataset/epic_kitchens100/common
+  # - dataset/dundee50salads/common
+  # - dataset/dundee50salads/annot_reader_fn: orig
+  # - dataset/egtea/common
+  # Overrides
+  - override hydra/launcher: submitit_slurm
+  - override hydra/job_logging: colorlog
+  - override hydra/hydra_logging: colorlog
+
+hydra:
+  job:
+    name: "AVT"
+  launcher:
+    # All params in https://github.com/facebookresearch/hydra/blob/master/plugins/hydra_submitit_launcher/hydra_plugins/hydra_submitit_launcher/config.py
+    timeout_min: 2880
+    cpus_per_task: 10
+    gpus_per_node: 8
+    tasks_per_node: ${hydra.launcher.gpus_per_node}
+    # This is the memory requested per node. So all GPUs on a given
+    # node will share this memory
+    mem_gb: 450
+    nodes: 1
+    # Use these parameters through + options in hydra
+    # partition: learnfair
+    # max_num_timeout: 3
+    # constraint: ${hydra.launcher.gpu_type} # Any, or could say [volta|pascal]
+    # comment: ""
+  run:
+    dir: ./outputs/  # Specified in the launch script
+  sweep:
+    dir: ${hydra.run.dir}
+    # Output sub directory for sweep runs.
+    subdir: ${hydra.job.num}  # ${hydra.job.override_dirname}
