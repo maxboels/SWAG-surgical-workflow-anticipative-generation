@@ -917,7 +917,7 @@ def main(cfg):
         for video_idx in test_videos_ids
     ]
 
-    logger.info("Time taken to load datasets: %f", time.time() - st)
+    logger.info(f"Time to load datasets: {(time.time() - st) / 60:.2f} min")
 
     logger.info("Creating data loaders")
     dataloader_train = torch.utils.data.DataLoader(
@@ -953,12 +953,14 @@ def main(cfg):
 
 
     model.to(device)
+    num_tokens = len(dataset_train)  # Assuming each sample is one token, adjust if necessary
     num_params = sum(p.numel() for p in model.parameters())
-    num_samples = len(dataset_train)
-    logger.info('[MAIN] Number of parameters: %d', num_params)
-    logger.info('[MAIN] Number of samples: %d', num_samples)
-    logger.info('[MAIN] Data-to-Parameter-Ratio is ideally between [1:1 to 10:1]: %f', num_params / num_samples)
-    if num_params / num_samples < 1 or num_params / num_samples > 10:
+    ratio = num_tokens / num_params
+    logger.info('[MAIN] Number of parameters: %d', num_tokens)
+    logger.info('[MAIN] Number of tokens: %d', num_params)
+    logger.info('[MAIN] Token-to-Parameter Ratio is ideally between [1:1 to 10:1]: %f', ratio)
+
+    if ratio < 1 or ratio > 10:
         logger.warning('[MAIN] Data-to-Parameter-Ratio is outside the interval [1:1 to 10:1]')
     
     if cfg.opt.classifier_only:

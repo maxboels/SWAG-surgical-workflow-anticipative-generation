@@ -169,3 +169,100 @@
 [2024-04-19 15:27:23,564][func.train][INFO] - [DATASET] test video_indices: [61]
 [2024-04-19 15:27:27,756][func.train][INFO] - [DATASET] test size: 50801
 [2024-04-19 15:27:27,757][func.train][INFO] - [DATASET] test video_indices: [62]
+[2024-04-19 15:27:31,286][func.train][INFO] - [DATASET] test size: 85826
+[2024-04-19 15:27:31,286][func.train][INFO] - [DATASET] test video_indices: [63]
+[2024-04-19 15:27:33,980][func.train][INFO] - [DATASET] test size: 59951
+[2024-04-19 15:27:33,981][func.train][INFO] - [DATASET] test video_indices: [64]
+[2024-04-19 15:27:37,419][func.train][INFO] - [DATASET] test size: 46826
+[2024-04-19 15:27:37,420][func.train][INFO] - [DATASET] test video_indices: [65]
+[2024-04-19 15:27:39,683][func.train][INFO] - [DATASET] test size: 45601
+[2024-04-19 15:27:39,683][func.train][INFO] - [DATASET] test video_indices: [66]
+[2024-04-19 15:27:43,111][func.train][INFO] - [DATASET] test size: 58826
+[2024-04-19 15:27:43,112][func.train][INFO] - [DATASET] test video_indices: [67]
+[2024-04-19 15:27:46,673][func.train][INFO] - [DATASET] test size: 49301
+[2024-04-19 15:27:46,673][func.train][INFO] - [DATASET] test video_indices: [68]
+[2024-04-19 15:27:49,004][func.train][INFO] - [DATASET] test size: 114376
+[2024-04-19 15:27:49,005][func.train][INFO] - [DATASET] test video_indices: [69]
+[2024-04-19 15:27:52,937][func.train][INFO] - [DATASET] test size: 29851
+[2024-04-19 15:27:52,938][func.train][INFO] - [DATASET] test video_indices: [70]
+[2024-04-19 15:27:55,801][func.train][INFO] - [DATASET] test size: 62876
+[2024-04-19 15:27:55,802][func.train][INFO] - [DATASET] test video_indices: [71]
+[2024-04-19 15:27:59,259][func.train][INFO] - [DATASET] test size: 77651
+[2024-04-19 15:27:59,260][func.train][INFO] - [DATASET] test video_indices: [72]
+[2024-04-19 15:28:01,806][func.train][INFO] - [DATASET] test size: 33901
+[2024-04-19 15:28:01,806][func.train][INFO] - [DATASET] test video_indices: [73]
+[2024-04-19 15:28:03,866][func.train][INFO] - [DATASET] test size: 40851
+[2024-04-19 15:28:03,867][func.train][INFO] - [DATASET] test video_indices: [74]
+[2024-04-19 15:28:06,243][func.train][INFO] - [DATASET] test size: 48076
+[2024-04-19 15:28:06,243][func.train][INFO] - [DATASET] test video_indices: [75]
+[2024-04-19 15:28:09,992][func.train][INFO] - [DATASET] test size: 66226
+[2024-04-19 15:28:09,993][func.train][INFO] - [DATASET] test video_indices: [76]
+[2024-04-19 15:28:13,152][func.train][INFO] - [DATASET] test size: 62551
+[2024-04-19 15:28:13,153][func.train][INFO] - [DATASET] test video_indices: [77]
+[2024-04-19 15:28:15,277][func.train][INFO] - [DATASET] test size: 18476
+[2024-04-19 15:28:15,277][func.train][INFO] - [DATASET] test video_indices: [78]
+[2024-04-19 15:28:17,231][func.train][INFO] - [DATASET] test size: 85351
+[2024-04-19 15:28:17,232][func.train][INFO] - [DATASET] test video_indices: [79]
+[2024-04-19 15:28:19,721][func.train][INFO] - [DATASET] test size: 43101
+[2024-04-19 15:28:19,721][func.train][INFO] - [DATASET] test video_indices: [80]
+[2024-04-19 15:28:19,844][func.train][INFO] - Time taken to load datasets: 199.670999
+[2024-04-19 15:28:19,845][func.train][INFO] - Creating data loaders
+[2024-04-19 15:28:19,848][func.train][INFO] - Creating model with {'one': 7} classes
+[2024-04-19 15:28:22,034][func.train][INFO] - [MAIN] Number of parameters: 39530989
+[2024-04-19 15:28:22,035][func.train][INFO] - [MAIN] Number of samples: 86304
+[2024-04-19 15:28:22,035][func.train][INFO] - [MAIN] Data-to-Parameter-Ratio is ideally between [1:1 to 10:1]: 458.043532
+[2024-04-19 15:28:22,035][func.train][WARNING] - [MAIN] Data-to-Parameter-Ratio is outside the interval [1:1 to 10:1]
+[2024-04-19 15:28:22,037][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-04-19 15:28:22,037][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-04-19 15:28:22,045][func.train][INFO] - Wrapping model into DP
+[2024-04-19 15:28:22,371][func.train][INFO] - Start training
+[2024-04-19 15:28:22,374][func.train][INFO] - Storing checkpoints every 60.00 mins
+[2024-04-19 15:28:24,005][func.train][INFO] - [TRAINING] Step 0/10788 | Loss: 3.35 | Acc (curr_frames): 0.05 | Acc (next_frames): 0.07 | time-left: 293.16 min
+[2024-04-19 15:28:49,231][func.train][INFO] - [TRAINING] Step 100/10788 | Loss: 2.65 | Acc (curr_frames): 0.03 | Acc (next_frames): 0.11 | time-left: 47.36 min
+[2024-04-19 15:29:12,253][func.train][INFO] - [TRAINING] Step 200/10788 | Loss: 2.51 | Acc (curr_frames): 0.08 | Acc (next_frames): 0.37 | time-left: 43.79 min
+[2024-04-19 15:29:35,980][func.train][INFO] - [TRAINING] Step 300/10788 | Loss: 2.10 | Acc (curr_frames): 0.53 | Acc (next_frames): 0.66 | time-left: 42.74 min
+[2024-04-19 15:30:00,969][func.train][INFO] - [TRAINING] Step 400/10788 | Loss: 2.00 | Acc (curr_frames): 0.61 | Acc (next_frames): 0.63 | time-left: 42.56 min
+[2024-04-19 15:30:24,282][func.train][INFO] - [TRAINING] Step 500/10788 | Loss: 1.10 | Acc (curr_frames): 0.79 | Acc (next_frames): 0.78 | time-left: 41.72 min
+[2024-04-19 15:30:45,994][func.train][INFO] - [TRAINING] Step 600/10788 | Loss: 1.82 | Acc (curr_frames): 0.61 | Acc (next_frames): 0.60 | time-left: 40.57 min
+[2024-04-19 15:31:16,266][func.train][INFO] - [TRAINING] Step 700/10788 | Loss: 2.35 | Acc (curr_frames): 0.41 | Acc (next_frames): 0.42 | time-left: 41.70 min
+[2024-04-19 15:31:42,228][func.train][INFO] - [TRAINING] Step 800/10788 | Loss: 2.13 | Acc (curr_frames): 0.57 | Acc (next_frames): 0.56 | time-left: 41.53 min
+[2024-04-19 15:32:07,386][func.train][INFO] - [TRAINING] Step 900/10788 | Loss: 0.98 | Acc (curr_frames): 0.59 | Acc (next_frames): 0.61 | time-left: 41.15 min
+[2024-04-19 15:32:30,664][func.train][INFO] - [TRAINING] Step 1000/10788 | Loss: 1.04 | Acc (curr_frames): 0.62 | Acc (next_frames): 0.63 | time-left: 40.46 min
+[2024-04-19 15:32:54,723][func.train][INFO] - [TRAINING] Step 1100/10788 | Loss: 1.65 | Acc (curr_frames): 0.59 | Acc (next_frames): 0.58 | time-left: 39.94 min
+[2024-04-19 15:33:17,753][func.train][INFO] - [TRAINING] Step 1200/10788 | Loss: 1.55 | Acc (curr_frames): 0.50 | Acc (next_frames): 0.49 | time-left: 39.30 min
+[2024-04-19 15:33:41,669][func.train][INFO] - [TRAINING] Step 1300/10788 | Loss: 1.29 | Acc (curr_frames): 0.60 | Acc (next_frames): 0.60 | time-left: 38.81 min
+[2024-04-19 15:34:03,426][func.train][INFO] - [TRAINING] Step 1400/10788 | Loss: 1.30 | Acc (curr_frames): 0.70 | Acc (next_frames): 0.68 | time-left: 38.09 min
+[2024-04-19 15:34:25,407][func.train][INFO] - [TRAINING] Step 1500/10788 | Loss: 1.69 | Acc (curr_frames): 0.74 | Acc (next_frames): 0.70 | time-left: 37.44 min
+[2024-04-19 15:34:47,003][func.train][INFO] - [TRAINING] Step 1600/10788 | Loss: 1.35 | Acc (curr_frames): 0.51 | Acc (next_frames): 0.57 | time-left: 36.79 min
+[2024-04-19 15:35:08,416][func.train][INFO] - [TRAINING] Step 1700/10788 | Loss: 1.07 | Acc (curr_frames): 0.55 | Acc (next_frames): 0.54 | time-left: 36.15 min
+[2024-04-19 15:35:28,860][func.train][INFO] - [TRAINING] Step 1800/10788 | Loss: 0.58 | Acc (curr_frames): 0.88 | Acc (next_frames): 0.87 | time-left: 35.47 min
+[2024-04-19 15:35:50,719][func.train][INFO] - [TRAINING] Step 1900/10788 | Loss: 0.70 | Acc (curr_frames): 0.80 | Acc (next_frames): 0.75 | time-left: 34.93 min
+[2024-04-19 15:36:14,917][func.train][INFO] - [TRAINING] Step 2000/10788 | Loss: 1.41 | Acc (curr_frames): 0.52 | Acc (next_frames): 0.55 | time-left: 34.58 min
+[2024-04-19 15:36:41,203][func.train][INFO] - [TRAINING] Step 2100/10788 | Loss: 1.47 | Acc (curr_frames): 0.66 | Acc (next_frames): 0.68 | time-left: 34.38 min
+[2024-04-19 15:37:06,948][func.train][INFO] - [TRAINING] Step 2200/10788 | Loss: 1.23 | Acc (curr_frames): 0.75 | Acc (next_frames): 0.73 | time-left: 34.11 min
+[2024-04-19 15:37:42,876][func.train][INFO] - [TRAINING] Step 2300/10788 | Loss: 1.28 | Acc (curr_frames): 0.72 | Acc (next_frames): 0.69 | time-left: 34.46 min
+[2024-04-19 15:38:24,140][func.train][INFO] - [TRAINING] Step 2400/10788 | Loss: 0.70 | Acc (curr_frames): 0.74 | Acc (next_frames): 0.73 | time-left: 35.03 min
+[2024-04-19 15:38:54,584][func.train][INFO] - [TRAINING] Step 2500/10788 | Loss: 0.81 | Acc (curr_frames): 0.82 | Acc (next_frames): 0.79 | time-left: 34.91 min
+[2024-04-19 15:39:33,031][func.train][INFO] - [TRAINING] Step 2600/10788 | Loss: 0.48 | Acc (curr_frames): 0.85 | Acc (next_frames): 0.83 | time-left: 35.18 min
+[2024-04-19 15:40:03,655][func.train][INFO] - [TRAINING] Step 2700/10788 | Loss: 0.46 | Acc (curr_frames): 0.81 | Acc (next_frames): 0.81 | time-left: 34.99 min
+[2024-04-19 15:40:33,997][func.train][INFO] - [TRAINING] Step 2800/10788 | Loss: 1.06 | Acc (curr_frames): 0.78 | Acc (next_frames): 0.77 | time-left: 34.77 min
+[2024-04-19 15:40:56,576][func.train][INFO] - [TRAINING] Step 2900/10788 | Loss: 1.15 | Acc (curr_frames): 0.83 | Acc (next_frames): 0.82 | time-left: 34.17 min
+[2024-04-19 15:41:22,033][func.train][INFO] - [TRAINING] Step 3000/10788 | Loss: 0.86 | Acc (curr_frames): 0.76 | Acc (next_frames): 0.74 | time-left: 33.72 min
+[2024-04-19 15:41:52,326][func.train][INFO] - [TRAINING] Step 3100/10788 | Loss: 0.46 | Acc (curr_frames): 0.86 | Acc (next_frames): 0.85 | time-left: 33.46 min
+[2024-04-19 15:42:29,322][func.train][INFO] - [TRAINING] Step 3200/10788 | Loss: 0.56 | Acc (curr_frames): 0.86 | Acc (next_frames): 0.86 | time-left: 33.46 min
+[2024-04-19 15:43:01,846][func.train][INFO] - [TRAINING] Step 3300/10788 | Loss: 0.37 | Acc (curr_frames): 0.77 | Acc (next_frames): 0.76 | time-left: 33.25 min
+[2024-04-19 15:43:33,424][func.train][INFO] - [TRAINING] Step 3400/10788 | Loss: 0.43 | Acc (curr_frames): 0.76 | Acc (next_frames): 0.76 | time-left: 32.98 min
+[2024-04-19 15:44:07,387][func.train][INFO] - [TRAINING] Step 3500/10788 | Loss: 0.84 | Acc (curr_frames): 0.79 | Acc (next_frames): 0.77 | time-left: 32.78 min
+[2024-04-19 15:44:43,473][func.train][INFO] - [TRAINING] Step 3600/10788 | Loss: 0.25 | Acc (curr_frames): 0.81 | Acc (next_frames): 0.81 | time-left: 32.64 min
+[2024-04-19 15:45:09,944][func.train][INFO] - [TRAINING] Step 3700/10788 | Loss: 0.49 | Acc (curr_frames): 0.79 | Acc (next_frames): 0.78 | time-left: 32.16 min
+[2024-04-19 15:45:34,996][func.train][INFO] - [TRAINING] Step 3800/10788 | Loss: 0.47 | Acc (curr_frames): 0.81 | Acc (next_frames): 0.81 | time-left: 31.64 min
+[2024-04-19 15:45:59,641][func.train][INFO] - [TRAINING] Step 3900/10788 | Loss: 0.24 | Acc (curr_frames): 0.82 | Acc (next_frames): 0.82 | time-left: 31.11 min
+[2024-04-19 15:46:22,332][func.train][INFO] - [TRAINING] Step 4000/10788 | Loss: 0.87 | Acc (curr_frames): 0.79 | Acc (next_frames): 0.77 | time-left: 30.53 min
+[2024-04-19 15:46:46,221][func.train][INFO] - [TRAINING] Step 4100/10788 | Loss: 0.79 | Acc (curr_frames): 0.75 | Acc (next_frames): 0.73 | time-left: 30.00 min
+[2024-04-19 15:47:10,115][func.train][INFO] - [TRAINING] Step 4200/10788 | Loss: 0.30 | Acc (curr_frames): 0.80 | Acc (next_frames): 0.79 | time-left: 29.47 min
+[2024-04-19 15:47:34,874][func.train][INFO] - [TRAINING] Step 4300/10788 | Loss: 0.54 | Acc (curr_frames): 0.83 | Acc (next_frames): 0.80 | time-left: 28.97 min
+[2024-04-19 15:48:07,537][func.train][INFO] - [TRAINING] Step 4400/10788 | Loss: 0.72 | Acc (curr_frames): 0.82 | Acc (next_frames): 0.79 | time-left: 28.67 min
+[2024-04-19 15:48:37,325][func.train][INFO] - [TRAINING] Step 4500/10788 | Loss: 0.25 | Acc (curr_frames): 0.88 | Acc (next_frames): 0.88 | time-left: 28.28 min
+[2024-04-19 15:49:08,834][func.train][INFO] - [TRAINING] Step 4600/10788 | Loss: 0.32 | Acc (curr_frames): 0.84 | Acc (next_frames): 0.84 | time-left: 27.94 min
+[2024-04-19 15:49:42,025][func.train][INFO] - [TRAINING] Step 4700/10788 | Loss: 0.64 | Acc (curr_frames): 0.79 | Acc (next_frames): 0.77 | time-left: 27.62 min
+[2024-04-19 15:50:11,658][func.train][INFO] - [TRAINING] Step 4800/10788 | Loss: 0.51 | Acc (curr_frames): 0.75 | Acc (next_frames): 0.75 | time-left: 27.21 min

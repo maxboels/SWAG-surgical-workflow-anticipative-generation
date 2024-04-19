@@ -182,12 +182,12 @@ class Medical_Dataset(Dataset):
                 random.shuffle(self.data_order)
                 self.classes = self.df_split['class'].tolist()
                 classes_counts_dict = self._compute_stats_cls_counts()
-                print(f"[DATASET] classes_counts: {classes_counts_dict}")
+                self.logger.info(f"[DATASET] classes_counts: {classes_counts_dict}")
                 if self.debug:
                     self.class_weights = torch.ones(self.num_classes).to(self.device)
                 else:
                     self.class_weights = self._compute_class_weights(classes_counts_dict)
-                print(f"[DATASET] class_weights: {self.class_weights}")
+                self.logger.info(f"[DATASET] class_weights: {self.class_weights}")
 
             if self.predict_next_segment:
                 # calculate the next_segments_class class weights on the whole training set
@@ -199,6 +199,79 @@ class Medical_Dataset(Dataset):
                 self.next_classes_weights = self.next_classes_weights / self.next_classes_weights[1:].mean()
                 self.next_classes_weights = torch.cat((torch.tensor([1.0]).to(self.device), self.next_classes_weights[1:]))
                 print(f"[DATASET] next_classes_weights: {self.next_classes_weights}")
+
+        def get_data_split(self, dataset_name="cholec80", split="train", video_indices=None):
+            """
+                autolapro21: 0-14, 14-21
+                cholec80: 0-40, 40-80
+            """
+            df = self.df[self.df.video_idx.isin(video_indices)]
+            assert len(df.video_idx.unique()) == len(video_indices), "video indices not found"
+            df = df.reset_index() if not split == "train" else df
+            return df
+
+        def init_video_data(self, video_indices=None):
+            self.videos = []
+            self.labels = []
+            self.next_segments_class = []
+            self.heatmap = []
+            # mb added
+            self.target_feats = []
+            new_id = 0                
+
+            for video_indx in video_indices:
+                df_video = self.df_split[self.df_split.video_idx==video_indx]
+                df_video = df_video[df_video.frame%self.frames_fps==0].reset_index(drop = True)
+                self.logger.info(f"[DATASET] Sampling video_idx: {video_indx} at {self.frames_fps} fps to {len(df_video)} frames")
+                video_length = len(df_video)
+                if video_length==0:
+                    print(f'[SKIP] video_idx:{video_indx} video_length:{video_length}') 
+                    continue
+                path_list = df_video.image_path.tolist()
+                label_list = df_video['class'].tolist()
+
+                #-----------------mb added-----------------
+                if self.predict_next_segment:
+                    next_label_folder = self.project_path + f"/LFB/{self.dataset_name}/next_labels_n{self.num_next_labels}"
+                    if not os.path.exists(next_label_folder):
+                        os.makedirs(next_label_folder)
+                    next_label_file = next_label_folder + f"/video{video_indx}.json"
+
+                if self.predict_next_segment:
+                    if os.path.exists(next_label_file):
+                        with open(next_label_file, 'r') as f:
+                            next_label_dict = json.load(f)
+                        next_label_list = next_label_dict[str(video_indx)]
+                        next_label_list = torch.Tensor(next_label_list).long()
+                    else:
+                        next_label_list = self.get_next_label(label_list, self.num_next_labels, end_class=self.last_seg_class)
+                        with open(next_label_file, 'w') as f:
+                            json.dump({str(video_indx): next_label_list.tolist()}, f)
+                        print(f"[DATASET] computed next_label_list to {next_label_file}")
+
+                label_list = torch.Tensor(label_list).long()
+                new_id += 1
+                num=0
+                # TODO: challenge this loop
+                for i in range(0, video_length):
+                    # maping between frames and video ids
+                    self.frame_indices.append(i) # [0, 1, 2, 3, 0, 1, 0, 1, 2, ...]
+                    self.video_idx.append(len(self.videos))
+                    self.video_lengths.append(len(df_video))
+
+                with torch.no_grad():
+                    self.labels.append(label_list)
+                    with open(self.extracted_feats_path + f"video_{video_indx}.pkl", 'rb') as f:
+                        video = pickle.load(f)
+                    video = torch.from_numpy(video).float().to(self.device)
+                    self.videos.append(video)
+
+            print(f"[DATASET] label_list sample: {self.labels[-1]}")
+            print(f"[DATASET] number of {self.train_mode} videos: {len(self.videos)}")
+
+            # PADDING VALUES based on video dims
+            self.zeros = torch.zeros([video.size(0), self.ctx_length, video.size(2), video.size(3)]).float().to(self.device)
+            self.minus_one_tgt = - torch.ones([self.ctx_length,]).long().to(self.device)
 
         def _compute_stats_cls_counts(self):
             all_classes_counts = {}
@@ -222,7 +295,7 @@ class Medical_Dataset(Dataset):
         
         def get_next_label(self, label_list, num_next_labels, end_class=7):
             """Next labels for each frame in the video
-            Returns: a tensor of size (video_lenth, num_next_labels)
+            Returns: a tensor of size (video_length, num_next_labels)
             """
             next_labels_tensor = - torch.ones((len(label_list), num_next_labels)).long()
             def find_next_classes(index, labels, num_next_class=1, end_class_id=7):
@@ -254,93 +327,7 @@ class Medical_Dataset(Dataset):
             if rests>0:
                 video_short = torch.cat((self.zeros[:,:rests,:,:], video_short),1)
             return video_short
-        
-        def init_video_data(self, video_indices=None):
-            self.videos = []
-            self.labels = []
-            self.next_segments_class = []
-            self.heatmap = []
-            # mb added
-            self.target_feats = []
-            new_id = 0                
 
-            for video_indx in video_indices:
-                df_video = self.df_split[self.df_split.video_idx==video_indx]
-                df_video = df_video[df_video.frame%self.frames_fps==0].reset_index(drop = True)
-                video_lenth = len(df_video)
-                if video_lenth==0:
-                    print(f'[SKIP] video_idx:{video_indx} video_lenth:{video_lenth}') 
-                    continue
-                path_list = df_video.image_path.tolist()
-                label_list = df_video['class'].tolist()
-
-                #-----------------mb added-----------------
-                if self.predict_next_segment:
-                    next_label_folder = self.project_path + f"/LFB/{self.dataset_name}/next_labels_n{self.num_next_labels}"
-                    if not os.path.exists(next_label_folder):
-                        os.makedirs(next_label_folder)
-                    next_label_file = next_label_folder + f"/video{video_indx}.json"
-
-                if self.predict_next_segment:
-                    if os.path.exists(next_label_file):
-                        with open(next_label_file, 'r') as f:
-                            next_label_dict = json.load(f)
-                        next_label_list = next_label_dict[str(video_indx)]
-                        next_label_list = torch.Tensor(next_label_list).long()
-                    else:
-                        next_label_list = self.get_next_label(label_list, self.num_next_labels, end_class=self.last_seg_class)
-                        with open(next_label_file, 'w') as f:
-                            json.dump({str(video_indx): next_label_list.tolist()}, f)
-                        print(f"[DATASET] computed next_label_list to {next_label_file}")
-
-                label_list = torch.Tensor(label_list).long()
-                new_id += 1
-                num=0
-                # TODO: challenge this loop
-                for i in range(0, video_lenth):
-                    # maping between frames and video ids
-                    self.frame_indices.append(i) # [0, 1, 2, 3, 0, 1, 0, 1, 2, ...]
-                    self.video_idx.append(len(self.videos))
-                    self.video_lengths.append(len(df_video))
-
-                #-----------------mb added-----------------
-                # if self.get_target_feats:
-                #     # load video_targets features from .h5 file
-                #     file_path = self.key_feats_path + f"video_{video_indx-1}.h5"
-                #     if os.path.exists(file_path):
-                #         video_target_feats = torch.tensor(h5py.File(file_path, 'r')['data'][:, :self.feats_dim], dtype=torch.float32).to(self.device)
-                #         print(f"[DATASET] video idx: {video_indx} reduced feats (read): {video_target_feats.size()}")
-                #         self.target_feats.append(video_target_feats)
-                #     else:
-                #         video_target_feats = torch.zeros((video_lenth, self.feats_dim)).to(self.device)
-                #         self.target_feats.append(video_target_feats)
-                #         print(f"[DATASET] video idx: {video_indx} reduced feats (not found -> zeros): {video_target_feats.size()}")                    
-                # #-----------------mb added end-----------------
-
-
-                with torch.no_grad():
-                    self.labels.append(label_list)
-                    with open(self.extracted_feats_path + f"video_{video_indx}.pkl", 'rb') as f:
-                        video = pickle.load(f)
-                    video = torch.from_numpy(video).float().to(self.device)
-                    self.videos.append(video)
-
-            print(f"[DATASET] label_list sample: {self.labels[-1]}")
-            print(f"[DATASET] number of {self.train_mode} videos: {len(self.videos)}")
-
-            # PADDING VALUES based on video dims
-            self.zeros = torch.zeros([video.size(0), self.ctx_length, video.size(2), video.size(3)]).float().to(self.device)
-            self.minus_one_tgt = - torch.ones([self.ctx_length,]).long().to(self.device)
-
-        def get_data_split(self, dataset_name="cholec80", split="train", video_indices=None):
-            """
-                autolapro21: 0-14, 14-21
-                cholec80: 0-40, 40-80
-            """
-            df = self.df[self.df.video_idx.isin(video_indices)]
-            assert len(df.video_idx.unique()) == len(video_indices), "video indices not found"
-            df = df.reset_index() if not split == "train" else df
-            return df
   
         def class_mappings(self) -> Dict[Tuple[str, str], torch.FloatTensor]:
             return {}
