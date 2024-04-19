@@ -1,7 +1,6 @@
 *.pyc
 *.cpp
 *.pth
-*.png
 
 LFB/*
 LFB/*.json

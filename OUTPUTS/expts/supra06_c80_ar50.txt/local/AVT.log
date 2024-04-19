@@ -17644,3 +17644,6 @@
 [2024-04-19 12:30:57,219][func.train][INFO] - [TRAINING] Step 3900/10788 | Loss: 0.02 | Acc (curr_frames): 1.00 | Acc (next_frames): 0.97 | time-left: 40.91 min
 [2024-04-19 12:31:31,026][func.train][INFO] - [TRAINING] Step 4000/10788 | Loss: 0.03 | Acc (curr_frames): 1.00 | Acc (next_frames): 0.92 | time-left: 40.26 min
 [2024-04-19 12:32:10,302][func.train][INFO] - [TRAINING] Step 4100/10788 | Loss: 0.06 | Acc (curr_frames): 1.00 | Acc (next_frames): 0.92 | time-left: 39.77 min
+[2024-04-19 12:32:45,616][func.train][INFO] - [TRAINING] Step 4200/10788 | Loss: 0.04 | Acc (curr_frames): 1.00 | Acc (next_frames): 0.96 | time-left: 39.17 min
+[2024-04-19 12:33:21,379][func.train][INFO] - [TRAINING] Step 4300/10788 | Loss: 0.01 | Acc (curr_frames): 1.00 | Acc (next_frames): 0.94 | time-left: 38.57 min
+[2024-04-19 12:33:56,000][func.train][INFO] - [TRAINING] Step 4400/10788 | Loss: 0.04 | Acc (curr_frames): 1.00 | Acc (next_frames): 0.96 | time-left: 37.95 min
