@@ -336,6 +336,7 @@ def check_numpy_to_list(dictionay):
     return dictionay
 
 def evaluate(
+        model,
         train_eval_op,
         device,
         step_now,
@@ -347,6 +348,8 @@ def evaluate(
         store=False,
         store_endpoint='logits',
         only_run_featext=False):
+
+    model.eval()
     # -----------------select params----------------- #
     num_classes = 7
     # -----------------select params----------------- #
@@ -390,8 +393,8 @@ def evaluate(
             end_idx = start_idx + batch_size
 
             with torch.no_grad():
-        
-                data, outputs, _, _ = train_eval_op(data, train_mode=False)
+                        
+                outputs = model(data['video'], train_mode=False)
 
                 # FRAME LEVEL STATE RECOGNITION
                 # (there is no autoregressive prediction here)
@@ -546,7 +549,13 @@ def evaluate(
 
     # 2. Qualitative: Visualize targets and predictions for each video
 
-    return np.nanmean(all_videos_mean_acc_future), step_now+1
+    accuracies = {
+        "acc_cur": np.nanmean(all_videos_mean_acc_curr),
+        "acc_fut": np.nanmean(all_videos_mean_acc_future)
+    }
+
+
+    return accuracies, step_now+1
 
 
 # TODO: edit score and f1 score at different overlap levels
@@ -1067,12 +1076,14 @@ def main(cfg):
 
     if cfg.test_only:
         logger.info("Starting test_only")
-        hydra.utils.call(cfg.eval.eval_fn, train_eval_op, device, 1,
-                        dataloaders_test, 
-                        tb_writer, 
-                        logger, 
-                        1, 
-                        cfg.eval.eval_fn.num_future_tokens)
+        hydra.utils.call(
+            cfg.eval.eval_fn, 
+            model,
+            train_eval_op, device, 1,
+            dataloaders_test, 
+            tb_writer, 
+            logger, 
+            1)
         return
 
     logger.info("Start training")
@@ -1087,49 +1098,61 @@ def main(cfg):
     epoch = 1  # Since using this var to write the checkpoint output, so init to sth
     step_now = 3000*start_epoch
     step_val_now =0
+    acc_vs_params = {}
     for epoch in range(start_epoch, cfg.train.num_epochs):
         if dist_info['distributed'] and train_sampler is not None:
             train_sampler.set_epoch(epoch)
         
         if epoch>=0:
-            last_saved_time, step_now = hydra.utils.call(cfg.train.train_one_epoch_fn,
-                                            model,
-                                            step_now,
-                                            device,
-                                            train_eval_op, 
-                                            optimizer,
-                                            lr_scheduler, 
-                                            dataloader_train, 
-                                            epoch,
-                                            partial_epoch,
-                                            tb_writer, 
-                                            logger,
-                                            last_saved_time)
+            last_saved_time, step_now = hydra.utils.call(
+                cfg.train.train_one_epoch_fn,
+                model,
+                step_now,
+                device,
+                train_eval_op, 
+                optimizer,
+                lr_scheduler, 
+                dataloader_train, 
+                epoch,
+                partial_epoch,
+                tb_writer, 
+                logger,
+                last_saved_time)
             
             partial_epoch = 0  # Reset, for future epochs
             store_checkpoint([CKPT_FNAME], model, optimizer, lr_scheduler,
                             epoch + 1)
-                            
+                      
         if cfg.train.eval_freq and epoch % cfg.train.eval_freq == 0:
-            acc1, step_val_now = hydra.utils.call(
+            accuracies, step_val_now = hydra.utils.call(
                 cfg.eval.eval_fn, 
+                model,
                 train_eval_op, 
                 device, 
                 step_val_now,
                 dataloaders_test, 
                 tb_writer, 
                 logger,
-                epoch + 1,
-                cfg.eval.eval_fn.num_future_tokens)
+                epoch + 1)
+
+            # Store the accuracies per number of parameters and tokens
+            with open('acc_vs_params.json', 'a+') as f:
+                acc_vs_params['epoch'] = epoch
+                acc_vs_params['num_params'] = num_params
+                acc_vs_params['num_tokens'] = num_tokens
+                acc_vs_params.update(accuracies)          # accuaries is a dict
+                json.dump([acc_vs_params], f)
+                f.write(',\n')
+
         else:
-            acc1 = 0
-        if acc1 >= best_acc1:
+            accuracies["acc_fut"] = 0
+        if accuracies["acc_fut"] >= best_acc1:
             store_checkpoint('checkpoint_best.pth', model, optimizer,
                              lr_scheduler, epoch + 1)
-            best_acc1 = acc1
+            best_acc1 = accuracies["acc_fut"]
         if isinstance(lr_scheduler.base_scheduler,
                       scheduler.ReduceLROnPlateau):
-            lr_scheduler.step(acc1)
+            lr_scheduler.step(accuracies["acc_fut"])
 
         # reset all meters in the metric logger
         for log in stat_loggers:
@@ -1137,6 +1160,5 @@ def main(cfg):
     # Store the final model to checkpoint
     store_checkpoint([CKPT_FNAME], model, optimizer, lr_scheduler, epoch + 1)
 
-    total_time = time.time() - start_time
-    total_time_str = str(datetime.timedelta(seconds=int(total_time)))
-    logger.info('Training time %s', total_time_str)
+    total_time = (time.time() - start_time) / 60
+    logger.info(f'Total Training & Evaluation time: {total_time:.2f} min')
