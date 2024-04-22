@@ -341,7 +341,7 @@ class R2A2(nn.Module):
         self.next_action_classifier = nn.Linear(gpt_cfg.n_embd, num_classes)
 
         # Phases
-        if level == "segment" or multiscale:
+        if self.segment_level or self.multiscale:
             self.phase_proj = nn.Linear(pres_dim, 128)
             self.next_phase_classifier = nn.Linear(128, num_classes)
 
@@ -350,7 +350,7 @@ class R2A2(nn.Module):
                 # TODO: Ablations change vocab size 
                 config = GPT2Config(vocab_size=gpt_cfg.vocab_size,          # number of different tokens (classes) that can be represented by the inputs_ids
                                     n_positions=256,                        # number of positional embeddings
-                                    n_embd=gpt_cfg.n_emdb,                  # embedding dimension
+                                    n_embd=gpt_cfg.n_embd,                  # embedding dimension
                                     n_layer=gpt_cfg.n_layer,                # try l:8 / m:6 / s:4 / xs:2
                                     n_head=gpt_cfg.n_head,                  # same
                                     use_cache=True)                         # whether to use cache for the model

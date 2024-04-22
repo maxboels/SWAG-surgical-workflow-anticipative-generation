@@ -24,17 +24,21 @@ train_end: 41       # last not included
 test_start: 41
 test_end: 81        # last not included
 
-# model size i.e. capacity (small, base, large)
-vocab_size: 100   # l:200 / base:100 / xs:50
-n_emdb: 256       # base (l):512 / base:256 / s:128 / xs:64
-n_layer: 4        # base (l):8 / m:6 / base:4 / xs:2
-n_head: 8         # base:8 / m:6 / s:4 / xs:2
+# model size i.e. capacity:
+# base:   100   / 512   / 8   / 8
+# medium: 100   / 384   / 4   / 4
+# small:  100   / 256   / 2   / 2
+# xsmall: 100   / 128   / 2   / 2
+vocab_size: 100
+n_embd:     384
+n_layer:    4
+n_head:     4
 
 # compression
 ctx_length: 1500
-num_ctx_tokens: 50
-frames_per_token: 30      # equals ctx_length / num_ctx_tokens = frames_per_token
-num_future_tokens: 60
+num_ctx_tokens: 25
+frames_per_token: 60      # equals ctx_length / num_ctx_tokens = frames_per_token
+num_future_tokens: 30
 
 # other params
 
@@ -142,7 +146,7 @@ model:
       pooling_dim: ${pooling_dim}
       gpt_cfg:
         vocab_size: ${vocab_size}
-        n_emdb: ${n_emdb}
+        n_embd: ${n_embd}
         n_layer: ${n_layer}
         n_head: ${n_head}
       key_recorder:

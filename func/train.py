@@ -446,8 +446,8 @@ def evaluate(
         # Mean Accuracy
         acc_curr_frames         = compute_accuracy(video_frame_rec, video_tgts_rec, return_mean=False)      # potential nans
         acc_future_frames       = compute_accuracy(video_frame_preds, video_tgts_preds, return_mean=False)  # potential nans
-        mean_acc_curr_frames    = np.nanmean(acc_curr_frames).tolist()
-        mean_acc_future_frames  = np.nanmean(acc_future_frames).tolist()
+        mean_acc_curr_frames    = np.round(np.nanmean(acc_curr_frames), decimals=4).tolist()
+        mean_acc_future_frames  = np.round(np.nanmean(acc_future_frames), decimals=4).tolist()
         cum_acc_future_frames   = np.round(np.nancumsum(acc_future_frames) / np.arange(1,len(acc_future_frames)+1), decimals=4).tolist()
 
         # Mean F1 Score
@@ -500,13 +500,14 @@ def evaluate(
     all_videos_results["all_videos_mean_f1_curr"]       = np.round(np.nanmean(all_videos_mean_f1_curr), decimals=4).tolist()
     all_videos_results["all_videos_mean_f1_future"]     = np.round(np.nanmean(all_videos_mean_f1_future), decimals=4).tolist()
     
-    # list of list to numpy array
-    all_videos_mean_acc_future       = np.nanmean(all_videos_acc_future, axis=0).tolist()
-    all_videos_mean_cum_acc_future   = np.nanmean(all_videos_cum_acc_future, axis=0).tolist()
+    # keep as variable for plotting and storage
+    all_videos_mean_acc_future       = np.round(np.nanmean(all_videos_acc_future, axis=0), decimals=4).tolist()
+    all_videos_mean_cum_acc_future   = np.round(np.nanmean(all_videos_cum_acc_future, axis=0), decimals=4).tolist()
+
     # compute the mean accuracy through all the videos and keep the time dimension
     all_videos_results["all_videos_acc_future"]         = all_videos_mean_acc_future
     all_videos_results["all_videos_cum_acc_future"]     = all_videos_mean_cum_acc_future
-    all_videos_results["all_videos_mean_cum_iter_time"]     = np.round(np.mean(all_videos_mean_cum_iter_time, axis=0), decimals=2).tolist()
+    all_videos_results["all_videos_mean_cum_iter_time"] = np.round(np.mean(all_videos_mean_cum_iter_time, axis=0), decimals=2).tolist()
 
     with open(f'all_videos_results.json', 'a+') as f:
         all_videos_results = check_numpy_to_list(all_videos_results)
