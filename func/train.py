@@ -490,16 +490,17 @@ def evaluate(
                     f"mean_acc_curr_frames: {mean_acc_curr_frames}, "
                     f"mean_acc_future_frames: {mean_acc_future_frames}")
         print(f"mean_acc_curr_frames: {mean_acc_curr_frames}, mean_acc_future_frames: {mean_acc_future_frames}")
-        
-        tb_writer.add_scalar(f'test/mean_acc_curr_frames', mean_acc_curr_frames, step_now)
-        tb_writer.add_scalar(f'test/mean_acc_future_frames', mean_acc_future_frames, step_now)
     
+    # Epoch level results
     all_videos_results["epoch"]                         = epoch
     all_videos_results["all_videos_mean_acc_curr"]      = np.round(np.nanmean(all_videos_mean_acc_curr), decimals=4).tolist()
     all_videos_results["all_videos_mean_acc_future"]    = np.round(np.nanmean(all_videos_mean_acc_future), decimals=4).tolist()
     all_videos_results["all_videos_mean_f1_curr"]       = np.round(np.nanmean(all_videos_mean_f1_curr), decimals=4).tolist()
     all_videos_results["all_videos_mean_f1_future"]     = np.round(np.nanmean(all_videos_mean_f1_future), decimals=4).tolist()
-    
+
+    tb_writer.add_scalar(f'test/all_videos_mean_acc_curr', all_videos_results["all_videos_mean_acc_curr"], step_now)
+    tb_writer.add_scalar(f'test/all_videos_mean_acc_future', all_videos_results["all_videos_mean_acc_future"], step_now)
+
     # keep as variable for plotting and storage
     all_videos_mean_acc_future       = np.round(np.nanmean(all_videos_acc_future, axis=0), decimals=4).tolist()
     all_videos_mean_cum_acc_future   = np.round(np.nanmean(all_videos_cum_acc_future, axis=0), decimals=4).tolist()
@@ -548,8 +549,8 @@ def evaluate(
     # 2. Qualitative: Visualize targets and predictions for each video
 
     accuracies = {
-        "acc_cur": np.nanmean(all_videos_mean_acc_curr),
-        "acc_fut": np.nanmean(all_videos_mean_acc_future)
+        "acc_cur": all_videos_results["all_videos_mean_acc_curr"],
+        "acc_fut": all_videos_results["all_videos_mean_acc_future"]
     }
 
     return accuracies, step_now+1
@@ -954,8 +955,8 @@ def main(cfg):
     num_tokens = len(dataset_train)  # Assuming each sample is one token, adjust if necessary
     num_params = sum(p.numel() for p in model.parameters())
     ratio = num_tokens / num_params
-    logger.info('[MAIN] Number of parameters: %d', num_tokens)
-    logger.info('[MAIN] Number of tokens: %d', num_params)
+    logger.info('[MAIN] Number of tokens: %d', num_tokens)
+    logger.info('[MAIN] Number of parameters: %d', num_params)
     logger.info('[MAIN] Token-to-Parameter Ratio is ideally between [1:1 to 10:1]: %f', ratio)
 
     if ratio < 1 or ratio > 10:
@@ -1136,7 +1137,7 @@ def main(cfg):
         else:
             accuracies["acc_fut"] = 0
         if accuracies["acc_fut"] >= best_acc1:
-            store_checkpoint('checkpoint_best.pth', model, optimizer,
+            store_checkpoint(f'checkpoint_best_ep{epoch}.pth', model, optimizer,
                              lr_scheduler, epoch + 1)
             best_acc1 = accuracies["acc_fut"]
         if isinstance(lr_scheduler.base_scheduler,

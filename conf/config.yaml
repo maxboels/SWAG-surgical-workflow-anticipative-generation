@@ -25,22 +25,30 @@ test_start: 41
 test_end: 81        # last not included
 
 # model size i.e. capacity:
-# base:   100   / 512   / 8   / 8
-# medium: 100   / 384   / 4   / 4
-# small:  100   / 256   / 2   / 2
-# xsmall: 100   / 128   / 2   / 2
+#        Informer / vocab / n_embd / n_layer / n_head
+# base:     512  /  100   / 512   / 8   / 8
+# medium:   512  /  100   / 384   / 4   / 4
+# small:    512  /  100   / 256   / 2   / 2
+# xsmall:   512  /  100   / 128   / 2   / 2
+# xxs:      512  /  100   / 256   / 2   / 2   (remove the decoder from the Informer model)
+# xxxs:     384  /  100   / 128   / 2   / 2   (remove the decoder from the Informer model)
 vocab_size: 100
-n_embd:     384
-n_layer:    4
-n_head:     4
+n_embd:     256
+n_layer:    2
+n_head:     2
+informer:
+  decoder: false          # default true
+  d_model: 384
 
 # compression
 ctx_length: 1500
 num_ctx_tokens: 25
 frames_per_token: 60      # equals ctx_length / num_ctx_tokens = frames_per_token
-num_future_tokens: 30
+num_future_tokens: 30     # 30 if frames_per_tokens = 60 elif 60 if frames_per_tokens = 30 (goal is to have 30min anticipation)
 
-# other params
+# pred_only: {"rec_loss": 0.1, pred_loss: 0.9}
+
+
 
 # ---------------------- end select params ----------------------------
 
@@ -138,8 +146,7 @@ model:
       present_length: 20
       num_ant_queries: 6
       past_sampling_rate: 10
-      past_dim: 512
-      pres_dim: 512
+      d_model: ${informer.d_model}
       num_classes: 7
       num_future_tokens: ${num_future_tokens}
       frames_per_token: ${frames_per_token}
@@ -151,7 +158,7 @@ model:
         n_head: ${n_head}
       key_recorder:
         _target_: R2A2.model.key_recorder.KeyRecorder
-        dim: 512
+        dim: ${informer.d_model}
         reduc_dim: 64
         sampling_rate: 10
         local_size: 20
@@ -190,7 +197,7 @@ model:
         label_len: 48
         out_len: 1
         factor: 5
-        d_model: 512
+        d_model: ${informer.d_model}
         n_heads: 8
         e_layers: 2
         d_layers: 2
@@ -203,6 +210,8 @@ model:
         output_attention: false
         distil: false
         mix: true
+        use_decoder: ${informer.decoder}
+
 
 opt:
   # Not using an overall LR anymore, since everything is now defined per

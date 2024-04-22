@@ -103,7 +103,7 @@ class KeyRecorder(nn.Module):
             )
         else:
             self.linear_reduction = nn.Sequential(
-                nn.Linear(512, reduc_dim),
+                nn.Linear(dim, reduc_dim),
                 nn.Sigmoid()
             )
         
@@ -275,8 +275,7 @@ class R2A2(nn.Module):
         present_length: int = 20,
         num_ant_queries: int = 20,
         past_sampling_rate: int = 10,
-        past_dim: int = 512,
-        pres_dim: int = 512,
+        d_model: int = 512,
         num_classes: int = 7,
         num_future_tokens: int = 30,
         frames_per_token: int = 60,
@@ -292,7 +291,7 @@ class R2A2(nn.Module):
         super().__init__()
         self.decoder_type = decoder_type
         self.input_dim = input_dim
-        self.past_dim = past_dim
+        self.d_model = d_model
         self.present_length = present_length
         self.past_sampling_rate = past_sampling_rate
         self.num_future_tokens = num_future_tokens     # 60 if 30 frames per tokens to get 30 minutes
@@ -310,39 +309,39 @@ class R2A2(nn.Module):
         self.fixed_ctx_length = False
         # -----------------------------------------------------------------------
 
-        self.proj_layer = nn.Linear(pres_dim, gpt_cfg.n_embd)
+        self.proj_layer = nn.Linear(d_model, gpt_cfg.n_embd)
 
-        self.future_durations = nn.Sequential(
-            nn.Linear(512, 64),
-            nn.ReLU(),
-            nn.LayerNorm(64),
-            nn.Linear(64, 1),
-        )
+        # self.future_durations = nn.Sequential(
+        #     nn.Linear(512, 64),
+        #     nn.ReLU(),
+        #     nn.LayerNorm(64),
+        #     nn.Linear(64, 1),
+        # )
         
-        self.norm1 = nn.LayerNorm(pres_dim)
+        # self.norm1 = nn.LayerNorm(d_model)
 
         self.informer = hydra.utils.instantiate(informer, _recursive_=False)
         # self.key_recorder = hydra.utils.instantiate(key_recorder, _recursive_=False)
         self.fusion_head1 = hydra.utils.instantiate(fusion_head, _recursive_=False)
 
         if self.pooling_method == "cum_max":
-            self.tokens_pooler = TokenPoolerCumMax(dim=512, pooling_dim=pooling_dim, frames_per_token=self.frames_per_token,
+            self.tokens_pooler = TokenPoolerCumMax(dim=d_model, pooling_dim=pooling_dim, frames_per_token=self.frames_per_token,
                                                    relu_norm=self.relu_norm)
         elif self.pooling_method == "top_k":
-            self.tokens_pooler = TokenPoolerTopK(dim=512, pooling_dim=pooling_dim, top_k=50, relu_norm=self.relu_norm)
+            self.tokens_pooler = TokenPoolerTopK(dim=d_model, pooling_dim=pooling_dim, top_k=50, relu_norm=self.relu_norm)
         elif self.pooling_method == "key_recorder":
-            self.tokens_pooler = KeyRecorder(dim=512, reduc_dim=pooling_dim, sampling_rate=10, local_size=20,
+            self.tokens_pooler = KeyRecorder(dim=d_model, reduc_dim=pooling_dim, sampling_rate=10, local_size=20,
                                              relu_norm=self.relu_norm)
         else:
             raise ValueError(f"Pooling method {self.pooling_method} not implemented.")
 
         # Action Triplets
-        self.curr_frames_classifier = nn.Linear(pres_dim, num_classes)
+        self.curr_frames_classifier = nn.Linear(d_model, num_classes)
         self.next_action_classifier = nn.Linear(gpt_cfg.n_embd, num_classes)
 
         # Phases
         if self.segment_level or self.multiscale:
-            self.phase_proj = nn.Linear(pres_dim, 128)
+            self.phase_proj = nn.Linear(d_model, 128)
             self.next_phase_classifier = nn.Linear(128, num_classes)
 
         if self.decoder_type == "ar_causal":
@@ -376,7 +375,7 @@ class R2A2(nn.Module):
         present = obs_video[:, -self.present_length:]
         past = past.contiguous().view(-1, self.present_length, self.input_dim)
         past = self.informer(past, past)
-        past = past.contiguous().view(B, -1, self.past_dim)
+        past = past.contiguous().view(B, -1, self.d_model)
         present = self.informer(present, present)
         past_present = torch.cat((past, present), dim=1)
         return past_present
