@@ -24,21 +24,32 @@ train_end: 41       # last not included
 test_start: 41
 test_end: 81        # last not included
 
-# model size i.e. capacity:
-#        Informer / vocab / n_embd / n_layer / n_head
-# base:     512  /  100   / 512   / 8   / 8
-# medium:   512  /  100   / 384   / 4   / 4
-# small:    512  /  100   / 256   / 2   / 2
-# xsmall:   512  /  100   / 128   / 2   / 2
-# xxs:      512  /  100   / 256   / 2   / 2   (remove the decoder from the Informer model)
-# xxxs:     384  /  100   / 128   / 2   / 2   (remove the decoder from the Informer model)
-vocab_size: 100
-n_embd:     256
-n_layer:    2
-n_head:     2
+# Comparison with other models
+# 0. Trans-SVNeT (TSVN)
+# TODO:
+
+# 1. SKiT
+# base:     512  /  x   / x     /   x     /   x     /   true  / KeyRecorder
+
+
+# SurGP (or SuPRA)
+#        Informer / vocab / n_embd  / n_layer / n_head  /  infromer.decoder   /    Temp. Agg.
+# base:     512  /  100   / 512     /   8     /   8     /   true              /   TokenPooler
+# medium:   512  /  100   / 384     /   4     /   4     /   true              /   TokenPooler
+# sm (s):   512  /  100   / 384     /   2     /   8     /   false              /  TokenPooler
+# s:        512  /  100   / 384     /   2     /   6     /   false             /   ...
+# xs (ms):  512  /  100   / 384     /   2     /   4     /   false             /   ...
+# xs (old): 512  /  100   / 128     /   2     /   2     /   true              /   ...
+# xxs:      512  /  100   / 256     /   2     /   2     /   false             /   ...
+# xxxs:     384  /  100   / 128     /   2     /   2     /   false             /   ...
 informer:
   decoder: false          # default true
-  d_model: 384
+  d_model: 512
+# gpt-2:
+vocab_size: 100
+n_embd:     384
+n_layer:    2
+n_head:     8
 
 # compression
 ctx_length: 1500
@@ -167,7 +178,7 @@ model:
         reduction: linear_relu
       fusion_head:
         _target_: R2A2.model.r2a2.FusionHead
-        dim: 512
+        dim: ${informer.d_model}
       encoder:
         _target_: R2A2.model.r2a2.TransformerEncoder
         input_length: 20

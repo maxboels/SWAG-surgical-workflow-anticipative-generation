@@ -64,7 +64,7 @@ model:
         reduction: linear_relu
       fusion_head:
         _target_: R2A2.model.r2a2.FusionHead
-        dim: 512
+        dim: ${informer.d_model}
       encoder:
         _target_: R2A2.model.r2a2.TransformerEncoder
         input_length: 20
@@ -204,13 +204,13 @@ train_start: 1
 train_end: 41
 test_start: 41
 test_end: 81
-vocab_size: 100
-n_embd: 256
-n_layer: 2
-n_head: 2
 informer:
   decoder: false
   d_model: 384
+vocab_size: 100
+n_embd: 128
+n_layer: 2
+n_head: 2
 ctx_length: 1500
 num_ctx_tokens: 25
 frames_per_token: 60

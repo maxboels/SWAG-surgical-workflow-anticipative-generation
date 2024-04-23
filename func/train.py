@@ -335,21 +335,8 @@ def check_numpy_to_list(dictionay):
             print(f"converted {key} np.ndarray to list")
     return dictionay
 
-def evaluate(
-        model,
-        train_eval_op,
-        device,
-        step_now,
-        dataloaders: list,
-        tb_writer,
-        logger,
-        epoch: float,  # Can be a partial epoch
-        num_future_tokens: int,
-        store=False,
-        store_endpoint='logits',
-        only_run_featext=False,
-        best_acc1=0.0,
-        ):
+def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_writer, logger, epoch: float, num_future_tokens: int, 
+             store=False, store_endpoint='logits', only_run_featext=False, best_acc1=0.0,):
 
     model.eval()
     # -----------------select params----------------- #
@@ -539,7 +526,7 @@ def evaluate(
                             y_axis_title='Mean Accuracy')
         
         # Inference time for deployment at 1fps
-        plot_cumulative_time(all_videos_results["all_videos_mean_cum_iter_time"])
+        plot_cumulative_time(all_videos_results["mean_cum_iter_time"])
 
         # 2. Qualitative: Visualize targets and predictions for each video
 
@@ -1102,8 +1089,7 @@ def main(cfg):
                 partial_epoch,
                 tb_writer, 
                 logger,
-                last_saved_time,
-                best_acc1)
+                last_saved_time,)
             
             partial_epoch = 0  # Reset, for future epochs
             store_checkpoint([CKPT_FNAME], model, optimizer, lr_scheduler,
@@ -1119,7 +1105,8 @@ def main(cfg):
                 dataloaders_test, 
                 tb_writer, 
                 logger,
-                epoch + 1)
+                epoch + 1,
+                best_acc1=best_acc1)
 
             # Store the accuracies per number of parameters and tokens
             with open('acc_vs_params.json', 'a+') as f:
@@ -1135,7 +1122,7 @@ def main(cfg):
         
         # Store the best model
         if accuracies["acc_fut"] >= best_acc1:
-            store_checkpoint(f'checkpoint_best_ep{epoch}.pth', model, optimizer,
+            store_checkpoint('checkpoint_best.pth', model, optimizer,
                              lr_scheduler, epoch + 1)
             best_acc1 = accuracies["acc_fut"]
         if isinstance(lr_scheduler.base_scheduler,

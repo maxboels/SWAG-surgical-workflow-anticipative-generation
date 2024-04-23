@@ -43,8 +43,7 @@ model:
       present_length: 20
       num_ant_queries: 6
       past_sampling_rate: 10
-      past_dim: 512
-      pres_dim: 512
+      d_model: ${informer.d_model}
       num_classes: 7
       num_future_tokens: ${num_future_tokens}
       frames_per_token: ${frames_per_token}
@@ -56,7 +55,7 @@ model:
         n_head: ${n_head}
       key_recorder:
         _target_: R2A2.model.key_recorder.KeyRecorder
-        dim: 512
+        dim: ${informer.d_model}
         reduc_dim: 64
         sampling_rate: 10
         local_size: 20
@@ -95,7 +94,7 @@ model:
         label_len: 48
         out_len: 1
         factor: 5
-        d_model: 512
+        d_model: ${informer.d_model}
         n_heads: 8
         e_layers: 2
         d_layers: 2
@@ -108,6 +107,7 @@ model:
         output_attention: false
         distil: false
         mix: true
+        use_decoder: ${informer.decoder}
     n_head: 4
     n_layer: 6
     output_len: 1
@@ -205,13 +205,16 @@ train_end: 41
 test_start: 41
 test_end: 81
 vocab_size: 100
-n_embd: 512
-n_layer: 8
-n_head: 8
+n_embd: 256
+n_layer: 2
+n_head: 2
+informer:
+  decoder: false
+  d_model: 384
 ctx_length: 1500
-num_ctx_tokens: 50
-frames_per_token: 30
-num_future_tokens: 60
+num_ctx_tokens: 25
+frames_per_token: 60
+num_future_tokens: 30
 pytorch:
   video_backend: video_reader
 train:
