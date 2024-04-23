@@ -17,3 +17,6 @@ R2A2/outputs/*
 
 
 OUTPUTS/expts/*/local/per_video_ep*.json
+
+external/*
+external/*/*

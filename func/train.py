@@ -347,7 +347,9 @@ def evaluate(
         num_future_tokens: int,
         store=False,
         store_endpoint='logits',
-        only_run_featext=False):
+        only_run_featext=False,
+        best_acc1=0.0,
+        ):
 
     model.eval()
     # -----------------select params----------------- #
@@ -426,6 +428,8 @@ def evaluate(
                 logger.info(f"[TESTING] video: {video_id} | "
                             f"frame: {curr_frame} / {video_length}")
         
+        # Video-level results
+
         # If performance increases with none fixed context length, then tracking the time per iteration makes sense
         iters_times = np.mean(iters_times, axis=0)
         cum_iters_times = np.round(np.cumsum(iters_times, axis=0), decimals=4).tolist()
@@ -443,40 +447,30 @@ def evaluate(
         # compute eval metrics for each video
         # NOTE: make sure to ignore the -1 class for both padding the last class and video length
 
-        # Mean Accuracy
+        # Keep Time Dimension
         acc_curr_frames         = compute_accuracy(video_frame_rec, video_tgts_rec, return_mean=False)      # potential nans
         acc_future_frames       = compute_accuracy(video_frame_preds, video_tgts_preds, return_mean=False)  # potential nans
-        mean_acc_curr_frames    = np.round(np.nanmean(acc_curr_frames), decimals=4).tolist()
-        mean_acc_future_frames  = np.round(np.nanmean(acc_future_frames), decimals=4).tolist()
-        cum_acc_future_frames   = np.round(np.nancumsum(acc_future_frames) / np.arange(1,len(acc_future_frames)+1), decimals=4).tolist()
 
-        # Mean F1 Score
-        f1_curr_frames          = compute_f1_score(video_frame_rec, video_tgts_rec, return_mean=False)
-        f1_future_frames        = compute_f1_score(video_frame_preds, video_tgts_preds, return_mean=False)
-        mean_f1_curr_frames     = np.nanmean(f1_curr_frames).tolist()
-        mean_f1_future_frames   = np.nanmean(f1_future_frames).tolist()
+        # global mean accuracy
+        mean_acc_curr_frames        = np.round(np.nanmean(acc_curr_frames), decimals=4).tolist()
+        mean_acc_future_frames      = np.round(np.nanmean(acc_future_frames), decimals=4).tolist()
+        cum_acc_future_frames       = np.round(np.nancumsum(acc_future_frames) / np.arange(1,len(acc_future_frames)+1), decimals=4).tolist()
+        mean_cum_acc_future_frames  = np.round(np.nanmean(cum_acc_future_frames), decimals=4).tolist()
 
         # Video-level results
-        video_results['mean_acc_curr_frames']   = mean_acc_curr_frames
-        video_results['mean_acc_future_frames'] = mean_acc_future_frames
-        video_results['mean_f1_curr_frames']   = mean_f1_curr_frames
-        video_results['mean_f1_future_frames'] = mean_f1_future_frames      # has NaNs
-
-        # Frame-level results
-        video_results['acc_curr_frames']        = acc_curr_frames
-        video_results['acc_future_frames']      = acc_future_frames
-        video_results['cum_acc_future_frames']  = cum_acc_future_frames
-        video_results['f1_curr_frames']         = f1_curr_frames
-        video_results['f1_future_frames']       = f1_future_frames          # has NaNs
+        video_results['mean_acc_curr_frames']       = mean_acc_curr_frames
+        video_results['mean_acc_future_frames']     = mean_acc_future_frames
+        video_results['mean_cum_acc_future_frames'] = mean_cum_acc_future_frames
 
         for key in video_results.keys():
             print(f"{key} is data type: {type(video_results[key])}")
             print(f"{key}: {video_results[key]}")
         
+        # video-level metrics
         all_videos_mean_acc_curr.append(mean_acc_curr_frames)
-        all_videos_mean_acc_future.append(mean_acc_future_frames)
-        all_videos_mean_f1_curr.append(mean_f1_curr_frames)
-        all_videos_mean_f1_future.append(mean_f1_future_frames)
+        # all_videos_mean_acc_future.append(mean_acc_future_frames)
+        # all_videos_mean_cum_acc_future.append(mean_cum_acc_future_frames)
+
         # keep temporal dimension
         all_videos_acc_future.append(acc_future_frames)
         all_videos_cum_acc_future.append(cum_acc_future_frames)
@@ -491,24 +485,23 @@ def evaluate(
                     f"mean_acc_future_frames: {mean_acc_future_frames}")
         print(f"mean_acc_curr_frames: {mean_acc_curr_frames}, mean_acc_future_frames: {mean_acc_future_frames}")
     
+    # keep time dimension
+    all_videos_mean_acc_future_t       = np.round(np.nanmean(all_videos_acc_future, axis=0), decimals=4).tolist()
+    all_videos_mean_cum_acc_future_t   = np.round(np.nanmean(all_videos_cum_acc_future, axis=0), decimals=4).tolist()
+    
     # Epoch level results
     all_videos_results["epoch"]                         = epoch
     all_videos_results["all_videos_mean_acc_curr"]      = np.round(np.nanmean(all_videos_mean_acc_curr), decimals=4).tolist()
-    all_videos_results["all_videos_mean_acc_future"]    = np.round(np.nanmean(all_videos_mean_acc_future), decimals=4).tolist()
-    all_videos_results["all_videos_mean_f1_curr"]       = np.round(np.nanmean(all_videos_mean_f1_curr), decimals=4).tolist()
-    all_videos_results["all_videos_mean_f1_future"]     = np.round(np.nanmean(all_videos_mean_f1_future), decimals=4).tolist()
+    all_videos_results["all_videos_mean_acc_future"]    = np.round(np.nanmean(all_videos_mean_acc_future_t), decimals=4).tolist()
+    all_videos_results["all_videos_mean_cum_acc_future"]= np.round(np.nanmean(all_videos_mean_cum_acc_future_t), decimals=4).tolist()
 
     tb_writer.add_scalar(f'test/all_videos_mean_acc_curr', all_videos_results["all_videos_mean_acc_curr"], step_now)
     tb_writer.add_scalar(f'test/all_videos_mean_acc_future', all_videos_results["all_videos_mean_acc_future"], step_now)
 
-    # keep as variable for plotting and storage
-    all_videos_mean_acc_future       = np.round(np.nanmean(all_videos_acc_future, axis=0), decimals=4).tolist()
-    all_videos_mean_cum_acc_future   = np.round(np.nanmean(all_videos_cum_acc_future, axis=0), decimals=4).tolist()
-
     # compute the mean accuracy through all the videos and keep the time dimension
-    all_videos_results["all_videos_acc_future"]         = all_videos_mean_acc_future
-    all_videos_results["all_videos_cum_acc_future"]     = all_videos_mean_cum_acc_future
-    all_videos_results["all_videos_mean_cum_iter_time"] = np.round(np.mean(all_videos_mean_cum_iter_time, axis=0), decimals=2).tolist()
+    all_videos_results["acc_future_t"]          = all_videos_mean_acc_future_t
+    all_videos_results["cum_acc_future_t"]      = all_videos_mean_cum_acc_future_t
+    all_videos_results["mean_cum_iter_time"]    = np.round(np.mean(all_videos_mean_cum_iter_time, axis=0), decimals=2).tolist()
 
     with open(f'all_videos_results.json', 'a+') as f:
         all_videos_results = check_numpy_to_list(all_videos_results)
@@ -517,36 +510,38 @@ def evaluate(
     
 
     # PLOTTING
-    future_minutes = 30 # fixed parameter for all experiments
-    step_size = future_minutes / num_future_tokens
-    x_values = np.arange(1, future_minutes+1, step_size).tolist()
+    if all_videos_results["all_videos_mean_acc_future"] > best_acc1:
 
-    # plot the mean accuracy over the videos
-    y_values = {"Cholec80": all_videos_mean_acc_future}
-    plot_figure(x_values, y_values,
-                title=f'Planning Evaluation (mean. acc. {np.nanmean(all_videos_mean_acc_future):.2f})',
-                x_axis_title='Predicted Sequence Length',
-                y_axis_title='Cummulative Mean Accuracy', file_name='planning_evaluation_mean_acc.png')
-    
-    # plot the mean accuracy over the videos
-    y_values = {"Cholec80": all_videos_mean_cum_acc_future}
-    plot_figure(x_values, y_values,
-                title=f'Planning Evaluation (cumm. acc. {np.nanmean(all_videos_mean_cum_acc_future):.2f})',
-                x_axis_title='Predicted Sequence Length',
-                y_axis_title='Mean Accuracy', file_name='planning_evaluation_mean_cumm_acc.png')
-    
-    # plot box plots (keeping the video-level information)
-    y_values = {"Cholec80": all_videos_acc_future}
-    plot_box_plot_figure(x_values, y_values,
-                         file_name='plot_acc_pred_box.png', 
-                         title='Furure Phase Planning Accuracies for all videos (N=50)', 
-                         x_axis_title='Future Predictions (in minutes)', 
-                         y_axis_title='Mean Accuracy')
-    
-    # Inference time for deployment at 1fps
-    plot_cumulative_time(all_videos_results["all_videos_mean_cum_iter_time"])
+        future_minutes = 30 # fixed parameter for all experiments
+        step_size = future_minutes / num_future_tokens
+        x_values = np.arange(1, future_minutes+1, step_size).tolist()
 
-    # 2. Qualitative: Visualize targets and predictions for each video
+        # plot the mean accuracy over the videos
+        y_values = {"Cholec80": all_videos_mean_acc_future_t}
+        plot_figure(x_values, y_values,
+                    title=f'Planning Evaluation (mean. acc. {np.nanmean(all_videos_mean_acc_future_t):.4f})',
+                    x_axis_title='Predicted Sequence Length (in minutes)',
+                    y_axis_title='Mean Accuracy', file_name='planning_evaluation_mean_acc.png')
+        
+        # plot the mean accuracy over the videos
+        y_values = {"Cholec80": all_videos_mean_cum_acc_future_t}
+        plot_figure(x_values, y_values,
+                    title=f'Planning Evaluation (cumm. acc. {np.nanmean(all_videos_mean_cum_acc_future_t):.4f})',
+                    x_axis_title='Predicted Sequence Length (in minutes)',
+                    y_axis_title='Mean Cummulative Accuracy', file_name='planning_evaluation_mean_cumm_acc.png')
+        
+        # plot box plots (keeping the video-level information)
+        y_values = {"Cholec80": all_videos_acc_future}
+        plot_box_plot_figure(x_values, y_values,
+                            file_name='plot_acc_pred_box.png', 
+                            title='Furure Phase Planning Accuracies for all videos (N=50)', 
+                            x_axis_title='Future Predictions (in minutes)', 
+                            y_axis_title='Mean Accuracy')
+        
+        # Inference time for deployment at 1fps
+        plot_cumulative_time(all_videos_results["all_videos_mean_cum_iter_time"])
+
+        # 2. Qualitative: Visualize targets and predictions for each video
 
     accuracies = {
         "acc_cur": all_videos_results["all_videos_mean_acc_curr"],
@@ -1107,7 +1102,8 @@ def main(cfg):
                 partial_epoch,
                 tb_writer, 
                 logger,
-                last_saved_time)
+                last_saved_time,
+                best_acc1)
             
             partial_epoch = 0  # Reset, for future epochs
             store_checkpoint([CKPT_FNAME], model, optimizer, lr_scheduler,
@@ -1136,6 +1132,8 @@ def main(cfg):
 
         else:
             accuracies["acc_fut"] = 0
+        
+        # Store the best model
         if accuracies["acc_fut"] >= best_acc1:
             store_checkpoint(f'checkpoint_best_ep{epoch}.pth', model, optimizer,
                              lr_scheduler, epoch + 1)
