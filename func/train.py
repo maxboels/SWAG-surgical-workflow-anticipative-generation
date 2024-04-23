@@ -472,7 +472,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                     f"mean_acc_future_frames: {mean_acc_future_frames}")
         print(f"mean_acc_curr_frames: {mean_acc_curr_frames}, mean_acc_future_frames: {mean_acc_future_frames}")
     
-    # keep time dimension
+    # keep time dimension over all videos
     all_videos_mean_acc_future_t       = np.round(np.nanmean(all_videos_acc_future, axis=0), decimals=4).tolist()
     all_videos_mean_cum_acc_future_t   = np.round(np.nanmean(all_videos_cum_acc_future, axis=0), decimals=4).tolist()
     

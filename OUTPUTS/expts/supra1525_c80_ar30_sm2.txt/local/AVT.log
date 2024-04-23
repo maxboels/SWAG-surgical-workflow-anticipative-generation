@@ -1,0 +1,282 @@
+[2024-04-23 19:30:27,968][func.train][INFO] - Dist info:
+[2024-04-23 19:30:27,969][func.train][INFO] - torch version: 2.2.2+cu121
+[2024-04-23 19:30:27,970][func.train][INFO] - torchvision version: 0.17.2+cu121
+[2024-04-23 19:30:27,970][func.train][INFO] - hydra version: 1.3.2
+[2024-04-23 19:30:27,978][func.train][INFO] - Loading data
+[2024-04-23 19:30:27,978][func.train][INFO] - Loading datasets
+[2024-04-23 19:30:33,237][func.train][INFO] - [DATASET] ALL loaded dataframe in 0m 5s
+[2024-04-23 19:30:33,238][func.train][INFO] - [DATASET] ALL loaded dataframe: (4612530, 11)
+[2024-04-23 19:30:34,576][func.train][INFO] - [DATASET] params: {'debug': False, 'dataset_name': 'cholec80', 'reduc_feats_folder': 'train_targets_x_mp/', 'num_classes': 7, 'num_next_labels': 6, 'last_seg_class': 7, 'predict_next_phase': True, 'get_target_feats': False, 'replace_current_with_next_class': False}
+[2024-04-23 19:30:41,347][func.train][INFO] - [DATASET] train size: 2157640
+[2024-04-23 19:30:41,349][func.train][INFO] - [DATASET] train video_indices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
+[2024-04-23 19:30:41,540][func.train][INFO] - [DATASET] Sampling video_idx: 1 at 25 fps to 1733 frames
+[2024-04-23 19:30:46,146][func.train][INFO] - [DATASET] Sampling video_idx: 2 at 25 fps to 2839 frames
+[2024-04-23 19:30:46,460][func.train][INFO] - [DATASET] Sampling video_idx: 3 at 25 fps to 5828 frames
+[2024-04-23 19:30:46,775][func.train][INFO] - [DATASET] Sampling video_idx: 4 at 25 fps to 1522 frames
+[2024-04-23 19:30:46,997][func.train][INFO] - [DATASET] Sampling video_idx: 5 at 25 fps to 2344 frames
+[2024-04-23 19:30:47,248][func.train][INFO] - [DATASET] Sampling video_idx: 6 at 25 fps to 2153 frames
+[2024-04-23 19:30:47,505][func.train][INFO] - [DATASET] Sampling video_idx: 7 at 25 fps to 4557 frames
+[2024-04-23 19:30:47,766][func.train][INFO] - [DATASET] Sampling video_idx: 8 at 25 fps to 1519 frames
+[2024-04-23 19:30:48,010][func.train][INFO] - [DATASET] Sampling video_idx: 9 at 25 fps to 2702 frames
+[2024-04-23 19:30:48,290][func.train][INFO] - [DATASET] Sampling video_idx: 10 at 25 fps to 1749 frames
+[2024-04-23 19:30:48,532][func.train][INFO] - [DATASET] Sampling video_idx: 11 at 25 fps to 3220 frames
+[2024-04-23 19:30:48,783][func.train][INFO] - [DATASET] Sampling video_idx: 12 at 25 fps to 1090 frames
+[2024-04-23 19:30:49,043][func.train][INFO] - [DATASET] Sampling video_idx: 13 at 25 fps to 981 frames
+[2024-04-23 19:30:49,285][func.train][INFO] - [DATASET] Sampling video_idx: 14 at 25 fps to 1708 frames
+[2024-04-23 19:30:49,557][func.train][INFO] - [DATASET] Sampling video_idx: 15 at 25 fps to 2058 frames
+[2024-04-23 19:30:49,798][func.train][INFO] - [DATASET] Sampling video_idx: 16 at 25 fps to 2957 frames
+[2024-04-23 19:30:50,056][func.train][INFO] - [DATASET] Sampling video_idx: 17 at 25 fps to 1304 frames
+[2024-04-23 19:30:50,301][func.train][INFO] - [DATASET] Sampling video_idx: 18 at 25 fps to 1942 frames
+[2024-04-23 19:30:50,558][func.train][INFO] - [DATASET] Sampling video_idx: 19 at 25 fps to 2424 frames
+[2024-04-23 19:30:50,820][func.train][INFO] - [DATASET] Sampling video_idx: 20 at 25 fps to 1449 frames
+[2024-04-23 19:30:51,063][func.train][INFO] - [DATASET] Sampling video_idx: 21 at 25 fps to 1258 frames
+[2024-04-23 19:30:51,311][func.train][INFO] - [DATASET] Sampling video_idx: 22 at 25 fps to 1532 frames
+[2024-04-23 19:30:51,623][func.train][INFO] - [DATASET] Sampling video_idx: 23 at 25 fps to 1635 frames
+[2024-04-23 19:30:51,892][func.train][INFO] - [DATASET] Sampling video_idx: 24 at 25 fps to 1975 frames
+[2024-04-23 19:30:52,179][func.train][INFO] - [DATASET] Sampling video_idx: 25 at 25 fps to 2129 frames
+[2024-04-23 19:30:52,420][func.train][INFO] - [DATASET] Sampling video_idx: 26 at 25 fps to 1773 frames
+[2024-04-23 19:30:52,652][func.train][INFO] - [DATASET] Sampling video_idx: 27 at 25 fps to 2084 frames
+[2024-04-23 19:30:52,886][func.train][INFO] - [DATASET] Sampling video_idx: 28 at 25 fps to 1199 frames
+[2024-04-23 19:30:53,112][func.train][INFO] - [DATASET] Sampling video_idx: 29 at 25 fps to 2350 frames
+[2024-04-23 19:30:53,412][func.train][INFO] - [DATASET] Sampling video_idx: 30 at 25 fps to 2925 frames
+[2024-04-23 19:30:53,708][func.train][INFO] - [DATASET] Sampling video_idx: 31 at 25 fps to 3945 frames
+[2024-04-23 19:30:53,974][func.train][INFO] - [DATASET] Sampling video_idx: 32 at 25 fps to 2116 frames
+[2024-04-23 19:30:54,228][func.train][INFO] - [DATASET] Sampling video_idx: 33 at 25 fps to 1307 frames
+[2024-04-23 19:30:54,491][func.train][INFO] - [DATASET] Sampling video_idx: 34 at 25 fps to 1323 frames
+[2024-04-23 19:30:54,721][func.train][INFO] - [DATASET] Sampling video_idx: 35 at 25 fps to 2106 frames
+[2024-04-23 19:30:55,016][func.train][INFO] - [DATASET] Sampling video_idx: 36 at 25 fps to 2387 frames
+[2024-04-23 19:30:55,272][func.train][INFO] - [DATASET] Sampling video_idx: 37 at 25 fps to 1232 frames
+[2024-04-23 19:30:55,567][func.train][INFO] - [DATASET] Sampling video_idx: 38 at 25 fps to 3080 frames
+[2024-04-23 19:30:55,846][func.train][INFO] - [DATASET] Sampling video_idx: 39 at 25 fps to 1647 frames
+[2024-04-23 19:30:56,079][func.train][INFO] - [DATASET] Sampling video_idx: 40 at 25 fps to 2222 frames
+[2024-04-23 19:30:56,877][func.train][INFO] - [DATASET] classes_counts: {0: 93902, 1: 922150, 2: 183225, 3: 602975, 4: 92900, 5: 180478, 6: 82010}
+[2024-04-23 19:30:56,901][func.train][INFO] - [DATASET] class_weights: tensor([0.3342, 1.6821, 0.5112, 3.3171, 1.7077, 3.7575, 3.2818])
+[2024-04-23 19:31:01,198][func.train][INFO] - [DATASET] test size: 77576
+[2024-04-23 19:31:01,199][func.train][INFO] - [DATASET] test video_indices: [41]
+[2024-04-23 19:31:01,233][func.train][INFO] - [DATASET] Sampling video_idx: 41 at 25 fps to 3103 frames
+[2024-04-23 19:31:05,278][func.train][INFO] - [DATASET] test size: 92801
+[2024-04-23 19:31:05,279][func.train][INFO] - [DATASET] test video_indices: [42]
+[2024-04-23 19:31:05,314][func.train][INFO] - [DATASET] Sampling video_idx: 42 at 25 fps to 3712 frames
+[2024-04-23 19:31:09,438][func.train][INFO] - [DATASET] test size: 59051
+[2024-04-23 19:31:09,439][func.train][INFO] - [DATASET] test video_indices: [43]
+[2024-04-23 19:31:09,461][func.train][INFO] - [DATASET] Sampling video_idx: 43 at 25 fps to 2362 frames
+[2024-04-23 19:31:13,471][func.train][INFO] - [DATASET] test size: 78176
+[2024-04-23 19:31:13,472][func.train][INFO] - [DATASET] test video_indices: [44]
+[2024-04-23 19:31:13,501][func.train][INFO] - [DATASET] Sampling video_idx: 44 at 25 fps to 3127 frames
+[2024-04-23 19:31:17,307][func.train][INFO] - [DATASET] test size: 84676
+[2024-04-23 19:31:17,308][func.train][INFO] - [DATASET] test video_indices: [45]
+[2024-04-23 19:31:17,337][func.train][INFO] - [DATASET] Sampling video_idx: 45 at 25 fps to 3387 frames
+[2024-04-23 19:31:21,600][func.train][INFO] - [DATASET] test size: 41326
+[2024-04-23 19:31:21,601][func.train][INFO] - [DATASET] test video_indices: [46]
+[2024-04-23 19:31:21,617][func.train][INFO] - [DATASET] Sampling video_idx: 46 at 25 fps to 1653 frames
+[2024-04-23 19:31:25,632][func.train][INFO] - [DATASET] test size: 56476
+[2024-04-23 19:31:25,633][func.train][INFO] - [DATASET] test video_indices: [47]
+[2024-04-23 19:31:25,679][func.train][INFO] - [DATASET] Sampling video_idx: 47 at 25 fps to 2259 frames
+[2024-04-23 19:31:29,679][func.train][INFO] - [DATASET] test size: 45851
+[2024-04-23 19:31:29,680][func.train][INFO] - [DATASET] test video_indices: [48]
+[2024-04-23 19:31:29,696][func.train][INFO] - [DATASET] Sampling video_idx: 48 at 25 fps to 1834 frames
+[2024-04-23 19:31:33,954][func.train][INFO] - [DATASET] test size: 41776
+[2024-04-23 19:31:33,955][func.train][INFO] - [DATASET] test video_indices: [49]
+[2024-04-23 19:31:33,977][func.train][INFO] - [DATASET] Sampling video_idx: 49 at 25 fps to 1671 frames
+[2024-04-23 19:31:38,853][func.train][INFO] - [DATASET] test size: 27351
+[2024-04-23 19:31:38,854][func.train][INFO] - [DATASET] test video_indices: [50]
+[2024-04-23 19:31:38,866][func.train][INFO] - [DATASET] Sampling video_idx: 50 at 25 fps to 1094 frames
+[2024-04-23 19:31:42,847][func.train][INFO] - [DATASET] test size: 73601
+[2024-04-23 19:31:42,847][func.train][INFO] - [DATASET] test video_indices: [51]
+[2024-04-23 19:31:42,873][func.train][INFO] - [DATASET] Sampling video_idx: 51 at 25 fps to 2944 frames
+[2024-04-23 19:31:46,863][func.train][INFO] - [DATASET] test size: 49151
+[2024-04-23 19:31:46,864][func.train][INFO] - [DATASET] test video_indices: [52]
+[2024-04-23 19:31:46,883][func.train][INFO] - [DATASET] Sampling video_idx: 52 at 25 fps to 1966 frames
+[2024-04-23 19:31:51,239][func.train][INFO] - [DATASET] test size: 82076
+[2024-04-23 19:31:51,240][func.train][INFO] - [DATASET] test video_indices: [53]
+[2024-04-23 19:31:51,278][func.train][INFO] - [DATASET] Sampling video_idx: 53 at 25 fps to 3283 frames
+[2024-04-23 19:31:56,012][func.train][INFO] - [DATASET] test size: 77501
+[2024-04-23 19:31:56,013][func.train][INFO] - [DATASET] test video_indices: [54]
+[2024-04-23 19:31:56,052][func.train][INFO] - [DATASET] Sampling video_idx: 54 at 25 fps to 3100 frames
+[2024-04-23 19:31:59,489][func.train][INFO] - [DATASET] test size: 25926
+[2024-04-23 19:31:59,490][func.train][INFO] - [DATASET] test video_indices: [55]
+[2024-04-23 19:31:59,500][func.train][INFO] - [DATASET] Sampling video_idx: 55 at 25 fps to 1037 frames
+[2024-04-23 19:32:02,750][func.train][INFO] - [DATASET] test size: 45851
+[2024-04-23 19:32:02,750][func.train][INFO] - [DATASET] test video_indices: [56]
+[2024-04-23 19:32:02,768][func.train][INFO] - [DATASET] Sampling video_idx: 56 at 25 fps to 1834 frames
+[2024-04-23 19:32:06,586][func.train][INFO] - [DATASET] test size: 65801
+[2024-04-23 19:32:06,587][func.train][INFO] - [DATASET] test video_indices: [57]
+[2024-04-23 19:32:06,613][func.train][INFO] - [DATASET] Sampling video_idx: 57 at 25 fps to 2632 frames
+[2024-04-23 19:32:09,561][func.train][INFO] - [DATASET] test size: 149826
+[2024-04-23 19:32:09,561][func.train][INFO] - [DATASET] test video_indices: [58]
+[2024-04-23 19:32:09,599][func.train][INFO] - [DATASET] Sampling video_idx: 58 at 25 fps to 5993 frames
+[2024-04-23 19:32:13,335][func.train][INFO] - [DATASET] test size: 26151
+[2024-04-23 19:32:13,336][func.train][INFO] - [DATASET] test video_indices: [59]
+[2024-04-23 19:32:13,345][func.train][INFO] - [DATASET] Sampling video_idx: 59 at 25 fps to 1046 frames
+[2024-04-23 19:32:15,730][func.train][INFO] - [DATASET] test size: 63301
+[2024-04-23 19:32:15,731][func.train][INFO] - [DATASET] test video_indices: [60]
+[2024-04-23 19:32:15,753][func.train][INFO] - [DATASET] Sampling video_idx: 60 at 25 fps to 2532 frames
+[2024-04-23 19:32:18,003][func.train][INFO] - [DATASET] test size: 110226
+[2024-04-23 19:32:18,004][func.train][INFO] - [DATASET] test video_indices: [61]
+[2024-04-23 19:32:18,034][func.train][INFO] - [DATASET] Sampling video_idx: 61 at 25 fps to 4409 frames
+[2024-04-23 19:32:20,104][func.train][INFO] - [DATASET] test size: 50801
+[2024-04-23 19:32:20,104][func.train][INFO] - [DATASET] test video_indices: [62]
+[2024-04-23 19:32:20,118][func.train][INFO] - [DATASET] Sampling video_idx: 62 at 25 fps to 2032 frames
+[2024-04-23 19:32:23,270][func.train][INFO] - [DATASET] test size: 85826
+[2024-04-23 19:32:23,271][func.train][INFO] - [DATASET] test video_indices: [63]
+[2024-04-23 19:32:23,295][func.train][INFO] - [DATASET] Sampling video_idx: 63 at 25 fps to 3433 frames
+[2024-04-23 19:32:25,671][func.train][INFO] - [DATASET] test size: 59951
+[2024-04-23 19:32:25,672][func.train][INFO] - [DATASET] test video_indices: [64]
+[2024-04-23 19:32:25,694][func.train][INFO] - [DATASET] Sampling video_idx: 64 at 25 fps to 2398 frames
+[2024-04-23 19:32:29,795][func.train][INFO] - [DATASET] test size: 46826
+[2024-04-23 19:32:29,796][func.train][INFO] - [DATASET] test video_indices: [65]
+[2024-04-23 19:32:29,813][func.train][INFO] - [DATASET] Sampling video_idx: 65 at 25 fps to 1873 frames
+[2024-04-23 19:32:33,925][func.train][INFO] - [DATASET] test size: 45601
+[2024-04-23 19:32:33,925][func.train][INFO] - [DATASET] test video_indices: [66]
+[2024-04-23 19:32:33,938][func.train][INFO] - [DATASET] Sampling video_idx: 66 at 25 fps to 1824 frames
+[2024-04-23 19:32:37,292][func.train][INFO] - [DATASET] test size: 58826
+[2024-04-23 19:32:37,293][func.train][INFO] - [DATASET] test video_indices: [67]
+[2024-04-23 19:32:37,324][func.train][INFO] - [DATASET] Sampling video_idx: 67 at 25 fps to 2353 frames
+[2024-04-23 19:32:41,430][func.train][INFO] - [DATASET] test size: 49301
+[2024-04-23 19:32:41,431][func.train][INFO] - [DATASET] test video_indices: [68]
+[2024-04-23 19:32:41,452][func.train][INFO] - [DATASET] Sampling video_idx: 68 at 25 fps to 1972 frames
+[2024-04-23 19:32:44,953][func.train][INFO] - [DATASET] test size: 114376
+[2024-04-23 19:32:44,954][func.train][INFO] - [DATASET] test video_indices: [69]
+[2024-04-23 19:32:44,984][func.train][INFO] - [DATASET] Sampling video_idx: 69 at 25 fps to 4575 frames
+[2024-04-23 19:32:48,073][func.train][INFO] - [DATASET] test size: 29851
+[2024-04-23 19:32:48,074][func.train][INFO] - [DATASET] test video_indices: [70]
+[2024-04-23 19:32:48,085][func.train][INFO] - [DATASET] Sampling video_idx: 70 at 25 fps to 1194 frames
+[2024-04-23 19:32:51,907][func.train][INFO] - [DATASET] test size: 62876
+[2024-04-23 19:32:51,908][func.train][INFO] - [DATASET] test video_indices: [71]
+[2024-04-23 19:32:51,926][func.train][INFO] - [DATASET] Sampling video_idx: 71 at 25 fps to 2515 frames
+[2024-04-23 19:32:55,691][func.train][INFO] - [DATASET] test size: 77651
+[2024-04-23 19:32:55,692][func.train][INFO] - [DATASET] test video_indices: [72]
+[2024-04-23 19:32:55,723][func.train][INFO] - [DATASET] Sampling video_idx: 72 at 25 fps to 3106 frames
+[2024-04-23 19:33:00,314][func.train][INFO] - [DATASET] test size: 33901
+[2024-04-23 19:33:00,315][func.train][INFO] - [DATASET] test video_indices: [73]
+[2024-04-23 19:33:00,332][func.train][INFO] - [DATASET] Sampling video_idx: 73 at 25 fps to 1356 frames
+[2024-04-23 19:33:03,593][func.train][INFO] - [DATASET] test size: 40851
+[2024-04-23 19:33:03,593][func.train][INFO] - [DATASET] test video_indices: [74]
+[2024-04-23 19:33:03,609][func.train][INFO] - [DATASET] Sampling video_idx: 74 at 25 fps to 1634 frames
+[2024-04-23 19:33:07,267][func.train][INFO] - [DATASET] test size: 48076
+[2024-04-23 19:33:07,268][func.train][INFO] - [DATASET] test video_indices: [75]
+[2024-04-23 19:33:07,287][func.train][INFO] - [DATASET] Sampling video_idx: 75 at 25 fps to 1923 frames
+[2024-04-23 19:33:11,175][func.train][INFO] - [DATASET] test size: 66226
+[2024-04-23 19:33:11,176][func.train][INFO] - [DATASET] test video_indices: [76]
+[2024-04-23 19:33:11,199][func.train][INFO] - [DATASET] Sampling video_idx: 76 at 25 fps to 2649 frames
+[2024-04-23 19:33:14,542][func.train][INFO] - [DATASET] test size: 62551
+[2024-04-23 19:33:14,543][func.train][INFO] - [DATASET] test video_indices: [77]
+[2024-04-23 19:33:14,568][func.train][INFO] - [DATASET] Sampling video_idx: 77 at 25 fps to 2502 frames
+[2024-04-23 19:33:17,638][func.train][INFO] - [DATASET] test size: 18476
+[2024-04-23 19:33:17,638][func.train][INFO] - [DATASET] test video_indices: [78]
+[2024-04-23 19:33:17,645][func.train][INFO] - [DATASET] Sampling video_idx: 78 at 25 fps to 739 frames
+[2024-04-23 19:33:20,167][func.train][INFO] - [DATASET] test size: 85351
+[2024-04-23 19:33:20,167][func.train][INFO] - [DATASET] test video_indices: [79]
+[2024-04-23 19:33:20,189][func.train][INFO] - [DATASET] Sampling video_idx: 79 at 25 fps to 3414 frames
+[2024-04-23 19:33:23,815][func.train][INFO] - [DATASET] test size: 43101
+[2024-04-23 19:33:23,815][func.train][INFO] - [DATASET] test video_indices: [80]
+[2024-04-23 19:33:23,838][func.train][INFO] - [DATASET] Sampling video_idx: 80 at 25 fps to 1724 frames
+[2024-04-23 19:33:23,929][func.train][INFO] - Time to load datasets: 2.93 min
+[2024-04-23 19:33:23,929][func.train][INFO] - Creating data loaders
+[2024-04-23 19:33:23,943][func.train][INFO] - Creating model with {'one': 7} classes
+[2024-04-23 19:33:27,282][func.train][INFO] - [MAIN] Number of tokens: 86304
+[2024-04-23 19:33:27,283][func.train][INFO] - [MAIN] Number of parameters: 10712917
+[2024-04-23 19:33:27,283][func.train][INFO] - [MAIN] Token-to-Parameter Ratio is ideally between [1:1 to 10:1]: 0.008056
+[2024-04-23 19:33:27,283][func.train][WARNING] - [MAIN] Data-to-Parameter-Ratio is outside the interval [1:1 to 10:1]
+[2024-04-23 19:33:27,285][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-04-23 19:33:27,285][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-04-23 19:33:27,294][func.train][INFO] - Wrapping model into DP
+[2024-04-23 19:33:27,624][func.train][INFO] - Start training
+[2024-04-23 19:33:27,630][func.train][INFO] - Storing checkpoints every 60.00 mins
+[2024-04-23 19:33:30,208][func.train][INFO] - [TRAINING] Step 0/10788 | Loss: 2.63 | Acc (curr_frames): 0.07 | Acc (next_frames): 0.10 | time-left: 463.42 min
+[2024-04-23 19:33:50,668][func.train][INFO] - [TRAINING] Step 100/10788 | Loss: 2.02 | Acc (curr_frames): 0.00 | Acc (next_frames): 0.18 | time-left: 40.63 min
+[2024-04-23 19:34:10,047][func.train][INFO] - [TRAINING] Step 200/10788 | Loss: 2.11 | Acc (curr_frames): 0.48 | Acc (next_frames): 0.32 | time-left: 37.24 min
+[2024-04-23 19:34:26,230][func.train][INFO] - [TRAINING] Step 300/10788 | Loss: 2.03 | Acc (curr_frames): 0.54 | Acc (next_frames): 0.50 | time-left: 34.03 min
+[2024-04-23 19:34:43,651][func.train][INFO] - [TRAINING] Step 400/10788 | Loss: 1.49 | Acc (curr_frames): 0.34 | Acc (next_frames): 0.31 | time-left: 32.82 min
+[2024-04-23 19:35:02,895][func.train][INFO] - [TRAINING] Step 500/10788 | Loss: 1.93 | Acc (curr_frames): 0.53 | Acc (next_frames): 0.49 | time-left: 32.60 min
+[2024-04-23 19:35:23,792][func.train][INFO] - [TRAINING] Step 600/10788 | Loss: 1.70 | Acc (curr_frames): 0.59 | Acc (next_frames): 0.51 | time-left: 32.82 min
+[2024-04-23 19:35:45,290][func.train][INFO] - [TRAINING] Step 700/10788 | Loss: 1.65 | Acc (curr_frames): 0.58 | Acc (next_frames): 0.55 | time-left: 33.01 min
+[2024-04-23 19:36:07,065][func.train][INFO] - [TRAINING] Step 800/10788 | Loss: 1.65 | Acc (curr_frames): 0.58 | Acc (next_frames): 0.58 | time-left: 33.13 min
+[2024-04-23 19:36:28,714][func.train][INFO] - [TRAINING] Step 900/10788 | Loss: 1.67 | Acc (curr_frames): 0.54 | Acc (next_frames): 0.50 | time-left: 33.12 min
+[2024-04-23 19:36:49,679][func.train][INFO] - [TRAINING] Step 1000/10788 | Loss: 2.18 | Acc (curr_frames): 0.59 | Acc (next_frames): 0.55 | time-left: 32.92 min
+[2024-04-23 19:37:12,806][func.train][INFO] - [TRAINING] Step 1100/10788 | Loss: 1.10 | Acc (curr_frames): 0.55 | Acc (next_frames): 0.47 | time-left: 33.02 min
+[2024-04-23 19:37:34,515][func.train][INFO] - [TRAINING] Step 1200/10788 | Loss: 1.58 | Acc (curr_frames): 0.25 | Acc (next_frames): 0.26 | time-left: 32.85 min
+[2024-04-23 19:37:56,593][func.train][INFO] - [TRAINING] Step 1300/10788 | Loss: 1.63 | Acc (curr_frames): 0.67 | Acc (next_frames): 0.65 | time-left: 32.69 min
+[2024-04-23 19:38:17,579][func.train][INFO] - [TRAINING] Step 1400/10788 | Loss: 0.86 | Acc (curr_frames): 0.68 | Acc (next_frames): 0.67 | time-left: 32.38 min
+[2024-04-23 19:38:38,931][func.train][INFO] - [TRAINING] Step 1500/10788 | Loss: 2.13 | Acc (curr_frames): 0.48 | Acc (next_frames): 0.47 | time-left: 32.10 min
+[2024-04-23 19:39:00,460][func.train][INFO] - [TRAINING] Step 1600/10788 | Loss: 1.20 | Acc (curr_frames): 0.68 | Acc (next_frames): 0.66 | time-left: 31.83 min
+[2024-04-23 19:39:22,446][func.train][INFO] - [TRAINING] Step 1700/10788 | Loss: 1.11 | Acc (curr_frames): 0.61 | Acc (next_frames): 0.61 | time-left: 31.59 min
+[2024-04-23 19:39:43,466][func.train][INFO] - [TRAINING] Step 1800/10788 | Loss: 1.86 | Acc (curr_frames): 0.55 | Acc (next_frames): 0.54 | time-left: 31.26 min
+[2024-04-23 19:40:05,685][func.train][INFO] - [TRAINING] Step 1900/10788 | Loss: 1.38 | Acc (curr_frames): 0.68 | Acc (next_frames): 0.66 | time-left: 31.01 min
+[2024-04-23 19:40:26,800][func.train][INFO] - [TRAINING] Step 2000/10788 | Loss: 0.95 | Acc (curr_frames): 0.71 | Acc (next_frames): 0.69 | time-left: 30.68 min
+[2024-04-23 19:40:47,967][func.train][INFO] - [TRAINING] Step 2100/10788 | Loss: 1.24 | Acc (curr_frames): 0.75 | Acc (next_frames): 0.65 | time-left: 30.34 min
+[2024-04-23 19:41:09,222][func.train][INFO] - [TRAINING] Step 2200/10788 | Loss: 1.00 | Acc (curr_frames): 0.81 | Acc (next_frames): 0.77 | time-left: 30.01 min
+[2024-04-23 19:41:30,269][func.train][INFO] - [TRAINING] Step 2300/10788 | Loss: 0.74 | Acc (curr_frames): 0.58 | Acc (next_frames): 0.57 | time-left: 29.67 min
+[2024-04-23 19:41:50,808][func.train][INFO] - [TRAINING] Step 2400/10788 | Loss: 1.72 | Acc (curr_frames): 0.70 | Acc (next_frames): 0.66 | time-left: 29.29 min
+[2024-04-23 19:42:10,582][func.train][INFO] - [TRAINING] Step 2500/10788 | Loss: 1.18 | Acc (curr_frames): 0.67 | Acc (next_frames): 0.63 | time-left: 28.88 min
+[2024-04-23 19:42:29,065][func.train][INFO] - [TRAINING] Step 2600/10788 | Loss: 1.41 | Acc (curr_frames): 0.68 | Acc (next_frames): 0.66 | time-left: 28.40 min
+[2024-04-23 19:42:48,658][func.train][INFO] - [TRAINING] Step 2700/10788 | Loss: 1.04 | Acc (curr_frames): 0.83 | Acc (next_frames): 0.80 | time-left: 28.00 min
+[2024-04-23 19:43:08,627][func.train][INFO] - [TRAINING] Step 2800/10788 | Loss: 1.46 | Acc (curr_frames): 0.80 | Acc (next_frames): 0.77 | time-left: 27.61 min
+[2024-04-23 19:43:27,546][func.train][INFO] - [TRAINING] Step 2900/10788 | Loss: 0.49 | Acc (curr_frames): 0.92 | Acc (next_frames): 0.90 | time-left: 27.18 min
+[2024-04-23 19:43:48,050][func.train][INFO] - [TRAINING] Step 3000/10788 | Loss: 1.36 | Acc (curr_frames): 0.73 | Acc (next_frames): 0.71 | time-left: 26.83 min
+[2024-04-23 19:44:07,997][func.train][INFO] - [TRAINING] Step 3100/10788 | Loss: 0.54 | Acc (curr_frames): 0.87 | Acc (next_frames): 0.84 | time-left: 26.46 min
+[2024-04-23 19:44:29,182][func.train][INFO] - [TRAINING] Step 3200/10788 | Loss: 0.40 | Acc (curr_frames): 0.69 | Acc (next_frames): 0.67 | time-left: 26.13 min
+[2024-04-23 19:44:49,979][func.train][INFO] - [TRAINING] Step 3300/10788 | Loss: 0.54 | Acc (curr_frames): 0.78 | Acc (next_frames): 0.79 | time-left: 25.79 min
+[2024-04-23 19:45:12,430][func.train][INFO] - [TRAINING] Step 3400/10788 | Loss: 0.72 | Acc (curr_frames): 0.77 | Acc (next_frames): 0.74 | time-left: 25.51 min
+[2024-04-23 19:45:34,288][func.train][INFO] - [TRAINING] Step 3500/10788 | Loss: 0.69 | Acc (curr_frames): 0.84 | Acc (next_frames): 0.82 | time-left: 25.21 min
+[2024-04-23 19:45:55,180][func.train][INFO] - [TRAINING] Step 3600/10788 | Loss: 0.22 | Acc (curr_frames): 0.79 | Acc (next_frames): 0.79 | time-left: 24.87 min
+[2024-04-23 19:46:16,293][func.train][INFO] - [TRAINING] Step 3700/10788 | Loss: 0.51 | Acc (curr_frames): 0.80 | Acc (next_frames): 0.78 | time-left: 24.53 min
+[2024-04-23 19:46:37,188][func.train][INFO] - [TRAINING] Step 3800/10788 | Loss: 0.51 | Acc (curr_frames): 0.83 | Acc (next_frames): 0.81 | time-left: 24.19 min
+[2024-04-23 19:46:57,491][func.train][INFO] - [TRAINING] Step 3900/10788 | Loss: 0.34 | Acc (curr_frames): 0.83 | Acc (next_frames): 0.82 | time-left: 23.83 min
+[2024-04-23 19:47:18,858][func.train][INFO] - [TRAINING] Step 4000/10788 | Loss: 0.43 | Acc (curr_frames): 0.91 | Acc (next_frames): 0.90 | time-left: 23.50 min
+[2024-04-23 19:47:40,075][func.train][INFO] - [TRAINING] Step 4100/10788 | Loss: 0.28 | Acc (curr_frames): 0.79 | Acc (next_frames): 0.79 | time-left: 23.17 min
+[2024-04-23 19:48:01,319][func.train][INFO] - [TRAINING] Step 4200/10788 | Loss: 0.48 | Acc (curr_frames): 0.78 | Acc (next_frames): 0.77 | time-left: 22.83 min
+[2024-04-23 19:48:22,148][func.train][INFO] - [TRAINING] Step 4300/10788 | Loss: 0.28 | Acc (curr_frames): 0.85 | Acc (next_frames): 0.84 | time-left: 22.49 min
+[2024-04-23 19:48:43,323][func.train][INFO] - [TRAINING] Step 4400/10788 | Loss: 0.44 | Acc (curr_frames): 0.79 | Acc (next_frames): 0.78 | time-left: 22.15 min
+[2024-04-23 19:49:03,628][func.train][INFO] - [TRAINING] Step 4500/10788 | Loss: 0.50 | Acc (curr_frames): 0.80 | Acc (next_frames): 0.80 | time-left: 21.79 min
+[2024-04-23 19:49:24,037][func.train][INFO] - [TRAINING] Step 4600/10788 | Loss: 0.35 | Acc (curr_frames): 0.79 | Acc (next_frames): 0.77 | time-left: 21.43 min
+[2024-04-23 19:49:45,083][func.train][INFO] - [TRAINING] Step 4700/10788 | Loss: 0.53 | Acc (curr_frames): 0.79 | Acc (next_frames): 0.76 | time-left: 21.09 min
+[2024-04-23 19:50:07,641][func.train][INFO] - [TRAINING] Step 4800/10788 | Loss: 0.23 | Acc (curr_frames): 0.84 | Acc (next_frames): 0.81 | time-left: 20.78 min
+[2024-04-23 19:50:29,095][func.train][INFO] - [TRAINING] Step 4900/10788 | Loss: 0.46 | Acc (curr_frames): 0.85 | Acc (next_frames): 0.83 | time-left: 20.45 min
+[2024-04-23 19:50:49,543][func.train][INFO] - [TRAINING] Step 5000/10788 | Loss: 0.41 | Acc (curr_frames): 0.74 | Acc (next_frames): 0.76 | time-left: 20.09 min
+[2024-04-23 19:51:09,996][func.train][INFO] - [TRAINING] Step 5100/10788 | Loss: 0.18 | Acc (curr_frames): 0.91 | Acc (next_frames): 0.90 | time-left: 19.74 min
+[2024-04-23 19:51:27,069][func.train][INFO] - [TRAINING] Step 5200/10788 | Loss: 0.22 | Acc (curr_frames): 0.90 | Acc (next_frames): 0.88 | time-left: 19.33 min
+[2024-04-23 19:51:44,391][func.train][INFO] - [TRAINING] Step 5300/10788 | Loss: 0.15 | Acc (curr_frames): 0.89 | Acc (next_frames): 0.90 | time-left: 18.92 min
+[2024-04-23 19:52:03,989][func.train][INFO] - [TRAINING] Step 5400/10788 | Loss: 0.57 | Acc (curr_frames): 0.81 | Acc (next_frames): 0.80 | time-left: 18.56 min
+[2024-04-23 19:52:24,231][func.train][INFO] - [TRAINING] Step 5500/10788 | Loss: 0.24 | Acc (curr_frames): 0.87 | Acc (next_frames): 0.84 | time-left: 18.21 min
+[2024-04-23 19:52:43,583][func.train][INFO] - [TRAINING] Step 5600/10788 | Loss: 0.45 | Acc (curr_frames): 0.78 | Acc (next_frames): 0.73 | time-left: 17.84 min
+[2024-04-23 19:53:03,668][func.train][INFO] - [TRAINING] Step 5700/10788 | Loss: 0.21 | Acc (curr_frames): 0.83 | Acc (next_frames): 0.81 | time-left: 17.49 min
+[2024-04-23 19:53:23,674][func.train][INFO] - [TRAINING] Step 5800/10788 | Loss: 0.42 | Acc (curr_frames): 0.88 | Acc (next_frames): 0.84 | time-left: 17.14 min
+[2024-04-23 19:53:45,452][func.train][INFO] - [TRAINING] Step 5900/10788 | Loss: 0.18 | Acc (curr_frames): 0.79 | Acc (next_frames): 0.76 | time-left: 16.81 min
+[2024-04-23 19:54:07,106][func.train][INFO] - [TRAINING] Step 6000/10788 | Loss: 0.38 | Acc (curr_frames): 0.84 | Acc (next_frames): 0.78 | time-left: 16.48 min
+[2024-04-23 19:54:28,879][func.train][INFO] - [TRAINING] Step 6100/10788 | Loss: 0.49 | Acc (curr_frames): 0.90 | Acc (next_frames): 0.87 | time-left: 16.15 min
+[2024-04-23 19:54:50,923][func.train][INFO] - [TRAINING] Step 6200/10788 | Loss: 0.34 | Acc (curr_frames): 0.91 | Acc (next_frames): 0.87 | time-left: 15.82 min
+[2024-04-23 19:55:12,068][func.train][INFO] - [TRAINING] Step 6300/10788 | Loss: 0.19 | Acc (curr_frames): 0.89 | Acc (next_frames): 0.82 | time-left: 15.48 min
+[2024-04-23 19:55:33,305][func.train][INFO] - [TRAINING] Step 6400/10788 | Loss: 0.20 | Acc (curr_frames): 0.89 | Acc (next_frames): 0.84 | time-left: 15.14 min
+[2024-04-23 19:55:54,195][func.train][INFO] - [TRAINING] Step 6500/10788 | Loss: 0.27 | Acc (curr_frames): 0.85 | Acc (next_frames): 0.84 | time-left: 14.80 min
+[2024-04-23 19:56:14,013][func.train][INFO] - [TRAINING] Step 6600/10788 | Loss: 0.15 | Acc (curr_frames): 0.88 | Acc (next_frames): 0.87 | time-left: 14.44 min
+[2024-04-23 19:56:34,946][func.train][INFO] - [TRAINING] Step 6700/10788 | Loss: 0.28 | Acc (curr_frames): 0.90 | Acc (next_frames): 0.83 | time-left: 14.10 min
+[2024-04-23 19:56:58,626][func.train][INFO] - [TRAINING] Step 6800/10788 | Loss: 0.48 | Acc (curr_frames): 0.88 | Acc (next_frames): 0.84 | time-left: 13.79 min
+[2024-04-23 19:57:20,854][func.train][INFO] - [TRAINING] Step 6900/10788 | Loss: 0.28 | Acc (curr_frames): 0.93 | Acc (next_frames): 0.88 | time-left: 13.45 min
+[2024-04-23 19:57:40,635][func.train][INFO] - [TRAINING] Step 7000/10788 | Loss: 0.16 | Acc (curr_frames): 0.94 | Acc (next_frames): 0.83 | time-left: 13.10 min
+[2024-04-23 19:58:01,091][func.train][INFO] - [TRAINING] Step 7100/10788 | Loss: 0.17 | Acc (curr_frames): 0.93 | Acc (next_frames): 0.87 | time-left: 12.75 min
+[2024-04-23 19:58:21,191][func.train][INFO] - [TRAINING] Step 7200/10788 | Loss: 0.30 | Acc (curr_frames): 0.89 | Acc (next_frames): 0.78 | time-left: 12.40 min
+[2024-04-23 19:58:39,967][func.train][INFO] - [TRAINING] Step 7300/10788 | Loss: 0.22 | Acc (curr_frames): 0.89 | Acc (next_frames): 0.86 | time-left: 12.04 min
+[2024-04-23 19:59:00,347][func.train][INFO] - [TRAINING] Step 7400/10788 | Loss: 0.24 | Acc (curr_frames): 0.91 | Acc (next_frames): 0.85 | time-left: 11.69 min
+[2024-04-23 19:59:20,086][func.train][INFO] - [TRAINING] Step 7500/10788 | Loss: 0.31 | Acc (curr_frames): 0.87 | Acc (next_frames): 0.79 | time-left: 11.34 min
+[2024-04-23 19:59:39,735][func.train][INFO] - [TRAINING] Step 7600/10788 | Loss: 0.31 | Acc (curr_frames): 0.91 | Acc (next_frames): 0.84 | time-left: 10.99 min
+[2024-04-23 20:00:00,512][func.train][INFO] - [TRAINING] Step 7700/10788 | Loss: 0.32 | Acc (curr_frames): 0.95 | Acc (next_frames): 0.89 | time-left: 10.64 min
+[2024-04-23 20:00:18,889][func.train][INFO] - [TRAINING] Step 7800/10788 | Loss: 0.07 | Acc (curr_frames): 0.85 | Acc (next_frames): 0.72 | time-left: 10.28 min
+[2024-04-23 20:00:36,251][func.train][INFO] - [TRAINING] Step 7900/10788 | Loss: 0.19 | Acc (curr_frames): 0.88 | Acc (next_frames): 0.83 | time-left: 9.92 min
+[2024-04-23 20:00:55,249][func.train][INFO] - [TRAINING] Step 8000/10788 | Loss: 0.22 | Acc (curr_frames): 0.96 | Acc (next_frames): 0.92 | time-left: 9.57 min
+[2024-04-23 20:01:14,841][func.train][INFO] - [TRAINING] Step 8100/10788 | Loss: 0.25 | Acc (curr_frames): 0.94 | Acc (next_frames): 0.79 | time-left: 9.22 min
+[2024-04-23 20:01:34,166][func.train][INFO] - [TRAINING] Step 8200/10788 | Loss: 0.15 | Acc (curr_frames): 0.94 | Acc (next_frames): 0.84 | time-left: 8.87 min
+[2024-04-23 20:01:53,815][func.train][INFO] - [TRAINING] Step 8300/10788 | Loss: 0.11 | Acc (curr_frames): 0.93 | Acc (next_frames): 0.84 | time-left: 8.52 min
+[2024-04-23 20:02:13,021][func.train][INFO] - [TRAINING] Step 8400/10788 | Loss: 0.11 | Acc (curr_frames): 0.96 | Acc (next_frames): 0.87 | time-left: 8.17 min
+[2024-04-23 20:02:29,490][func.train][INFO] - [TRAINING] Step 8500/10788 | Loss: 0.52 | Acc (curr_frames): 0.86 | Acc (next_frames): 0.80 | time-left: 7.81 min
+[2024-04-23 20:02:47,670][func.train][INFO] - [TRAINING] Step 8600/10788 | Loss: 0.17 | Acc (curr_frames): 0.97 | Acc (next_frames): 0.86 | time-left: 7.46 min
+[2024-04-23 20:03:06,663][func.train][INFO] - [TRAINING] Step 8700/10788 | Loss: 0.28 | Acc (curr_frames): 0.90 | Acc (next_frames): 0.81 | time-left: 7.11 min
+[2024-04-23 20:03:27,800][func.train][INFO] - [TRAINING] Step 8800/10788 | Loss: 0.20 | Acc (curr_frames): 0.93 | Acc (next_frames): 0.79 | time-left: 6.77 min
+[2024-04-23 20:03:49,186][func.train][INFO] - [TRAINING] Step 8900/10788 | Loss: 0.40 | Acc (curr_frames): 0.89 | Acc (next_frames): 0.85 | time-left: 6.44 min
+[2024-04-23 20:04:10,502][func.train][INFO] - [TRAINING] Step 9000/10788 | Loss: 0.10 | Acc (curr_frames): 0.96 | Acc (next_frames): 0.91 | time-left: 6.10 min
+[2024-04-23 20:04:31,450][func.train][INFO] - [TRAINING] Step 9100/10788 | Loss: 0.28 | Acc (curr_frames): 0.92 | Acc (next_frames): 0.85 | time-left: 5.76 min
+[2024-04-23 20:04:51,543][func.train][INFO] - [TRAINING] Step 9200/10788 | Loss: 0.34 | Acc (curr_frames): 0.90 | Acc (next_frames): 0.74 | time-left: 5.42 min
+[2024-04-23 20:05:15,870][func.train][INFO] - [TRAINING] Step 9300/10788 | Loss: 0.20 | Acc (curr_frames): 0.94 | Acc (next_frames): 0.84 | time-left: 5.08 min
+[2024-04-23 20:05:37,288][func.train][INFO] - [TRAINING] Step 9400/10788 | Loss: 0.13 | Acc (curr_frames): 0.95 | Acc (next_frames): 0.86 | time-left: 4.74 min
+[2024-04-23 20:05:58,209][func.train][INFO] - [TRAINING] Step 9500/10788 | Loss: 0.22 | Acc (curr_frames): 0.93 | Acc (next_frames): 0.80 | time-left: 4.40 min
+[2024-04-23 20:06:19,083][func.train][INFO] - [TRAINING] Step 9600/10788 | Loss: 0.06 | Acc (curr_frames): 0.99 | Acc (next_frames): 0.94 | time-left: 4.06 min
