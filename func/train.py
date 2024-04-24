@@ -56,6 +56,7 @@ STR_UID_MAXLEN = 64  # Max length of the string UID stored in H5PY
 
 
 #--maxence boels impots
+# from R2A2.eval.plot_video_preds import get_plotter
 from R2A2.eval.plot_segments.plot_values import plot_maxpooled_videos
 from R2A2.eval.seg_eval import MetricsSegments
 from R2A2.eval.plot_segments.plot_video import plot_video_segments
@@ -336,7 +337,8 @@ def check_numpy_to_list(dictionay):
     return dictionay
 
 def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_writer, logger, epoch: float, num_future_tokens: int, 
-             store=False, store_endpoint='logits', only_run_featext=False, best_acc1=0.0,):
+             store=False, store_endpoint='logits', only_run_featext=False,
+             best_acc1=0.0,):
 
     model.eval()
     # -----------------select params----------------- #
@@ -354,6 +356,8 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     all_videos_mean_cum_iter_time = []
 
     eval_start_time = time.time()
+
+    best_video_idx = 60                     # NOTE: cherry-picked video index 
 
     # FOR EACH VIDEO LOADER
     for data_loader in dataloaders:
@@ -471,7 +475,22 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                     f"mean_acc_curr_frames: {mean_acc_curr_frames}, "
                     f"mean_acc_future_frames: {mean_acc_future_frames}")
         print(f"mean_acc_curr_frames: {mean_acc_curr_frames}, mean_acc_future_frames: {mean_acc_future_frames}")
-    
+
+        
+        # PLOTTING VIDEO RESULTS (3D (static or animated)
+        if video_id == best_video_idx:
+            save_numpy_arrays = True
+            if save_numpy_arrays:
+                np.save(f"video_frame_rec_{video_id}_ep{epoch}.npy", video_frame_rec)
+                np.save(f"video_tgts_rec_{video_id}_ep{epoch}.npy", video_tgts_rec)
+                np.save(f"video_frame_preds_{video_id}_ep{epoch}.npy", video_frame_preds)
+                np.save(f"video_tgts_preds_{video_id}_ep{epoch}.npy", video_tgts_preds)
+                logger.info(f"[TESTING] video: {video_id} saved numpy arrays")
+
+            # video_plotter = get_plotter(plotter_name="3D_box_surface")
+            # video_plotter(video_frame_rec, video_tgts_rec, video_frame_preds, video_tgts_preds, video_id,
+            #               title=f"Video {video_id} Epoch {epoch} F.Acc. {mean_acc_future_frames} - Unchained Predictions") 
+            
     # keep time dimension over all videos
     all_videos_mean_acc_future_t       = np.round(np.nanmean(all_videos_acc_future, axis=0), decimals=4).tolist()
     all_videos_mean_cum_acc_future_t   = np.round(np.nanmean(all_videos_cum_acc_future, axis=0), decimals=4).tolist()

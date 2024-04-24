@@ -48,7 +48,7 @@ informer:
   decoder: true          # default true
   d_model: 384
 # gpt-2:
-vocab_size: 100
+vocab_size: 1000           # base: 100, mv: 1000, lv: 10000
 n_embd:     384
 n_layer:    2
 n_head:     4
