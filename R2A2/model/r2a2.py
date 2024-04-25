@@ -10,6 +10,16 @@ import time
 import math
 from typing import List
 
+def corr_function(pred_values, eos_length=30*60):
+    """ correct the predicted values by decrementing the values based on the time to the end of the sequence """
+    corrected_values = []
+    seq_length = len(pred_values)
+    for i in range(seq_length):
+        decrement = (((seq_length - i)*60) / seq_length) * (1/eos_length)
+        corrected_value = pred_values[i] - decrement
+        corrected_values.append(corrected_value)
+    return corrected_values
+
 class TokenPoolerCumMax(nn.Module):
     def __init__(self, dim: int = 512, pooling_dim: int = 64, frames_per_token: int = 60, 
                  relu_norm: bool = True, **kwargs):
@@ -277,7 +287,7 @@ class R2A2(nn.Module):
         past_sampling_rate: int = 10,
         d_model: int = 512,
         num_classes: int = 7,
-        num_max_future_preds: int = 30,
+        max_future_preds: int = 30,
         frames_per_token: int = 60,
         pooling_dim: int = 64,
         gpt_cfg: dict = None,
@@ -294,7 +304,7 @@ class R2A2(nn.Module):
         self.d_model = d_model
         self.present_length = present_length
         self.past_sampling_rate = past_sampling_rate
-        self.num_max_future_preds = num_max_future_preds     # 60 if 30 frames per tokens to get 30 minutes
+        self.max_future_preds = max_future_preds     # 60 if 30 frames per tokens to get 30 minutes
         self.frames_per_token = frames_per_token
 
 
@@ -450,13 +460,15 @@ class R2A2(nn.Module):
             if "curr_eos_rem_time" in outputs:
                 curr_eos_rem_time = outputs["curr_eos_rem_time"]
 
-                # if add time_to_current_frame:
-                eos_agg_method = "mean"
-                # if eos_agg_method == "mean":
-                mean_eos_estim_time = torch.mean(curr_eos_rem_time[:, -30:])
-                print(f"[R2A2] mean_eos_estim_time: {mean_eos_estim_time}")
 
-                num_future_predictions = self.num_max_future_preds * mean_eos_estim_time
+                # TODO: ABLATIONS FOR EOS INFERENCE USAGE
+                # add the distance to current frame to every indices
+                # corr_eos_rem_time = corr_function(curr_eos_rem_time.squeeze().tolist())
+
+                # mean over batch for more stable estimation (1fps)
+                mean_eos_estim_time = curr_eos_rem_time.mean().item()
+
+                num_future_predictions = self.max_future_preds * mean_eos_estim_time
                 print(f"[R2A2] num_future_predictions: {num_future_predictions}")
             
             iters_time = []
