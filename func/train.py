@@ -336,7 +336,7 @@ def check_numpy_to_list(dictionay):
             print(f"converted {key} np.ndarray to list")
     return dictionay
 
-def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_writer, logger, epoch: float, num_future_tokens: int, 
+def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_writer, logger, epoch: float, num_max_future_preds: int, 
              store=False, store_endpoint='logits', only_run_featext=False,
              best_acc1=0.0,):
 
@@ -371,8 +371,8 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         # init new video buffers
         video_frame_rec     = np.full((video_length, 1), -1)
         video_tgts_rec      = np.full((video_length, 1), -1)
-        video_frame_preds   = np.full((video_length, num_future_tokens), -1)
-        video_tgts_preds    = np.full((video_length, num_future_tokens), -1)
+        video_frame_preds   = np.full((video_length, num_max_future_preds), -1)
+        video_tgts_preds    = np.full((video_length, num_max_future_preds), -1)
         video_seg_preds     = np.full((video_length, 1), -1)
         video_tgts_preds_seg = np.full((video_length, 1), -1)
         
@@ -478,7 +478,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
 
         
         # PLOTTING VIDEO RESULTS (3D (static or animated)
-        if video_id == best_video_idx:
+        if video_id == best_video_idx and epoch == 1:
             save_numpy_arrays = True
             if save_numpy_arrays:
                 np.save(f"video_frame_rec_{video_id}_ep{epoch}.npy", video_frame_rec)
@@ -519,7 +519,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     if all_videos_results["all_videos_mean_acc_future"] > best_acc1:
 
         future_minutes = 30 # fixed parameter for all experiments
-        step_size = future_minutes / num_future_tokens
+        step_size = future_minutes / num_max_future_preds
         x_values = np.arange(1, future_minutes+1, step_size).tolist()
 
         # plot the mean accuracy over the videos

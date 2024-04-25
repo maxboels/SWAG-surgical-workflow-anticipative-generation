@@ -277,7 +277,7 @@ class R2A2(nn.Module):
         past_sampling_rate: int = 10,
         d_model: int = 512,
         num_classes: int = 7,
-        num_future_tokens: int = 30,
+        num_max_future_preds: int = 30,
         frames_per_token: int = 60,
         pooling_dim: int = 64,
         gpt_cfg: dict = None,
@@ -294,7 +294,7 @@ class R2A2(nn.Module):
         self.d_model = d_model
         self.present_length = present_length
         self.past_sampling_rate = past_sampling_rate
-        self.num_future_tokens = num_future_tokens     # 60 if 30 frames per tokens to get 30 minutes
+        self.num_max_future_preds = num_max_future_preds     # 60 if 30 frames per tokens to get 30 minutes
         self.frames_per_token = frames_per_token
 
 
@@ -335,9 +335,12 @@ class R2A2(nn.Module):
         else:
             raise ValueError(f"Pooling method {self.pooling_method} not implemented.")
 
-        # Action Triplets
+        # Current Token and EOS Time prediction
         self.curr_frames_classifier = nn.Linear(d_model, num_classes)
-        self.next_action_classifier = nn.Linear(gpt_cfg.n_embd, num_classes)
+        self.curr_eos_rem_time_reg = nn.Linear(d_model, 1)
+        
+        # Next Token Prediction
+        self.next_action_classifier = nn.Linear(gpt_cfg.n_embd, num_classes) # optional +1 for the EOS (end of sequence token)
 
         # Phases
         if self.segment_level or self.multiscale:
@@ -413,6 +416,12 @@ class R2A2(nn.Module):
         print(f"[R2A2] curr_frames: {curr_frames_cls.shape}")
         outputs["curr_frames"] = curr_frames_cls
 
+        # Current EOS Time Prediction
+        curr_eos_rem_time = self.curr_eos_rem_time_reg(enc_out)
+        print(f"[R2A2] curr_eos_rem_time: {curr_eos_rem_time.shape}")
+        outputs["curr_eos_rem_time"] = curr_eos_rem_time
+
+
         if train_mode:
             # GPT-2 decoder takes a single sequence as input prompt and predicts the next token.
             # In this setup, the next token is the next action in the sequence at a frame level since
@@ -437,10 +446,23 @@ class R2A2(nn.Module):
         else:
             # Autoregressive decoding during inference
             # TODO: TRY WITH FIXED CONTEXT WINDOW TO PREVENT LATENCY DURING INFERENCE
+            
+            if "curr_eos_rem_time" in outputs:
+                curr_eos_rem_time = outputs["curr_eos_rem_time"]
+
+                # if add time_to_current_frame:
+                eos_agg_method = "mean"
+                # if eos_agg_method == "mean":
+                mean_eos_estim_time = torch.mean(curr_eos_rem_time[:, -30:])
+                print(f"[R2A2] mean_eos_estim_time: {mean_eos_estim_time}")
+
+                num_future_predictions = self.num_max_future_preds * mean_eos_estim_time
+                print(f"[R2A2] num_future_predictions: {num_future_predictions}")
+            
             iters_time = []
             frames_cls_preds = []
             dec_in = self.proj_layer(enc_out)
-            for _ in range(self.num_future_tokens):
+            for _ in range(num_future_predictions):
                 start_time = time.time()
                 next_frames = self.frame_decoder(inputs_embeds=dec_in)
                 iters_time.append(time.time() - start_time) # measure time per iteration

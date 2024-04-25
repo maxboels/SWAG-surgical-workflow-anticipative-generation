@@ -42,13 +42,7 @@ class BasicLossAccuracy(nn.Module):
         self.past_sampling_rate = 1
         self.target_type = "next_target" # options: "future_classes", "next_target", "future_feats"
         #------------------------------------------------------------------
-        
-        if hasattr(dataset, "class_weights"):
-            weights_train = dataset.class_weights.to(device).float()
-        else:
-            weights_train = torch.ones(7).to(device).float()
-        print(f"[LOSS] class weights: {weights_train}")
-        # cholec_weights_train = torch.from_numpy(np.asarray([
+        # cholec_curr_class_weights = torch.from_numpy(np.asarray([
         #     1.6411019141231247,
         #     0.19090963801041133,
         #     1.0,
@@ -57,25 +51,23 @@ class BasicLossAccuracy(nn.Module):
         #     0.9840248158200853,
         #     2.174635818337618,
         #     ])).to(device).float() # removed last weight
-        
-        if hasattr(dataset, "next_classes_weights"):
-            next_classes_weights = dataset.next_classes_weights.to(device).float()
+
+
+        if hasattr(dataset, "class_weights"):
+            curr_class_weights = dataset.class_weights.to(device).float()
         else:
-            next_classes_weights = torch.ones(7).to(device).float()
-        print(f"[LOSS] next_classes_weights: {next_classes_weights}")
+            curr_class_weights = torch.ones(7).to(device).float()
+        print(f"[LOSS] class weights: {curr_class_weights}")
+
+        if hasattr(dataset, "next_class_weights"):
+            next_class_weights = dataset.next_class_weights.to(device).float()
+        else:
+            next_class_weights = curr_class_weights
+        print(f"[LOSS] next class weights: {next_class_weights}")
         
-        self.ce_loss_fn = nn.CrossEntropyLoss(weight=weights_train, reduction='none', ignore_index=-1)
-        self.cls_criterion = MultiDimCrossEntropy(weight=weights_train, reduction = 'none', ignore_index= -1)
-        self.smoothl1loss = nn.MSELoss(reduction = 'none')
-        self.DistanceLoss = DistanceLoss()
-        self.duration_criterion = nn.MSELoss(reduction = 'none')
-        self.future_ce_criterion = MultiDimCrossEntropy(weight=next_classes_weights, reduction = 'none', ignore_index= -1)
-        self.future_mse_criterion = nn.MSELoss(reduction = 'none')
-        self.ce_mse_consistency_ms = CEConsistencyMSE(ignore_idx=-1, 
-                                                      ce_weight=weights_train,
-                                                       mse_fraction=0.10, 
-                                                       mse_clip_val=2.0, 
-                                                       num_classes=7)
+        self.ce_loss_fn_curr = nn.CrossEntropyLoss(weight=curr_class_weights, reduction='none', ignore_index=-1)
+        self.ce_loss_fn_next = nn.CrossEntropyLoss(weight=next_class_weights, reduction='none', ignore_index=-1)
+        self.ce_loss_fn_curr_eos = nn.MSELoss(reduction='none')
 
     def forward(self, outputs, targets):
         losses = {}
@@ -85,14 +77,29 @@ class BasicLossAccuracy(nn.Module):
             print(f"[LOSS] output ({key}): {outputs[key].shape}")
             print(f"[LOSS] target ({key}): {targets[key].shape}")
 
-            losses[key + '_loss'] = self.ce_loss_fn(outputs[key].permute(0, 2, 1), targets[key]).mean()
-            print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
+            if key == 'curr_frames':
+                losses[key + '_loss'] = self.ce_loss_fn_curr(outputs[key].permute(0, 2, 1), targets[key]).mean() * 0.4
+                print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
 
-            accuracies[key + '_acc'] = seq_accuracy_nans(outputs[key], targets[key]) # mean included
-            print(f"[LOSS] {key}_acc: {accuracies[key + '_acc']}")
+                accuracies[key + '_acc'] = seq_accuracy_nans(outputs[key], targets[key])
+                print(f"[LOSS] {key}_acc: {accuracies[key + '_acc']}")
+            
+            elif key == 'next_frames':
+                losses[key + '_loss'] = self.ce_loss_fn_next(outputs[key].permute(0, 2, 1), targets[key]).mean() * 0.4
+                print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
 
+                accuracies[key + '_acc'] = seq_accuracy_nans(outputs[key], targets[key])
+                print(f"[LOSS] {key}_acc: {accuracies[key + '_acc']}")
+            
+            elif key == "curr_eos_values":
+                losses[key + '_loss'] = self.ce_loss_fn_curr_eos(outputs[key], targets[key]).mean() * 0.2
+                print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
+
+            
+        
         # total loss
-        losses['total_loss'] = losses['curr_frames_loss'] * 0.5 + losses['next_frames_loss'] * 0.5
+        losses['total_loss'] = torch.sum(torch.stack([losses[key + '_loss'] for key in outputs.keys()]))
+
         print(f"[LOSS] total_loss: {losses['total_loss']}")
 
         return losses, accuracies

@@ -207,9 +207,9 @@ class Medical_Dataset(Dataset):
 
             if self.train_mode == 'train':
                 random.shuffle(self.data_order)
-                classes = self.df_split['class'].tolist()
+                self.classes = self.df_split['class'].tolist()
 
-                classes_counts_dict = self._compute_stats_cls_counts(classes)
+                classes_counts_dict = self._compute_stats_cls_counts()
                 self.logger.info(f"[DATASET] classes_counts: {classes_counts_dict}")
 
                 if self.debug:
@@ -219,16 +219,16 @@ class Medical_Dataset(Dataset):
                 self.logger.info(f"[DATASET] curr_class_weights: {self.class_weights}")
 
                 # NEXT CLASS WEIGHTS
-                # num_eos_values = calculate_total_padded_values(classes, self.frames_fps, self.frames_per_tokens, self.num_future_tokens)
-                # self.logger.info(f"[DATASET] num_eos_values: {num_eos_values}")
-                # print(f"[DATASET] num_eos_values: {num_eos_values}")
-                # unique_elements, counts = np.unique(example_array, return_counts=True)
-                # next_class_counts = dict(zip(unique_elements, counts))
-                # # add the last eos class to dict
-                # next_class_counts[7] = num_eos_values
-                # self.logger.info(f"[DATASET] next_class_counts: {next_class_counts}")
-                # self.next_class_weights = self._compute_class_weights(next_class_counts)
-                # self.logger.info(f"[DATASET] next_class_weights: {self.next_class_weights}")
+                num_eos_values = calculate_total_padded_values(self.classes, self.frames_fps, self.frames_per_tokens, self.num_future_tokens)
+                self.logger.info(f"[DATASET] num_eos_values: {num_eos_values}")
+                print(f"[DATASET] num_eos_values: {num_eos_values}")
+                unique_elements, counts = np.unique(example_array, return_counts=True)
+                next_class_counts = dict(zip(unique_elements, counts))
+                # add the last eos class to dict
+                next_class_counts[7] = num_eos_values
+                self.logger.info(f"[DATASET] next_class_counts: {next_class_counts}")
+                self.next_class_weights = self._compute_class_weights(next_class_counts)
+                self.logger.info(f"[DATASET] next_class_weights: {self.next_class_weights}")
 
         def get_data_split(self, dataset_name="cholec80", split="train", video_indices=None):
             """
@@ -264,19 +264,34 @@ class Medical_Dataset(Dataset):
                 #-----------------mb added-----------------
                 if self.eos_regression:
                     eos_regression_values = video_end_regression_values(video_length, eos_length=eos_time_reg_at_inference)
-                    eos_regression_values = torch.Tensor(eos_regression_values).to(self.device)
                     self.eos_video_target_values.append(eos_regression_values)
-                    self.logger.info(f"[DATASET] video {video_indx} eos_regression_values: {eos_regression_values[-100:]}")
+                    self.logger.info(f"[DATASET] eos_regression_values: {eos_regression_values[-100:]}")
                     plt.plot(values)
                     plt.xlabel('Frame number')
                     plt.ylabel('Remaining time')
                     plt.title(f'Remaining time regression values for video {video_indx}')
                     plt.savefig(f"remaining_time_video_{video_indx}.png")
 
-                # to tensors
+
+                if self.predict_next_segment:
+                    next_label_folder = self.project_path + f"/LFB/{self.dataset_name}/next_labels_n{self.num_next_labels}"
+                    if not os.path.exists(next_label_folder):
+                        os.makedirs(next_label_folder)
+                    next_label_file = next_label_folder + f"/video{video_indx}.json"
+
+                if self.predict_next_segment:
+                    if os.path.exists(next_label_file):
+                        with open(next_label_file, 'r') as f:
+                            next_label_dict = json.load(f)
+                        next_label_list = next_label_dict[str(video_indx)]
+                        next_label_list = torch.Tensor(next_label_list).long()
+                    else:
+                        next_label_list = self.get_next_label(label_list, self.num_next_labels, end_class=self.last_seg_class)
+                        with open(next_label_file, 'w') as f:
+                            json.dump({str(video_indx): next_label_list.tolist()}, f)
+                        print(f"[DATASET] computed next_label_list to {next_label_file}")
+
                 label_list = torch.Tensor(label_list).long()
-                self.logger.info(f"[DATASET] video {video_indx} label_list: {label_list.size()}")
-                
                 new_id += 1
                 num=0
                 # TODO: challenge this loop
@@ -300,9 +315,9 @@ class Medical_Dataset(Dataset):
             self.zeros = torch.zeros([video.size(0), self.ctx_length, video.size(2), video.size(3)]).float().to(self.device)
             self.minus_one_tgt = - torch.ones([self.ctx_length,]).long().to(self.device)
 
-        def _compute_stats_cls_counts(self, classes):
+        def _compute_stats_cls_counts(self):
             all_classes_counts = {}
-            lbls = np.array(classes)
+            lbls = np.array(self.classes)
             for cls_id in range(0, len(np.unique(lbls))):
                 all_classes_counts[cls_id] = np.sum(lbls == cls_id)
             assert sum(all_classes_counts.values()) == len(self.df_split), (
@@ -369,9 +384,6 @@ class Medical_Dataset(Dataset):
         def get_video_data(self, video_idx, frame_idx):
             video = self.videos[video_idx]
             video_targets = self.labels[video_idx]
-            if self.eos_regression:
-                eos_values = self.eos_video_target_values[video_idx]
-                print(f"[DATASET] eos_values: {eos_values.shape}")
             # video_next_seg_targets = self.next_segments_class[video_idx]
             print(f"[DATASET] video_idx: {video_idx} (t={frame_idx}) with shape: {video.size()}")
             print(f"[DATASET] video targets: {video_targets.size()}")
@@ -417,13 +429,6 @@ class Medical_Dataset(Dataset):
                 curr_frames_tgt = torch.cat((self.minus_one_tgt[:missing], curr_frames_tgt), 0)
             data_now['curr_frames_tgt'] = curr_frames_tgt.to(self.device).long()
             print(f"[DATASET] curr_frames_tgt: {curr_frames_tgt.size()}")
-
-            if self.eos_regression:
-                curr_eos_values = eos_values[starts: ends: self.frames_per_tokens]
-                if missing > 0:
-                    curr_eos_values = torch.cat((torch.ones(missing), curr_eos_values), 0)
-                data_now['curr_eos_values'] = curr_eos_values.to(self.device)
-                print(f"[DATASET] curr_eos_values: {curr_eos_values.size()}")            
 
             assert curr_frames_tgt.size(0) == self.num_ctx_tokens, f"curr_frames_tgt size not equal to num_ctx_tokens: {curr_frames_tgt.size(0)}"
             

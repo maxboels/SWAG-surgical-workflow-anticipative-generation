@@ -57,7 +57,7 @@ n_head:     4
 ctx_length: 1500
 num_ctx_tokens: 25
 frames_per_token: 60      # equals ctx_length / num_ctx_tokens = frames_per_token
-num_future_tokens: 30     # 30 if frames_per_tokens = 60 elif 60 if frames_per_tokens = 30 (goal is to have 30min anticipation)
+num_max_future_preds: 30     # 30 if frames_per_tokens = 60 elif 60 if frames_per_tokens = 30 (goal is to have 30min anticipation)
 
 # pred_only: {"rec_loss": 0.1, pred_loss: 0.9}
 
@@ -116,7 +116,7 @@ eval:
   batch_size: null  # Will automatically figure out from train if null
   eval_fn:
     _target_: func.train.evaluate
-    num_future_tokens: ${num_future_tokens}
+    num_max_future_preds: ${num_max_future_preds}
     store: false
     store_endpoint: logits
     only_run_featext: false
@@ -161,7 +161,7 @@ model:
       past_sampling_rate: 10
       d_model: ${informer.d_model}
       num_classes: 7
-      num_future_tokens: ${num_future_tokens}
+      num_max_future_preds: ${num_max_future_preds}
       frames_per_token: ${frames_per_token}
       pooling_dim: ${pooling_dim}
       gpt_cfg:
