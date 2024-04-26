@@ -37,7 +37,7 @@ def pil_loader(path):
             return np.array(img.convert('RGB'))
 
 
-def video_end_regression_values(video_length, eos_length=30*60):
+def video_end_regression_values(video_length, eos_length=20*60):
     """ Here, 60 frames is 1/30 of the eos length. And 3 minutes is 1/10 of the eos length.
     """
     values = []
@@ -274,8 +274,8 @@ class Medical_Dataset(Dataset):
                     eos_regression_list = video_end_regression_values(video_length, eos_length=self.eos_time_reg_at_inference)
                     eos_regression_tensor = torch.Tensor(eos_regression_list).to(self.device)
                     self.eos_video_targets.append(eos_regression_tensor)
-                    # plot and save if we reached the last video index
-                    if video_indx == video_indices[-1]:
+                    plot_eos_times = False
+                    if video_indx == video_indices[-1] and plot_eos_times:
                         plt.plot(eos_regression_list)
                         plt.xlabel('Frame number')
                         plt.ylabel('Remaining time')
@@ -432,7 +432,7 @@ class Medical_Dataset(Dataset):
             if self.eos_regression:
                 curr_eos_values = eos_values[starts: ends: self.frames_per_token]
                 if missing > 0:
-                    curr_eos_values = torch.cat((self.ones(missing).float(), curr_eos_values), 0)
+                    curr_eos_values = torch.cat((self.ones[:missing].float(), curr_eos_values), 0)
                 data_now['curr_eos_values'] = curr_eos_values.to(self.device).float()
                 print(f"[DATASET] curr_eos_values: {curr_eos_values.size()}")            
 
@@ -475,7 +475,7 @@ class Medical_Dataset(Dataset):
                     print(f"[DATASET] future_frames_tgt: {torch.arange(starts, ends, self.frames_per_token)}")
                 missing = self.num_future_tokens - future_frames_tgt.size(0)
                 if missing > 0:
-                    future_frames_tgt = torch.cat((future_frames_tgt, -self.ones[:missing]).long(), 0)
+                    future_frames_tgt = torch.cat((future_frames_tgt, -self.ones[:missing].long()), 0)
                 data_now['future_frames_tgt'] = future_frames_tgt.to(self.device).long()
                 print(f"[DATASET] future_frames_tgt: {future_frames_tgt.size()}")
 

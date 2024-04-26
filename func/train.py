@@ -376,6 +376,9 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         video_tgts_preds    = np.full((video_length, max_future_preds), -1)
         video_seg_preds     = np.full((video_length, 1), -1)
         video_tgts_preds_seg = np.full((video_length, 1), -1)
+
+        start_idx = 0
+        end_idx = 0
         
         # eval loop
         for b, data in enumerate(data_loader):
@@ -383,7 +386,6 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
             batch_size = data['video'].shape[0]
             first_frame_idx = data['frame_idx'][0].detach().cpu().numpy()
             curr_frame = data['frame_idx'][-1].detach().cpu().numpy()
-            start_idx = b * batch_size
             end_idx = start_idx + batch_size
 
             with torch.no_grad():
@@ -419,6 +421,9 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                 
                 logger.info(f"[TESTING] video: {video_id} | "
                             f"frame: {curr_frame} / {video_length}")
+
+            # update start index
+            start_idx += batch_size
         
         # Video-level results
 
@@ -479,12 +484,12 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
 
         
         # PLOTTING VIDEO RESULTS (3D (static or animated)
-        plot_vid_ids = [41, 50, 60, 70, 80]
+        plot_vid_ids = [41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 60, 70, 80]
         if video_id in plot_vid_ids and epoch == 1: # starts at 0
             # 2. Qualitative: Visualize targets and predictions for each video
             plot_video_contour_3D(video_frame_preds, video_frame_rec, video_tgts_preds, video_tgts_rec, video_id)
 
-            save_numpy_arrays = True
+            save_numpy_arrays = False
             if save_numpy_arrays:
                 np.save(f"video_frame_rec_{video_id}_ep{epoch}.npy", video_frame_rec)
                 np.save(f"video_tgts_rec_{video_id}_ep{epoch}.npy", video_tgts_rec)
@@ -519,7 +524,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     # PLOTTING
     if all_videos_results["all_videos_mean_acc_future"] > best_acc1:
 
-        future_minutes = 30 # fixed parameter for all experiments
+        future_minutes = 20 # fixed parameter for all experiments
         step_size = future_minutes / max_future_preds
         x_values = np.arange(1, future_minutes+1, step_size).tolist()
 

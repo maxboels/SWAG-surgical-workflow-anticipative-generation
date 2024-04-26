@@ -22,3 +22,7 @@ external/*
 external/*/*
 OUTPUTS/expts/*/local/*.npy
 OUTPUTS/expts/*/local/*.png
+
+external/epic-kitchens-55-annotations
+external/epic-kitchens-100-annotations
+external/rulstm

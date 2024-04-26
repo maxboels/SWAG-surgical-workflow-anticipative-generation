@@ -282,6 +282,7 @@ class R2A2(nn.Module):
         self,
         decoder_type: str = "ar_causal",
         eos_regression: bool = False,
+        fixed_ctx_length: bool = True,
         input_dim: int = 768,
         present_length: int = 20,
         num_ant_queries: int = 20,
@@ -317,7 +318,7 @@ class R2A2(nn.Module):
         self.multiscale = False
         self.use_key_recorder = True
         self.decoder_type = "ar_causal"
-        self.fixed_ctx_length = False
+        self.fixed_ctx_length = fixed_ctx_length
         # -----------------------------------------------------------------------
 
         self.proj_layer = nn.Linear(d_model, gpt_cfg.n_embd)
@@ -485,14 +486,17 @@ class R2A2(nn.Module):
                 next_frames = self.frame_decoder(inputs_embeds=dec_in)
                 iters_time.append(time.time() - start_time) # measure time per iteration
                 next_frame_embed = next_frames.last_hidden_state[:, -1:, :]
-                next_frame_cls = self.next_action_classifier(next_frame_embed)
+                next_frame_cls = self.next_action_classifier(next_frame_embed) # (B, 1, num_classes)
                 frames_cls_preds.append(next_frame_cls)
+
+                # NOTE: if the input sequence becomes longer than the context length used during training
+                # the model will not be confused since the context length is fixed during training.
                 # shift the input sequence by one frame if fixed context length
                 if self.fixed_ctx_length:
                     dec_in = dec_in[:, 1:]
-                dec_in = torch.cat((dec_in, next_frame_embed), dim=1)
+                dec_in = torch.cat((dec_in, next_frame_embed), dim=1) # (B, T, D)
                 print(f"[R2A2] dec_in: {dec_in.shape}")
-            outputs["future_frames"] = torch.cat(frames_cls_preds, dim=1)
+            outputs["future_frames"] = torch.cat(frames_cls_preds, dim=1) # (B, num_future_preds, num_classes)
             outputs["iters_time"] = iters_time
             print(f"[R2A2] future_frames: {outputs['future_frames'].shape}")
             print(f"[R2A2] iters_time: {outputs['iters_time']}")
