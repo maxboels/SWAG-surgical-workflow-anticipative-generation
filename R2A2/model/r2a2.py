@@ -281,6 +281,7 @@ class R2A2(nn.Module):
     def __init__(
         self,
         decoder_type: str = "ar_causal",
+        eos_regression: bool = False,
         input_dim: int = 768,
         present_length: int = 20,
         num_ant_queries: int = 20,
@@ -347,7 +348,10 @@ class R2A2(nn.Module):
 
         # Current Token and EOS Time prediction
         self.curr_frames_classifier = nn.Linear(d_model, num_classes)
-        self.curr_eos_rem_time_reg = nn.Linear(d_model, 1)
+
+        self.eos_regression = eos_regression
+        if self.eos_regression:
+            self.curr_eos_rem_time_reg = nn.Linear(d_model, 1)
         
         # Next Token Prediction
         self.next_action_classifier = nn.Linear(gpt_cfg.n_embd, num_classes) # optional +1 for the EOS (end of sequence token)
@@ -427,9 +431,10 @@ class R2A2(nn.Module):
         outputs["curr_frames"] = curr_frames_cls
 
         # Current EOS Time Prediction
-        curr_eos_rem_time = self.curr_eos_rem_time_reg(enc_out)
-        print(f"[R2A2] curr_eos_rem_time: {curr_eos_rem_time.shape}")
-        outputs["curr_eos_rem_time"] = curr_eos_rem_time
+        if self.eos_regression:
+            curr_eos_rem_time = self.curr_eos_rem_time_reg(enc_out)
+            print(f"[R2A2] curr_eos_rem_time: {curr_eos_rem_time.shape}")
+            outputs["curr_eos_rem_time"] = curr_eos_rem_time
 
 
         if train_mode:
@@ -460,7 +465,6 @@ class R2A2(nn.Module):
             if "curr_eos_rem_time" in outputs:
                 curr_eos_rem_time = outputs["curr_eos_rem_time"]
 
-
                 # TODO: ABLATIONS FOR EOS INFERENCE USAGE
                 # add the distance to current frame to every indices
                 # corr_eos_rem_time = corr_function(curr_eos_rem_time.squeeze().tolist())
@@ -470,6 +474,8 @@ class R2A2(nn.Module):
 
                 num_future_predictions = self.max_future_preds * mean_eos_estim_time
                 print(f"[R2A2] num_future_predictions: {num_future_predictions}")
+            else:
+                num_future_predictions = self.max_future_preds
             
             iters_time = []
             frames_cls_preds = []

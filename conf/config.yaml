@@ -36,6 +36,7 @@ test_end: 81        # last not included
 #        Informer / vocab / n_embd  / n_layer / n_head  /  infromer.decoder   /    Temp. Agg.
 # base:     512  /  100   / 512     /   8     /   8     /   true              /   TokenPooler
 # medium:   512  /  100   / 384     /   4     /   4     /   true              /   TokenPooler
+# sm:       512  /  100   / 384     /   2     /   4     /   true              /   TokenPooler
 # sm (3):   384  /  100   / 384     /   2     /   4     /   true              /   TokenPooler
 # sm (2):   384  /  100   / 256     /   2     /   4     /   true              /   TokenPooler
 # sm (1):   512  /  100   / 384     /   2     /   8     /   false              /  TokenPooler
@@ -46,21 +47,19 @@ test_end: 81        # last not included
 # xxxs:     384  /  100   / 128     /   2     /   2     /   false             /   ...
 informer:
   decoder: true          # default true
-  d_model: 384
+  d_model: 512
 # gpt-2:
 vocab_size: 1000           # base: 100, mv: 1000, lv: 10000
 n_embd:     384
 n_layer:    2
 n_head:     4
-
+# tasks:
+eos_regression: false
 # compression
 ctx_length: 1500
-num_ctx_tokens: 25
-frames_per_token: 60        # equals ctx_length / num_ctx_tokens = frames_per_token
-max_future_preds: 30    # 30 if frames_per_tokens = 60 elif 60 if frames_per_tokens = 30 (goal is to have 30min anticipation)
-
-# pred_only: {"rec_loss": 0.1, pred_loss: 0.9}
-
+num_ctx_tokens: 50
+frames_per_token: 30        # equals ctx_length / num_ctx_tokens = frames_per_token
+max_future_preds: 40        # 30 if frames_per_tokens = 60 elif 60 if frames_per_tokens = 30 (goal is to have 30min anticipation)
 
 
 # ---------------------- end select params ----------------------------
@@ -155,6 +154,7 @@ model:
     r2a2_model:
       _target_: R2A2.model.r2a2.R2A2
       decoder_type: ar_causal
+      eos_regression: ${eos_regression}
       input_dim: 768
       present_length: 20
       num_ant_queries: 6

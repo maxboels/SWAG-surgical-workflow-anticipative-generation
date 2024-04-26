@@ -21,3 +21,4 @@ OUTPUTS/expts/*/local/per_video_ep*.json
 external/*
 external/*/*
 OUTPUTS/expts/*/local/*.npy
+OUTPUTS/expts/*/local/*.png

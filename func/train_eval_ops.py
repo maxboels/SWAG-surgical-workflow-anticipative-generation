@@ -94,8 +94,6 @@ class BasicLossAccuracy(nn.Module):
             elif key == "curr_eos_values":
                 losses[key + '_loss'] = self.ce_loss_fn_curr_eos(outputs[key], targets[key]).mean() * 0.2
                 print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
-
-            
         
         # total loss
         losses['total_loss'] = torch.sum(torch.stack([losses[key + '_loss'] for key in outputs.keys()]))

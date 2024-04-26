@@ -61,6 +61,7 @@ from R2A2.eval.plot_segments.plot_values import plot_maxpooled_videos
 from R2A2.eval.seg_eval import MetricsSegments
 from R2A2.eval.plot_segments.plot_video import plot_video_segments
 from R2A2.eval.plot_metrics import plot_figure, plot_box_plot_figure, plot_cumulative_time
+from R2A2.eval.plot_video_3D import plot_video_contour_3D
 
 
 #--maxence boels- debugging cuda error
@@ -478,7 +479,11 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
 
         
         # PLOTTING VIDEO RESULTS (3D (static or animated)
-        if video_id == best_video_idx and epoch == 1:
+        plot_vid_ids = [41, 50, 60, 70, 80]
+        if video_id in plot_vid_ids and epoch == 1: # starts at 0
+            # 2. Qualitative: Visualize targets and predictions for each video
+            plot_video_contour_3D(video_frame_preds, video_frame_rec, video_tgts_preds, video_tgts_rec, video_id)
+
             save_numpy_arrays = True
             if save_numpy_arrays:
                 np.save(f"video_frame_rec_{video_id}_ep{epoch}.npy", video_frame_rec)
@@ -486,10 +491,6 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                 np.save(f"video_frame_preds_{video_id}_ep{epoch}.npy", video_frame_preds)
                 np.save(f"video_tgts_preds_{video_id}_ep{epoch}.npy", video_tgts_preds)
                 logger.info(f"[TESTING] video: {video_id} saved numpy arrays")
-
-            # video_plotter = get_plotter(plotter_name="3D_box_surface")
-            # video_plotter(video_frame_rec, video_tgts_rec, video_frame_preds, video_tgts_preds, video_id,
-            #               title=f"Video {video_id} Epoch {epoch} F.Acc. {mean_acc_future_frames} - Unchained Predictions") 
             
     # keep time dimension over all videos
     all_videos_mean_acc_future_t       = np.round(np.nanmean(all_videos_acc_future, axis=0), decimals=4).tolist()
@@ -546,8 +547,6 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         
         # Inference time for deployment at 1fps
         plot_cumulative_time(all_videos_results["mean_cum_iter_time"])
-
-        # 2. Qualitative: Visualize targets and predictions for each video
 
     accuracies = {
         "acc_cur": all_videos_results["all_videos_mean_acc_curr"],
