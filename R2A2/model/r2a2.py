@@ -21,12 +21,12 @@ def corr_function(pred_values, eos_length=30*60):
     return corrected_values
 
 class TokenPoolerCumMax(nn.Module):
-    def __init__(self, dim: int = 512, pooling_dim: int = 64, frames_per_token: int = 60, 
+    def __init__(self, dim: int = 512, pooling_dim: int = 64, anticip_time: int = 60, 
                  relu_norm: bool = True, **kwargs):
         super().__init__()
         self.dim = dim
         self.pooling_dim = pooling_dim
-        self.frames_per_token = frames_per_token
+        self.anticip_time = anticip_time
         
         if relu_norm:
             self.linear_reduction = nn.Sequential(
@@ -48,8 +48,8 @@ class TokenPoolerCumMax(nn.Module):
     
     def forward(self, x):
         batch_size, seq_len, _ = x.size()
-        num_ctx_tokens = seq_len // self.frames_per_token
-        x = x.view(batch_size, num_ctx_tokens, self.frames_per_token, self.dim)
+        num_ctx_tokens = seq_len // self.anticip_time
+        x = x.view(batch_size, num_ctx_tokens, self.anticip_time, self.dim)
         x = self.linear_reduction(x)
         x, _ = torch.max(x, dim=2)
         x = self.linear_expand(x)
@@ -289,8 +289,8 @@ class R2A2(nn.Module):
         past_sampling_rate: int = 10,
         d_model: int = 512,
         num_classes: int = 7,
-        max_future_preds: int = 30,
-        frames_per_token: int = 60,
+        max_anticip_time: int = 30,
+        anticip_time: int = 60,
         pooling_dim: int = 64,
         gpt_cfg: dict = None,
         key_recorder: TargetConf = None,
@@ -306,8 +306,8 @@ class R2A2(nn.Module):
         self.d_model = d_model
         self.present_length = present_length
         self.past_sampling_rate = past_sampling_rate
-        self.max_future_preds = max_future_preds     # 60 if 30 frames per tokens to get 30 minutes
-        self.frames_per_token = frames_per_token
+        self.max_anticip_time = max_anticip_time     # 60 if 30 frames per tokens to get 30 minutes
+        self.anticip_time = anticip_time
 
 
         # other params
@@ -337,7 +337,7 @@ class R2A2(nn.Module):
         self.fusion_head1 = hydra.utils.instantiate(fusion_head, _recursive_=False)
 
         if self.pooling_method == "cum_max":
-            self.tokens_pooler = TokenPoolerCumMax(dim=d_model, pooling_dim=pooling_dim, frames_per_token=self.frames_per_token,
+            self.tokens_pooler = TokenPoolerCumMax(dim=d_model, pooling_dim=pooling_dim, anticip_time=self.anticip_time,
                                                    relu_norm=self.relu_norm)
         elif self.pooling_method == "top_k":
             self.tokens_pooler = TokenPoolerTopK(dim=d_model, pooling_dim=pooling_dim, top_k=50, relu_norm=self.relu_norm)
@@ -417,7 +417,7 @@ class R2A2(nn.Module):
         if lt_pooling == "key_recorder":
             enc_out_local = enc_out[:, -self.present_length:]
         elif lt_pooling == "token_pooling":
-            enc_out_local = enc_out[:, self.frames_per_token-1:enc_out.size(1):self.frames_per_token, :]
+            enc_out_local = enc_out[:, self.anticip_time-1:enc_out.size(1):self.anticip_time, :]
         print(f"[R2A2] enc_out_local: {enc_out_local.shape}")
         
         # Fusion Head (skip connection + linear layer)
@@ -473,10 +473,11 @@ class R2A2(nn.Module):
                 # mean over batch for more stable estimation (1fps)
                 mean_eos_estim_time = curr_eos_rem_time.mean().item()
 
-                num_future_predictions = self.max_future_preds * mean_eos_estim_time
+                max_num_steps = self.max_anticip_time / self.anticip_time
+                num_future_predictions = max_num_steps * mean_eos_estim_time
                 print(f"[R2A2] num_future_predictions: {num_future_predictions}")
             else:
-                num_future_predictions = self.max_future_preds
+                num_future_predictions = max_num_steps
             
             iters_time = []
             frames_cls_preds = []

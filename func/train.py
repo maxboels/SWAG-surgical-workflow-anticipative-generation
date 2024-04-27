@@ -337,9 +337,15 @@ def check_numpy_to_list(dictionay):
             print(f"converted {key} np.ndarray to list")
     return dictionay
 
-def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_writer, logger, epoch: float, max_future_preds: int, 
+def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_writer, logger, epoch: float,
+            anticip_time: int,
+            max_anticip_time: int, 
              store=False, store_endpoint='logits', only_run_featext=False,
              best_acc1=0.0,):
+    
+    step_size = max_anticip_time / anticip_time
+    max_num_preds = int(max_anticip_time / step_size)
+    x_values = np.arange(1, max_anticip_time+1, step_size).tolist()
 
     model.eval()
     # -----------------select params----------------- #
@@ -372,8 +378,8 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         # init new video buffers
         video_frame_rec     = np.full((video_length, 1), -1)
         video_tgts_rec      = np.full((video_length, 1), -1)
-        video_frame_preds   = np.full((video_length, max_future_preds), -1)
-        video_tgts_preds    = np.full((video_length, max_future_preds), -1)
+        video_frame_preds   = np.full((video_length, max_num_preds), -1)
+        video_tgts_preds    = np.full((video_length, max_num_preds), -1)
         video_seg_preds     = np.full((video_length, 1), -1)
         video_tgts_preds_seg = np.full((video_length, 1), -1)
 
@@ -523,11 +529,6 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
 
     # PLOTTING
     if all_videos_results["all_videos_mean_acc_future"] > best_acc1:
-
-        future_minutes = 20 # fixed parameter for all experiments
-        step_size = future_minutes / max_future_preds
-        x_values = np.arange(1, future_minutes+1, step_size).tolist()
-
         # plot the mean accuracy over the videos
         y_values = {"Cholec80": all_videos_mean_acc_future_t}
         plot_figure(x_values, y_values,
