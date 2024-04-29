@@ -125,16 +125,17 @@ class Medical_Dataset(Dataset):
             self.project_path = "/nfs/home/mboels/projects/SKiT_video_augmentation"
             #-----------------select arguments-----------------
             self.debug = False
-            self.dataset_name = dataset_name                                # autolaparo21, cholec80, cholect50
-            self.num_classes = 7                                            # AutoLapro: 7, Cholec80: 7
+            self.dataset_name = dataset_name                                        # autolaparo21, cholec80, cholect50
+            self.num_classes = 7                                                    # AutoLapro: 7, Cholec80: 7
             self.attn_window_size = 20
-            self.ctx_length = cfg.ctx_length                                # 3000 or 1500 frames
-            self.num_ctx_tokens = cfg.num_ctx_tokens                        # Compression Tokens: 100 or 50 tokens for curr and next frames
-            self.num_future_tokens = cfg.max_future_preds                  # 60 or 30 tokens (num auto-regressive steps)
-            self.frames_per_token = cfg.frames_per_token                  # 50 or 25 frames per token
+            self.ctx_length = cfg.ctx_length                                        # 3000 or 1500 frames
+            self.num_ctx_tokens = int(cfg.ctx_length/cfg.anticip_time)                 # Compression Tokens: 100 or 50 tokens for curr and next frames
+            self.anticip_time = cfg.anticip_time                                    # 50 or 25 frames per token
+            self.num_future_tokens = int((cfg.max_anticip_time * 60) / cfg.anticip_time)   # 60 or 30 tokens (num auto-regressive steps)
             # new approach
             self.eos_regression = cfg.eos_regression
-            self.eos_time_reg_at_inference = cfg.max_future_preds * cfg.frames_per_token
+            self.eos_reg_length = int(self.num_future_tokens/4) * cfg.anticip_time + 1 # 30m * 180s = 5400 frames
+            self.plot_eos_times = False     # TODO: Use Gaussian
             #----------------- end select arguments-----------------
             self.reduc_feats_folder = "train_targets_x_mp/"
             self.num_next_labels = 6
@@ -197,6 +198,7 @@ class Medical_Dataset(Dataset):
             print(f"[DATASET] {train_mode} video_indices: {video_indices}")
             self.logger.info(f"[DATASET] {train_mode} size: {len(self.df_split)}")
             self.logger.info(f"[DATASET] {train_mode} video_indices: {video_indices}")
+            self.logger.info(f"[DATASET] EOS regression: {self.eos_regression} with length: {self.eos_reg_length}")
 
             self.frame_indices = []
             self.video_idx = []
@@ -223,7 +225,7 @@ class Medical_Dataset(Dataset):
                 self.logger.info(f"[DATASET] curr_class_weights: {self.class_weights}")
 
                 # NEXT CLASS WEIGHTS
-                # num_eos_values = calculate_total_padded_values(classes, self.frames_fps, self.frames_per_token, self.num_future_tokens)
+                # num_eos_values = calculate_total_padded_values(classes, self.frames_fps, self.anticip_time, self.num_future_tokens)
                 # self.logger.info(f"[DATASET] num_eos_values: {num_eos_values}")
                 # print(f"[DATASET] num_eos_values: {num_eos_values}")
                 # unique_elements, counts = np.unique(example_array, return_counts=True)
@@ -271,11 +273,10 @@ class Medical_Dataset(Dataset):
 
                 #-----------------mb added-----------------
                 if self.eos_regression:
-                    eos_regression_list = video_end_regression_values(video_length, eos_length=self.eos_time_reg_at_inference)
+                    eos_regression_list = video_end_regression_values(video_length, eos_length=self.eos_reg_length)
                     eos_regression_tensor = torch.Tensor(eos_regression_list).to(self.device)
                     self.eos_video_targets.append(eos_regression_tensor)
-                    plot_eos_times = False
-                    if video_indx == video_indices[-1] and plot_eos_times:
+                    if video_indx == video_indices[-1] and self.plot_eos_times:
                         plt.plot(eos_regression_list)
                         plt.xlabel('Frame number')
                         plt.ylabel('Remaining time')
@@ -409,32 +410,33 @@ class Medical_Dataset(Dataset):
             # CURRENT FRAMES TARGETS
             if self.curr_frames_tgt == "global":
                 ends = frame_idx + 1
-                remainder = frame_idx  % self.frames_per_token
+                remainder = frame_idx  % self.anticip_time
                 # the target is the last frame in the attn window
-                starts = max(remainder, frame_idx - self.ctx_length + 1*self.frames_per_token)
+                starts = max(remainder, frame_idx - self.ctx_length + self.anticip_time)
             elif self.curr_frames_tgt == "local":
-                # self.frames_per_token = 1
+                # self.anticip_time = 1
                 self.num_ctx_tokens = self.attn_window_size
                 ends = frame_idx +1
                 starts = max(0, frame_idx - self.attn_window_size)
             else:
                 raise ValueError("curr_frames_tgt not found")
             print(f"[DATASET] curr_frames_tgt starts: {starts} ends: {ends}")
-            curr_frames_tgt = video_targets[starts: ends: self.frames_per_token].to(self.device)
+            curr_frames_tgt = video_targets[starts: ends: self.anticip_time].to(self.device)
             print(f"[DATASET] curr_frames_tgt: {curr_frames_tgt.size()}")
-            print(f"[DATASET] curr_frames_tgt: {torch.arange(starts, ends, self.frames_per_token)}")
+            print(f"[DATASET] curr_frames_tgt: {torch.arange(starts, ends, self.anticip_time)}")
             missing = self.num_ctx_tokens - curr_frames_tgt.size(0)
+            print(f"[DATASET] missing: {missing}")
             if missing > 0:
                 curr_frames_tgt = torch.cat(( -self.ones[:missing].long(), curr_frames_tgt), 0)
             data_now['curr_frames_tgt'] = curr_frames_tgt.to(self.device).long()
             print(f"[DATASET] curr_frames_tgt: {curr_frames_tgt.size()}")
 
             if self.eos_regression:
-                curr_eos_values = eos_values[starts: ends: self.frames_per_token]
+                curr_eos_values = eos_values[starts: ends: self.anticip_time]
                 if missing > 0:
                     curr_eos_values = torch.cat((self.ones[:missing].float(), curr_eos_values), 0)
-                data_now['curr_eos_values'] = curr_eos_values.to(self.device).float()
-                print(f"[DATASET] curr_eos_values: {curr_eos_values.size()}")            
+                data_now['curr_time2eos_tgt'] = curr_eos_values.to(self.device).float()
+                print(f"[DATASET] curr_time2eos_tgt: {curr_eos_values.size()}")
 
             assert curr_frames_tgt.size(0) == self.num_ctx_tokens, f"curr_frames_tgt size not equal to num_ctx_tokens: {curr_frames_tgt.size(0)}"
             
@@ -442,20 +444,20 @@ class Medical_Dataset(Dataset):
 
                 # NEXT FRAMES TARGETS (SHIFTED BY 2x Window size or 2x Frames per tokens)
                 if self.next_frames_tgt=="global":
-                    ends = frame_idx + self.frames_per_token + 1
-                    start_offset = frame_idx  % self.frames_per_token
-                    starts = max(start_offset, frame_idx - self.ctx_length + 2*self.frames_per_token)
+                    ends = frame_idx + self.anticip_time + 1
+                    start_offset = frame_idx  % self.anticip_time
+                    starts = max(start_offset, frame_idx - self.ctx_length + (2*self.anticip_time))
                 elif self.next_frames_tgt=="local":
                     starts = max(0, frame_idx - self.attn_window_size)
                     ends = frame_idx
-                    # self.frames_per_token = 1
+                    # self.anticip_time = 1
                     self.num_ctx_tokens = self.attn_window_size
                 else:
                     raise ValueError("next_frames_tgt not found")
                 print(f"[DATASET] next_frames_tgt starts: {starts} ends: {ends}")
-                next_frames_tgt = video_targets[starts: ends: self.frames_per_token].to(self.device)
+                next_frames_tgt = video_targets[starts: ends: self.anticip_time].to(self.device)
                 print(f"[DATASET] next_frames_tgt: {next_frames_tgt.size()}")
-                print(f"[DATASET] next_frames_tgt: {torch.arange(starts, ends, self.frames_per_token)}")
+                print(f"[DATASET] next_frames_tgt: {torch.arange(starts, ends, self.anticip_time)}")
                 missing = self.num_ctx_tokens - next_frames_tgt.size(0)
                 if missing > 0:
                     next_frames_tgt = torch.cat(( -self.ones[:missing].long(), next_frames_tgt), 0)
@@ -468,11 +470,12 @@ class Medical_Dataset(Dataset):
             else:
 
                 # FUTURE FRAMES TARGETS (SHIFTED BY WINDOW SIZE FROM CURRENT FRAME)
-                starts = frame_idx + self.frames_per_token
-                ends = min(video_targets.size(0), starts + (self.num_future_tokens * self.frames_per_token))
-                future_frames_tgt = video_targets[starts: ends: self.frames_per_token].to(self.device)
+                starts = frame_idx + self.anticip_time
+                ends = min(video_targets.size(0), starts + (self.num_future_tokens * self.anticip_time))
+                print(f"[DATASET] future_frames_tgt starts: {starts} ends: {ends}, anticip_time: {self.anticip_time}")
+                future_frames_tgt = video_targets[starts: ends: self.anticip_time].to(self.device)
                 if starts < ends:
-                    print(f"[DATASET] future_frames_tgt: {torch.arange(starts, ends, self.frames_per_token)}")
+                    print(f"[DATASET] future_frames_tgt: {torch.arange(starts, ends, self.anticip_time)}")
                 missing = self.num_future_tokens - future_frames_tgt.size(0)
                 if missing > 0:
                     future_frames_tgt = torch.cat((future_frames_tgt, -self.ones[:missing].long()), 0)

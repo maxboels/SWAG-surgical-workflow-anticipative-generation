@@ -59,8 +59,10 @@ eos_regression: false
 # compression
 ctx_length: 1500            # 1500s = 25min, 3000s = 50min (avg video is 34min)
 # NOTE: we need long anticipation time to increase the number of transition samples for predicting transitions at inference.
-anticip_time: 30            # 30s / 60s / 120s / 240s / 300s / 600s (10min)
-max_anticip_time: 20        # inference maximum duration (minutes)
+anticip_time: 60            # training: 30s / 60s / 120s / 240s / 300s / 600s (10min)
+max_anticip_time: 20        # inference: maximum duration (minutes)
+# losses
+feature_loss: false         # default false
 
 
 # ---------------------- end select params ----------------------------
@@ -155,6 +157,7 @@ model:
     _target_: models.future_prediction.AVTh
     r2a2_model:
       _target_: R2A2.model.r2a2.R2A2
+      feature_loss: ${feature_loss}
       decoder_type: ar_causal
       eos_regression: ${eos_regression}
       input_dim: 768

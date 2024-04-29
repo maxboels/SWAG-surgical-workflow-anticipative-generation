@@ -74,8 +74,9 @@ class BasicLossAccuracy(nn.Module):
         accuracies = {}
 
         for key in outputs:
-            print(f"[LOSS] output ({key}): {outputs[key].shape}")
-            print(f"[LOSS] target ({key}): {targets[key].shape}")
+            print(f"[LOSS] {key} output: {outputs[key].shape}")
+            if key in targets:
+                print(f"[LOSS] {key} target: {targets[key].shape}")
 
             if key == 'curr_frames':
                 losses[key + '_loss'] = self.ce_loss_fn_curr(outputs[key].permute(0, 2, 1), targets[key]).mean() * 0.4
@@ -91,9 +92,16 @@ class BasicLossAccuracy(nn.Module):
                 accuracies[key + '_acc'] = seq_accuracy_nans(outputs[key], targets[key])
                 print(f"[LOSS] {key}_acc: {accuracies[key + '_acc']}")
             
-            elif key == "curr_eos_values":
-                losses[key + '_loss'] = self.ce_loss_fn_curr_eos(outputs[key], targets[key]).mean() * 0.2
+            elif key == "curr_time2eos":
+                losses[key + '_loss'] = self.ce_loss_fn_curr_eos(outputs[key].squeeze(-1), targets[key]).mean() * 0.2
                 print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
+            
+            elif key == "feature_loss":
+                losses[key + '_loss'] = outputs[key].mean() * 0.2
+                print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
+
+            else:
+                raise ValueError(f"Unknown key: {key}")
         
         # total loss
         losses['total_loss'] = torch.sum(torch.stack([losses[key + '_loss'] for key in outputs.keys()]))
@@ -152,6 +160,8 @@ class Basic:
         
         if train_mode:
             for key in outputs.keys():
+                if key == "feature_loss":
+                    pass
                 targets[key] = data[key+'_tgt']
             losses, accs = self.cls_loss_acc_fn(outputs, targets)
         else:

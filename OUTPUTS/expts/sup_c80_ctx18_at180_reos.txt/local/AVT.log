@@ -1,0 +1,1164 @@
+[2024-04-29 11:49:19,635][func.train][INFO] - Dist info:
+[2024-04-29 11:49:19,636][func.train][INFO] - torch version: 2.2.2+cu121
+[2024-04-29 11:49:19,636][func.train][INFO] - torchvision version: 0.17.2+cu121
+[2024-04-29 11:49:19,636][func.train][INFO] - hydra version: 1.3.2
+[2024-04-29 11:49:19,640][func.train][INFO] - Loading data
+[2024-04-29 11:49:19,641][func.train][INFO] - Loading datasets
+[2024-04-29 11:49:22,357][func.train][INFO] - [DATASET] ALL loaded dataframe in 0m 3s
+[2024-04-29 11:49:22,357][func.train][INFO] - [DATASET] ALL loaded dataframe: (4612530, 11)
+[2024-04-29 11:49:31,596][func.train][INFO] - [DATASET] params: {'debug': False, 'dataset_name': 'cholec80', 'reduc_feats_folder': 'train_targets_x_mp/', 'num_classes': 7, 'num_next_labels': 6, 'last_seg_class': 7, 'predict_next_phase': True, 'get_target_feats': False, 'replace_current_with_next_class': False}
+[2024-04-29 11:51:22,563][func.train][INFO] - [DATASET] train size: 2157640
+[2024-04-29 11:51:22,564][func.train][INFO] - [DATASET] train video_indices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
+[2024-04-29 11:51:22,564][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:51:22,649][func.train][INFO] - [DATASET] Sampling video_idx: 1 at 25 fps to 1733 frames
+[2024-04-29 11:51:22,902][func.train][INFO] - [DATASET] video 1 label_list: torch.Size([1733])
+[2024-04-29 11:51:23,079][func.train][INFO] - [DATASET] Sampling video_idx: 2 at 25 fps to 2839 frames
+[2024-04-29 11:51:23,081][func.train][INFO] - [DATASET] video 2 label_list: torch.Size([2839])
+[2024-04-29 11:51:23,209][func.train][INFO] - [DATASET] Sampling video_idx: 3 at 25 fps to 5828 frames
+[2024-04-29 11:51:23,211][func.train][INFO] - [DATASET] video 3 label_list: torch.Size([5828])
+[2024-04-29 11:51:23,319][func.train][INFO] - [DATASET] Sampling video_idx: 4 at 25 fps to 1522 frames
+[2024-04-29 11:51:23,320][func.train][INFO] - [DATASET] video 4 label_list: torch.Size([1522])
+[2024-04-29 11:51:23,421][func.train][INFO] - [DATASET] Sampling video_idx: 5 at 25 fps to 2344 frames
+[2024-04-29 11:51:23,422][func.train][INFO] - [DATASET] video 5 label_list: torch.Size([2344])
+[2024-04-29 11:51:23,529][func.train][INFO] - [DATASET] Sampling video_idx: 6 at 25 fps to 2153 frames
+[2024-04-29 11:51:23,531][func.train][INFO] - [DATASET] video 6 label_list: torch.Size([2153])
+[2024-04-29 11:51:23,687][func.train][INFO] - [DATASET] Sampling video_idx: 7 at 25 fps to 4557 frames
+[2024-04-29 11:51:23,689][func.train][INFO] - [DATASET] video 7 label_list: torch.Size([4557])
+[2024-04-29 11:51:23,796][func.train][INFO] - [DATASET] Sampling video_idx: 8 at 25 fps to 1519 frames
+[2024-04-29 11:51:23,797][func.train][INFO] - [DATASET] video 8 label_list: torch.Size([1519])
+[2024-04-29 11:51:23,925][func.train][INFO] - [DATASET] Sampling video_idx: 9 at 25 fps to 2702 frames
+[2024-04-29 11:51:23,927][func.train][INFO] - [DATASET] video 9 label_list: torch.Size([2702])
+[2024-04-29 11:51:24,030][func.train][INFO] - [DATASET] Sampling video_idx: 10 at 25 fps to 1749 frames
+[2024-04-29 11:51:24,031][func.train][INFO] - [DATASET] video 10 label_list: torch.Size([1749])
+[2024-04-29 11:51:24,138][func.train][INFO] - [DATASET] Sampling video_idx: 11 at 25 fps to 3220 frames
+[2024-04-29 11:51:24,139][func.train][INFO] - [DATASET] video 11 label_list: torch.Size([3220])
+[2024-04-29 11:51:24,253][func.train][INFO] - [DATASET] Sampling video_idx: 12 at 25 fps to 1090 frames
+[2024-04-29 11:51:24,254][func.train][INFO] - [DATASET] video 12 label_list: torch.Size([1090])
+[2024-04-29 11:51:24,369][func.train][INFO] - [DATASET] Sampling video_idx: 13 at 25 fps to 981 frames
+[2024-04-29 11:51:24,370][func.train][INFO] - [DATASET] video 13 label_list: torch.Size([981])
+[2024-04-29 11:51:24,518][func.train][INFO] - [DATASET] Sampling video_idx: 14 at 25 fps to 1708 frames
+[2024-04-29 11:51:24,519][func.train][INFO] - [DATASET] video 14 label_list: torch.Size([1708])
+[2024-04-29 11:51:24,620][func.train][INFO] - [DATASET] Sampling video_idx: 15 at 25 fps to 2058 frames
+[2024-04-29 11:51:24,621][func.train][INFO] - [DATASET] video 15 label_list: torch.Size([2058])
+[2024-04-29 11:51:24,720][func.train][INFO] - [DATASET] Sampling video_idx: 16 at 25 fps to 2957 frames
+[2024-04-29 11:51:24,722][func.train][INFO] - [DATASET] video 16 label_list: torch.Size([2957])
+[2024-04-29 11:51:24,829][func.train][INFO] - [DATASET] Sampling video_idx: 17 at 25 fps to 1304 frames
+[2024-04-29 11:51:24,829][func.train][INFO] - [DATASET] video 17 label_list: torch.Size([1304])
+[2024-04-29 11:51:24,925][func.train][INFO] - [DATASET] Sampling video_idx: 18 at 25 fps to 1942 frames
+[2024-04-29 11:51:24,926][func.train][INFO] - [DATASET] video 18 label_list: torch.Size([1942])
+[2024-04-29 11:51:25,022][func.train][INFO] - [DATASET] Sampling video_idx: 19 at 25 fps to 2424 frames
+[2024-04-29 11:51:25,023][func.train][INFO] - [DATASET] video 19 label_list: torch.Size([2424])
+[2024-04-29 11:51:25,127][func.train][INFO] - [DATASET] Sampling video_idx: 20 at 25 fps to 1449 frames
+[2024-04-29 11:51:25,128][func.train][INFO] - [DATASET] video 20 label_list: torch.Size([1449])
+[2024-04-29 11:51:25,237][func.train][INFO] - [DATASET] Sampling video_idx: 21 at 25 fps to 1258 frames
+[2024-04-29 11:51:25,238][func.train][INFO] - [DATASET] video 21 label_list: torch.Size([1258])
+[2024-04-29 11:51:25,333][func.train][INFO] - [DATASET] Sampling video_idx: 22 at 25 fps to 1532 frames
+[2024-04-29 11:51:25,334][func.train][INFO] - [DATASET] video 22 label_list: torch.Size([1532])
+[2024-04-29 11:51:25,426][func.train][INFO] - [DATASET] Sampling video_idx: 23 at 25 fps to 1635 frames
+[2024-04-29 11:51:25,427][func.train][INFO] - [DATASET] video 23 label_list: torch.Size([1635])
+[2024-04-29 11:51:25,532][func.train][INFO] - [DATASET] Sampling video_idx: 24 at 25 fps to 1975 frames
+[2024-04-29 11:51:25,533][func.train][INFO] - [DATASET] video 24 label_list: torch.Size([1975])
+[2024-04-29 11:51:25,636][func.train][INFO] - [DATASET] Sampling video_idx: 25 at 25 fps to 2129 frames
+[2024-04-29 11:51:25,638][func.train][INFO] - [DATASET] video 25 label_list: torch.Size([2129])
+[2024-04-29 11:51:25,741][func.train][INFO] - [DATASET] Sampling video_idx: 26 at 25 fps to 1773 frames
+[2024-04-29 11:51:25,742][func.train][INFO] - [DATASET] video 26 label_list: torch.Size([1773])
+[2024-04-29 11:51:25,838][func.train][INFO] - [DATASET] Sampling video_idx: 27 at 25 fps to 2084 frames
+[2024-04-29 11:51:25,839][func.train][INFO] - [DATASET] video 27 label_list: torch.Size([2084])
+[2024-04-29 11:51:25,928][func.train][INFO] - [DATASET] Sampling video_idx: 28 at 25 fps to 1199 frames
+[2024-04-29 11:51:25,929][func.train][INFO] - [DATASET] video 28 label_list: torch.Size([1199])
+[2024-04-29 11:51:26,022][func.train][INFO] - [DATASET] Sampling video_idx: 29 at 25 fps to 2350 frames
+[2024-04-29 11:51:26,023][func.train][INFO] - [DATASET] video 29 label_list: torch.Size([2350])
+[2024-04-29 11:51:26,122][func.train][INFO] - [DATASET] Sampling video_idx: 30 at 25 fps to 2925 frames
+[2024-04-29 11:51:26,124][func.train][INFO] - [DATASET] video 30 label_list: torch.Size([2925])
+[2024-04-29 11:51:26,238][func.train][INFO] - [DATASET] Sampling video_idx: 31 at 25 fps to 3945 frames
+[2024-04-29 11:51:26,239][func.train][INFO] - [DATASET] video 31 label_list: torch.Size([3945])
+[2024-04-29 11:51:26,344][func.train][INFO] - [DATASET] Sampling video_idx: 32 at 25 fps to 2116 frames
+[2024-04-29 11:51:26,345][func.train][INFO] - [DATASET] video 32 label_list: torch.Size([2116])
+[2024-04-29 11:51:26,441][func.train][INFO] - [DATASET] Sampling video_idx: 33 at 25 fps to 1307 frames
+[2024-04-29 11:51:26,442][func.train][INFO] - [DATASET] video 33 label_list: torch.Size([1307])
+[2024-04-29 11:51:26,536][func.train][INFO] - [DATASET] Sampling video_idx: 34 at 25 fps to 1323 frames
+[2024-04-29 11:51:26,537][func.train][INFO] - [DATASET] video 34 label_list: torch.Size([1323])
+[2024-04-29 11:51:26,632][func.train][INFO] - [DATASET] Sampling video_idx: 35 at 25 fps to 2106 frames
+[2024-04-29 11:51:26,633][func.train][INFO] - [DATASET] video 35 label_list: torch.Size([2106])
+[2024-04-29 11:51:26,727][func.train][INFO] - [DATASET] Sampling video_idx: 36 at 25 fps to 2387 frames
+[2024-04-29 11:51:26,728][func.train][INFO] - [DATASET] video 36 label_list: torch.Size([2387])
+[2024-04-29 11:51:26,818][func.train][INFO] - [DATASET] Sampling video_idx: 37 at 25 fps to 1232 frames
+[2024-04-29 11:51:26,819][func.train][INFO] - [DATASET] video 37 label_list: torch.Size([1232])
+[2024-04-29 11:51:26,922][func.train][INFO] - [DATASET] Sampling video_idx: 38 at 25 fps to 3080 frames
+[2024-04-29 11:51:26,924][func.train][INFO] - [DATASET] video 38 label_list: torch.Size([3080])
+[2024-04-29 11:51:27,021][func.train][INFO] - [DATASET] Sampling video_idx: 39 at 25 fps to 1647 frames
+[2024-04-29 11:51:27,022][func.train][INFO] - [DATASET] video 39 label_list: torch.Size([1647])
+[2024-04-29 11:51:27,119][func.train][INFO] - [DATASET] Sampling video_idx: 40 at 25 fps to 2222 frames
+[2024-04-29 11:51:27,120][func.train][INFO] - [DATASET] video 40 label_list: torch.Size([2222])
+[2024-04-29 11:51:27,125][func.train][INFO] - [DATASET] number of train videos: 40
+[2024-04-29 11:51:27,125][func.train][INFO] - [DATASET] avg video length: 35.96 minutes
+[2024-04-29 11:51:35,730][func.train][INFO] - [DATASET] classes_counts: {0: 93902, 1: 922150, 2: 183225, 3: 602975, 4: 92900, 5: 180478, 6: 82010}
+[2024-04-29 11:51:35,732][func.train][INFO] - [DATASET] curr_class_weights: tensor([0.3342, 1.6821, 0.5112, 3.3171, 1.7077, 3.7575, 3.2818])
+[2024-04-29 11:51:37,215][func.train][INFO] - [DATASET] test size: 77576
+[2024-04-29 11:51:37,215][func.train][INFO] - [DATASET] test video_indices: [41]
+[2024-04-29 11:51:37,215][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:51:37,228][func.train][INFO] - [DATASET] Sampling video_idx: 41 at 25 fps to 3103 frames
+[2024-04-29 11:51:37,229][func.train][INFO] - [DATASET] video 41 label_list: torch.Size([3103])
+[2024-04-29 11:51:37,236][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:51:37,236][func.train][INFO] - [DATASET] avg video length: 51.72 minutes
+[2024-04-29 11:51:38,682][func.train][INFO] - [DATASET] test size: 92801
+[2024-04-29 11:51:38,682][func.train][INFO] - [DATASET] test video_indices: [42]
+[2024-04-29 11:51:38,682][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:51:38,697][func.train][INFO] - [DATASET] Sampling video_idx: 42 at 25 fps to 3712 frames
+[2024-04-29 11:51:38,699][func.train][INFO] - [DATASET] video 42 label_list: torch.Size([3712])
+[2024-04-29 11:51:38,708][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:51:38,708][func.train][INFO] - [DATASET] avg video length: 61.87 minutes
+[2024-04-29 11:51:40,213][func.train][INFO] - [DATASET] test size: 59051
+[2024-04-29 11:51:40,214][func.train][INFO] - [DATASET] test video_indices: [43]
+[2024-04-29 11:51:40,214][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:51:40,223][func.train][INFO] - [DATASET] Sampling video_idx: 43 at 25 fps to 2362 frames
+[2024-04-29 11:51:40,225][func.train][INFO] - [DATASET] video 43 label_list: torch.Size([2362])
+[2024-04-29 11:51:40,229][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:51:40,229][func.train][INFO] - [DATASET] avg video length: 39.37 minutes
+[2024-04-29 11:51:41,740][func.train][INFO] - [DATASET] test size: 78176
+[2024-04-29 11:51:41,741][func.train][INFO] - [DATASET] test video_indices: [44]
+[2024-04-29 11:51:41,741][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:51:41,753][func.train][INFO] - [DATASET] Sampling video_idx: 44 at 25 fps to 3127 frames
+[2024-04-29 11:51:41,754][func.train][INFO] - [DATASET] video 44 label_list: torch.Size([3127])
+[2024-04-29 11:51:41,760][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:51:41,760][func.train][INFO] - [DATASET] avg video length: 52.12 minutes
+[2024-04-29 11:52:18,934][func.train][INFO] - [DATASET] test size: 84676
+[2024-04-29 11:52:18,935][func.train][INFO] - [DATASET] test video_indices: [45]
+[2024-04-29 11:52:18,935][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:52:18,950][func.train][INFO] - [DATASET] Sampling video_idx: 45 at 25 fps to 3387 frames
+[2024-04-29 11:52:18,951][func.train][INFO] - [DATASET] video 45 label_list: torch.Size([3387])
+[2024-04-29 11:52:18,960][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:52:18,960][func.train][INFO] - [DATASET] avg video length: 56.45 minutes
+[2024-04-29 11:52:21,206][func.train][INFO] - [DATASET] test size: 41326
+[2024-04-29 11:52:21,206][func.train][INFO] - [DATASET] test video_indices: [46]
+[2024-04-29 11:52:21,206][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:52:21,215][func.train][INFO] - [DATASET] Sampling video_idx: 46 at 25 fps to 1653 frames
+[2024-04-29 11:52:21,216][func.train][INFO] - [DATASET] video 46 label_list: torch.Size([1653])
+[2024-04-29 11:52:21,221][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:52:21,221][func.train][INFO] - [DATASET] avg video length: 27.55 minutes
+[2024-04-29 11:52:22,691][func.train][INFO] - [DATASET] test size: 56476
+[2024-04-29 11:52:22,692][func.train][INFO] - [DATASET] test video_indices: [47]
+[2024-04-29 11:52:22,692][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:52:22,704][func.train][INFO] - [DATASET] Sampling video_idx: 47 at 25 fps to 2259 frames
+[2024-04-29 11:52:22,706][func.train][INFO] - [DATASET] video 47 label_list: torch.Size([2259])
+[2024-04-29 11:52:22,712][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:52:22,712][func.train][INFO] - [DATASET] avg video length: 37.65 minutes
+[2024-04-29 11:52:24,196][func.train][INFO] - [DATASET] test size: 45851
+[2024-04-29 11:52:24,196][func.train][INFO] - [DATASET] test video_indices: [48]
+[2024-04-29 11:52:24,196][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:52:24,204][func.train][INFO] - [DATASET] Sampling video_idx: 48 at 25 fps to 1834 frames
+[2024-04-29 11:52:24,205][func.train][INFO] - [DATASET] video 48 label_list: torch.Size([1834])
+[2024-04-29 11:52:24,210][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:52:24,210][func.train][INFO] - [DATASET] avg video length: 30.57 minutes
+[2024-04-29 11:52:25,690][func.train][INFO] - [DATASET] test size: 41776
+[2024-04-29 11:52:25,690][func.train][INFO] - [DATASET] test video_indices: [49]
+[2024-04-29 11:52:25,690][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:52:25,698][func.train][INFO] - [DATASET] Sampling video_idx: 49 at 25 fps to 1671 frames
+[2024-04-29 11:52:25,700][func.train][INFO] - [DATASET] video 49 label_list: torch.Size([1671])
+[2024-04-29 11:52:25,710][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:52:25,711][func.train][INFO] - [DATASET] avg video length: 27.85 minutes
+[2024-04-29 11:52:36,658][func.train][INFO] - [DATASET] test size: 27351
+[2024-04-29 11:52:36,659][func.train][INFO] - [DATASET] test video_indices: [50]
+[2024-04-29 11:52:36,659][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:52:36,663][func.train][INFO] - [DATASET] Sampling video_idx: 50 at 25 fps to 1094 frames
+[2024-04-29 11:52:36,664][func.train][INFO] - [DATASET] video 50 label_list: torch.Size([1094])
+[2024-04-29 11:52:36,667][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:52:36,667][func.train][INFO] - [DATASET] avg video length: 18.23 minutes
+[2024-04-29 11:52:48,813][func.train][INFO] - [DATASET] test size: 73601
+[2024-04-29 11:52:48,813][func.train][INFO] - [DATASET] test video_indices: [51]
+[2024-04-29 11:52:48,813][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:52:48,826][func.train][INFO] - [DATASET] Sampling video_idx: 51 at 25 fps to 2944 frames
+[2024-04-29 11:52:48,827][func.train][INFO] - [DATASET] video 51 label_list: torch.Size([2944])
+[2024-04-29 11:52:48,835][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:52:48,835][func.train][INFO] - [DATASET] avg video length: 49.07 minutes
+[2024-04-29 11:52:54,596][func.train][INFO] - [DATASET] test size: 49151
+[2024-04-29 11:52:54,596][func.train][INFO] - [DATASET] test video_indices: [52]
+[2024-04-29 11:52:54,596][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:52:54,604][func.train][INFO] - [DATASET] Sampling video_idx: 52 at 25 fps to 1966 frames
+[2024-04-29 11:52:54,605][func.train][INFO] - [DATASET] video 52 label_list: torch.Size([1966])
+[2024-04-29 11:52:54,610][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:52:54,611][func.train][INFO] - [DATASET] avg video length: 32.77 minutes
+[2024-04-29 11:52:56,086][func.train][INFO] - [DATASET] test size: 82076
+[2024-04-29 11:52:56,086][func.train][INFO] - [DATASET] test video_indices: [53]
+[2024-04-29 11:52:56,086][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:52:56,100][func.train][INFO] - [DATASET] Sampling video_idx: 53 at 25 fps to 3283 frames
+[2024-04-29 11:52:56,101][func.train][INFO] - [DATASET] video 53 label_list: torch.Size([3283])
+[2024-04-29 11:52:56,110][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:52:56,110][func.train][INFO] - [DATASET] avg video length: 54.72 minutes
+[2024-04-29 11:53:04,855][func.train][INFO] - [DATASET] test size: 77501
+[2024-04-29 11:53:04,856][func.train][INFO] - [DATASET] test video_indices: [54]
+[2024-04-29 11:53:04,856][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:53:04,870][func.train][INFO] - [DATASET] Sampling video_idx: 54 at 25 fps to 3100 frames
+[2024-04-29 11:53:04,871][func.train][INFO] - [DATASET] video 54 label_list: torch.Size([3100])
+[2024-04-29 11:53:04,879][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:53:04,879][func.train][INFO] - [DATASET] avg video length: 51.67 minutes
+[2024-04-29 11:53:07,257][func.train][INFO] - [DATASET] test size: 25926
+[2024-04-29 11:53:07,258][func.train][INFO] - [DATASET] test video_indices: [55]
+[2024-04-29 11:53:07,258][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:53:07,262][func.train][INFO] - [DATASET] Sampling video_idx: 55 at 25 fps to 1037 frames
+[2024-04-29 11:53:07,263][func.train][INFO] - [DATASET] video 55 label_list: torch.Size([1037])
+[2024-04-29 11:53:07,266][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:53:07,266][func.train][INFO] - [DATASET] avg video length: 17.28 minutes
+[2024-04-29 11:53:34,193][func.train][INFO] - [DATASET] test size: 45851
+[2024-04-29 11:53:34,194][func.train][INFO] - [DATASET] test video_indices: [56]
+[2024-04-29 11:53:34,194][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:53:34,202][func.train][INFO] - [DATASET] Sampling video_idx: 56 at 25 fps to 1834 frames
+[2024-04-29 11:53:34,203][func.train][INFO] - [DATASET] video 56 label_list: torch.Size([1834])
+[2024-04-29 11:53:34,211][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:53:34,211][func.train][INFO] - [DATASET] avg video length: 30.57 minutes
+[2024-04-29 11:54:28,054][func.train][INFO] - [DATASET] test size: 65801
+[2024-04-29 11:54:28,055][func.train][INFO] - [DATASET] test video_indices: [57]
+[2024-04-29 11:54:28,055][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:54:28,066][func.train][INFO] - [DATASET] Sampling video_idx: 57 at 25 fps to 2632 frames
+[2024-04-29 11:54:28,067][func.train][INFO] - [DATASET] video 57 label_list: torch.Size([2632])
+[2024-04-29 11:54:28,074][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:54:28,074][func.train][INFO] - [DATASET] avg video length: 43.87 minutes
+[2024-04-29 11:55:25,359][func.train][INFO] - [DATASET] test size: 149826
+[2024-04-29 11:55:25,359][func.train][INFO] - [DATASET] test video_indices: [58]
+[2024-04-29 11:55:25,359][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:55:25,382][func.train][INFO] - [DATASET] Sampling video_idx: 58 at 25 fps to 5993 frames
+[2024-04-29 11:55:25,384][func.train][INFO] - [DATASET] video 58 label_list: torch.Size([5993])
+[2024-04-29 11:55:25,404][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:55:25,405][func.train][INFO] - [DATASET] avg video length: 99.88 minutes
+[2024-04-29 11:55:26,886][func.train][INFO] - [DATASET] test size: 26151
+[2024-04-29 11:55:26,886][func.train][INFO] - [DATASET] test video_indices: [59]
+[2024-04-29 11:55:26,886][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:55:26,891][func.train][INFO] - [DATASET] Sampling video_idx: 59 at 25 fps to 1046 frames
+[2024-04-29 11:55:26,891][func.train][INFO] - [DATASET] video 59 label_list: torch.Size([1046])
+[2024-04-29 11:55:26,894][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:55:26,894][func.train][INFO] - [DATASET] avg video length: 17.43 minutes
+[2024-04-29 11:55:28,407][func.train][INFO] - [DATASET] test size: 63301
+[2024-04-29 11:55:28,407][func.train][INFO] - [DATASET] test video_indices: [60]
+[2024-04-29 11:55:28,407][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:55:28,417][func.train][INFO] - [DATASET] Sampling video_idx: 60 at 25 fps to 2532 frames
+[2024-04-29 11:55:28,418][func.train][INFO] - [DATASET] video 60 label_list: torch.Size([2532])
+[2024-04-29 11:55:28,432][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:55:28,432][func.train][INFO] - [DATASET] avg video length: 42.20 minutes
+[2024-04-29 11:55:29,902][func.train][INFO] - [DATASET] test size: 110226
+[2024-04-29 11:55:29,902][func.train][INFO] - [DATASET] test video_indices: [61]
+[2024-04-29 11:55:29,902][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:55:29,920][func.train][INFO] - [DATASET] Sampling video_idx: 61 at 25 fps to 4409 frames
+[2024-04-29 11:55:29,921][func.train][INFO] - [DATASET] video 61 label_list: torch.Size([4409])
+[2024-04-29 11:55:29,986][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:55:29,986][func.train][INFO] - [DATASET] avg video length: 73.48 minutes
+[2024-04-29 11:55:31,465][func.train][INFO] - [DATASET] test size: 50801
+[2024-04-29 11:55:31,465][func.train][INFO] - [DATASET] test video_indices: [62]
+[2024-04-29 11:55:31,465][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:55:31,473][func.train][INFO] - [DATASET] Sampling video_idx: 62 at 25 fps to 2032 frames
+[2024-04-29 11:55:31,474][func.train][INFO] - [DATASET] video 62 label_list: torch.Size([2032])
+[2024-04-29 11:55:31,493][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:55:31,494][func.train][INFO] - [DATASET] avg video length: 33.87 minutes
+[2024-04-29 11:55:32,963][func.train][INFO] - [DATASET] test size: 85826
+[2024-04-29 11:55:32,963][func.train][INFO] - [DATASET] test video_indices: [63]
+[2024-04-29 11:55:32,963][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:55:32,979][func.train][INFO] - [DATASET] Sampling video_idx: 63 at 25 fps to 3433 frames
+[2024-04-29 11:55:32,980][func.train][INFO] - [DATASET] video 63 label_list: torch.Size([3433])
+[2024-04-29 11:55:32,991][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:55:32,991][func.train][INFO] - [DATASET] avg video length: 57.22 minutes
+[2024-04-29 11:55:57,630][func.train][INFO] - [DATASET] test size: 59951
+[2024-04-29 11:55:57,631][func.train][INFO] - [DATASET] test video_indices: [64]
+[2024-04-29 11:55:57,631][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:55:57,642][func.train][INFO] - [DATASET] Sampling video_idx: 64 at 25 fps to 2398 frames
+[2024-04-29 11:55:57,643][func.train][INFO] - [DATASET] video 64 label_list: torch.Size([2398])
+[2024-04-29 11:55:57,649][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:55:57,649][func.train][INFO] - [DATASET] avg video length: 39.97 minutes
+[2024-04-29 11:55:59,151][func.train][INFO] - [DATASET] test size: 46826
+[2024-04-29 11:55:59,151][func.train][INFO] - [DATASET] test video_indices: [65]
+[2024-04-29 11:55:59,151][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:55:59,160][func.train][INFO] - [DATASET] Sampling video_idx: 65 at 25 fps to 1873 frames
+[2024-04-29 11:55:59,161][func.train][INFO] - [DATASET] video 65 label_list: torch.Size([1873])
+[2024-04-29 11:55:59,166][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:55:59,166][func.train][INFO] - [DATASET] avg video length: 31.22 minutes
+[2024-04-29 11:56:00,896][func.train][INFO] - [DATASET] test size: 45601
+[2024-04-29 11:56:00,896][func.train][INFO] - [DATASET] test video_indices: [66]
+[2024-04-29 11:56:00,896][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:56:00,905][func.train][INFO] - [DATASET] Sampling video_idx: 66 at 25 fps to 1824 frames
+[2024-04-29 11:56:00,906][func.train][INFO] - [DATASET] video 66 label_list: torch.Size([1824])
+[2024-04-29 11:56:00,911][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:56:00,911][func.train][INFO] - [DATASET] avg video length: 30.40 minutes
+[2024-04-29 11:56:34,108][func.train][INFO] - [DATASET] test size: 58826
+[2024-04-29 11:56:34,108][func.train][INFO] - [DATASET] test video_indices: [67]
+[2024-04-29 11:56:34,108][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:56:34,118][func.train][INFO] - [DATASET] Sampling video_idx: 67 at 25 fps to 2353 frames
+[2024-04-29 11:56:34,119][func.train][INFO] - [DATASET] video 67 label_list: torch.Size([2353])
+[2024-04-29 11:56:34,134][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:56:34,134][func.train][INFO] - [DATASET] avg video length: 39.22 minutes
+[2024-04-29 11:56:35,605][func.train][INFO] - [DATASET] test size: 49301
+[2024-04-29 11:56:35,605][func.train][INFO] - [DATASET] test video_indices: [68]
+[2024-04-29 11:56:35,605][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:56:35,614][func.train][INFO] - [DATASET] Sampling video_idx: 68 at 25 fps to 1972 frames
+[2024-04-29 11:56:35,615][func.train][INFO] - [DATASET] video 68 label_list: torch.Size([1972])
+[2024-04-29 11:56:35,622][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:56:35,622][func.train][INFO] - [DATASET] avg video length: 32.87 minutes
+[2024-04-29 11:56:37,151][func.train][INFO] - [DATASET] test size: 114376
+[2024-04-29 11:56:37,151][func.train][INFO] - [DATASET] test video_indices: [69]
+[2024-04-29 11:56:37,151][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:56:37,169][func.train][INFO] - [DATASET] Sampling video_idx: 69 at 25 fps to 4575 frames
+[2024-04-29 11:56:37,171][func.train][INFO] - [DATASET] video 69 label_list: torch.Size([4575])
+[2024-04-29 11:56:37,182][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:56:37,182][func.train][INFO] - [DATASET] avg video length: 76.25 minutes
+[2024-04-29 11:56:38,585][func.train][INFO] - [DATASET] test size: 29851
+[2024-04-29 11:56:38,585][func.train][INFO] - [DATASET] test video_indices: [70]
+[2024-04-29 11:56:38,585][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:56:38,590][func.train][INFO] - [DATASET] Sampling video_idx: 70 at 25 fps to 1194 frames
+[2024-04-29 11:56:38,591][func.train][INFO] - [DATASET] video 70 label_list: torch.Size([1194])
+[2024-04-29 11:56:38,593][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:56:38,593][func.train][INFO] - [DATASET] avg video length: 19.90 minutes
+[2024-04-29 11:56:40,060][func.train][INFO] - [DATASET] test size: 62876
+[2024-04-29 11:56:40,061][func.train][INFO] - [DATASET] test video_indices: [71]
+[2024-04-29 11:56:40,061][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:56:40,071][func.train][INFO] - [DATASET] Sampling video_idx: 71 at 25 fps to 2515 frames
+[2024-04-29 11:56:40,072][func.train][INFO] - [DATASET] video 71 label_list: torch.Size([2515])
+[2024-04-29 11:56:40,078][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:56:40,078][func.train][INFO] - [DATASET] avg video length: 41.92 minutes
+[2024-04-29 11:56:41,520][func.train][INFO] - [DATASET] test size: 77651
+[2024-04-29 11:56:41,521][func.train][INFO] - [DATASET] test video_indices: [72]
+[2024-04-29 11:56:41,521][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:56:41,534][func.train][INFO] - [DATASET] Sampling video_idx: 72 at 25 fps to 3106 frames
+[2024-04-29 11:56:41,535][func.train][INFO] - [DATASET] video 72 label_list: torch.Size([3106])
+[2024-04-29 11:56:41,543][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:56:41,544][func.train][INFO] - [DATASET] avg video length: 51.77 minutes
+[2024-04-29 11:56:42,919][func.train][INFO] - [DATASET] test size: 33901
+[2024-04-29 11:56:42,919][func.train][INFO] - [DATASET] test video_indices: [73]
+[2024-04-29 11:56:42,919][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:56:42,925][func.train][INFO] - [DATASET] Sampling video_idx: 73 at 25 fps to 1356 frames
+[2024-04-29 11:56:42,925][func.train][INFO] - [DATASET] video 73 label_list: torch.Size([1356])
+[2024-04-29 11:56:42,931][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:56:42,931][func.train][INFO] - [DATASET] avg video length: 22.60 minutes
+[2024-04-29 11:56:44,306][func.train][INFO] - [DATASET] test size: 40851
+[2024-04-29 11:56:44,307][func.train][INFO] - [DATASET] test video_indices: [74]
+[2024-04-29 11:56:44,307][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:56:44,314][func.train][INFO] - [DATASET] Sampling video_idx: 74 at 25 fps to 1634 frames
+[2024-04-29 11:56:44,315][func.train][INFO] - [DATASET] video 74 label_list: torch.Size([1634])
+[2024-04-29 11:56:44,318][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:56:44,318][func.train][INFO] - [DATASET] avg video length: 27.23 minutes
+[2024-04-29 11:56:45,726][func.train][INFO] - [DATASET] test size: 48076
+[2024-04-29 11:56:45,727][func.train][INFO] - [DATASET] test video_indices: [75]
+[2024-04-29 11:56:45,727][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:56:45,735][func.train][INFO] - [DATASET] Sampling video_idx: 75 at 25 fps to 1923 frames
+[2024-04-29 11:56:45,736][func.train][INFO] - [DATASET] video 75 label_list: torch.Size([1923])
+[2024-04-29 11:56:45,744][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:56:45,744][func.train][INFO] - [DATASET] avg video length: 32.05 minutes
+[2024-04-29 11:56:56,054][func.train][INFO] - [DATASET] test size: 66226
+[2024-04-29 11:56:56,054][func.train][INFO] - [DATASET] test video_indices: [76]
+[2024-04-29 11:56:56,054][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:56:56,066][func.train][INFO] - [DATASET] Sampling video_idx: 76 at 25 fps to 2649 frames
+[2024-04-29 11:56:56,067][func.train][INFO] - [DATASET] video 76 label_list: torch.Size([2649])
+[2024-04-29 11:56:56,073][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:56:56,074][func.train][INFO] - [DATASET] avg video length: 44.15 minutes
+[2024-04-29 11:56:58,148][func.train][INFO] - [DATASET] test size: 62551
+[2024-04-29 11:56:58,149][func.train][INFO] - [DATASET] test video_indices: [77]
+[2024-04-29 11:56:58,149][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:56:58,162][func.train][INFO] - [DATASET] Sampling video_idx: 77 at 25 fps to 2502 frames
+[2024-04-29 11:56:58,163][func.train][INFO] - [DATASET] video 77 label_list: torch.Size([2502])
+[2024-04-29 11:56:58,169][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:56:58,169][func.train][INFO] - [DATASET] avg video length: 41.70 minutes
+[2024-04-29 11:57:10,390][func.train][INFO] - [DATASET] test size: 18476
+[2024-04-29 11:57:10,390][func.train][INFO] - [DATASET] test video_indices: [78]
+[2024-04-29 11:57:10,390][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:57:10,393][func.train][INFO] - [DATASET] Sampling video_idx: 78 at 25 fps to 739 frames
+[2024-04-29 11:57:10,394][func.train][INFO] - [DATASET] video 78 label_list: torch.Size([739])
+[2024-04-29 11:57:10,400][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:57:10,400][func.train][INFO] - [DATASET] avg video length: 12.32 minutes
+[2024-04-29 11:57:12,072][func.train][INFO] - [DATASET] test size: 85351
+[2024-04-29 11:57:12,072][func.train][INFO] - [DATASET] test video_indices: [79]
+[2024-04-29 11:57:12,072][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:57:12,099][func.train][INFO] - [DATASET] Sampling video_idx: 79 at 25 fps to 3414 frames
+[2024-04-29 11:57:12,101][func.train][INFO] - [DATASET] video 79 label_list: torch.Size([3414])
+[2024-04-29 11:57:12,113][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:57:12,114][func.train][INFO] - [DATASET] avg video length: 56.90 minutes
+[2024-04-29 11:57:13,839][func.train][INFO] - [DATASET] test size: 43101
+[2024-04-29 11:57:13,839][func.train][INFO] - [DATASET] test video_indices: [80]
+[2024-04-29 11:57:13,839][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 11:57:13,848][func.train][INFO] - [DATASET] Sampling video_idx: 80 at 25 fps to 1724 frames
+[2024-04-29 11:57:13,849][func.train][INFO] - [DATASET] video 80 label_list: torch.Size([1724])
+[2024-04-29 11:57:13,852][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 11:57:13,853][func.train][INFO] - [DATASET] avg video length: 28.73 minutes
+[2024-04-29 11:57:13,902][func.train][INFO] - Time to load datasets: 7.90 min
+[2024-04-29 11:57:13,902][func.train][INFO] - Creating data loaders
+[2024-04-29 11:57:13,905][func.train][INFO] - Creating model with {'one': 7} classes
+[2024-04-29 11:57:14,878][func.train][INFO] - [MAIN] Number of tokens: 86304
+[2024-04-29 11:57:14,879][func.train][INFO] - [MAIN] Number of parameters: 17789654
+[2024-04-29 11:57:14,879][func.train][INFO] - [MAIN] Token-to-Parameter Ratio is ideally between [1:1 to 10:1]: 0.004851
+[2024-04-29 11:57:14,879][func.train][WARNING] - [MAIN] Data-to-Parameter-Ratio is outside the interval [1:1 to 10:1]
+[2024-04-29 11:57:14,880][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-04-29 11:57:14,880][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-04-29 11:57:14,887][func.train][INFO] - Wrapping model into DP
+[2024-04-29 11:57:14,992][func.train][INFO] - Start training
+[2024-04-29 11:57:14,996][func.train][INFO] - Storing checkpoints every 60.00 mins
+[2024-04-29 13:03:58,170][func.train][INFO] - Dist info:
+[2024-04-29 13:03:58,171][func.train][INFO] - torch version: 2.2.2+cu121
+[2024-04-29 13:03:58,171][func.train][INFO] - torchvision version: 0.17.2+cu121
+[2024-04-29 13:03:58,172][func.train][INFO] - hydra version: 1.3.2
+[2024-04-29 13:03:58,184][func.train][INFO] - Loading data
+[2024-04-29 13:03:58,184][func.train][INFO] - Loading datasets
+[2024-04-29 13:04:01,909][func.train][INFO] - [DATASET] ALL loaded dataframe in 0m 4s
+[2024-04-29 13:04:01,910][func.train][INFO] - [DATASET] ALL loaded dataframe: (4612530, 11)
+[2024-04-29 13:04:03,761][func.train][INFO] - [DATASET] params: {'debug': False, 'dataset_name': 'cholec80', 'reduc_feats_folder': 'train_targets_x_mp/', 'num_classes': 7, 'num_next_labels': 6, 'last_seg_class': 7, 'predict_next_phase': True, 'get_target_feats': False, 'replace_current_with_next_class': False}
+[2024-04-29 13:04:07,249][func.train][INFO] - [DATASET] train size: 2157640
+[2024-04-29 13:04:07,250][func.train][INFO] - [DATASET] train video_indices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
+[2024-04-29 13:04:07,250][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:07,331][func.train][INFO] - [DATASET] Sampling video_idx: 1 at 25 fps to 1733 frames
+[2024-04-29 13:04:07,634][func.train][INFO] - [DATASET] video 1 label_list: torch.Size([1733])
+[2024-04-29 13:04:08,025][func.train][INFO] - [DATASET] Sampling video_idx: 2 at 25 fps to 2839 frames
+[2024-04-29 13:04:08,026][func.train][INFO] - [DATASET] video 2 label_list: torch.Size([2839])
+[2024-04-29 13:04:08,234][func.train][INFO] - [DATASET] Sampling video_idx: 3 at 25 fps to 5828 frames
+[2024-04-29 13:04:08,235][func.train][INFO] - [DATASET] video 3 label_list: torch.Size([5828])
+[2024-04-29 13:04:08,559][func.train][INFO] - [DATASET] Sampling video_idx: 4 at 25 fps to 1522 frames
+[2024-04-29 13:04:08,560][func.train][INFO] - [DATASET] video 4 label_list: torch.Size([1522])
+[2024-04-29 13:04:08,780][func.train][INFO] - [DATASET] Sampling video_idx: 5 at 25 fps to 2344 frames
+[2024-04-29 13:04:08,781][func.train][INFO] - [DATASET] video 5 label_list: torch.Size([2344])
+[2024-04-29 13:04:09,079][func.train][INFO] - [DATASET] Sampling video_idx: 6 at 25 fps to 2153 frames
+[2024-04-29 13:04:09,080][func.train][INFO] - [DATASET] video 6 label_list: torch.Size([2153])
+[2024-04-29 13:04:09,400][func.train][INFO] - [DATASET] Sampling video_idx: 7 at 25 fps to 4557 frames
+[2024-04-29 13:04:09,402][func.train][INFO] - [DATASET] video 7 label_list: torch.Size([4557])
+[2024-04-29 13:04:09,668][func.train][INFO] - [DATASET] Sampling video_idx: 8 at 25 fps to 1519 frames
+[2024-04-29 13:04:09,670][func.train][INFO] - [DATASET] video 8 label_list: torch.Size([1519])
+[2024-04-29 13:04:09,900][func.train][INFO] - [DATASET] Sampling video_idx: 9 at 25 fps to 2702 frames
+[2024-04-29 13:04:09,901][func.train][INFO] - [DATASET] video 9 label_list: torch.Size([2702])
+[2024-04-29 13:04:10,108][func.train][INFO] - [DATASET] Sampling video_idx: 10 at 25 fps to 1749 frames
+[2024-04-29 13:04:10,110][func.train][INFO] - [DATASET] video 10 label_list: torch.Size([1749])
+[2024-04-29 13:04:10,410][func.train][INFO] - [DATASET] Sampling video_idx: 11 at 25 fps to 3220 frames
+[2024-04-29 13:04:10,412][func.train][INFO] - [DATASET] video 11 label_list: torch.Size([3220])
+[2024-04-29 13:04:10,705][func.train][INFO] - [DATASET] Sampling video_idx: 12 at 25 fps to 1090 frames
+[2024-04-29 13:04:10,706][func.train][INFO] - [DATASET] video 12 label_list: torch.Size([1090])
+[2024-04-29 13:04:10,970][func.train][INFO] - [DATASET] Sampling video_idx: 13 at 25 fps to 981 frames
+[2024-04-29 13:04:10,971][func.train][INFO] - [DATASET] video 13 label_list: torch.Size([981])
+[2024-04-29 13:04:11,138][func.train][INFO] - [DATASET] Sampling video_idx: 14 at 25 fps to 1708 frames
+[2024-04-29 13:04:11,139][func.train][INFO] - [DATASET] video 14 label_list: torch.Size([1708])
+[2024-04-29 13:04:11,363][func.train][INFO] - [DATASET] Sampling video_idx: 15 at 25 fps to 2058 frames
+[2024-04-29 13:04:11,364][func.train][INFO] - [DATASET] video 15 label_list: torch.Size([2058])
+[2024-04-29 13:04:11,789][func.train][INFO] - [DATASET] Sampling video_idx: 16 at 25 fps to 2957 frames
+[2024-04-29 13:04:11,791][func.train][INFO] - [DATASET] video 16 label_list: torch.Size([2957])
+[2024-04-29 13:04:12,183][func.train][INFO] - [DATASET] Sampling video_idx: 17 at 25 fps to 1304 frames
+[2024-04-29 13:04:12,185][func.train][INFO] - [DATASET] video 17 label_list: torch.Size([1304])
+[2024-04-29 13:04:12,422][func.train][INFO] - [DATASET] Sampling video_idx: 18 at 25 fps to 1942 frames
+[2024-04-29 13:04:12,423][func.train][INFO] - [DATASET] video 18 label_list: torch.Size([1942])
+[2024-04-29 13:04:12,574][func.train][INFO] - [DATASET] Sampling video_idx: 19 at 25 fps to 2424 frames
+[2024-04-29 13:04:12,576][func.train][INFO] - [DATASET] video 19 label_list: torch.Size([2424])
+[2024-04-29 13:04:12,744][func.train][INFO] - [DATASET] Sampling video_idx: 20 at 25 fps to 1449 frames
+[2024-04-29 13:04:12,745][func.train][INFO] - [DATASET] video 20 label_list: torch.Size([1449])
+[2024-04-29 13:04:12,901][func.train][INFO] - [DATASET] Sampling video_idx: 21 at 25 fps to 1258 frames
+[2024-04-29 13:04:12,903][func.train][INFO] - [DATASET] video 21 label_list: torch.Size([1258])
+[2024-04-29 13:04:13,051][func.train][INFO] - [DATASET] Sampling video_idx: 22 at 25 fps to 1532 frames
+[2024-04-29 13:04:13,052][func.train][INFO] - [DATASET] video 22 label_list: torch.Size([1532])
+[2024-04-29 13:04:13,186][func.train][INFO] - [DATASET] Sampling video_idx: 23 at 25 fps to 1635 frames
+[2024-04-29 13:04:13,187][func.train][INFO] - [DATASET] video 23 label_list: torch.Size([1635])
+[2024-04-29 13:04:13,359][func.train][INFO] - [DATASET] Sampling video_idx: 24 at 25 fps to 1975 frames
+[2024-04-29 13:04:13,361][func.train][INFO] - [DATASET] video 24 label_list: torch.Size([1975])
+[2024-04-29 13:04:13,578][func.train][INFO] - [DATASET] Sampling video_idx: 25 at 25 fps to 2129 frames
+[2024-04-29 13:04:13,579][func.train][INFO] - [DATASET] video 25 label_list: torch.Size([2129])
+[2024-04-29 13:04:13,773][func.train][INFO] - [DATASET] Sampling video_idx: 26 at 25 fps to 1773 frames
+[2024-04-29 13:04:13,775][func.train][INFO] - [DATASET] video 26 label_list: torch.Size([1773])
+[2024-04-29 13:04:13,945][func.train][INFO] - [DATASET] Sampling video_idx: 27 at 25 fps to 2084 frames
+[2024-04-29 13:04:13,946][func.train][INFO] - [DATASET] video 27 label_list: torch.Size([2084])
+[2024-04-29 13:04:14,102][func.train][INFO] - [DATASET] Sampling video_idx: 28 at 25 fps to 1199 frames
+[2024-04-29 13:04:14,103][func.train][INFO] - [DATASET] video 28 label_list: torch.Size([1199])
+[2024-04-29 13:04:14,242][func.train][INFO] - [DATASET] Sampling video_idx: 29 at 25 fps to 2350 frames
+[2024-04-29 13:04:14,243][func.train][INFO] - [DATASET] video 29 label_list: torch.Size([2350])
+[2024-04-29 13:04:14,428][func.train][INFO] - [DATASET] Sampling video_idx: 30 at 25 fps to 2925 frames
+[2024-04-29 13:04:14,430][func.train][INFO] - [DATASET] video 30 label_list: torch.Size([2925])
+[2024-04-29 13:04:14,603][func.train][INFO] - [DATASET] Sampling video_idx: 31 at 25 fps to 3945 frames
+[2024-04-29 13:04:14,605][func.train][INFO] - [DATASET] video 31 label_list: torch.Size([3945])
+[2024-04-29 13:04:14,799][func.train][INFO] - [DATASET] Sampling video_idx: 32 at 25 fps to 2116 frames
+[2024-04-29 13:04:14,804][func.train][INFO] - [DATASET] video 32 label_list: torch.Size([2116])
+[2024-04-29 13:04:14,957][func.train][INFO] - [DATASET] Sampling video_idx: 33 at 25 fps to 1307 frames
+[2024-04-29 13:04:14,958][func.train][INFO] - [DATASET] video 33 label_list: torch.Size([1307])
+[2024-04-29 13:04:15,091][func.train][INFO] - [DATASET] Sampling video_idx: 34 at 25 fps to 1323 frames
+[2024-04-29 13:04:15,092][func.train][INFO] - [DATASET] video 34 label_list: torch.Size([1323])
+[2024-04-29 13:04:15,238][func.train][INFO] - [DATASET] Sampling video_idx: 35 at 25 fps to 2106 frames
+[2024-04-29 13:04:15,239][func.train][INFO] - [DATASET] video 35 label_list: torch.Size([2106])
+[2024-04-29 13:04:15,401][func.train][INFO] - [DATASET] Sampling video_idx: 36 at 25 fps to 2387 frames
+[2024-04-29 13:04:15,402][func.train][INFO] - [DATASET] video 36 label_list: torch.Size([2387])
+[2024-04-29 13:04:15,563][func.train][INFO] - [DATASET] Sampling video_idx: 37 at 25 fps to 1232 frames
+[2024-04-29 13:04:15,564][func.train][INFO] - [DATASET] video 37 label_list: torch.Size([1232])
+[2024-04-29 13:04:15,719][func.train][INFO] - [DATASET] Sampling video_idx: 38 at 25 fps to 3080 frames
+[2024-04-29 13:04:15,721][func.train][INFO] - [DATASET] video 38 label_list: torch.Size([3080])
+[2024-04-29 13:04:15,885][func.train][INFO] - [DATASET] Sampling video_idx: 39 at 25 fps to 1647 frames
+[2024-04-29 13:04:15,886][func.train][INFO] - [DATASET] video 39 label_list: torch.Size([1647])
+[2024-04-29 13:04:16,033][func.train][INFO] - [DATASET] Sampling video_idx: 40 at 25 fps to 2222 frames
+[2024-04-29 13:04:16,034][func.train][INFO] - [DATASET] video 40 label_list: torch.Size([2222])
+[2024-04-29 13:04:16,089][func.train][INFO] - [DATASET] number of train videos: 40
+[2024-04-29 13:04:16,090][func.train][INFO] - [DATASET] avg video length: 35.96 minutes
+[2024-04-29 13:04:16,391][func.train][INFO] - [DATASET] classes_counts: {0: 93902, 1: 922150, 2: 183225, 3: 602975, 4: 92900, 5: 180478, 6: 82010}
+[2024-04-29 13:04:16,408][func.train][INFO] - [DATASET] curr_class_weights: tensor([0.3342, 1.6821, 0.5112, 3.3171, 1.7077, 3.7575, 3.2818])
+[2024-04-29 13:04:18,528][func.train][INFO] - [DATASET] test size: 77576
+[2024-04-29 13:04:18,528][func.train][INFO] - [DATASET] test video_indices: [41]
+[2024-04-29 13:04:18,528][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:18,547][func.train][INFO] - [DATASET] Sampling video_idx: 41 at 25 fps to 3103 frames
+[2024-04-29 13:04:18,549][func.train][INFO] - [DATASET] video 41 label_list: torch.Size([3103])
+[2024-04-29 13:04:18,617][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:18,618][func.train][INFO] - [DATASET] avg video length: 51.72 minutes
+[2024-04-29 13:04:20,438][func.train][INFO] - [DATASET] test size: 92801
+[2024-04-29 13:04:20,439][func.train][INFO] - [DATASET] test video_indices: [42]
+[2024-04-29 13:04:20,439][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:20,461][func.train][INFO] - [DATASET] Sampling video_idx: 42 at 25 fps to 3712 frames
+[2024-04-29 13:04:20,463][func.train][INFO] - [DATASET] video 42 label_list: torch.Size([3712])
+[2024-04-29 13:04:20,557][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:20,557][func.train][INFO] - [DATASET] avg video length: 61.87 minutes
+[2024-04-29 13:04:22,598][func.train][INFO] - [DATASET] test size: 59051
+[2024-04-29 13:04:22,599][func.train][INFO] - [DATASET] test video_indices: [43]
+[2024-04-29 13:04:22,599][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:22,614][func.train][INFO] - [DATASET] Sampling video_idx: 43 at 25 fps to 2362 frames
+[2024-04-29 13:04:22,616][func.train][INFO] - [DATASET] video 43 label_list: torch.Size([2362])
+[2024-04-29 13:04:22,662][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:22,662][func.train][INFO] - [DATASET] avg video length: 39.37 minutes
+[2024-04-29 13:04:24,583][func.train][INFO] - [DATASET] test size: 78176
+[2024-04-29 13:04:24,583][func.train][INFO] - [DATASET] test video_indices: [44]
+[2024-04-29 13:04:24,583][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:24,602][func.train][INFO] - [DATASET] Sampling video_idx: 44 at 25 fps to 3127 frames
+[2024-04-29 13:04:24,604][func.train][INFO] - [DATASET] video 44 label_list: torch.Size([3127])
+[2024-04-29 13:04:24,682][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:24,683][func.train][INFO] - [DATASET] avg video length: 52.12 minutes
+[2024-04-29 13:04:26,399][func.train][INFO] - [DATASET] test size: 84676
+[2024-04-29 13:04:26,399][func.train][INFO] - [DATASET] test video_indices: [45]
+[2024-04-29 13:04:26,399][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:26,418][func.train][INFO] - [DATASET] Sampling video_idx: 45 at 25 fps to 3387 frames
+[2024-04-29 13:04:26,420][func.train][INFO] - [DATASET] video 45 label_list: torch.Size([3387])
+[2024-04-29 13:04:26,504][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:26,504][func.train][INFO] - [DATASET] avg video length: 56.45 minutes
+[2024-04-29 13:04:28,086][func.train][INFO] - [DATASET] test size: 41326
+[2024-04-29 13:04:28,087][func.train][INFO] - [DATASET] test video_indices: [46]
+[2024-04-29 13:04:28,087][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:28,098][func.train][INFO] - [DATASET] Sampling video_idx: 46 at 25 fps to 1653 frames
+[2024-04-29 13:04:28,099][func.train][INFO] - [DATASET] video 46 label_list: torch.Size([1653])
+[2024-04-29 13:04:28,202][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:28,202][func.train][INFO] - [DATASET] avg video length: 27.55 minutes
+[2024-04-29 13:04:29,670][func.train][INFO] - [DATASET] test size: 56476
+[2024-04-29 13:04:29,670][func.train][INFO] - [DATASET] test video_indices: [47]
+[2024-04-29 13:04:29,670][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:29,680][func.train][INFO] - [DATASET] Sampling video_idx: 47 at 25 fps to 2259 frames
+[2024-04-29 13:04:29,681][func.train][INFO] - [DATASET] video 47 label_list: torch.Size([2259])
+[2024-04-29 13:04:29,843][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:29,843][func.train][INFO] - [DATASET] avg video length: 37.65 minutes
+[2024-04-29 13:04:31,639][func.train][INFO] - [DATASET] test size: 45851
+[2024-04-29 13:04:31,639][func.train][INFO] - [DATASET] test video_indices: [48]
+[2024-04-29 13:04:31,640][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:31,653][func.train][INFO] - [DATASET] Sampling video_idx: 48 at 25 fps to 1834 frames
+[2024-04-29 13:04:31,654][func.train][INFO] - [DATASET] video 48 label_list: torch.Size([1834])
+[2024-04-29 13:04:31,752][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:31,753][func.train][INFO] - [DATASET] avg video length: 30.57 minutes
+[2024-04-29 13:04:33,555][func.train][INFO] - [DATASET] test size: 41776
+[2024-04-29 13:04:33,556][func.train][INFO] - [DATASET] test video_indices: [49]
+[2024-04-29 13:04:33,556][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:33,566][func.train][INFO] - [DATASET] Sampling video_idx: 49 at 25 fps to 1671 frames
+[2024-04-29 13:04:33,567][func.train][INFO] - [DATASET] video 49 label_list: torch.Size([1671])
+[2024-04-29 13:04:33,613][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:33,614][func.train][INFO] - [DATASET] avg video length: 27.85 minutes
+[2024-04-29 13:04:35,242][func.train][INFO] - [DATASET] test size: 27351
+[2024-04-29 13:04:35,242][func.train][INFO] - [DATASET] test video_indices: [50]
+[2024-04-29 13:04:35,242][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:35,248][func.train][INFO] - [DATASET] Sampling video_idx: 50 at 25 fps to 1094 frames
+[2024-04-29 13:04:35,248][func.train][INFO] - [DATASET] video 50 label_list: torch.Size([1094])
+[2024-04-29 13:04:35,282][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:35,282][func.train][INFO] - [DATASET] avg video length: 18.23 minutes
+[2024-04-29 13:04:36,898][func.train][INFO] - [DATASET] test size: 73601
+[2024-04-29 13:04:36,898][func.train][INFO] - [DATASET] test video_indices: [51]
+[2024-04-29 13:04:36,899][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:36,914][func.train][INFO] - [DATASET] Sampling video_idx: 51 at 25 fps to 2944 frames
+[2024-04-29 13:04:36,915][func.train][INFO] - [DATASET] video 51 label_list: torch.Size([2944])
+[2024-04-29 13:04:36,978][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:36,979][func.train][INFO] - [DATASET] avg video length: 49.07 minutes
+[2024-04-29 13:04:38,605][func.train][INFO] - [DATASET] test size: 49151
+[2024-04-29 13:04:38,605][func.train][INFO] - [DATASET] test video_indices: [52]
+[2024-04-29 13:04:38,606][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:38,618][func.train][INFO] - [DATASET] Sampling video_idx: 52 at 25 fps to 1966 frames
+[2024-04-29 13:04:38,619][func.train][INFO] - [DATASET] video 52 label_list: torch.Size([1966])
+[2024-04-29 13:04:38,669][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:38,669][func.train][INFO] - [DATASET] avg video length: 32.77 minutes
+[2024-04-29 13:04:40,473][func.train][INFO] - [DATASET] test size: 82076
+[2024-04-29 13:04:40,473][func.train][INFO] - [DATASET] test video_indices: [53]
+[2024-04-29 13:04:40,473][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:40,493][func.train][INFO] - [DATASET] Sampling video_idx: 53 at 25 fps to 3283 frames
+[2024-04-29 13:04:40,495][func.train][INFO] - [DATASET] video 53 label_list: torch.Size([3283])
+[2024-04-29 13:04:40,573][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:40,573][func.train][INFO] - [DATASET] avg video length: 54.72 minutes
+[2024-04-29 13:04:42,365][func.train][INFO] - [DATASET] test size: 77501
+[2024-04-29 13:04:42,365][func.train][INFO] - [DATASET] test video_indices: [54]
+[2024-04-29 13:04:42,365][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:42,383][func.train][INFO] - [DATASET] Sampling video_idx: 54 at 25 fps to 3100 frames
+[2024-04-29 13:04:42,385][func.train][INFO] - [DATASET] video 54 label_list: torch.Size([3100])
+[2024-04-29 13:04:42,437][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:42,437][func.train][INFO] - [DATASET] avg video length: 51.67 minutes
+[2024-04-29 13:04:44,230][func.train][INFO] - [DATASET] test size: 25926
+[2024-04-29 13:04:44,230][func.train][INFO] - [DATASET] test video_indices: [55]
+[2024-04-29 13:04:44,230][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:44,237][func.train][INFO] - [DATASET] Sampling video_idx: 55 at 25 fps to 1037 frames
+[2024-04-29 13:04:44,237][func.train][INFO] - [DATASET] video 55 label_list: torch.Size([1037])
+[2024-04-29 13:04:44,261][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:44,261][func.train][INFO] - [DATASET] avg video length: 17.28 minutes
+[2024-04-29 13:04:46,137][func.train][INFO] - [DATASET] test size: 45851
+[2024-04-29 13:04:46,138][func.train][INFO] - [DATASET] test video_indices: [56]
+[2024-04-29 13:04:46,138][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:46,152][func.train][INFO] - [DATASET] Sampling video_idx: 56 at 25 fps to 1834 frames
+[2024-04-29 13:04:46,153][func.train][INFO] - [DATASET] video 56 label_list: torch.Size([1834])
+[2024-04-29 13:04:46,190][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:46,190][func.train][INFO] - [DATASET] avg video length: 30.57 minutes
+[2024-04-29 13:04:48,003][func.train][INFO] - [DATASET] test size: 65801
+[2024-04-29 13:04:48,003][func.train][INFO] - [DATASET] test video_indices: [57]
+[2024-04-29 13:04:48,003][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:48,020][func.train][INFO] - [DATASET] Sampling video_idx: 57 at 25 fps to 2632 frames
+[2024-04-29 13:04:48,022][func.train][INFO] - [DATASET] video 57 label_list: torch.Size([2632])
+[2024-04-29 13:04:48,072][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:48,073][func.train][INFO] - [DATASET] avg video length: 43.87 minutes
+[2024-04-29 13:04:49,901][func.train][INFO] - [DATASET] test size: 149826
+[2024-04-29 13:04:49,902][func.train][INFO] - [DATASET] test video_indices: [58]
+[2024-04-29 13:04:49,902][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:49,938][func.train][INFO] - [DATASET] Sampling video_idx: 58 at 25 fps to 5993 frames
+[2024-04-29 13:04:49,940][func.train][INFO] - [DATASET] video 58 label_list: torch.Size([5993])
+[2024-04-29 13:04:50,393][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:50,393][func.train][INFO] - [DATASET] avg video length: 99.88 minutes
+[2024-04-29 13:04:52,166][func.train][INFO] - [DATASET] test size: 26151
+[2024-04-29 13:04:52,167][func.train][INFO] - [DATASET] test video_indices: [59]
+[2024-04-29 13:04:52,167][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:52,174][func.train][INFO] - [DATASET] Sampling video_idx: 59 at 25 fps to 1046 frames
+[2024-04-29 13:04:52,175][func.train][INFO] - [DATASET] video 59 label_list: torch.Size([1046])
+[2024-04-29 13:04:52,215][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:52,216][func.train][INFO] - [DATASET] avg video length: 17.43 minutes
+[2024-04-29 13:04:54,076][func.train][INFO] - [DATASET] test size: 63301
+[2024-04-29 13:04:54,076][func.train][INFO] - [DATASET] test video_indices: [60]
+[2024-04-29 13:04:54,076][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:54,092][func.train][INFO] - [DATASET] Sampling video_idx: 60 at 25 fps to 2532 frames
+[2024-04-29 13:04:54,093][func.train][INFO] - [DATASET] video 60 label_list: torch.Size([2532])
+[2024-04-29 13:04:54,217][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:54,217][func.train][INFO] - [DATASET] avg video length: 42.20 minutes
+[2024-04-29 13:04:55,952][func.train][INFO] - [DATASET] test size: 110226
+[2024-04-29 13:04:55,952][func.train][INFO] - [DATASET] test video_indices: [61]
+[2024-04-29 13:04:55,952][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:55,971][func.train][INFO] - [DATASET] Sampling video_idx: 61 at 25 fps to 4409 frames
+[2024-04-29 13:04:55,973][func.train][INFO] - [DATASET] video 61 label_list: torch.Size([4409])
+[2024-04-29 13:04:56,044][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:56,044][func.train][INFO] - [DATASET] avg video length: 73.48 minutes
+[2024-04-29 13:04:57,451][func.train][INFO] - [DATASET] test size: 50801
+[2024-04-29 13:04:57,451][func.train][INFO] - [DATASET] test video_indices: [62]
+[2024-04-29 13:04:57,451][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:57,459][func.train][INFO] - [DATASET] Sampling video_idx: 62 at 25 fps to 2032 frames
+[2024-04-29 13:04:57,460][func.train][INFO] - [DATASET] video 62 label_list: torch.Size([2032])
+[2024-04-29 13:04:57,500][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:57,501][func.train][INFO] - [DATASET] avg video length: 33.87 minutes
+[2024-04-29 13:04:58,907][func.train][INFO] - [DATASET] test size: 85826
+[2024-04-29 13:04:58,908][func.train][INFO] - [DATASET] test video_indices: [63]
+[2024-04-29 13:04:58,908][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:04:58,922][func.train][INFO] - [DATASET] Sampling video_idx: 63 at 25 fps to 3433 frames
+[2024-04-29 13:04:58,923][func.train][INFO] - [DATASET] video 63 label_list: torch.Size([3433])
+[2024-04-29 13:04:58,982][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:04:58,983][func.train][INFO] - [DATASET] avg video length: 57.22 minutes
+[2024-04-29 13:05:00,771][func.train][INFO] - [DATASET] test size: 59951
+[2024-04-29 13:05:00,771][func.train][INFO] - [DATASET] test video_indices: [64]
+[2024-04-29 13:05:00,771][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:05:00,787][func.train][INFO] - [DATASET] Sampling video_idx: 64 at 25 fps to 2398 frames
+[2024-04-29 13:05:00,789][func.train][INFO] - [DATASET] video 64 label_list: torch.Size([2398])
+[2024-04-29 13:05:00,833][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:05:00,833][func.train][INFO] - [DATASET] avg video length: 39.97 minutes
+[2024-04-29 13:05:02,684][func.train][INFO] - [DATASET] test size: 46826
+[2024-04-29 13:05:03,042][func.train][INFO] - [DATASET] test video_indices: [65]
+[2024-04-29 13:05:03,042][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:05:03,055][func.train][INFO] - [DATASET] Sampling video_idx: 65 at 25 fps to 1873 frames
+[2024-04-29 13:05:03,057][func.train][INFO] - [DATASET] video 65 label_list: torch.Size([1873])
+[2024-04-29 13:05:03,091][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:05:03,092][func.train][INFO] - [DATASET] avg video length: 31.22 minutes
+[2024-04-29 13:05:04,771][func.train][INFO] - [DATASET] test size: 45601
+[2024-04-29 13:05:04,772][func.train][INFO] - [DATASET] test video_indices: [66]
+[2024-04-29 13:05:04,772][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:05:04,781][func.train][INFO] - [DATASET] Sampling video_idx: 66 at 25 fps to 1824 frames
+[2024-04-29 13:05:04,782][func.train][INFO] - [DATASET] video 66 label_list: torch.Size([1824])
+[2024-04-29 13:05:04,834][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:05:04,834][func.train][INFO] - [DATASET] avg video length: 30.40 minutes
+[2024-04-29 13:05:06,274][func.train][INFO] - [DATASET] test size: 58826
+[2024-04-29 13:05:06,274][func.train][INFO] - [DATASET] test video_indices: [67]
+[2024-04-29 13:05:06,274][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:05:06,285][func.train][INFO] - [DATASET] Sampling video_idx: 67 at 25 fps to 2353 frames
+[2024-04-29 13:05:06,286][func.train][INFO] - [DATASET] video 67 label_list: torch.Size([2353])
+[2024-04-29 13:05:06,333][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:05:06,333][func.train][INFO] - [DATASET] avg video length: 39.22 minutes
+[2024-04-29 13:05:07,883][func.train][INFO] - [DATASET] test size: 49301
+[2024-04-29 13:05:07,883][func.train][INFO] - [DATASET] test video_indices: [68]
+[2024-04-29 13:05:07,883][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:05:07,895][func.train][INFO] - [DATASET] Sampling video_idx: 68 at 25 fps to 1972 frames
+[2024-04-29 13:05:07,896][func.train][INFO] - [DATASET] video 68 label_list: torch.Size([1972])
+[2024-04-29 13:05:07,947][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:05:07,947][func.train][INFO] - [DATASET] avg video length: 32.87 minutes
+[2024-04-29 13:05:09,765][func.train][INFO] - [DATASET] test size: 114376
+[2024-04-29 13:05:09,765][func.train][INFO] - [DATASET] test video_indices: [69]
+[2024-04-29 13:05:09,765][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:05:09,792][func.train][INFO] - [DATASET] Sampling video_idx: 69 at 25 fps to 4575 frames
+[2024-04-29 13:05:09,794][func.train][INFO] - [DATASET] video 69 label_list: torch.Size([4575])
+[2024-04-29 13:05:09,884][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:05:09,884][func.train][INFO] - [DATASET] avg video length: 76.25 minutes
+[2024-04-29 13:05:11,667][func.train][INFO] - [DATASET] test size: 29851
+[2024-04-29 13:05:11,668][func.train][INFO] - [DATASET] test video_indices: [70]
+[2024-04-29 13:05:11,668][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:05:11,675][func.train][INFO] - [DATASET] Sampling video_idx: 70 at 25 fps to 1194 frames
+[2024-04-29 13:05:11,677][func.train][INFO] - [DATASET] video 70 label_list: torch.Size([1194])
+[2024-04-29 13:05:11,711][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:05:11,711][func.train][INFO] - [DATASET] avg video length: 19.90 minutes
+[2024-04-29 13:05:13,499][func.train][INFO] - [DATASET] test size: 62876
+[2024-04-29 13:05:13,500][func.train][INFO] - [DATASET] test video_indices: [71]
+[2024-04-29 13:05:13,500][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:05:13,515][func.train][INFO] - [DATASET] Sampling video_idx: 71 at 25 fps to 2515 frames
+[2024-04-29 13:05:13,517][func.train][INFO] - [DATASET] video 71 label_list: torch.Size([2515])
+[2024-04-29 13:05:13,585][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:05:13,586][func.train][INFO] - [DATASET] avg video length: 41.92 minutes
+[2024-04-29 13:05:15,386][func.train][INFO] - [DATASET] test size: 77651
+[2024-04-29 13:05:15,387][func.train][INFO] - [DATASET] test video_indices: [72]
+[2024-04-29 13:05:15,387][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:05:15,405][func.train][INFO] - [DATASET] Sampling video_idx: 72 at 25 fps to 3106 frames
+[2024-04-29 13:05:15,407][func.train][INFO] - [DATASET] video 72 label_list: torch.Size([3106])
+[2024-04-29 13:05:15,455][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:05:15,455][func.train][INFO] - [DATASET] avg video length: 51.77 minutes
+[2024-04-29 13:05:17,276][func.train][INFO] - [DATASET] test size: 33901
+[2024-04-29 13:05:17,276][func.train][INFO] - [DATASET] test video_indices: [73]
+[2024-04-29 13:05:17,276][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:05:17,285][func.train][INFO] - [DATASET] Sampling video_idx: 73 at 25 fps to 1356 frames
+[2024-04-29 13:05:17,286][func.train][INFO] - [DATASET] video 73 label_list: torch.Size([1356])
+[2024-04-29 13:05:17,314][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:05:17,314][func.train][INFO] - [DATASET] avg video length: 22.60 minutes
+[2024-04-29 13:05:19,084][func.train][INFO] - [DATASET] test size: 40851
+[2024-04-29 13:05:19,084][func.train][INFO] - [DATASET] test video_indices: [74]
+[2024-04-29 13:05:19,084][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:05:19,094][func.train][INFO] - [DATASET] Sampling video_idx: 74 at 25 fps to 1634 frames
+[2024-04-29 13:05:19,095][func.train][INFO] - [DATASET] video 74 label_list: torch.Size([1634])
+[2024-04-29 13:05:19,136][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:05:19,137][func.train][INFO] - [DATASET] avg video length: 27.23 minutes
+[2024-04-29 13:05:21,049][func.train][INFO] - [DATASET] test size: 48076
+[2024-04-29 13:05:21,050][func.train][INFO] - [DATASET] test video_indices: [75]
+[2024-04-29 13:05:21,050][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:05:21,063][func.train][INFO] - [DATASET] Sampling video_idx: 75 at 25 fps to 1923 frames
+[2024-04-29 13:05:21,065][func.train][INFO] - [DATASET] video 75 label_list: torch.Size([1923])
+[2024-04-29 13:05:21,136][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:05:21,136][func.train][INFO] - [DATASET] avg video length: 32.05 minutes
+[2024-04-29 13:05:23,025][func.train][INFO] - [DATASET] test size: 66226
+[2024-04-29 13:05:23,026][func.train][INFO] - [DATASET] test video_indices: [76]
+[2024-04-29 13:05:23,026][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:05:23,045][func.train][INFO] - [DATASET] Sampling video_idx: 76 at 25 fps to 2649 frames
+[2024-04-29 13:05:23,046][func.train][INFO] - [DATASET] video 76 label_list: torch.Size([2649])
+[2024-04-29 13:05:24,830][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:05:24,830][func.train][INFO] - [DATASET] avg video length: 44.15 minutes
+[2024-04-29 13:05:26,278][func.train][INFO] - [DATASET] test size: 62551
+[2024-04-29 13:05:26,278][func.train][INFO] - [DATASET] test video_indices: [77]
+[2024-04-29 13:05:26,278][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:05:26,289][func.train][INFO] - [DATASET] Sampling video_idx: 77 at 25 fps to 2502 frames
+[2024-04-29 13:05:26,290][func.train][INFO] - [DATASET] video 77 label_list: torch.Size([2502])
+[2024-04-29 13:05:26,438][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:05:26,439][func.train][INFO] - [DATASET] avg video length: 41.70 minutes
+[2024-04-29 13:05:27,864][func.train][INFO] - [DATASET] test size: 18476
+[2024-04-29 13:05:27,864][func.train][INFO] - [DATASET] test video_indices: [78]
+[2024-04-29 13:05:27,864][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:05:27,868][func.train][INFO] - [DATASET] Sampling video_idx: 78 at 25 fps to 739 frames
+[2024-04-29 13:05:27,869][func.train][INFO] - [DATASET] video 78 label_list: torch.Size([739])
+[2024-04-29 13:05:27,916][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:05:27,916][func.train][INFO] - [DATASET] avg video length: 12.32 minutes
+[2024-04-29 13:05:29,887][func.train][INFO] - [DATASET] test size: 85351
+[2024-04-29 13:05:29,888][func.train][INFO] - [DATASET] test video_indices: [79]
+[2024-04-29 13:05:29,888][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:05:29,909][func.train][INFO] - [DATASET] Sampling video_idx: 79 at 25 fps to 3414 frames
+[2024-04-29 13:05:29,911][func.train][INFO] - [DATASET] video 79 label_list: torch.Size([3414])
+[2024-04-29 13:05:30,013][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:05:30,013][func.train][INFO] - [DATASET] avg video length: 56.90 minutes
+[2024-04-29 13:05:31,995][func.train][INFO] - [DATASET] test size: 43101
+[2024-04-29 13:05:31,995][func.train][INFO] - [DATASET] test video_indices: [80]
+[2024-04-29 13:05:31,995][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:05:32,006][func.train][INFO] - [DATASET] Sampling video_idx: 80 at 25 fps to 1724 frames
+[2024-04-29 13:05:32,007][func.train][INFO] - [DATASET] video 80 label_list: torch.Size([1724])
+[2024-04-29 13:05:32,054][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:05:32,055][func.train][INFO] - [DATASET] avg video length: 28.73 minutes
+[2024-04-29 13:05:32,059][func.train][INFO] - Time to load datasets: 1.56 min
+[2024-04-29 13:05:32,060][func.train][INFO] - Creating data loaders
+[2024-04-29 13:05:32,063][func.train][INFO] - Creating model with {'one': 7} classes
+[2024-04-29 13:05:32,783][func.train][INFO] - [MAIN] Number of tokens: 86304
+[2024-04-29 13:05:32,783][func.train][INFO] - [MAIN] Number of parameters: 17789654
+[2024-04-29 13:05:32,783][func.train][INFO] - [MAIN] Token-to-Parameter Ratio is ideally between [1:1 to 10:1]: 0.004851
+[2024-04-29 13:05:32,784][func.train][WARNING] - [MAIN] Data-to-Parameter-Ratio is outside the interval [1:1 to 10:1]
+[2024-04-29 13:05:32,785][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-04-29 13:05:32,785][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-04-29 13:05:32,792][func.train][INFO] - Wrapping model into DP
+[2024-04-29 13:05:33,085][func.train][INFO] - Start training
+[2024-04-29 13:05:33,090][func.train][INFO] - Storing checkpoints every 60.00 mins
+[2024-04-29 13:21:38,050][func.train][INFO] - Dist info:
+[2024-04-29 13:21:38,050][func.train][INFO] - torch version: 2.2.2+cu121
+[2024-04-29 13:21:38,051][func.train][INFO] - torchvision version: 0.17.2+cu121
+[2024-04-29 13:21:38,051][func.train][INFO] - hydra version: 1.3.2
+[2024-04-29 13:21:38,073][func.train][INFO] - Loading data
+[2024-04-29 13:21:38,073][func.train][INFO] - Loading datasets
+[2024-04-29 13:21:40,395][func.train][INFO] - [DATASET] ALL loaded dataframe in 0m 2s
+[2024-04-29 13:21:40,395][func.train][INFO] - [DATASET] ALL loaded dataframe: (4612530, 11)
+[2024-04-29 13:21:40,942][func.train][INFO] - [DATASET] params: {'debug': False, 'dataset_name': 'cholec80', 'reduc_feats_folder': 'train_targets_x_mp/', 'num_classes': 7, 'num_next_labels': 6, 'last_seg_class': 7, 'predict_next_phase': True, 'get_target_feats': False, 'replace_current_with_next_class': False}
+[2024-04-29 13:21:43,419][func.train][INFO] - [DATASET] train size: 2157640
+[2024-04-29 13:21:43,419][func.train][INFO] - [DATASET] train video_indices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
+[2024-04-29 13:21:43,419][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:21:43,516][func.train][INFO] - [DATASET] Sampling video_idx: 1 at 25 fps to 1733 frames
+[2024-04-29 13:21:43,736][func.train][INFO] - [DATASET] video 1 label_list: torch.Size([1733])
+[2024-04-29 13:21:43,974][func.train][INFO] - [DATASET] Sampling video_idx: 2 at 25 fps to 2839 frames
+[2024-04-29 13:21:43,975][func.train][INFO] - [DATASET] video 2 label_list: torch.Size([2839])
+[2024-04-29 13:21:44,122][func.train][INFO] - [DATASET] Sampling video_idx: 3 at 25 fps to 5828 frames
+[2024-04-29 13:21:44,124][func.train][INFO] - [DATASET] video 3 label_list: torch.Size([5828])
+[2024-04-29 13:21:44,273][func.train][INFO] - [DATASET] Sampling video_idx: 4 at 25 fps to 1522 frames
+[2024-04-29 13:21:44,274][func.train][INFO] - [DATASET] video 4 label_list: torch.Size([1522])
+[2024-04-29 13:21:44,402][func.train][INFO] - [DATASET] Sampling video_idx: 5 at 25 fps to 2344 frames
+[2024-04-29 13:21:44,403][func.train][INFO] - [DATASET] video 5 label_list: torch.Size([2344])
+[2024-04-29 13:21:44,532][func.train][INFO] - [DATASET] Sampling video_idx: 6 at 25 fps to 2153 frames
+[2024-04-29 13:21:44,534][func.train][INFO] - [DATASET] video 6 label_list: torch.Size([2153])
+[2024-04-29 13:21:44,667][func.train][INFO] - [DATASET] Sampling video_idx: 7 at 25 fps to 4557 frames
+[2024-04-29 13:21:44,669][func.train][INFO] - [DATASET] video 7 label_list: torch.Size([4557])
+[2024-04-29 13:21:44,808][func.train][INFO] - [DATASET] Sampling video_idx: 8 at 25 fps to 1519 frames
+[2024-04-29 13:21:44,809][func.train][INFO] - [DATASET] video 8 label_list: torch.Size([1519])
+[2024-04-29 13:21:44,934][func.train][INFO] - [DATASET] Sampling video_idx: 9 at 25 fps to 2702 frames
+[2024-04-29 13:21:44,935][func.train][INFO] - [DATASET] video 9 label_list: torch.Size([2702])
+[2024-04-29 13:21:45,056][func.train][INFO] - [DATASET] Sampling video_idx: 10 at 25 fps to 1749 frames
+[2024-04-29 13:21:45,057][func.train][INFO] - [DATASET] video 10 label_list: torch.Size([1749])
+[2024-04-29 13:21:45,174][func.train][INFO] - [DATASET] Sampling video_idx: 11 at 25 fps to 3220 frames
+[2024-04-29 13:21:45,175][func.train][INFO] - [DATASET] video 11 label_list: torch.Size([3220])
+[2024-04-29 13:21:45,308][func.train][INFO] - [DATASET] Sampling video_idx: 12 at 25 fps to 1090 frames
+[2024-04-29 13:21:45,309][func.train][INFO] - [DATASET] video 12 label_list: torch.Size([1090])
+[2024-04-29 13:21:45,418][func.train][INFO] - [DATASET] Sampling video_idx: 13 at 25 fps to 981 frames
+[2024-04-29 13:21:45,418][func.train][INFO] - [DATASET] video 13 label_list: torch.Size([981])
+[2024-04-29 13:21:45,526][func.train][INFO] - [DATASET] Sampling video_idx: 14 at 25 fps to 1708 frames
+[2024-04-29 13:21:45,527][func.train][INFO] - [DATASET] video 14 label_list: torch.Size([1708])
+[2024-04-29 13:21:45,651][func.train][INFO] - [DATASET] Sampling video_idx: 15 at 25 fps to 2058 frames
+[2024-04-29 13:21:45,652][func.train][INFO] - [DATASET] video 15 label_list: torch.Size([2058])
+[2024-04-29 13:21:45,772][func.train][INFO] - [DATASET] Sampling video_idx: 16 at 25 fps to 2957 frames
+[2024-04-29 13:21:45,774][func.train][INFO] - [DATASET] video 16 label_list: torch.Size([2957])
+[2024-04-29 13:21:45,909][func.train][INFO] - [DATASET] Sampling video_idx: 17 at 25 fps to 1304 frames
+[2024-04-29 13:21:45,910][func.train][INFO] - [DATASET] video 17 label_list: torch.Size([1304])
+[2024-04-29 13:21:46,020][func.train][INFO] - [DATASET] Sampling video_idx: 18 at 25 fps to 1942 frames
+[2024-04-29 13:21:46,021][func.train][INFO] - [DATASET] video 18 label_list: torch.Size([1942])
+[2024-04-29 13:21:46,155][func.train][INFO] - [DATASET] Sampling video_idx: 19 at 25 fps to 2424 frames
+[2024-04-29 13:21:46,156][func.train][INFO] - [DATASET] video 19 label_list: torch.Size([2424])
+[2024-04-29 13:21:46,280][func.train][INFO] - [DATASET] Sampling video_idx: 20 at 25 fps to 1449 frames
+[2024-04-29 13:21:46,281][func.train][INFO] - [DATASET] video 20 label_list: torch.Size([1449])
+[2024-04-29 13:21:46,398][func.train][INFO] - [DATASET] Sampling video_idx: 21 at 25 fps to 1258 frames
+[2024-04-29 13:21:46,399][func.train][INFO] - [DATASET] video 21 label_list: torch.Size([1258])
+[2024-04-29 13:21:46,514][func.train][INFO] - [DATASET] Sampling video_idx: 22 at 25 fps to 1532 frames
+[2024-04-29 13:21:46,515][func.train][INFO] - [DATASET] video 22 label_list: torch.Size([1532])
+[2024-04-29 13:21:46,636][func.train][INFO] - [DATASET] Sampling video_idx: 23 at 25 fps to 1635 frames
+[2024-04-29 13:21:46,637][func.train][INFO] - [DATASET] video 23 label_list: torch.Size([1635])
+[2024-04-29 13:21:46,755][func.train][INFO] - [DATASET] Sampling video_idx: 24 at 25 fps to 1975 frames
+[2024-04-29 13:21:46,756][func.train][INFO] - [DATASET] video 24 label_list: torch.Size([1975])
+[2024-04-29 13:21:46,877][func.train][INFO] - [DATASET] Sampling video_idx: 25 at 25 fps to 2129 frames
+[2024-04-29 13:21:46,878][func.train][INFO] - [DATASET] video 25 label_list: torch.Size([2129])
+[2024-04-29 13:21:46,992][func.train][INFO] - [DATASET] Sampling video_idx: 26 at 25 fps to 1773 frames
+[2024-04-29 13:21:46,993][func.train][INFO] - [DATASET] video 26 label_list: torch.Size([1773])
+[2024-04-29 13:21:47,114][func.train][INFO] - [DATASET] Sampling video_idx: 27 at 25 fps to 2084 frames
+[2024-04-29 13:21:47,115][func.train][INFO] - [DATASET] video 27 label_list: torch.Size([2084])
+[2024-04-29 13:21:47,237][func.train][INFO] - [DATASET] Sampling video_idx: 28 at 25 fps to 1199 frames
+[2024-04-29 13:21:47,238][func.train][INFO] - [DATASET] video 28 label_list: torch.Size([1199])
+[2024-04-29 13:21:47,349][func.train][INFO] - [DATASET] Sampling video_idx: 29 at 25 fps to 2350 frames
+[2024-04-29 13:21:47,350][func.train][INFO] - [DATASET] video 29 label_list: torch.Size([2350])
+[2024-04-29 13:21:47,481][func.train][INFO] - [DATASET] Sampling video_idx: 30 at 25 fps to 2925 frames
+[2024-04-29 13:21:47,483][func.train][INFO] - [DATASET] video 30 label_list: torch.Size([2925])
+[2024-04-29 13:21:47,622][func.train][INFO] - [DATASET] Sampling video_idx: 31 at 25 fps to 3945 frames
+[2024-04-29 13:21:47,624][func.train][INFO] - [DATASET] video 31 label_list: torch.Size([3945])
+[2024-04-29 13:21:47,771][func.train][INFO] - [DATASET] Sampling video_idx: 32 at 25 fps to 2116 frames
+[2024-04-29 13:21:47,772][func.train][INFO] - [DATASET] video 32 label_list: torch.Size([2116])
+[2024-04-29 13:21:47,895][func.train][INFO] - [DATASET] Sampling video_idx: 33 at 25 fps to 1307 frames
+[2024-04-29 13:21:47,896][func.train][INFO] - [DATASET] video 33 label_list: torch.Size([1307])
+[2024-04-29 13:21:48,006][func.train][INFO] - [DATASET] Sampling video_idx: 34 at 25 fps to 1323 frames
+[2024-04-29 13:21:48,007][func.train][INFO] - [DATASET] video 34 label_list: torch.Size([1323])
+[2024-04-29 13:21:48,124][func.train][INFO] - [DATASET] Sampling video_idx: 35 at 25 fps to 2106 frames
+[2024-04-29 13:21:48,125][func.train][INFO] - [DATASET] video 35 label_list: torch.Size([2106])
+[2024-04-29 13:21:48,250][func.train][INFO] - [DATASET] Sampling video_idx: 36 at 25 fps to 2387 frames
+[2024-04-29 13:21:48,251][func.train][INFO] - [DATASET] video 36 label_list: torch.Size([2387])
+[2024-04-29 13:21:48,380][func.train][INFO] - [DATASET] Sampling video_idx: 37 at 25 fps to 1232 frames
+[2024-04-29 13:21:48,381][func.train][INFO] - [DATASET] video 37 label_list: torch.Size([1232])
+[2024-04-29 13:21:48,497][func.train][INFO] - [DATASET] Sampling video_idx: 38 at 25 fps to 3080 frames
+[2024-04-29 13:21:48,499][func.train][INFO] - [DATASET] video 38 label_list: torch.Size([3080])
+[2024-04-29 13:21:48,633][func.train][INFO] - [DATASET] Sampling video_idx: 39 at 25 fps to 1647 frames
+[2024-04-29 13:21:48,634][func.train][INFO] - [DATASET] video 39 label_list: torch.Size([1647])
+[2024-04-29 13:21:48,759][func.train][INFO] - [DATASET] Sampling video_idx: 40 at 25 fps to 2222 frames
+[2024-04-29 13:21:48,760][func.train][INFO] - [DATASET] video 40 label_list: torch.Size([2222])
+[2024-04-29 13:21:48,794][func.train][INFO] - [DATASET] number of train videos: 40
+[2024-04-29 13:21:48,794][func.train][INFO] - [DATASET] avg video length: 35.96 minutes
+[2024-04-29 13:21:49,018][func.train][INFO] - [DATASET] classes_counts: {0: 93902, 1: 922150, 2: 183225, 3: 602975, 4: 92900, 5: 180478, 6: 82010}
+[2024-04-29 13:21:49,019][func.train][INFO] - [DATASET] curr_class_weights: tensor([0.3342, 1.6821, 0.5112, 3.3171, 1.7077, 3.7575, 3.2818])
+[2024-04-29 13:21:50,346][func.train][INFO] - [DATASET] test size: 77576
+[2024-04-29 13:21:50,347][func.train][INFO] - [DATASET] test video_indices: [41]
+[2024-04-29 13:21:50,347][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:21:50,360][func.train][INFO] - [DATASET] Sampling video_idx: 41 at 25 fps to 3103 frames
+[2024-04-29 13:21:50,361][func.train][INFO] - [DATASET] video 41 label_list: torch.Size([3103])
+[2024-04-29 13:21:50,424][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:21:50,424][func.train][INFO] - [DATASET] avg video length: 51.72 minutes
+[2024-04-29 13:21:51,838][func.train][INFO] - [DATASET] test size: 92801
+[2024-04-29 13:21:51,838][func.train][INFO] - [DATASET] test video_indices: [42]
+[2024-04-29 13:21:51,838][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:21:51,854][func.train][INFO] - [DATASET] Sampling video_idx: 42 at 25 fps to 3712 frames
+[2024-04-29 13:21:51,856][func.train][INFO] - [DATASET] video 42 label_list: torch.Size([3712])
+[2024-04-29 13:21:51,898][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:21:51,898][func.train][INFO] - [DATASET] avg video length: 61.87 minutes
+[2024-04-29 13:21:53,210][func.train][INFO] - [DATASET] test size: 59051
+[2024-04-29 13:21:53,210][func.train][INFO] - [DATASET] test video_indices: [43]
+[2024-04-29 13:21:53,210][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:21:53,220][func.train][INFO] - [DATASET] Sampling video_idx: 43 at 25 fps to 2362 frames
+[2024-04-29 13:21:53,221][func.train][INFO] - [DATASET] video 43 label_list: torch.Size([2362])
+[2024-04-29 13:21:53,255][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:21:53,255][func.train][INFO] - [DATASET] avg video length: 39.37 minutes
+[2024-04-29 13:21:54,573][func.train][INFO] - [DATASET] test size: 78176
+[2024-04-29 13:21:54,573][func.train][INFO] - [DATASET] test video_indices: [44]
+[2024-04-29 13:21:54,573][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:21:54,587][func.train][INFO] - [DATASET] Sampling video_idx: 44 at 25 fps to 3127 frames
+[2024-04-29 13:21:54,588][func.train][INFO] - [DATASET] video 44 label_list: torch.Size([3127])
+[2024-04-29 13:21:54,638][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:21:54,639][func.train][INFO] - [DATASET] avg video length: 52.12 minutes
+[2024-04-29 13:21:55,980][func.train][INFO] - [DATASET] test size: 84676
+[2024-04-29 13:21:55,981][func.train][INFO] - [DATASET] test video_indices: [45]
+[2024-04-29 13:21:55,981][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:21:55,994][func.train][INFO] - [DATASET] Sampling video_idx: 45 at 25 fps to 3387 frames
+[2024-04-29 13:21:55,995][func.train][INFO] - [DATASET] video 45 label_list: torch.Size([3387])
+[2024-04-29 13:21:56,063][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:21:56,063][func.train][INFO] - [DATASET] avg video length: 56.45 minutes
+[2024-04-29 13:21:57,386][func.train][INFO] - [DATASET] test size: 41326
+[2024-04-29 13:21:57,386][func.train][INFO] - [DATASET] test video_indices: [46]
+[2024-04-29 13:21:57,387][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:21:57,397][func.train][INFO] - [DATASET] Sampling video_idx: 46 at 25 fps to 1653 frames
+[2024-04-29 13:21:57,398][func.train][INFO] - [DATASET] video 46 label_list: torch.Size([1653])
+[2024-04-29 13:21:57,428][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:21:57,428][func.train][INFO] - [DATASET] avg video length: 27.55 minutes
+[2024-04-29 13:21:58,889][func.train][INFO] - [DATASET] test size: 56476
+[2024-04-29 13:21:58,889][func.train][INFO] - [DATASET] test video_indices: [47]
+[2024-04-29 13:21:58,889][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:21:58,899][func.train][INFO] - [DATASET] Sampling video_idx: 47 at 25 fps to 2259 frames
+[2024-04-29 13:21:58,900][func.train][INFO] - [DATASET] video 47 label_list: torch.Size([2259])
+[2024-04-29 13:21:58,936][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:21:58,937][func.train][INFO] - [DATASET] avg video length: 37.65 minutes
+[2024-04-29 13:22:00,246][func.train][INFO] - [DATASET] test size: 45851
+[2024-04-29 13:22:00,246][func.train][INFO] - [DATASET] test video_indices: [48]
+[2024-04-29 13:22:00,246][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:00,253][func.train][INFO] - [DATASET] Sampling video_idx: 48 at 25 fps to 1834 frames
+[2024-04-29 13:22:00,254][func.train][INFO] - [DATASET] video 48 label_list: torch.Size([1834])
+[2024-04-29 13:22:00,292][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:00,292][func.train][INFO] - [DATASET] avg video length: 30.57 minutes
+[2024-04-29 13:22:01,601][func.train][INFO] - [DATASET] test size: 41776
+[2024-04-29 13:22:01,601][func.train][INFO] - [DATASET] test video_indices: [49]
+[2024-04-29 13:22:01,601][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:01,608][func.train][INFO] - [DATASET] Sampling video_idx: 49 at 25 fps to 1671 frames
+[2024-04-29 13:22:01,609][func.train][INFO] - [DATASET] video 49 label_list: torch.Size([1671])
+[2024-04-29 13:22:01,637][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:01,637][func.train][INFO] - [DATASET] avg video length: 27.85 minutes
+[2024-04-29 13:22:02,947][func.train][INFO] - [DATASET] test size: 27351
+[2024-04-29 13:22:02,947][func.train][INFO] - [DATASET] test video_indices: [50]
+[2024-04-29 13:22:02,947][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:02,952][func.train][INFO] - [DATASET] Sampling video_idx: 50 at 25 fps to 1094 frames
+[2024-04-29 13:22:02,953][func.train][INFO] - [DATASET] video 50 label_list: torch.Size([1094])
+[2024-04-29 13:22:02,967][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:02,967][func.train][INFO] - [DATASET] avg video length: 18.23 minutes
+[2024-04-29 13:22:04,283][func.train][INFO] - [DATASET] test size: 73601
+[2024-04-29 13:22:04,284][func.train][INFO] - [DATASET] test video_indices: [51]
+[2024-04-29 13:22:04,284][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:04,297][func.train][INFO] - [DATASET] Sampling video_idx: 51 at 25 fps to 2944 frames
+[2024-04-29 13:22:04,298][func.train][INFO] - [DATASET] video 51 label_list: torch.Size([2944])
+[2024-04-29 13:22:04,339][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:04,339][func.train][INFO] - [DATASET] avg video length: 49.07 minutes
+[2024-04-29 13:22:05,641][func.train][INFO] - [DATASET] test size: 49151
+[2024-04-29 13:22:05,641][func.train][INFO] - [DATASET] test video_indices: [52]
+[2024-04-29 13:22:05,641][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:05,649][func.train][INFO] - [DATASET] Sampling video_idx: 52 at 25 fps to 1966 frames
+[2024-04-29 13:22:05,650][func.train][INFO] - [DATASET] video 52 label_list: torch.Size([1966])
+[2024-04-29 13:22:05,681][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:05,681][func.train][INFO] - [DATASET] avg video length: 32.77 minutes
+[2024-04-29 13:22:06,999][func.train][INFO] - [DATASET] test size: 82076
+[2024-04-29 13:22:07,000][func.train][INFO] - [DATASET] test video_indices: [53]
+[2024-04-29 13:22:07,000][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:07,013][func.train][INFO] - [DATASET] Sampling video_idx: 53 at 25 fps to 3283 frames
+[2024-04-29 13:22:07,015][func.train][INFO] - [DATASET] video 53 label_list: torch.Size([3283])
+[2024-04-29 13:22:07,106][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:07,106][func.train][INFO] - [DATASET] avg video length: 54.72 minutes
+[2024-04-29 13:22:08,437][func.train][INFO] - [DATASET] test size: 77501
+[2024-04-29 13:22:08,437][func.train][INFO] - [DATASET] test video_indices: [54]
+[2024-04-29 13:22:08,437][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:08,451][func.train][INFO] - [DATASET] Sampling video_idx: 54 at 25 fps to 3100 frames
+[2024-04-29 13:22:08,452][func.train][INFO] - [DATASET] video 54 label_list: torch.Size([3100])
+[2024-04-29 13:22:08,582][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:08,582][func.train][INFO] - [DATASET] avg video length: 51.67 minutes
+[2024-04-29 13:22:09,903][func.train][INFO] - [DATASET] test size: 25926
+[2024-04-29 13:22:09,904][func.train][INFO] - [DATASET] test video_indices: [55]
+[2024-04-29 13:22:09,904][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:09,908][func.train][INFO] - [DATASET] Sampling video_idx: 55 at 25 fps to 1037 frames
+[2024-04-29 13:22:09,909][func.train][INFO] - [DATASET] video 55 label_list: torch.Size([1037])
+[2024-04-29 13:22:09,960][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:09,960][func.train][INFO] - [DATASET] avg video length: 17.28 minutes
+[2024-04-29 13:22:11,342][func.train][INFO] - [DATASET] test size: 45851
+[2024-04-29 13:22:11,342][func.train][INFO] - [DATASET] test video_indices: [56]
+[2024-04-29 13:22:11,342][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:11,350][func.train][INFO] - [DATASET] Sampling video_idx: 56 at 25 fps to 1834 frames
+[2024-04-29 13:22:11,351][func.train][INFO] - [DATASET] video 56 label_list: torch.Size([1834])
+[2024-04-29 13:22:11,388][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:11,388][func.train][INFO] - [DATASET] avg video length: 30.57 minutes
+[2024-04-29 13:22:12,690][func.train][INFO] - [DATASET] test size: 65801
+[2024-04-29 13:22:12,690][func.train][INFO] - [DATASET] test video_indices: [57]
+[2024-04-29 13:22:12,690][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:12,701][func.train][INFO] - [DATASET] Sampling video_idx: 57 at 25 fps to 2632 frames
+[2024-04-29 13:22:12,703][func.train][INFO] - [DATASET] video 57 label_list: torch.Size([2632])
+[2024-04-29 13:22:12,736][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:12,737][func.train][INFO] - [DATASET] avg video length: 43.87 minutes
+[2024-04-29 13:22:14,120][func.train][INFO] - [DATASET] test size: 149826
+[2024-04-29 13:22:14,120][func.train][INFO] - [DATASET] test video_indices: [58]
+[2024-04-29 13:22:14,120][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:14,147][func.train][INFO] - [DATASET] Sampling video_idx: 58 at 25 fps to 5993 frames
+[2024-04-29 13:22:14,150][func.train][INFO] - [DATASET] video 58 label_list: torch.Size([5993])
+[2024-04-29 13:22:14,223][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:14,223][func.train][INFO] - [DATASET] avg video length: 99.88 minutes
+[2024-04-29 13:22:15,533][func.train][INFO] - [DATASET] test size: 26151
+[2024-04-29 13:22:15,533][func.train][INFO] - [DATASET] test video_indices: [59]
+[2024-04-29 13:22:15,533][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:15,537][func.train][INFO] - [DATASET] Sampling video_idx: 59 at 25 fps to 1046 frames
+[2024-04-29 13:22:15,538][func.train][INFO] - [DATASET] video 59 label_list: torch.Size([1046])
+[2024-04-29 13:22:15,557][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:15,557][func.train][INFO] - [DATASET] avg video length: 17.43 minutes
+[2024-04-29 13:22:16,868][func.train][INFO] - [DATASET] test size: 63301
+[2024-04-29 13:22:16,869][func.train][INFO] - [DATASET] test video_indices: [60]
+[2024-04-29 13:22:16,869][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:16,880][func.train][INFO] - [DATASET] Sampling video_idx: 60 at 25 fps to 2532 frames
+[2024-04-29 13:22:16,881][func.train][INFO] - [DATASET] video 60 label_list: torch.Size([2532])
+[2024-04-29 13:22:16,977][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:16,978][func.train][INFO] - [DATASET] avg video length: 42.20 minutes
+[2024-04-29 13:22:18,292][func.train][INFO] - [DATASET] test size: 110226
+[2024-04-29 13:22:18,293][func.train][INFO] - [DATASET] test video_indices: [61]
+[2024-04-29 13:22:18,293][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:18,310][func.train][INFO] - [DATASET] Sampling video_idx: 61 at 25 fps to 4409 frames
+[2024-04-29 13:22:18,312][func.train][INFO] - [DATASET] video 61 label_list: torch.Size([4409])
+[2024-04-29 13:22:18,364][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:18,365][func.train][INFO] - [DATASET] avg video length: 73.48 minutes
+[2024-04-29 13:22:19,653][func.train][INFO] - [DATASET] test size: 50801
+[2024-04-29 13:22:19,653][func.train][INFO] - [DATASET] test video_indices: [62]
+[2024-04-29 13:22:19,654][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:19,662][func.train][INFO] - [DATASET] Sampling video_idx: 62 at 25 fps to 2032 frames
+[2024-04-29 13:22:19,663][func.train][INFO] - [DATASET] video 62 label_list: torch.Size([2032])
+[2024-04-29 13:22:19,689][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:19,689][func.train][INFO] - [DATASET] avg video length: 33.87 minutes
+[2024-04-29 13:22:21,001][func.train][INFO] - [DATASET] test size: 85826
+[2024-04-29 13:22:21,001][func.train][INFO] - [DATASET] test video_indices: [63]
+[2024-04-29 13:22:21,001][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:21,015][func.train][INFO] - [DATASET] Sampling video_idx: 63 at 25 fps to 3433 frames
+[2024-04-29 13:22:21,017][func.train][INFO] - [DATASET] video 63 label_list: torch.Size([3433])
+[2024-04-29 13:22:21,048][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:21,049][func.train][INFO] - [DATASET] avg video length: 57.22 minutes
+[2024-04-29 13:22:22,347][func.train][INFO] - [DATASET] test size: 59951
+[2024-04-29 13:22:22,347][func.train][INFO] - [DATASET] test video_indices: [64]
+[2024-04-29 13:22:22,347][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:22,358][func.train][INFO] - [DATASET] Sampling video_idx: 64 at 25 fps to 2398 frames
+[2024-04-29 13:22:22,359][func.train][INFO] - [DATASET] video 64 label_list: torch.Size([2398])
+[2024-04-29 13:22:22,390][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:22,390][func.train][INFO] - [DATASET] avg video length: 39.97 minutes
+[2024-04-29 13:22:23,704][func.train][INFO] - [DATASET] test size: 46826
+[2024-04-29 13:22:23,704][func.train][INFO] - [DATASET] test video_indices: [65]
+[2024-04-29 13:22:23,705][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:23,712][func.train][INFO] - [DATASET] Sampling video_idx: 65 at 25 fps to 1873 frames
+[2024-04-29 13:22:23,713][func.train][INFO] - [DATASET] video 65 label_list: torch.Size([1873])
+[2024-04-29 13:22:23,746][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:23,747][func.train][INFO] - [DATASET] avg video length: 31.22 minutes
+[2024-04-29 13:22:25,044][func.train][INFO] - [DATASET] test size: 45601
+[2024-04-29 13:22:25,044][func.train][INFO] - [DATASET] test video_indices: [66]
+[2024-04-29 13:22:25,044][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:25,052][func.train][INFO] - [DATASET] Sampling video_idx: 66 at 25 fps to 1824 frames
+[2024-04-29 13:22:25,053][func.train][INFO] - [DATASET] video 66 label_list: torch.Size([1824])
+[2024-04-29 13:22:25,091][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:25,092][func.train][INFO] - [DATASET] avg video length: 30.40 minutes
+[2024-04-29 13:22:26,392][func.train][INFO] - [DATASET] test size: 58826
+[2024-04-29 13:22:26,392][func.train][INFO] - [DATASET] test video_indices: [67]
+[2024-04-29 13:22:26,392][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:26,402][func.train][INFO] - [DATASET] Sampling video_idx: 67 at 25 fps to 2353 frames
+[2024-04-29 13:22:26,403][func.train][INFO] - [DATASET] video 67 label_list: torch.Size([2353])
+[2024-04-29 13:22:26,448][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:26,448][func.train][INFO] - [DATASET] avg video length: 39.22 minutes
+[2024-04-29 13:22:27,745][func.train][INFO] - [DATASET] test size: 49301
+[2024-04-29 13:22:27,745][func.train][INFO] - [DATASET] test video_indices: [68]
+[2024-04-29 13:22:27,745][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:27,753][func.train][INFO] - [DATASET] Sampling video_idx: 68 at 25 fps to 1972 frames
+[2024-04-29 13:22:27,754][func.train][INFO] - [DATASET] video 68 label_list: torch.Size([1972])
+[2024-04-29 13:22:27,785][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:27,786][func.train][INFO] - [DATASET] avg video length: 32.87 minutes
+[2024-04-29 13:22:29,097][func.train][INFO] - [DATASET] test size: 114376
+[2024-04-29 13:22:29,098][func.train][INFO] - [DATASET] test video_indices: [69]
+[2024-04-29 13:22:29,098][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:29,118][func.train][INFO] - [DATASET] Sampling video_idx: 69 at 25 fps to 4575 frames
+[2024-04-29 13:22:29,119][func.train][INFO] - [DATASET] video 69 label_list: torch.Size([4575])
+[2024-04-29 13:22:29,174][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:29,174][func.train][INFO] - [DATASET] avg video length: 76.25 minutes
+[2024-04-29 13:22:30,463][func.train][INFO] - [DATASET] test size: 29851
+[2024-04-29 13:22:30,464][func.train][INFO] - [DATASET] test video_indices: [70]
+[2024-04-29 13:22:30,464][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:30,469][func.train][INFO] - [DATASET] Sampling video_idx: 70 at 25 fps to 1194 frames
+[2024-04-29 13:22:30,469][func.train][INFO] - [DATASET] video 70 label_list: torch.Size([1194])
+[2024-04-29 13:22:30,513][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:30,513][func.train][INFO] - [DATASET] avg video length: 19.90 minutes
+[2024-04-29 13:22:31,843][func.train][INFO] - [DATASET] test size: 62876
+[2024-04-29 13:22:31,844][func.train][INFO] - [DATASET] test video_indices: [71]
+[2024-04-29 13:22:31,844][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:31,855][func.train][INFO] - [DATASET] Sampling video_idx: 71 at 25 fps to 2515 frames
+[2024-04-29 13:22:31,856][func.train][INFO] - [DATASET] video 71 label_list: torch.Size([2515])
+[2024-04-29 13:22:31,956][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:31,957][func.train][INFO] - [DATASET] avg video length: 41.92 minutes
+[2024-04-29 13:22:33,291][func.train][INFO] - [DATASET] test size: 77651
+[2024-04-29 13:22:33,291][func.train][INFO] - [DATASET] test video_indices: [72]
+[2024-04-29 13:22:33,291][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:33,305][func.train][INFO] - [DATASET] Sampling video_idx: 72 at 25 fps to 3106 frames
+[2024-04-29 13:22:33,306][func.train][INFO] - [DATASET] video 72 label_list: torch.Size([3106])
+[2024-04-29 13:22:33,412][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:33,413][func.train][INFO] - [DATASET] avg video length: 51.77 minutes
+[2024-04-29 13:22:34,722][func.train][INFO] - [DATASET] test size: 33901
+[2024-04-29 13:22:34,723][func.train][INFO] - [DATASET] test video_indices: [73]
+[2024-04-29 13:22:34,723][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:34,728][func.train][INFO] - [DATASET] Sampling video_idx: 73 at 25 fps to 1356 frames
+[2024-04-29 13:22:34,729][func.train][INFO] - [DATASET] video 73 label_list: torch.Size([1356])
+[2024-04-29 13:22:34,751][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:34,751][func.train][INFO] - [DATASET] avg video length: 22.60 minutes
+[2024-04-29 13:22:36,080][func.train][INFO] - [DATASET] test size: 40851
+[2024-04-29 13:22:36,080][func.train][INFO] - [DATASET] test video_indices: [74]
+[2024-04-29 13:22:36,080][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:36,087][func.train][INFO] - [DATASET] Sampling video_idx: 74 at 25 fps to 1634 frames
+[2024-04-29 13:22:36,088][func.train][INFO] - [DATASET] video 74 label_list: torch.Size([1634])
+[2024-04-29 13:22:36,113][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:36,114][func.train][INFO] - [DATASET] avg video length: 27.23 minutes
+[2024-04-29 13:22:37,418][func.train][INFO] - [DATASET] test size: 48076
+[2024-04-29 13:22:37,418][func.train][INFO] - [DATASET] test video_indices: [75]
+[2024-04-29 13:22:37,418][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:37,426][func.train][INFO] - [DATASET] Sampling video_idx: 75 at 25 fps to 1923 frames
+[2024-04-29 13:22:37,427][func.train][INFO] - [DATASET] video 75 label_list: torch.Size([1923])
+[2024-04-29 13:22:37,466][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:37,466][func.train][INFO] - [DATASET] avg video length: 32.05 minutes
+[2024-04-29 13:22:38,771][func.train][INFO] - [DATASET] test size: 66226
+[2024-04-29 13:22:38,771][func.train][INFO] - [DATASET] test video_indices: [76]
+[2024-04-29 13:22:38,771][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:38,783][func.train][INFO] - [DATASET] Sampling video_idx: 76 at 25 fps to 2649 frames
+[2024-04-29 13:22:38,784][func.train][INFO] - [DATASET] video 76 label_list: torch.Size([2649])
+[2024-04-29 13:22:38,823][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:38,823][func.train][INFO] - [DATASET] avg video length: 44.15 minutes
+[2024-04-29 13:22:40,128][func.train][INFO] - [DATASET] test size: 62551
+[2024-04-29 13:22:40,128][func.train][INFO] - [DATASET] test video_indices: [77]
+[2024-04-29 13:22:40,128][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:40,139][func.train][INFO] - [DATASET] Sampling video_idx: 77 at 25 fps to 2502 frames
+[2024-04-29 13:22:40,140][func.train][INFO] - [DATASET] video 77 label_list: torch.Size([2502])
+[2024-04-29 13:22:40,177][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:40,177][func.train][INFO] - [DATASET] avg video length: 41.70 minutes
+[2024-04-29 13:22:41,472][func.train][INFO] - [DATASET] test size: 18476
+[2024-04-29 13:22:41,472][func.train][INFO] - [DATASET] test video_indices: [78]
+[2024-04-29 13:22:41,472][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:41,475][func.train][INFO] - [DATASET] Sampling video_idx: 78 at 25 fps to 739 frames
+[2024-04-29 13:22:41,476][func.train][INFO] - [DATASET] video 78 label_list: torch.Size([739])
+[2024-04-29 13:22:41,493][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:41,493][func.train][INFO] - [DATASET] avg video length: 12.32 minutes
+[2024-04-29 13:22:42,801][func.train][INFO] - [DATASET] test size: 85351
+[2024-04-29 13:22:42,801][func.train][INFO] - [DATASET] test video_indices: [79]
+[2024-04-29 13:22:42,801][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:42,815][func.train][INFO] - [DATASET] Sampling video_idx: 79 at 25 fps to 3414 frames
+[2024-04-29 13:22:42,816][func.train][INFO] - [DATASET] video 79 label_list: torch.Size([3414])
+[2024-04-29 13:22:42,853][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:42,854][func.train][INFO] - [DATASET] avg video length: 56.90 minutes
+[2024-04-29 13:22:44,152][func.train][INFO] - [DATASET] test size: 43101
+[2024-04-29 13:22:44,152][func.train][INFO] - [DATASET] test video_indices: [80]
+[2024-04-29 13:22:44,152][func.train][INFO] - [DATASET] EOS regression: True with length: 361
+[2024-04-29 13:22:44,159][func.train][INFO] - [DATASET] Sampling video_idx: 80 at 25 fps to 1724 frames
+[2024-04-29 13:22:44,160][func.train][INFO] - [DATASET] video 80 label_list: torch.Size([1724])
+[2024-04-29 13:22:44,192][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-04-29 13:22:44,192][func.train][INFO] - [DATASET] avg video length: 28.73 minutes
+[2024-04-29 13:22:44,206][func.train][INFO] - Time to load datasets: 1.10 min
+[2024-04-29 13:22:44,206][func.train][INFO] - Creating data loaders
+[2024-04-29 13:22:44,209][func.train][INFO] - Creating model with {'one': 7} classes
+[2024-04-29 13:22:44,912][func.train][INFO] - [MAIN] Number of tokens: 86304
+[2024-04-29 13:22:44,912][func.train][INFO] - [MAIN] Number of parameters: 17789654
+[2024-04-29 13:22:44,912][func.train][INFO] - [MAIN] Token-to-Parameter Ratio is ideally between [1:1 to 10:1]: 0.004851
+[2024-04-29 13:22:44,912][func.train][WARNING] - [MAIN] Data-to-Parameter-Ratio is outside the interval [1:1 to 10:1]
+[2024-04-29 13:22:44,913][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-04-29 13:22:44,913][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-04-29 13:22:44,919][func.train][INFO] - Wrapping model into DP
+[2024-04-29 13:22:45,169][func.train][INFO] - Start training
+[2024-04-29 13:22:45,172][func.train][INFO] - Storing checkpoints every 60.00 mins

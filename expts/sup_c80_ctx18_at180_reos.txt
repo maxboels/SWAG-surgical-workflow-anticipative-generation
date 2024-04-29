@@ -6,10 +6,11 @@ n_embd=384
 n_layer=2
 n_head=4
 fixed_ctx_length=true
-eos_regression=false
-ctx_length=1500
-anticip_time=120
-max_anticip_time=20
+eos_regression=true
+ctx_length=1800
+anticip_time=180
+max_anticip_time=30
+feature_loss=False
 
 
 

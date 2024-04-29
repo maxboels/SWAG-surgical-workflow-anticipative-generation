@@ -1,0 +1,1 @@
+[{"epoch": 1, "all_videos_mean_acc_curr": 0.5036, "all_videos_mean_acc_future": 0.2698, "all_videos_mean_cum_acc_future": 0.3998, "acc_future_t": [0.5637, 0.461, 0.3481, 0.2697, 0.2031, 0.1378, 0.1002, 0.0744], "cum_acc_future_t": [0.5637, 0.5124, 0.4576, 0.4106, 0.3681, 0.328, 0.2936, 0.2648], "mean_cum_iter_time": [0.01, 0.01, 0.02, 0.02, 0.03, 0.03, 0.03, 0.04]}],

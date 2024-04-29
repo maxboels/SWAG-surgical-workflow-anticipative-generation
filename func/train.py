@@ -61,7 +61,7 @@ from R2A2.eval.plot_segments.plot_values import plot_maxpooled_videos
 from R2A2.eval.seg_eval import MetricsSegments
 from R2A2.eval.plot_segments.plot_video import plot_video_segments
 from R2A2.eval.plot_metrics import plot_figure, plot_box_plot_figure, plot_cumulative_time
-from R2A2.eval.plot_video_3D import plot_video_contour_3D
+from R2A2.eval.plot_video_3D import plot_video_contour_3D, plot_video_scatter_3D
 
 
 #--maxence boels- debugging cuda error
@@ -343,9 +343,18 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
              store=False, store_endpoint='logits', only_run_featext=False,
              best_acc1=0.0,):
     
-    step_size = max_anticip_time / anticip_time
-    max_num_preds = int(max_anticip_time / step_size)
-    x_values = np.arange(1, max_anticip_time+1, step_size).tolist()
+    save_numpy_arrays = False
+    
+    step_size = int(anticip_time/60)
+    max_num_steps = int((max_anticip_time * 60) / anticip_time)
+    start = int(anticip_time / 60)
+    x_values = np.arange(start, max_anticip_time+1, step_size).tolist()
+    logger.info(f"[EVAL] Epoch: {epoch} | "
+                f"Anticipation Time: {anticip_time} | "
+                f"Max Anticipation Time: {max_anticip_time} | "
+                f"Step Size: {step_size} | "
+                f"Max Num Steps: {max_num_steps}")
+    logger.info(f"[EVAL] X-axis values: {x_values}")
 
     model.eval()
     # -----------------select params----------------- #
@@ -372,19 +381,20 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         video_results = OrderedDict()
         video_length = len(data_loader.dataset)
         video_id = data_loader.dataset.video_indices[0] # int type
+        batch_size = data_loader.batch_size
 
         iters_times = []
 
         # init new video buffers
         video_frame_rec     = np.full((video_length, 1), -1)
         video_tgts_rec      = np.full((video_length, 1), -1)
-        video_frame_preds   = np.full((video_length, max_num_preds), -1)
-        video_tgts_preds    = np.full((video_length, max_num_preds), -1)
+        video_frame_preds   = np.full((video_length, max_num_steps), -1)
+        video_tgts_preds    = np.full((video_length, max_num_steps), -1)
         video_seg_preds     = np.full((video_length, 1), -1)
         video_tgts_preds_seg = np.full((video_length, 1), -1)
 
         start_idx = 0
-        end_idx = 0
+        end_idx = start_idx + batch_size
         
         # eval loop
         for b, data in enumerate(data_loader):
@@ -392,7 +402,6 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
             batch_size = data['video'].shape[0]
             first_frame_idx = data['frame_idx'][0].detach().cpu().numpy()
             curr_frame = data['frame_idx'][-1].detach().cpu().numpy()
-            end_idx = start_idx + batch_size
 
             with torch.no_grad():
                         
@@ -410,6 +419,10 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                 if "future_frames" in outputs.keys():
                     preds = np.argmax(outputs['future_frames'].detach().cpu().numpy(), axis=2)
                     targets = data["future_frames_tgt"].detach().cpu().numpy()
+                    if preds.shape[1] < max_num_steps:
+                        logger.info(f"[TESTING] padding preds: {preds.shape} | targets: {targets.shape}")
+                        preds = np.pad(preds, ((0,0), (0, max_num_steps-preds.shape[1])), mode='constant', constant_values=-1)
+                        # targets = np.pad(targets, ((0,0), (0, max_num_steps-targets.shape[1])), mode='constant', constant_values=-1)
                     video_frame_preds[start_idx:end_idx] = preds
                     video_tgts_preds[start_idx:end_idx] = targets # NOTE: those targets are for inference only
                     
@@ -430,6 +443,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
 
             # update start index
             start_idx += batch_size
+            end_idx += batch_size
         
         # Video-level results
 
@@ -493,9 +507,8 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         plot_vid_ids = [41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 60, 70, 80]
         if video_id in plot_vid_ids and epoch == 1: # starts at 0
             # 2. Qualitative: Visualize targets and predictions for each video
-            plot_video_contour_3D(video_frame_preds, video_frame_rec, video_tgts_preds, video_tgts_rec, video_id)
+            plot_video_scatter_3D(video_frame_preds, video_frame_rec, video_tgts_preds, video_tgts_rec, anticip_time, video_id)
 
-            save_numpy_arrays = False
             if save_numpy_arrays:
                 np.save(f"video_frame_rec_{video_id}_ep{epoch}.npy", video_frame_rec)
                 np.save(f"video_tgts_rec_{video_id}_ep{epoch}.npy", video_tgts_rec)

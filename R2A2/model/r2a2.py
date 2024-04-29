@@ -280,6 +280,7 @@ class R2A2(nn.Module):
     """ Reflective and Anticipative Action Recognition Model (R2A2) """
     def __init__(
         self,
+        feature_loss: bool = False,
         decoder_type: str = "ar_causal",
         eos_regression: bool = False,
         fixed_ctx_length: bool = True,
@@ -289,7 +290,7 @@ class R2A2(nn.Module):
         past_sampling_rate: int = 10,
         d_model: int = 512,
         num_classes: int = 7,
-        max_anticip_time: int = 30,
+        max_anticip_time: int = 20,
         anticip_time: int = 60,
         pooling_dim: int = 64,
         gpt_cfg: dict = None,
@@ -306,8 +307,8 @@ class R2A2(nn.Module):
         self.d_model = d_model
         self.present_length = present_length
         self.past_sampling_rate = past_sampling_rate
-        self.max_anticip_time = max_anticip_time     # 60 if 30 frames per tokens to get 30 minutes
-        self.anticip_time = anticip_time
+        self.max_anticip_time = max_anticip_time        # is in minutes
+        self.anticip_time = anticip_time                # is in seconds
 
 
         # other params
@@ -319,7 +320,11 @@ class R2A2(nn.Module):
         self.use_key_recorder = True
         self.decoder_type = "ar_causal"
         self.fixed_ctx_length = fixed_ctx_length
+        self.feature_loss = feature_loss
+
         # -----------------------------------------------------------------------
+        if self.feature_loss:   
+            self.future_pred_loss = nn.MSELoss()
 
         self.proj_layer = nn.Linear(d_model, gpt_cfg.n_embd)
 
@@ -433,9 +438,9 @@ class R2A2(nn.Module):
 
         # Current EOS Time Prediction
         if self.eos_regression:
-            curr_eos_rem_time = self.curr_eos_rem_time_reg(enc_out)
-            print(f"[R2A2] curr_eos_rem_time: {curr_eos_rem_time.shape}")
-            outputs["curr_eos_rem_time"] = curr_eos_rem_time
+            curr_time2eos = self.curr_eos_rem_time_reg(enc_out)
+            print(f"[R2A2] curr_time2eos: {curr_time2eos.shape}")
+            outputs["curr_time2eos"] = curr_time2eos
 
 
         if train_mode:
@@ -453,6 +458,12 @@ class R2A2(nn.Module):
                 next_frames_cls = self.next_action_classifier(next_action.last_hidden_state)
                 outputs["next_frames"] = next_frames_cls
 
+                
+                if self.feature_loss:
+                    # Future Prediction Loss with shifted predictions (shifted by 1) and decoded frames
+                    feature_loss = self.future_pred_loss(next_action.last_hidden_state[:, :-1], dec_in[:, 1:])
+                    outputs["feature_loss"] = feature_loss
+
             if level == "segment" or multiscale:
                 # Long-Term Planning
                 phase_embed = self.phase_proj(enc_out)
@@ -462,22 +473,25 @@ class R2A2(nn.Module):
         else:
             # Autoregressive decoding during inference
             # TODO: TRY WITH FIXED CONTEXT WINDOW TO PREVENT LATENCY DURING INFERENCE
+
+            max_num_steps = int((self.max_anticip_time * 60) / self.anticip_time)
+            print(f"[R2A2] max_num_steps: {max_num_steps}")
             
-            if "curr_eos_rem_time" in outputs:
-                curr_eos_rem_time = outputs["curr_eos_rem_time"]
+            if "curr_time2eos" in outputs:
+                curr_time2eos = outputs["curr_time2eos"]
 
                 # TODO: ABLATIONS FOR EOS INFERENCE USAGE
                 # add the distance to current frame to every indices
-                # corr_eos_rem_time = corr_function(curr_eos_rem_time.squeeze().tolist())
+                # corr_eos_rem_time = corr_function(curr_time2eos.squeeze().tolist())
 
                 # mean over batch for more stable estimation (1fps)
-                mean_eos_estim_time = curr_eos_rem_time.mean().item()
-
-                max_num_steps = self.max_anticip_time / self.anticip_time
-                num_future_predictions = max_num_steps * mean_eos_estim_time
-                print(f"[R2A2] num_future_predictions: {num_future_predictions}")
+                mean_eos_estim_time = curr_time2eos.mean().item()
+                print(f"[R2A2] mean_eos_estim_time: {mean_eos_estim_time}")
+                num_future_predictions = int(max_num_steps * mean_eos_estim_time)
             else:
                 num_future_predictions = max_num_steps
+
+            print(f"[R2A2] num_future_predictions: {num_future_predictions}")
             
             iters_time = []
             frames_cls_preds = []
