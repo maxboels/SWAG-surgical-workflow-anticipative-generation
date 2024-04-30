@@ -340,8 +340,8 @@ def check_numpy_to_list(dictionay):
 def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_writer, logger, epoch: float,
             anticip_time: int,
             max_anticip_time: int, 
-             store=False, store_endpoint='logits', only_run_featext=False,
-             best_acc1=0.0,):
+            store=False, store_endpoint='logits', only_run_featext=False,
+            best_acc1=0.0,):
     
     save_numpy_arrays = False
     
@@ -350,10 +350,10 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     start = int(anticip_time / 60)
     x_values = np.arange(start, max_anticip_time+1, step_size).tolist()
     logger.info(f"[EVAL] Epoch: {epoch} | "
-                f"Anticipation Time: {anticip_time} | "
-                f"Max Anticipation Time: {max_anticip_time} | "
-                f"Step Size: {step_size} | "
-                f"Max Num Steps: {max_num_steps}")
+                f"Anticipation time (s): {anticip_time} | "
+                f"Max anticipation time (m): {max_anticip_time} | "
+                f"Step size (m): {step_size} | "
+                f"Max auto-reg. steps: {max_num_steps}")
     logger.info(f"[EVAL] X-axis values: {x_values}")
 
     model.eval()
@@ -502,7 +502,12 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         plot_vid_ids = [41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 60, 70, 80]
         if video_id in plot_vid_ids and epoch == 1: # starts at 0
             # 2. Qualitative: Visualize targets and predictions for each video
-            plot_video_scatter_3D(video_frame_preds, video_frame_rec, video_tgts_preds, video_tgts_rec, anticip_time, video_id)
+            plot_video_scatter_3D(video_frame_preds, video_frame_rec, video_tgts_preds, video_tgts_rec, anticip_time, 
+                                  video_idx=video_id, 
+                                  sampling_rate=60, # current frames axis (seconds to minutes)
+                                  padding_class=-1, # padding class
+                                  eos_class=7,
+                                  num_classes=7)    # don't include the eos class which is assigned to -1
 
             if save_numpy_arrays:
                 np.save(f"video_frame_rec_{video_id}_ep{epoch}.npy", video_frame_rec)

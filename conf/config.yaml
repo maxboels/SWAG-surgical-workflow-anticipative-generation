@@ -55,7 +55,8 @@ n_layer:    2
 n_head:     4
 fixed_ctx_length: true      # default true
 # LABELS
-num_classes: 7              # 7 classes for cholec80
+num_curr_classes: 7              # 7 classes for cholec80
+num_next_classes: 7         # 7 classes for cholec80
 eos_class: 7                # last class for EOS
 eos_regression: false
 eos_classification: true
@@ -168,7 +169,8 @@ model:
       num_ant_queries: 6
       past_sampling_rate: 10
       d_model: ${informer.d_model}
-      num_classes: ${num_classes}
+      num_curr_classes: ${num_curr_classes} # possible obseved classes
+      num_next_classes: ${num_next_classes} # possible future classes (including EOS)
       max_anticip_time: ${max_anticip_time}
       anticip_time: ${anticip_time}
       pooling_dim: ${pooling_dim}

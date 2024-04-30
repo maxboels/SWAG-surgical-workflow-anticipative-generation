@@ -53,8 +53,8 @@ class BasicLossAccuracy(nn.Module):
         #     ])).to(device).float() # removed last weight
 
 
-        if hasattr(dataset, "class_weights"):
-            curr_class_weights = dataset.class_weights.to(device).float()
+        if hasattr(dataset, "curr_class_weights"):
+            curr_class_weights = dataset.curr_class_weights.to(device).float()
         else:
             curr_class_weights = torch.ones(7).to(device).float()
         print(f"[LOSS] class weights: {curr_class_weights}")

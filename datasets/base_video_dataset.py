@@ -224,19 +224,16 @@ class Medical_Dataset(Dataset):
                 random.shuffle(self.data_order)
                 classes = self.df_split['class'].tolist()
 
+                # CUUR AND NEXT CLASS WEIGHTS
                 classes_counts_dict = dict(zip(*np.unique(classes, return_counts=True)))
-                self.logger.info(f"[DATASET] classes_counts: {classes_counts_dict}")
+                self.curr_class_weights = self._compute_class_weights(classes_counts_dict)
+                self.logger.info(f"[DATASET] curr_class_weights: {self.curr_class_weights}")
 
                 if self.eos_class == 7 and self.eos_classification:
                     num_eos_vals = compute_num_eos_values(self.anticip_time, len(video_indices))
-                    classes_counts_dict[self.num_classes] = int(self.eos_class)
-                    self.logger.info(f"[DATASET] num_eos_values: {num_eos_vals} in {len(video_indices)} videos")
-
-                if self.debug:
-                    self.class_weights = torch.ones(self.num_classes).to(self.device)
-                else:
-                    self.class_weights = self._compute_class_weights(classes_counts_dict)
-                self.logger.info(f"[DATASET] curr_class_weights: {self.class_weights}")
+                    classes_counts_dict[self.num_classes] = int(num_eos_vals)
+                    self.next_class_weights = self._compute_class_weights(classes_counts_dict)
+                    self.logger.info(f"[DATASET] next_class_weights: {self.next_class_weights}")
 
         def get_data_split(self, dataset_name="cholec80", split="train", video_indices=None):
             """
@@ -317,7 +314,7 @@ class Medical_Dataset(Dataset):
             if self.eos_class== -1:
                 self.eos = - torch.ones([self.ctx_length,]).to(self.device).long()
             elif self.eos_class== 7:
-                self.eos = torch.full((self.max_anticip_sec,), self.num_classes).long().to(self.device)
+                self.eos = torch.full((self.max_anticip_sec,), self.eos_class).long().to(self.device)
             else:
                 raise ValueError("eos_padding not found")
             
@@ -432,8 +429,7 @@ class Medical_Dataset(Dataset):
             if self.eos_regression:
                 curr_eos_values = eos_values[starts: ends: self.anticip_time]
                 if missing > 0:
-                    ones = torch.ones([missing,]).to(self.device).float()
-                    curr_eos_values = torch.cat((ones, curr_eos_values), 0)
+                    curr_eos_values = torch.cat((self.ones[:missing].float(), curr_eos_values), 0)
                 data_now['curr_time2eos_tgt'] = curr_eos_values.to(self.device).float()
                 print(f"[DATASET] curr_time2eos_tgt: {curr_eos_values.size()}")
 
@@ -454,16 +450,17 @@ class Medical_Dataset(Dataset):
                     self.num_ctx_tokens = self.attn_window_size
                 else:
                     raise ValueError("next_frames_tgt not found")
-                print(f"[DATASET] next_frames_tgt starts: {starts}, ends: {ends}, excess_right: {excess_right}")
+                print(f"[DATASET] next_frames_tgt starts: {starts}, ends: {ends}")
                 next_frames_tgt = video_targets[starts: ends: self.anticip_time].to(self.device)
                 print(f"[DATASET] next_frames_tgt: {next_frames_tgt.size()}")
                 print(f"[DATASET] next_frames_tgt: {torch.arange(starts, ends, self.anticip_time)}")
                 if excess_right > 0:
-                    next_frames_tgt = torch.cat((next_frames_tgt, self.eos[:excess_right].long()), 0)
-                    self.logger.info(f"[DATASET] EOS padding on next frames: {excess_right}")
+                    # only add 1 eos token since we use anticip window size
+                    next_frames_tgt = torch.cat((next_frames_tgt, self.eos[:1].long()), 0)
+                    print(f"[DATASET] EOS padding for next_frames_tgt: {excess_right}")
                 missing = self.num_ctx_tokens - next_frames_tgt.size(0)
                 if missing > 0:
-                    next_frames_tgt = torch.cat((self.eos[:missing].long(), next_frames_tgt), 0)
+                    next_frames_tgt = torch.cat(( -self.ones[:missing].long(), next_frames_tgt), 0)
                 data_now['next_frames_tgt'] = next_frames_tgt.to(self.device).long()
                 print(f"[DATASET] next_frames_tgt: {next_frames_tgt.size()}")
 
@@ -474,7 +471,7 @@ class Medical_Dataset(Dataset):
 
                 # FUTURE FRAMES TARGETS (SHIFTED BY WINDOW SIZE FROM CURRENT FRAME)
                 starts = frame_idx + self.anticip_time
-                ends = min(video_targets.size(0), starts + (self.num_future_tokens * self.anticip_time))
+                ends = min(video_targets.size(0), starts + self.max_anticip_sec)
                 print(f"[DATASET] future_frames_tgt starts: {starts} ends: {ends}, anticip_time: {self.anticip_time}")
                 future_frames_tgt = video_targets[starts: ends: self.anticip_time].to(self.device)
                 if starts < ends:
@@ -482,26 +479,11 @@ class Medical_Dataset(Dataset):
                 missing = self.num_future_tokens - future_frames_tgt.size(0)
                 if missing > 0:
                     future_frames_tgt = torch.cat((future_frames_tgt, self.eos[:missing].long()), 0)
-                    self.logger.info(f"[DATASET] EOS padding on future frames: {missing}")
+                    print(f"[DATASET] EOS padding for future_frames_tgt: {missing}")
                 data_now['future_frames_tgt'] = future_frames_tgt.to(self.device).long()
                 print(f"[DATASET] future_frames_tgt: {future_frames_tgt.size()}")
 
                 assert future_frames_tgt.size(0) == self.num_future_tokens, f"future_frames_tgt size not equal to num_future_tokens: {future_frames_tgt.size(0)}"
-
-
-                # FUTURE SEGMENTS TARGETS
-                if self.future_segmts_tgt:
-                    self.next_seg_length = 6 # for inference with AR
-                    ends = frame_idx
-                    starts = max(0, ends - self.attn_window_size)
-                    next_segmts_tgt = video_next_seg_targets[starts: ends, :self.next_seg_length].to(self.device)
-                    missing = self.attn_window_size - next_segmts_tgt.size(0)
-                    if missing > 0:
-                        padding = - torch.ones((missing, self.next_seg_length)).long().to(self.device)
-                        next_segmts_tgt = torch.cat((next_segmts_tgt, padding), 0)
-                    print(f"[DATASET] next_segmts_tgt: {next_segmts_tgt.size()}")
-                    print(f"[DATASET] next_segmts_tgt: {next_segmts_tgt}")
-                    data_now['next_segmts_tgt'] = next_segmts_tgt.to(self.device).long()
             
             return data_now
         

@@ -289,7 +289,8 @@ class R2A2(nn.Module):
         num_ant_queries: int = 20,
         past_sampling_rate: int = 10,
         d_model: int = 512,
-        num_classes: int = 7,
+        num_curr_classes: int = 7,
+        num_next_classes: int = 7,
         max_anticip_time: int = 20,
         anticip_time: int = 60,
         pooling_dim: int = 64,
@@ -309,6 +310,7 @@ class R2A2(nn.Module):
         self.past_sampling_rate = past_sampling_rate
         self.max_anticip_time = max_anticip_time        # is in minutes
         self.anticip_time = anticip_time                # is in seconds
+        self.eos_regression = eos_regression
 
 
         # other params
@@ -353,19 +355,19 @@ class R2A2(nn.Module):
             raise ValueError(f"Pooling method {self.pooling_method} not implemented.")
 
         # Current Token and EOS Time prediction
-        self.curr_frames_classifier = nn.Linear(d_model, num_classes)
+        self.curr_frames_classifier = nn.Linear(d_model, num_curr_classes)
 
-        self.eos_regression = eos_regression
+        
         if self.eos_regression:
             self.curr_eos_rem_time_reg = nn.Linear(d_model, 1)
         
         # Next Token Prediction
-        self.next_action_classifier = nn.Linear(gpt_cfg.n_embd, num_classes) # optional +1 for the EOS (end of sequence token)
+        self.next_action_classifier = nn.Linear(gpt_cfg.n_embd, num_next_classes) # optional +1 for the EOS (end of sequence token)
 
         # Phases
         if self.segment_level or self.multiscale:
             self.phase_proj = nn.Linear(d_model, 128)
-            self.next_phase_classifier = nn.Linear(128, num_classes)
+            self.next_phase_classifier = nn.Linear(128, num_curr_classes)
 
         if self.decoder_type == "ar_causal":
             if self.frame_level or self.multiscale:
@@ -479,25 +481,19 @@ class R2A2(nn.Module):
             
             if "curr_time2eos" in outputs:
                 curr_time2eos = outputs["curr_time2eos"]
-
-                # TODO: ABLATIONS FOR EOS INFERENCE USAGE
-                # add the distance to current frame to every indices
-                # corr_eos_rem_time = corr_function(curr_time2eos.squeeze().tolist())
-
-                # mean over batch for more stable estimation (1fps)
                 mean_eos_estim_time = curr_time2eos.mean().item()
                 print(f"[R2A2] mean_eos_estim_time: {mean_eos_estim_time}")
-                num_steps = int(max_num_steps * mean_eos_estim_time)
-                print(f"[R2A2] time2eos selected num_steps: {num_steps}")
+                max_num_steps = int(max_num_steps * mean_eos_estim_time)
+                print(f"[R2A2] time2eos selected max_num_steps: {max_num_steps}")
 
     
             frames_cls_preds = []
             dec_in = self.proj_layer(enc_out)
-            for _ in range(num_steps):
+            for _ in range(max_num_steps):
                 start_time = time.time()
                 next_frames = self.frame_decoder(inputs_embeds=dec_in)
                 next_frame_embed = next_frames.last_hidden_state[:, -1:, :]
-                next_frame_cls = self.next_action_classifier(next_frame_embed) # (B, 1, num_classes)
+                next_frame_cls = self.next_action_classifier(next_frame_embed) # (B, 1, num_curr_classes)
                 frames_cls_preds.append(next_frame_cls)
 
                 # NOTE: if the input sequence becomes longer than the context length used during training
@@ -507,7 +503,7 @@ class R2A2(nn.Module):
                     dec_in = dec_in[:, 1:]
                 dec_in = torch.cat((dec_in, next_frame_embed), dim=1) # (B, T, D)
                 print(f"[R2A2] dec_in: {dec_in.shape}")
-            outputs["future_frames"] = torch.cat(frames_cls_preds, dim=1) # (B, num_future_preds, num_classes)
+            outputs["future_frames"] = torch.cat(frames_cls_preds, dim=1) # (B, num_future_preds, num_curr_classes)
             print(f"[R2A2] future_frames: {outputs['future_frames'].shape}")
 
         return outputs

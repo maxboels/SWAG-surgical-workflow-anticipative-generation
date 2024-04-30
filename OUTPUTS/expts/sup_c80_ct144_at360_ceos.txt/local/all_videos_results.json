@@ -1,0 +1,3 @@
+[{"epoch": 1, "all_videos_mean_acc_curr": 0.0511, "all_videos_mean_acc_future": 0.0894, "all_videos_mean_cum_acc_future": 0.1433, "acc_future_t": [0.2138, 0.0971, 0.0328, 0.014], "cum_acc_future_t": [0.2138, 0.1555, 0.1146, 0.0894]}],
+[{"epoch": 2, "all_videos_mean_acc_curr": 0.7257, "all_videos_mean_acc_future": 0.1688, "all_videos_mean_cum_acc_future": 0.2546, "acc_future_t": [0.3613, 0.19, 0.0858, 0.0383], "cum_acc_future_t": [0.3613, 0.2756, 0.2124, 0.1689]}],
+[{"epoch": 3, "all_videos_mean_acc_curr": 0.753, "all_videos_mean_acc_future": 0.1556, "all_videos_mean_cum_acc_future": 0.2344, "acc_future_t": [0.33, 0.1799, 0.0808, 0.0319], "cum_acc_future_t": [0.33, 0.255, 0.1969, 0.1557]}],

@@ -13,7 +13,8 @@ feature_loss=False
 
 eos_regression=false
 eos_classification=true
-num_classes=8
+num_curr_classes=7
+num_next_classes=8
 eos_class=7
 
 

@@ -3,10 +3,20 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.colors import ListedColormap, Normalize
 
-def plot_video_scatter_3D(preds, recs, tgt_preds, tgt_recs, anticip_time, video_idx=1, sampling_rate=1):
+def plot_video_scatter_3D(preds, recs, tgt_preds, tgt_recs, anticip_time,
+                          video_idx=1, 
+                          sampling_rate=60, # seconds to minutes
+                          padding_class=-1,
+                          eos_class=7, 
+                          num_classes=7): # don't include the eos class which is assigned to -1
+    
     # Concatenate recordings and predictions
     preds = np.concatenate([recs, preds], axis=1)
     targets = np.concatenate([tgt_recs, tgt_preds], axis=1)
+
+    # change all the values equal to 6 into -1
+    preds[preds == eos_class] = padding_class
+    targets[targets == eos_class] = padding_class
 
     # Sample data according to the given rate
     preds = preds[::sampling_rate]
@@ -18,7 +28,7 @@ def plot_video_scatter_3D(preds, recs, tgt_preds, tgt_recs, anticip_time, video_
     fig.suptitle(f'Surgical Phase Rec & Pred (Video {video_idx})', fontdict={'family': 'monospace', 'weight': 'bold', 'size': 20})
 
     # Define a custom discrete colormap with 8 distinct colors from 'viridis'
-    colors = plt.cm.plasma(np.linspace(0, 1, 8)) # viridis, magma, inferno, plasma
+    colors = plt.cm.plasma(np.linspace(0, 1, num_classes+1)) # viridis, magma, inferno, plasma
     cmap = ListedColormap(colors)
 
     # Axes for predictions
@@ -64,11 +74,11 @@ def plot_video_scatter_3D(preds, recs, tgt_preds, tgt_recs, anticip_time, video_
     ax2.view_init(elev=23., azim=-60)
 
     # Color bar setup
-    norm = plt.Normalize(vmin=-1, vmax=6)
+    norm = plt.Normalize(vmin=padding_class, vmax=num_classes-1)
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
     sm.set_array([])
     cbar_ax = fig.add_axes([0.25, 0.08, 0.50, 0.02])
-    cbar = fig.colorbar(sm, cax=cbar_ax, orientation='horizontal', ticks=np.arange(-1, 7))
+    cbar = fig.colorbar(sm, cax=cbar_ax, orientation='horizontal', ticks=np.arange(padding_class, num_classes))
     cbar.set_label('Classes (phases)')
 
     plt.savefig(f'video_{video_idx}_scatter3d_preds.png', dpi=300)
