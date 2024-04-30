@@ -447,11 +447,6 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         
         # Video-level results
 
-        # If performance increases with none fixed context length, then tracking the time per iteration makes sense
-        iters_times = np.mean(iters_times, axis=0)
-        cum_iters_times = np.round(np.cumsum(iters_times, axis=0), decimals=4).tolist()
-        all_videos_mean_cum_iter_time.append(cum_iters_times)
-
         vid_test_time = time.time() - vid_start_time
         test_time = time.time() - eval_start_time
         logger.info(f"[TESTING] video: {video_id} | "
@@ -532,7 +527,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     # compute the mean accuracy through all the videos and keep the time dimension
     all_videos_results["acc_future_t"]          = all_videos_mean_acc_future_t
     all_videos_results["cum_acc_future_t"]      = all_videos_mean_cum_acc_future_t
-    all_videos_results["mean_cum_iter_time"]    = np.round(np.mean(all_videos_mean_cum_iter_time, axis=0), decimals=2).tolist()
+    # all_videos_results["mean_cum_iter_time"]    = np.round(np.mean(all_videos_mean_cum_iter_time, axis=0), decimals=2).tolist()
 
     with open(f'all_videos_results.json', 'a+') as f:
         all_videos_results = check_numpy_to_list(all_videos_results)
@@ -565,7 +560,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                             y_axis_title='Mean Accuracy')
         
         # Inference time for deployment at 1fps
-        plot_cumulative_time(all_videos_results["mean_cum_iter_time"])
+        # plot_cumulative_time(all_videos_results["mean_cum_iter_time"])
 
     accuracies = {
         "acc_cur": all_videos_results["all_videos_mean_acc_curr"],

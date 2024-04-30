@@ -54,8 +54,11 @@ n_embd:     384
 n_layer:    2
 n_head:     4
 fixed_ctx_length: true      # default true
-# tasks:
+# LABELS
+num_classes: 7              # 7 classes for cholec80
+eos_class: 7                # last class for EOS
 eos_regression: false
+eos_classification: true
 # compression
 ctx_length: 1500            # 1500s = 25min, 3000s = 50min (avg video is 34min)
 # NOTE: we need long anticipation time to increase the number of transition samples for predicting transitions at inference.
@@ -165,7 +168,7 @@ model:
       num_ant_queries: 6
       past_sampling_rate: 10
       d_model: ${informer.d_model}
-      num_classes: 7
+      num_classes: ${num_classes}
       max_anticip_time: ${max_anticip_time}
       anticip_time: ${anticip_time}
       pooling_dim: ${pooling_dim}

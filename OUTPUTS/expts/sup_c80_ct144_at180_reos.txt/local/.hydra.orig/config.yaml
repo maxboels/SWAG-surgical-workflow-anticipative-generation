@@ -215,9 +215,9 @@ n_layer: 2
 n_head: 4
 fixed_ctx_length: true
 eos_regression: true
-ctx_length: 1800
+ctx_length: 1440
 anticip_time: 180
-max_anticip_time: 30
+max_anticip_time: 24
 feature_loss: false
 pytorch:
   video_backend: video_reader

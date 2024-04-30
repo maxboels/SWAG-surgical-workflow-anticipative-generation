@@ -475,7 +475,7 @@ class R2A2(nn.Module):
             # TODO: TRY WITH FIXED CONTEXT WINDOW TO PREVENT LATENCY DURING INFERENCE
 
             max_num_steps = int((self.max_anticip_time * 60) / self.anticip_time)
-            print(f"[R2A2] max_num_steps: {max_num_steps}")
+            print(f"[R2A2] initial max_num_steps: {max_num_steps}")
             
             if "curr_time2eos" in outputs:
                 curr_time2eos = outputs["curr_time2eos"]
@@ -487,19 +487,15 @@ class R2A2(nn.Module):
                 # mean over batch for more stable estimation (1fps)
                 mean_eos_estim_time = curr_time2eos.mean().item()
                 print(f"[R2A2] mean_eos_estim_time: {mean_eos_estim_time}")
-                num_future_predictions = int(max_num_steps * mean_eos_estim_time)
-            else:
-                num_future_predictions = max_num_steps
+                num_steps = int(max_num_steps * mean_eos_estim_time)
+                print(f"[R2A2] time2eos selected num_steps: {num_steps}")
 
-            print(f"[R2A2] num_future_predictions: {num_future_predictions}")
-            
-            iters_time = []
+    
             frames_cls_preds = []
             dec_in = self.proj_layer(enc_out)
-            for _ in range(num_future_predictions):
+            for _ in range(num_steps):
                 start_time = time.time()
                 next_frames = self.frame_decoder(inputs_embeds=dec_in)
-                iters_time.append(time.time() - start_time) # measure time per iteration
                 next_frame_embed = next_frames.last_hidden_state[:, -1:, :]
                 next_frame_cls = self.next_action_classifier(next_frame_embed) # (B, 1, num_classes)
                 frames_cls_preds.append(next_frame_cls)
@@ -512,9 +508,7 @@ class R2A2(nn.Module):
                 dec_in = torch.cat((dec_in, next_frame_embed), dim=1) # (B, T, D)
                 print(f"[R2A2] dec_in: {dec_in.shape}")
             outputs["future_frames"] = torch.cat(frames_cls_preds, dim=1) # (B, num_future_preds, num_classes)
-            outputs["iters_time"] = iters_time
             print(f"[R2A2] future_frames: {outputs['future_frames'].shape}")
-            print(f"[R2A2] iters_time: {outputs['iters_time']}")
 
         return outputs
 

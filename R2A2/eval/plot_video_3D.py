@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
-
+from matplotlib.colors import ListedColormap, Normalize
 
 def plot_video_scatter_3D(preds, recs, tgt_preds, tgt_recs, anticip_time, video_idx=1, sampling_rate=1):
     # Concatenate recordings and predictions

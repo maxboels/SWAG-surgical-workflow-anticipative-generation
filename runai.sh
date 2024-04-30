@@ -17,6 +17,7 @@ runai submit $JOB_NAME \
        --run-as-user \
        --large-shm \
        --gpu 1 \
+       --cpu 4 \
        --project mboels \
        -v /nfs:/nfs \
        --command \
