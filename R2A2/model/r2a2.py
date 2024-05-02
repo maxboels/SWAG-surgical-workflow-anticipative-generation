@@ -57,7 +57,7 @@ class TokenPoolerCumMax(nn.Module):
 
 class TokenPoolerTopK(nn.Module):
     """ Association is All You Need """
-    def __init__(self, dim: int = 512, pooling_dim: int = 64, top_k: int = 50, 
+    def __init__(self, dim: int = 512, pooling_dim: int = 64, top_k: int = 50, anticip_time: int = 60,
                  relu_norm: bool = True, **kwargs):
         super().__init__()
         self.dim = dim
@@ -68,7 +68,7 @@ class TokenPoolerTopK(nn.Module):
             self.linear_reduction = nn.Sequential(
                 nn.Linear(dim, pooling_dim),
                 nn.ReLU(),
-                nn.LayerNorm(pooling_dim) # replace LayerNorm with Sonething for the Temporality
+                nn.LayerNorm(pooling_dim) # replace LayerNorm with Something for the Temporality
             )
         else:
             self.linear_reduction = nn.Sequential(

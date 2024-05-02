@@ -1,0 +1,4 @@
+[{"epoch": 0, "num_params": 17789526, "num_tokens": 86304, "acc_cur": 0.3011, "acc_fut": 0.1387}],
+[{"epoch": 1, "num_params": 17789526, "num_tokens": 86304, "acc_cur": 0.6738, "acc_fut": 0.1909}],
+[{"epoch": 2, "num_params": 17789526, "num_tokens": 86304, "acc_cur": 0.7533, "acc_fut": 0.2008}],
+[{"epoch": 3, "num_params": 17789526, "num_tokens": 86304, "acc_cur": 0.7672, "acc_fut": 0.2158}],

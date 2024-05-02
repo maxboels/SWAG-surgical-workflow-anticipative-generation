@@ -343,7 +343,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
             store=False, store_endpoint='logits', only_run_featext=False,
             best_acc1=0.0,):
     
-    save_numpy_arrays = False
+    
     
     step_size = int(anticip_time/60)
     max_num_steps = int((max_anticip_time * 60) / anticip_time)
@@ -358,7 +358,9 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
 
     model.eval()
     # -----------------select params----------------- #
+    save_numpy_arrays = False
     num_classes = 7
+    plot_vid_ids = [41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 60, 70, 80]
     # -----------------select params----------------- #
 
     all_videos_results = OrderedDict()
@@ -368,12 +370,12 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     all_videos_cum_acc_future   = []
     all_videos_mean_f1_curr     = []
     all_videos_mean_f1_future   = []
-
     all_videos_mean_cum_iter_time = []
-
     eval_start_time = time.time()
 
-    best_video_idx = 60                     # NOTE: cherry-picked video index 
+    best_cum_acc_future = 0.2
+    best_epoch = 0
+
 
     # FOR EACH VIDEO LOADER
     for data_loader in dataloaders:
@@ -463,7 +465,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         acc_curr_frames         = compute_accuracy(video_frame_rec, video_tgts_rec, return_mean=False)      # potential nans
         acc_future_frames       = compute_accuracy(video_frame_preds, video_tgts_preds, return_mean=False)  # potential nans
 
-        # global mean accuracy
+        # global video mean accuracy
         mean_acc_curr_frames        = np.round(np.nanmean(acc_curr_frames), decimals=4).tolist()
         mean_acc_future_frames      = np.round(np.nanmean(acc_future_frames), decimals=4).tolist()
         cum_acc_future_frames       = np.round(np.nancumsum(acc_future_frames) / np.arange(1,len(acc_future_frames)+1), decimals=4).tolist()
@@ -493,21 +495,24 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
             f.write(',\n')
 
         logger.info(f"[TESTING] video: {video_id} | "
-                    f"mean_acc_curr_frames: {mean_acc_curr_frames}, "
-                    f"mean_acc_future_frames: {mean_acc_future_frames}")
+                    f"mean_acc_curr_frames: {mean_acc_curr_frames} | "
+                    f"mean_acc_future_frames: {mean_acc_future_frames} | "
+                    f"mean_cum_acc_future_frames: {mean_cum_acc_future_frames}")
         print(f"mean_acc_curr_frames: {mean_acc_curr_frames}, mean_acc_future_frames: {mean_acc_future_frames}")
 
         
-        # PLOTTING VIDEO RESULTS (3D (static or animated)
-        plot_vid_ids = [41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 60, 70, 80]
-        if video_id in plot_vid_ids and epoch == 1: # starts at 0
-            # 2. Qualitative: Visualize targets and predictions for each video
-            plot_video_scatter_3D(video_frame_preds, video_frame_rec, video_tgts_preds, video_tgts_rec, anticip_time, 
-                                  video_idx=video_id, 
-                                  sampling_rate=60, # current frames axis (seconds to minutes)
-                                  padding_class=-1, # padding class
-                                  eos_class=7,
-                                  num_classes=7)    # don't include the eos class which is assigned to -1
+        
+        if mean_cum_acc_future_frames > best_cum_acc_future:
+            if video_id in plot_vid_ids:
+                plot_video_scatter_3D(video_frame_preds, video_frame_rec, video_tgts_preds, video_tgts_rec, anticip_time, 
+                                    video_idx=video_id, 
+                                    sampling_rate=60, # current frames axis (seconds to minutes)
+                                    padding_class=-1, # padding class
+                                    eos_class=7,
+                                    num_classes=7,
+                                    video_mean_curr_acc=mean_acc_curr_frames,
+                                    video_mean_cum_acc_future=mean_cum_acc_future_frames,
+                                    )    # don't include the eos class which is assigned to -1
 
             if save_numpy_arrays:
                 np.save(f"video_frame_rec_{video_id}_ep{epoch}.npy", video_frame_rec)

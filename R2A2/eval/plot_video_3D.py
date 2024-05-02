@@ -8,13 +8,21 @@ def plot_video_scatter_3D(preds, recs, tgt_preds, tgt_recs, anticip_time,
                           sampling_rate=60, # seconds to minutes
                           padding_class=-1,
                           eos_class=7, 
-                          num_classes=7): # don't include the eos class which is assigned to -1
+                          num_classes=7,
+                          video_mean_curr_acc=0.0,
+                          video_mean_cum_acc_future=0.0): # don't include the eos class which is assigned to -1
+
+    suptitle = f"Surgical Phase Rec. & Pred. (Video={video_idx}) \n" \
+                f'Current Accuracy: {video_mean_curr_acc:.2f} | ' \
+                f"Future Accuracy: {video_mean_cum_acc_future:.2f} \n" \
+                f"Anticipative steps: {anticip_time // 60} minutes"
+
     
     # Concatenate recordings and predictions
     preds = np.concatenate([recs, preds], axis=1)
     targets = np.concatenate([tgt_recs, tgt_preds], axis=1)
 
-    # change all the values equal to 6 into -1
+    # change all the values equal to 7 into -1
     preds[preds == eos_class] = padding_class
     targets[targets == eos_class] = padding_class
 
@@ -25,60 +33,67 @@ def plot_video_scatter_3D(preds, recs, tgt_preds, tgt_recs, anticip_time,
     # Create figure and adjust layout
     fig = plt.figure(figsize=(16, 9))
     plt.subplots_adjust(left=0.05, right=0.95, bottom=0.25, top=0.95, wspace=0.1, hspace=0.35)
-    fig.suptitle(f'Surgical Phase Rec & Pred (Video {video_idx})', fontdict={'family': 'monospace', 'weight': 'bold', 'size': 20})
+    fig.suptitle(suptitle, fontdict={'family': 'monospace', 'weight': 'bold', 'size': 20})
 
     # Define a custom discrete colormap with 8 distinct colors from 'viridis'
     colors = plt.cm.plasma(np.linspace(0, 1, num_classes+1)) # viridis, magma, inferno, plasma
     cmap = ListedColormap(colors)
 
+    # Axes for targets
+    ax2 = fig.add_subplot(122, projection='3d')
+    ax2.grid(False)
+    ax2.set_zticks([])
+    ax2.xaxis.line.set_color('lightgray')
+    ax2.yaxis.line.set_color('lightgray')
+    ax2.zaxis.line.set_color('lightgray')
+
     # Axes for predictions
     ax1 = fig.add_subplot(121, projection='3d')
     ax1.grid(False)
     ax1.set_zticks([])
-    # Set the color of the axis lines to light gray
     ax1.xaxis.line.set_color('lightgray')
     ax1.yaxis.line.set_color('lightgray')
     ax1.zaxis.line.set_color('lightgray')
 
     # Flatten the data for scatter plot, switch x and y
-    y_values = np.tile(np.arange(preds.shape[1]), preds.shape[0]) * anticip_time
+    y_values = (np.tile(np.arange(preds.shape[1]), preds.shape[0]) * anticip_time) / 60  # Convert to minutes
     x_values = np.repeat(np.arange(preds.shape[0]), preds.shape[1])
     z_values = np.zeros_like(x_values)  # No actual z-values, use zeros
 
-    ax1.scatter(x_values, y_values, z_values, c=preds.flatten(), cmap=cmap, marker='o', s=400)
+    # Scatter plot targets
+    ax2.scatter(x_values, y_values, z_values, c=targets.flatten(), cmap=cmap, marker='o', s=400, 
+                vmin=padding_class, vmax=num_classes)
+    ax2.set_xlim(max(x_values), 0)  # Ensure x-axis is inverted
+    ax2.set_title("Targets")
+    ax2.set_xlabel("Time (minutes)")
+    ax2.set_ylabel("Anticipation (minutes)")
+    ax2.set_ylim(0, anticip_time * preds.shape[1] / 60)  # Adjust y-axis limits to bring rows closer
+    ax2.set_yticks(np.arange(0, (anticip_time * preds.shape[1])/60, anticip_time/60))  # Adjust y-ticks to match original data scale
+    ax2.view_init(elev=23., azim=-60)
+
+    # Scatter plot predictions
+    ax1.scatter(x_values, y_values, z_values, c=preds.flatten(), cmap=cmap, marker='o', s=400, 
+                vmin=padding_class, vmax=num_classes)
     ax1.set_xlim(max(x_values), 0)  # Ensure x-axis is inverted
     ax1.set_title("Predictions")
     ax1.set_xlabel("Current Frames (1fps)")
     ax1.set_ylabel("Future Frames (1fps)")
-    ax1.set_ylim(0, anticip_time * preds.shape[1])  # Adjust y-axis limits to bring rows closer
-    ax1.set_yticks(np.arange(0, anticip_time * preds.shape[1] + 1, anticip_time * 2))  # Adjust y-ticks to match original data scale
+    ax1.set_ylim(0, anticip_time * preds.shape[1] / 60)  # Adjust y-axis limits to bring rows closer
+    ax1.set_yticks(np.arange(0, (anticip_time * preds.shape[1])/60, anticip_time/60))  # Adjust y-ticks to match original data scale
     # left side view
     ax1.view_init(elev=23., azim=-60)
 
-    # Axes for targets
-    ax2 = fig.add_subplot(122, projection='3d')
-    ax2.grid(False)
-    ax2.set_zticks([])
-    # Set the color of the axis lines to light gray
-    ax2.xaxis.line.set_color('lightgray')
-    ax2.yaxis.line.set_color('lightgray')
-    ax2.zaxis.line.set_color('lightgray')
-
-    ax2.scatter(x_values, y_values, z_values, c=targets.flatten(), cmap=cmap, marker='o', s=400)
-    ax2.set_xlim(max(x_values), 0)  # Ensure x-axis is inverted
-    ax2.set_title("Targets")
-    ax2.set_xlabel("Current Frames (1fps)")
-    ax2.set_ylabel("Future Frames (1fps)")
-    ax2.set_ylim(0, anticip_time * preds.shape[1])  # Adjust y-axis limits to bring rows closer
-    ax2.set_yticks(np.arange(0, anticip_time * preds.shape[1] + 1, anticip_time))  # Adjust y-ticks to match original data scale
-    ax2.view_init(elev=23., azim=-60)
+    # Set font size for axes
+    ax1.tick_params(axis='both', which='major', labelsize=10)
+    ax2.tick_params(axis='both', which='major', labelsize=10)
 
     # Color bar setup
-    norm = plt.Normalize(vmin=padding_class, vmax=num_classes-1)
+    norm = plt.Normalize(vmin=0, vmax=num_classes)
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
     sm.set_array([])
+    # thin color bar
     cbar_ax = fig.add_axes([0.25, 0.08, 0.50, 0.02])
-    cbar = fig.colorbar(sm, cax=cbar_ax, orientation='horizontal', ticks=np.arange(padding_class, num_classes))
+    cbar = fig.colorbar(sm, cax=cbar_ax, orientation='horizontal', ticks=np.arange(0, num_classes+1))
     cbar.set_label('Classes (phases)')
 
     plt.savefig(f'video_{video_idx}_scatter3d_preds.png', dpi=300)
