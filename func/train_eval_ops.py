@@ -79,14 +79,14 @@ class BasicLossAccuracy(nn.Module):
                 print(f"[LOSS] {key} target: {targets[key].shape}")
 
             if key == 'curr_frames':
-                losses[key + '_loss'] = self.ce_loss_fn_curr(outputs[key].permute(0, 2, 1), targets[key]).mean() * 0.1
+                losses[key + '_loss'] = self.ce_loss_fn_curr(outputs[key].permute(0, 2, 1), targets[key]).mean() * 0.2
                 print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
 
                 accuracies[key + '_acc'] = seq_accuracy_nans(outputs[key], targets[key])
                 print(f"[LOSS] {key}_acc: {accuracies[key + '_acc']}")
             
             elif key == 'next_frames':
-                losses[key + '_loss'] = self.ce_loss_fn_next(outputs[key].permute(0, 2, 1), targets[key]).mean() * 0.5
+                losses[key + '_loss'] = self.ce_loss_fn_next(outputs[key].permute(0, 2, 1), targets[key]).mean() * 0.3
                 print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
 
                 accuracies[key + '_acc'] = seq_accuracy_nans(outputs[key], targets[key])
@@ -97,7 +97,7 @@ class BasicLossAccuracy(nn.Module):
                 print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
             
             elif key == "feature_loss":
-                losses[key + '_loss'] = outputs[key].mean() * 0.4
+                losses[key + '_loss'] = outputs[key].mean() * 0.5
                 print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
 
             else:

@@ -54,6 +54,7 @@ n_embd:     384
 n_layer:    2
 n_head:     4
 fixed_ctx_length: true      # default true
+mutli_token: false          # default false
 # LABELS
 num_curr_classes: 7              # 7 classes for cholec80
 num_next_classes: 7         # 7 classes for cholec80
@@ -161,9 +162,11 @@ model:
     _target_: models.future_prediction.AVTh
     r2a2_model:
       _target_: R2A2.model.r2a2.R2A2
+      mutli_token: ${mutli_token}
       feature_loss: ${feature_loss}
       decoder_type: ar_causal
       eos_regression: ${eos_regression}
+      fixed_ctx_length: ${fixed_ctx_length}
       input_dim: 768
       present_length: 20
       num_ant_queries: 6

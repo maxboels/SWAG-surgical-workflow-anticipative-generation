@@ -280,6 +280,7 @@ class R2A2(nn.Module):
     """ Reflective and Anticipative Action Recognition Model (R2A2) """
     def __init__(
         self,
+        multi_token: bool = False,
         feature_loss: bool = False,
         decoder_type: str = "ar_causal",
         eos_regression: bool = False,
@@ -311,6 +312,8 @@ class R2A2(nn.Module):
         self.max_anticip_time = max_anticip_time        # is in minutes
         self.anticip_time = anticip_time                # is in seconds
         self.eos_regression = eos_regression
+
+        self.multi_token = multi_token
 
 
         # other params
@@ -357,17 +360,11 @@ class R2A2(nn.Module):
         # Current Token and EOS Time prediction
         self.curr_frames_classifier = nn.Linear(d_model, num_curr_classes)
 
-        
         if self.eos_regression:
             self.curr_eos_rem_time_reg = nn.Linear(d_model, 1)
         
         # Next Token Prediction
         self.next_action_classifier = nn.Linear(gpt_cfg.n_embd, num_next_classes) # optional +1 for the EOS (end of sequence token)
-
-        # Phases
-        if self.segment_level or self.multiscale:
-            self.phase_proj = nn.Linear(d_model, 128)
-            self.next_phase_classifier = nn.Linear(128, num_curr_classes)
 
         if self.decoder_type == "ar_causal":
             if self.frame_level or self.multiscale:
@@ -454,24 +451,15 @@ class R2A2(nn.Module):
             # A single token is represented by all the phases activations from previous frames.
             # So it should predict if new phase features activations are going to appear in the next frames.
 
-            if level == "frame" or multiscale:
-                dec_in = self.proj_layer(enc_out)
-                next_action = self.frame_decoder(inputs_embeds=dec_in)  # next frame-level prediction
-                next_frames_cls = self.next_action_classifier(next_action.last_hidden_state)
-                outputs["next_frames"] = next_frames_cls
+            dec_in = self.proj_layer(enc_out)
+            next_action = self.frame_decoder(inputs_embeds=dec_in)  # next frame-level prediction
+            next_frames_cls = self.next_action_classifier(next_action.last_hidden_state)
+            outputs["next_frames"] = next_frames_cls
 
-                
-                if self.feature_loss:
-                    # Future Prediction Loss with shifted predictions (shifted by 1) and decoded frames
-                    feature_loss = self.future_pred_loss(next_action.last_hidden_state[:, :-1], dec_in[:, 1:])
-                    outputs["feature_loss"] = feature_loss
-
-            if level == "segment" or multiscale:
-                # Long-Term Planning
-                phase_embed = self.phase_proj(enc_out)
-                next_segmts = self.long_term_decoder(inputs_embeds=phase_embed)    # next phase-level prediction
-                next_segmts_cls = self.next_phase_classifier(next_segmts.last_hidden_state)
-                outputs["next_segmts"] = next_segmts_cls
+            if self.feature_loss:
+                # Future Prediction Loss with shifted predictions (shifted by 1) and decoded frames
+                feature_loss = self.future_pred_loss(next_action.last_hidden_state[:, :-1], dec_in[:, 1:])
+                outputs["feature_loss"] = feature_loss
         else:
             # Autoregressive decoding during inference
             # TODO: TRY WITH FIXED CONTEXT WINDOW TO PREVENT LATENCY DURING INFERENCE
