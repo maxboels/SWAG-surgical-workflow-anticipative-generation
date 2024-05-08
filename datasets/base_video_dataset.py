@@ -71,7 +71,7 @@ class SelectDataset():
         if self.dataset_name == "autolaparo21":
             self.frames_fps = 1
             self.dataset_path = f"{abs_path}/R2A2/dataset/{self.dataset_name}/"
-            self.data_root = '/nfs/home/yangliu/dataset/AutoLaparo_Task1/'
+            self.data_root = '/nfs/home/mboels/datasets/autolaparo21/'
             self.path_and_label_dir = os.path.join(self.data_root, 'dataframes', f'autolaparo_df_255px_{self.frames_fps}fps.pkl')
         elif self.dataset_name == "cholec80":
             self.frames_fps = 25
@@ -90,22 +90,23 @@ class SelectDataset():
         with open(self.path_and_label_dir, 'rb') as fo:
             self.df = pickle.load(fo)
         time_elapsed = time.time() - start_time
-        self.logger.info(f"[DATASET] ALL loaded dataframe in {time_elapsed//60:.0f}m {time_elapsed%60:.0f}s")
-        self.logger.info(f"[DATASET] ALL loaded dataframe: {self.df.shape}")
+        self.logger.info(f"[SELECT DATASET] ALL loaded dataframe in {time_elapsed//60:.0f}m {time_elapsed%60:.0f}s")
+        self.logger.info(f"[SELECT DATASET] ALL loaded dataframe: {self.df.shape}")
 
         # replace the labels to start from 0 to num_classes-1 (currently 1 to num_classes)
         if self.df['class'].min() == 1:
+            self.logger.info(f"[SELECT DATASET] labels are starting from 1")
             self.df['class'] = self.df['class'] - 1
             # overwrite the dataframe with the new labels
             with open(self.path_and_label_dir, 'wb') as f:
                 pickle.dump(self.df, f)
-                print(f"[DATASET] saved dataframe with updated labels: {self.df.shape}")
+                self.logger.info(f"[SELECT DATASET] saved dataframe with updated labels: {self.df.shape}")
         else:
-            print(f"[DATASET] labels are already starting from 0")
+            self.logger.info(f"[SELECT DATASET] labels are already starting from 0")
         #-----------------mb added-----------------
-        print(f"[DATASET] ALL unique classes: {np.unique(self.df['class'].tolist())}")
-        print(f"[DATASET] aLL dataframe (head): {self.df.head()}")
-        print(f"[DATASET] ALL dataframe (tail): {self.df.tail()}")
+        self.logger.info(f"[SELECT DATASET] ALL unique classes: {np.unique(self.df['class'].tolist())}")
+        self.logger.info(f"[SELECT DATASET] aLL dataframe (head): {self.df.head()}")
+        self.logger.info(f"[SELECT DATASET] ALL dataframe (tail): {self.df.tail()}")
     
     def get_dataframe(self):
         return self.df
@@ -174,17 +175,17 @@ class Medical_Dataset(Dataset):
                 self.frames_fps = 1
                 self.dataset_path = f"{abs_path}/R2A2/dataset/{self.dataset_name}/"
                 self.data_root = '/nfs/home/yangliu/dataset/AutoLaparo_Task1/'
-                self.path_and_label_dir = os.path.join(self.data_root, 'dataframes', f'autolaparo_df_255px_{self.frames_fps}fps.pkl')
+                # self.path_and_label_dir = os.path.join(self.data_root, 'dataframes', f'autolaparo_df_255px_{self.frames_fps}fps.pkl')
             elif self.dataset_name == "cholec80":
                 self.frames_fps = 25
                 self.dataset_path = f"{abs_path}/R2A2/dataset/{self.dataset_name}/"
                 self.data_root = '/nfs/home/yangliu/dataset/VandArecognition/cholec80/'
-                self.path_and_label_dir = os.path.join(self.data_root, 'dataframes', f'CholecFrames_{self.frames_fps}fps_250px_df.pkl')
+                # self.path_and_label_dir = os.path.join(self.data_root, 'dataframes', f'CholecFrames_{self.frames_fps}fps_250px_df.pkl')
             elif self.dataset_name == "cholect50":
                 self.frames_fps = 25
                 self.dataset_path = f"{abs_path}/R2A2/dataset/{self.dataset_name}/"
                 self.data_root = '/nfs/home/yangliu/dataset/VandArecognition/cholect50/'
-                self.path_and_label_dir = os.path.join(self.data_root, 'dataframes', f'CholecFrames_{self.frames_fps}fps_250px_df.pkl')
+                # self.path_and_label_dir = os.path.join(self.data_root, 'dataframes', f'CholecFrames_{self.frames_fps}fps_250px_df.pkl')
             else:
                 raise ValueError("dataset_name not found")
             self.extracted_feats_path = self.dataset_path + f"vit_extracted_feats/"
@@ -238,8 +239,10 @@ class Medical_Dataset(Dataset):
         def get_data_split(self, dataset_name="cholec80", split="train", video_indices=None):
             """
                 autolapro21: 0-14, 14-21
-                cholec80: 0-40, 40-80
+                cholec80: 1-41, 41-81
             """
+            self.logger.info(f"[DATASET] df unique videos: {self.df.video_idx.unique()}")
+            self.logger.info(f"[DATASET] split: {split} video_indices: {video_indices}")
             df = self.df[self.df.video_idx.isin(video_indices)]
             assert len(df.video_idx.unique()) == len(video_indices), "video indices not found"
             df = df.reset_index() if not split == "train" else df

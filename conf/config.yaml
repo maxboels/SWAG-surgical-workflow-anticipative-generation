@@ -15,13 +15,15 @@ dist_backend: nccl
 
 # run mode
 test_only: false
+num_epochs: 20
+finetune_ckpt: last # or best
 
 # dataset
 dataset_name: cholec80
 pooling_dim: 64
-train_start: 1
+train_start: 1      # cholec80: 1-41, 
 train_end: 41       # last not included
-test_start: 41
+test_start: 41      # cholec80: 41-81, 
 test_end: 81        # last not included
 
 # Comparison with other models
@@ -39,7 +41,7 @@ test_end: 81        # last not included
 # sm:       512  /  100   / 384     /   2     /   4     /   true              /   TokenPooler
 # sm (3):   384  /  100   / 384     /   2     /   4     /   true              /   TokenPooler
 # sm (2):   384  /  100   / 256     /   2     /   4     /   true              /   TokenPooler
-# sm (1):   512  /  100   / 384     /   2     /   8     /   false              /  TokenPooler
+# 9m:   512  /  100   / 384     /   2     /   8     /   false              /  TokenPooler
 # s:        512  /  100   / 384     /   2     /   6     /   false             /   ...
 # xs (ms):  512  /  100   / 384     /   2     /   4     /   false             /   ...
 # xs (old): 512  /  100   / 128     /   2     /   2     /   true              /   ...
@@ -69,9 +71,20 @@ max_anticip_time: 20        # inference: maximum duration (minutes)
 # losses
 feature_loss: false         # default false
 
+loss_w_curr: 0.5
+loss_w_next: 0.5
+loss_w_feats: 0.0
+
+
 
 # ---------------------- end select params ----------------------------
-
+train_eval_op:
+    _target_: func.train_eval_ops.Basic
+    cls_loss_acc_fn:
+      _target_: func.train_eval_ops.BasicLossAccuracy
+      loss_w_curr: ${loss_w_curr}
+      loss_w_next: ${loss_w_next}
+      loss_w_feats: ${loss_w_feats}
 
 pytorch:
   # This only works with the compiled version of torchvision, and might have
@@ -89,7 +102,7 @@ train:
   # module_name_in_ckpt is assumed to be null
   init_from_model: null
   # Total epochs to train for
-  num_epochs: 10
+  num_epochs: ${num_epochs}
   # Evaluate within training, every these many epochs
   eval_freq: 1
   # Shuffle data at train time
@@ -277,8 +290,6 @@ moco:
 
 defaults:
   - train_eval_op: basic
-  - train_eval_op/cls_loss_acc_fn: basic
-  - train_eval_op/reg_criterion: mse
   - opt/optimizer: sgd
   - model/backbone: r2plus1d_34
   - model/temporal_aggregator: mean

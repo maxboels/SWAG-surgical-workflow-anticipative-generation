@@ -458,6 +458,7 @@ class R2A2(nn.Module):
 
             if self.feature_loss:
                 # Future Prediction Loss with shifted predictions (shifted by 1) and decoded frames
+                # doesn't train on last class embedding (EOS token)
                 feature_loss = self.future_pred_loss(next_action.last_hidden_state[:, :-1], dec_in[:, 1:])
                 outputs["feature_loss"] = feature_loss
         else:

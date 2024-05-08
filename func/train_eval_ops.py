@@ -33,10 +33,15 @@ class NoLossAccuracy(nn.Module):
 
 
 class BasicLossAccuracy(nn.Module):
-    def __init__(self, dataset, device, balance_classes=False):
+    def __init__(self, dataset, device,
+                 loss_w_curr=0.5, loss_w_next=0.5, loss_w_feats=0.0,
+    ):
+
         super().__init__()
         self.device = device
-
+        self.loss_w_curr = loss_w_curr
+        self.loss_w_next = loss_w_next
+        self.loss_w_feats = loss_w_feats
         #-----------------select params parameters for loss and accuracy-----------------
         self.model = "skit_v_ant" # options: "skit-x-ant", "skit-v-ant", "r2d2-x-ant", "r2d2-v-ant
         self.past_sampling_rate = 1
@@ -79,26 +84,26 @@ class BasicLossAccuracy(nn.Module):
                 print(f"[LOSS] {key} target: {targets[key].shape}")
 
             if key == 'curr_frames':
-                losses[key + '_loss'] = self.ce_loss_fn_curr(outputs[key].permute(0, 2, 1), targets[key]).mean() * 0.2
+                losses[key + '_loss'] = self.ce_loss_fn_curr(outputs[key].permute(0, 2, 1), targets[key]).mean() * self.loss_w_curr
                 print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
 
                 accuracies[key + '_acc'] = seq_accuracy_nans(outputs[key], targets[key])
                 print(f"[LOSS] {key}_acc: {accuracies[key + '_acc']}")
             
             elif key == 'next_frames':
-                losses[key + '_loss'] = self.ce_loss_fn_next(outputs[key].permute(0, 2, 1), targets[key]).mean() * 0.3
+                losses[key + '_loss'] = self.ce_loss_fn_next(outputs[key].permute(0, 2, 1), targets[key]).mean() * self.loss_w_next
                 print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
 
                 accuracies[key + '_acc'] = seq_accuracy_nans(outputs[key], targets[key])
                 print(f"[LOSS] {key}_acc: {accuracies[key + '_acc']}")
             
-            elif key == "curr_time2eos":
-                losses[key + '_loss'] = self.ce_loss_fn_curr_eos(outputs[key].squeeze(-1), targets[key]).mean() * 0.2
+            elif key == "feature_loss":
+                losses[key + '_loss'] = outputs[key].mean() * self.loss_w_feats
                 print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
             
-            elif key == "feature_loss":
-                losses[key + '_loss'] = outputs[key].mean() * 0.5
-                print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
+            # elif key == "curr_time2eos":
+            #     losses[key + '_loss'] = self.ce_loss_fn_curr_eos(outputs[key].squeeze(-1), targets[key]).mean() * 0.0
+            #     print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
 
             else:
                 raise ValueError(f"Unknown key: {key}")
@@ -118,14 +123,13 @@ class Basic:
         device,
         dataset,
         cls_loss_acc_fn: TargetConf,
-        reg_criterion: TargetConf = None):
+    ):
         super().__init__()
         
         self.model = model
         self.device = device
         self.cls_loss_acc_fn = hydra.utils.instantiate(cls_loss_acc_fn,
                                                        dataset, device)
-        del reg_criterion  # not used here
 
     def _basic_preproc(self, data, train_mode):
         self.train_mode = train_mode

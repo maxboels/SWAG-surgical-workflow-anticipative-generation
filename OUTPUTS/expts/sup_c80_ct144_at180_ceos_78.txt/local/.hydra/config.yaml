@@ -38,9 +38,11 @@ model:
     _target_: models.future_prediction.AVTh
     r2a2_model:
       _target_: R2A2.model.r2a2.R2A2
+      mutli_token: ${mutli_token}
       feature_loss: ${feature_loss}
       decoder_type: ar_causal
       eos_regression: ${eos_regression}
+      fixed_ctx_length: ${fixed_ctx_length}
       input_dim: 768
       present_length: 20
       num_ant_queries: 6
@@ -201,6 +203,8 @@ sync_bn: false
 data_parallel: true
 dist_backend: nccl
 test_only: false
+num_epochs: 20
+finetune_ckpt: last
 dataset_name: cholec80
 pooling_dim: 64
 train_start: 1
@@ -215,6 +219,7 @@ n_embd: 384
 n_layer: 2
 n_head: 4
 fixed_ctx_length: true
+mutli_token: false
 num_curr_classes: 7
 num_next_classes: 8
 eos_class: 7
@@ -222,7 +227,7 @@ eos_regression: false
 eos_classification: true
 ctx_length: 1440
 anticip_time: 180
-max_anticip_time: 24
+max_anticip_time: 18
 feature_loss: false
 pytorch:
   video_backend: video_reader
@@ -232,7 +237,7 @@ train:
   init_from_model:
   - - backbone.model
     - ${cwd}/DATA/pretrained/TIMM/jx_vit_base_p16_224-80ecf9dd.pth
-  num_epochs: 10
+  num_epochs: ${num_epochs}
   eval_freq: 1
   shuffle_data: true
   store_best: false

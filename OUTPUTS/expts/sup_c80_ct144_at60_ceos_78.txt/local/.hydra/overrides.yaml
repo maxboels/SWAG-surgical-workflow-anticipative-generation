@@ -8,7 +8,7 @@
 - fixed_ctx_length=True
 - ctx_length=1440
 - anticip_time=60
-- max_anticip_time=24
+- max_anticip_time=18
 - feature_loss=False
 - eos_regression=False
 - eos_classification=True
