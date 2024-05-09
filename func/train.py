@@ -538,10 +538,15 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     all_videos_results["cum_acc_future"]= np.round(np.nanmean(all_videos_mean_cum_acc_future_t), decimals=4).tolist()
     # all_videos_results["acc_future"]    = np.round(np.nanmean(all_videos_mean_acc_future_t), decimals=4).tolist()
 
-    if save_all_video_preds:
-        np.save(f"all_videos_mean_acc_future_t_ep{epoch}.npy", all_videos_acc_future)
-        np.save(f"all_videos_mean_cum_acc_future_t_ep{epoch}.npy", all_videos_cum_acc_future)
-
+    # update best_cum_acc
+    if all_videos_results["cum_acc_future"] > best_cum_acc_future:
+        best_cum_acc_future = all_videos_results["cum_acc_future"]
+        best_epoch = epoch
+        logger.info(f"[TESTING] Best epoch: {best_epoch} | "
+                    f"Best cum_acc_future: {best_cum_acc_future}")
+        if save_all_video_preds:
+            np.save(f"all_videos_mean_acc_future_t_ep{epoch}.npy", all_videos_acc_future)
+            np.save(f"all_videos_mean_cum_acc_future_t_ep{epoch}.npy", all_videos_cum_acc_future)
 
     tb_writer.add_scalar(f'test/acc_curr', all_videos_results["acc_curr"], step_now)
     tb_writer.add_scalar(f'test/cum_acc_future', all_videos_results["cum_acc_future"], step_now)
