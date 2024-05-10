@@ -509,17 +509,18 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
 
         
         
-        if mean_cum_acc_future_frames > best_cum_acc_future:
-            if video_id % plot_video_freq == 0:
-                plot_video_scatter_3D(video_frame_preds, video_frame_rec, video_tgts_preds, video_tgts_rec, anticip_time, 
-                                    video_idx=video_id, 
-                                    sampling_rate=60, # current frames axis (seconds to minutes)
-                                    padding_class=-1, # padding class
-                                    eos_class=7,
-                                    num_classes=7,
-                                    video_mean_curr_acc=mean_acc_curr_frames,
-                                    video_mean_cum_acc_future=mean_cum_acc_future_frames,
-                                    )    # don't include the eos class which is assigned to -1
+        # if mean_cum_acc_future_frames > best_cum_acc_future:
+        if video_id % plot_video_freq == 0:
+            plot_video_scatter_3D(video_frame_preds, video_frame_rec, video_tgts_preds, video_tgts_rec, anticip_time, 
+                                video_idx=video_id, 
+                                epoch=epoch,
+                                sampling_rate=60, # current frames axis (seconds to minutes)
+                                padding_class=-1, # padding class
+                                eos_class=7,
+                                num_classes=7,
+                                video_mean_curr_acc=mean_acc_curr_frames,
+                                video_mean_cum_acc_future=mean_cum_acc_future_frames,
+                                )    # don't include the eos class which is assigned to -1
 
             if save_video_preds:
                 np.save(f"video_frame_rec_{video_id}_ep{epoch}.npy", video_frame_rec)

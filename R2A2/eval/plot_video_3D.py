@@ -5,6 +5,7 @@ from matplotlib.colors import ListedColormap, Normalize
 
 def plot_video_scatter_3D(preds, recs, tgt_preds, tgt_recs, anticip_time,
                           video_idx=1, 
+                          epoch=1,
                           sampling_rate=60, # seconds to minutes
                           padding_class=-1,
                           eos_class=7, 
@@ -108,7 +109,7 @@ def plot_video_scatter_3D(preds, recs, tgt_preds, tgt_recs, anticip_time,
     cbar = fig.colorbar(sm, cax=cbar_ax, orientation='horizontal', ticks=np.arange(0, num_classes+1))
     cbar.set_label('Classes (phases)')
 
-    plt.savefig(f'video_{video_idx}_scatter3d_preds.png', dpi=300)
+    plt.savefig(f'video_{video_idx}_ep{epoch}_scatter3d_preds.png', dpi=300)
     # plt.show()
 
 def plot_video_contour_3D(preds, recs, tgt_preds, tgt_recs, anticip_time, video_idx=1, sampling_rate=1):
