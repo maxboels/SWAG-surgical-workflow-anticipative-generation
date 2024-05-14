@@ -110,6 +110,7 @@ def plot_video_scatter_3D(preds, recs, tgt_preds, tgt_recs, anticip_time,
     cbar.set_label('Classes (phases)')
 
     plt.savefig(f'video_{video_idx}_ep{epoch}_scatter3d_preds.png', dpi=300)
+    plt.close()
     # plt.show()
 
 def plot_video_contour_3D(preds, recs, tgt_preds, tgt_recs, anticip_time, video_idx=1, sampling_rate=1):

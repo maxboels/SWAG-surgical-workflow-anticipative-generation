@@ -24,9 +24,21 @@ class BaseModel(nn.Module):
         if model_cfg.intermediate_featdim is None:
             model_cfg.intermediate_featdim = backbone_dim
 
-        self.future_predictor = hydra.utils.instantiate(model_cfg.future_predictor,
-            in_features=model_cfg.intermediate_featdim,
-            _recursive_=False)
+
+
+        # LOAD MODEL
+        if model_cfg.model_name=="supra":
+            self.model = hydra.utils.instantiate(model_cfg.supra,
+                in_features=model_cfg.intermediate_featdim,
+                _recursive_=False)
+        elif model_cfg.model_name=="skit":
+            self.model = hydra.utils.instantiate(model_cfg.skit, _recursive_=False)
+        else:
+            raise ValueError(f"model_name {model_cfg.model_name} not supported")
+
+
+
+
         # Projection layer
         self.project_mlp = nn.Sequential()
         if model_cfg.project_dim_for_nce is not None:
@@ -37,7 +49,7 @@ class BaseModel(nn.Module):
         # 2nd round of temporal aggregation, if needed
         #self.temporal_aggregator_after_future_pred = hydra.utils.instantiate(
         #    model_cfg.temporal_aggregator_after_future_pred,
-        #    self.future_predictor.output_dim)
+        #    self.model.output_dim)
         # Dropout
         self.dropout = nn.Dropout(model_cfg.dropout)
         # Takes as input (B, C**) -> (B, num_classes)
@@ -134,7 +146,7 @@ class BaseModel(nn.Module):
         #-------------------model-------------------
 
         # Forward Pass
-        outputs = self.future_predictor(feats_past, train_mode)
+        outputs = self.model(feats_past, train_mode)
  
         if plot_maxpooled:
             outputs['maxpooled'] = feats
