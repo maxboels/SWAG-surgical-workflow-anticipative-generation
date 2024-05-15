@@ -178,7 +178,7 @@ def train_one_epoch(
             logger.info(f"[TRAINING] Step {i}/{len(dataloader_train)} | "
                 f"Loss: {losses['total_loss'].item():.2f} | "
                 f"Acc (curr_frames): {accuracies['curr_frames_acc']:.2f} | "
-                f"Acc (next_frames): {accuracies['next_frames_acc']:.2f} | "
+                # f"Acc (next_frames): {accuracies['next_frames_acc']:.2f} | "
                 f"time-left: {remaining_time:.2f} min")
 
         loss = losses["total_loss"]

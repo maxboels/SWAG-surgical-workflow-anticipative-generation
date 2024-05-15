@@ -74,6 +74,9 @@ class BasicLossAccuracy(nn.Module):
         self.ce_loss_fn_next = nn.CrossEntropyLoss(weight=next_class_weights, reduction='none', ignore_index=-1)
         self.ce_loss_fn_curr_eos = nn.MSELoss(reduction='none')
 
+
+        self.ce_loss_fn_future = nn.CrossEntropyLoss(weight=next_class_weights, reduction='none', ignore_index=-1)
+
     def forward(self, outputs, targets):
         losses = {}
         accuracies = {}
@@ -101,9 +104,12 @@ class BasicLossAccuracy(nn.Module):
                 losses[key + '_loss'] = outputs[key].mean() * self.loss_w_feats
                 print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
             
-            # elif key == "curr_time2eos":
-            #     losses[key + '_loss'] = self.ce_loss_fn_curr_eos(outputs[key].squeeze(-1), targets[key]).mean() * 0.0
-            #     print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
+            elif key == "future_frames":
+                losses[key + '_loss'] = self.ce_loss_fn_future(outputs[key].permute(0, 2, 1), targets[key]).mean() * self.loss_w_next
+                print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
+
+                accuracies[key + '_acc'] = seq_accuracy_nans(outputs[key], targets[key])
+                print(f"[LOSS] {key}_acc: {accuracies[key + '_acc']}")
 
             else:
                 raise ValueError(f"Unknown key: {key}")
@@ -165,7 +171,8 @@ class Basic:
         if train_mode:
             for key in outputs.keys():
                 if key == "feature_loss":
-                    continue
+                    continue#
+                print(f"[TRAIN] {key} output: {outputs[key].shape}")
                 targets[key] = data[key+'_tgt']
             losses, accs = self.cls_loss_acc_fn(outputs, targets)
         else:

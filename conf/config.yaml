@@ -60,7 +60,8 @@ fixed_ctx_length: true      # default true
 mutli_token: false          # default false
 # LABELS
 num_curr_classes: 7              # 7 classes for cholec80
-num_next_classes: 7         # 7 classes for cholec80
+num_next_classes: 8         # 7 classes for cholec80
+num_future_classes: 8       # 7 classes for cholec80
 eos_class: 7                # last class for EOS
 eos_regression: false
 eos_classification: true
@@ -68,7 +69,7 @@ eos_classification: true
 ctx_length: 1500            # 1500s = 25min, 3000s = 50min (avg video is 34min)
 # NOTE: we need long anticipation time to increase the number of transition samples for predicting transitions at inference.
 anticip_time: 60            # training: 30s / 60s / 120s / 240s / 300s / 600s (10min)
-max_anticip_time: 20        # inference: maximum duration (minutes)
+max_anticip_time: 18        # inference: maximum duration (minutes)
 # losses
 feature_loss: false         # default false
 
@@ -256,13 +257,12 @@ model:
     _target_: models.skit_future.SKITFuture
     input_dim: 768
     present_length: 20
-    num_ant_queries: 20
     past_sampling_rate: 10
     d_model: 512
     dec_dim: 512
     num_curr_classes: 7
-    num_next_classes: 7
-    max_anticip_time: 20
+    num_future_classes: ${num_future_classes}
+    max_anticip_time: 18
     anticip_time: 60
     pooling_dim: 64
     fusion_head:
@@ -270,7 +270,7 @@ model:
       dim: ${informer.d_model}
     decoder:
       _target_: models.transformers.TransformerDecoder
-      input_dim: 768
+      input_dim: 512
       hidden_dim: 512
       n_heads: 8
       n_layers: 2

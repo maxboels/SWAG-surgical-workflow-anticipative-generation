@@ -131,6 +131,7 @@ class Medical_Dataset(Dataset):
             self.logger = logger
             # self.project_path = "/nfs/home/mboels/projects/SKiT_video_augmentation"
             #-----------------select arguments-----------------
+            self.model_name = cfg.model_name
             self.debug = False
             self.dataset_name = dataset_name                                        # autolaparo21, cholec80, cholect50
             self.num_classes = 7                                                    # AutoLapro: 7, Cholec80: 7
@@ -155,8 +156,16 @@ class Medical_Dataset(Dataset):
             self.get_target_feats = False
             self.replace_current_with_next_class = False
             self.future_segmts_tgt = False
-            self.curr_frames_tgt = "global" # "global" or "local"
-            self.next_frames_tgt = "global" # "global" or "local"
+            
+            # observed targets
+            if self.model_name == "supra":
+                self.curr_frames_tgt = "global" # "global" or "local"
+                self.next_frames_tgt = "next"
+            elif self.model_name == "skit":
+                self.curr_frames_tgt = "local"
+                self.next_frames_tgt = "future"
+            
+             # "global" or "local"
             params = {
                 "debug": self.debug,
                 "dataset_name": self.dataset_name,
@@ -407,21 +416,22 @@ class Medical_Dataset(Dataset):
             
             # CURRENT FRAMES TARGETS
             if self.curr_frames_tgt == "global":
+                curr_frame_spacing = self.anticip_time
                 ends = frame_idx + 1
                 remainder = frame_idx  % self.anticip_time
                 # the target is the last frame in the attn window
                 starts = max(remainder, frame_idx - self.ctx_length + self.anticip_time)
             elif self.curr_frames_tgt == "local":
-                # self.anticip_time = 1
+                curr_frame_spacing = 1
+                ends = frame_idx + 1
+                starts = max(0, frame_idx - self.attn_window_size + 1)
                 self.num_ctx_tokens = self.attn_window_size
-                ends = frame_idx +1
-                starts = max(0, frame_idx - self.attn_window_size)
             else:
                 raise ValueError("curr_frames_tgt not found")
             print(f"[DATASET] curr_frames_tgt starts: {starts} ends: {ends}")
-            curr_frames_tgt = video_targets[starts: ends: self.anticip_time].to(self.device)
+            curr_frames_tgt = video_targets[starts: ends: curr_frame_spacing].to(self.device)
             print(f"[DATASET] curr_frames_tgt: {curr_frames_tgt.size()}")
-            print(f"[DATASET] curr_frames_tgt: {torch.arange(starts, ends, self.anticip_time)}")
+            print(f"[DATASET] curr_frames_tgt: {torch.arange(starts, ends, curr_frame_spacing)}")
             missing = self.num_ctx_tokens - curr_frames_tgt.size(0)
             print(f"[DATASET] missing: {missing}")
             if missing > 0:
@@ -436,39 +446,52 @@ class Medical_Dataset(Dataset):
                 data_now['curr_time2eos_tgt'] = curr_eos_values.to(self.device).float()
                 print(f"[DATASET] curr_time2eos_tgt: {curr_eos_values.size()}")
 
-            assert curr_frames_tgt.size(0) == self.num_ctx_tokens, f"curr_frames_tgt size not equal to num_ctx_tokens: {curr_frames_tgt.size(0)}"
+            assert curr_frames_tgt.size(0) == self.num_ctx_tokens, f"num_ctx_tokens size not equal to curr_frames_tgt: {curr_frames_tgt.size(0)}"
             
             if self.train_mode == 'train':
 
                 # NEXT FRAMES TARGETS (SHIFTED BY 2x Window size or 2x Frames per tokens)
-                if self.next_frames_tgt=="global":
+                if self.next_frames_tgt=="next":
                     excess_right = max(0, (frame_idx + self.anticip_time + 1) - video_targets.size(0))
                     ends = min(video_targets.size(0), frame_idx + self.anticip_time + 1)
                     start_offset = frame_idx  % self.anticip_time
                     starts = max(start_offset, frame_idx - self.ctx_length + (2*self.anticip_time))
-                elif self.next_frames_tgt=="local":
-                    starts = max(0, frame_idx - self.attn_window_size)
-                    ends = frame_idx
-                    # self.anticip_time = 1
-                    self.num_ctx_tokens = self.attn_window_size
+                    print(f"[DATASET] next_frames_tgt starts: {starts}, ends: {ends}")
+                    next_frames_tgt = video_targets[starts: ends: self.anticip_time].to(self.device)
+                    print(f"[DATASET] next_frames_tgt: {next_frames_tgt.size()}")
+                    print(f"[DATASET] next_frames_tgt: {torch.arange(starts, ends, self.anticip_time)}")
+                    if excess_right > 0:
+                        # only add 1 eos token since we use anticip window size
+                        next_frames_tgt = torch.cat((next_frames_tgt, self.eos[:1].long()), 0)
+                        print(f"[DATASET] EOS padding for next_frames_tgt: {excess_right}")
+                    missing = self.num_ctx_tokens - next_frames_tgt.size(0)
+                    if missing > 0:
+                        next_frames_tgt = torch.cat(( -self.ones[:missing].long(), next_frames_tgt), 0)
+                    data_now['next_frames_tgt'] = next_frames_tgt.to(self.device).long()
+                    print(f"[DATASET] next_frames_tgt: {next_frames_tgt.size()}")
+
+                    assert next_frames_tgt.size(0) == self.num_ctx_tokens, f"next_frames_tgt size not equal to num_ctx_tokens: {next_frames_tgt.size(0)}"
+
+                elif self.next_frames_tgt=="future":
+                    # FUTURE FRAMES TARGETS (SHIFTED BY WINDOW SIZE FROM CURRENT FRAME)
+                    starts = frame_idx + self.anticip_time
+                    ends = min(video_targets.size(0), starts + self.max_anticip_sec)
+                    print(f"[DATASET] future_frames_tgt starts: {starts} ends: {ends}, anticip_time: {self.anticip_time}")
+                    future_frames_tgt = video_targets[starts: ends: self.anticip_time].to(self.device)
+                    if starts < ends:
+                        print(f"[DATASET] future_frames_tgt: {torch.arange(starts, ends, self.anticip_time)}")
+                    missing = self.num_future_tokens - future_frames_tgt.size(0)
+                    if missing > 0:
+                        future_frames_tgt = torch.cat((future_frames_tgt, self.eos[:missing].long()), 0)
+                        print(f"[DATASET] EOS padding for future_frames_tgt: {missing}")
+                    data_now['future_frames_tgt'] = future_frames_tgt.to(self.device).long()
+                    print(f"[DATASET] future_frames_tgt: {future_frames_tgt.size()}")
+
+                    assert future_frames_tgt.size(0) == self.num_future_tokens, f"future_frames_tgt size not equal to num_future_tokens: {future_frames_tgt.size(0)}"
+                
                 else:
                     raise ValueError("next_frames_tgt not found")
-                print(f"[DATASET] next_frames_tgt starts: {starts}, ends: {ends}")
-                next_frames_tgt = video_targets[starts: ends: self.anticip_time].to(self.device)
-                print(f"[DATASET] next_frames_tgt: {next_frames_tgt.size()}")
-                print(f"[DATASET] next_frames_tgt: {torch.arange(starts, ends, self.anticip_time)}")
-                if excess_right > 0:
-                    # only add 1 eos token since we use anticip window size
-                    next_frames_tgt = torch.cat((next_frames_tgt, self.eos[:1].long()), 0)
-                    print(f"[DATASET] EOS padding for next_frames_tgt: {excess_right}")
-                missing = self.num_ctx_tokens - next_frames_tgt.size(0)
-                if missing > 0:
-                    next_frames_tgt = torch.cat(( -self.ones[:missing].long(), next_frames_tgt), 0)
-                data_now['next_frames_tgt'] = next_frames_tgt.to(self.device).long()
-                print(f"[DATASET] next_frames_tgt: {next_frames_tgt.size()}")
-
-                assert next_frames_tgt.size(0) == self.num_ctx_tokens, f"next_frames_tgt size not equal to num_ctx_tokens: {next_frames_tgt.size(0)}"
-
+            
             # ----------------- INFERENCE LABELS -----------------
             else:
 

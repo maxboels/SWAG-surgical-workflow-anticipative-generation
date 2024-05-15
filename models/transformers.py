@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class TransformerDecoderModel(nn.Module):
+class TransformerDecoder(nn.Module):
     def __init__(self, input_dim, hidden_dim, n_heads, n_layers, dim_feedforward=2048, dropout=0.1):
-        super(TransformerDecoderModel, self).__init__()
+        super(TransformerDecoder, self).__init__()
         self.embedding = nn.Linear(input_dim, hidden_dim)
         self.positional_encoding = nn.Parameter(torch.zeros(1, 1000, hidden_dim))  # Assuming max sequence length of 1000
 

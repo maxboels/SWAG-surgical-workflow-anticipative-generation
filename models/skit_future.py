@@ -106,13 +106,12 @@ class SKITFuture(nn.Module):
         self,
         input_dim: int = 768,
         present_length: int = 20,
-        num_ant_queries: int = 20,
         past_sampling_rate: int = 10,
         d_model: int = 512,
         dec_dim: int = 512,
         num_curr_classes: int = 7,
-        num_next_classes: int = 7,
-        max_anticip_time: int = 20,
+        num_future_classes: int = 8,
+        max_anticip_time: int = 18,
         anticip_time: int = 60,
         pooling_dim: int = 64,
         decoder: TargetConf = None,
@@ -128,7 +127,7 @@ class SKITFuture(nn.Module):
         self.past_sampling_rate = past_sampling_rate
         self.max_anticip_time = max_anticip_time        # is in minutes
         self.anticip_time = anticip_time                # is in seconds
-        self.num_ant_queries = num_ant_queries
+        self.num_ant_queries = int(self.max_anticip_time * 60 / self.anticip_time)
         # other params
         self.relu_norm = True
         self.frame_level = True
@@ -141,8 +140,8 @@ class SKITFuture(nn.Module):
         self.frame_decoder = hydra.utils.instantiate(decoder, _recursive_=False)
 
         self.curr_frames_classifier = nn.Linear(d_model, num_curr_classes)
-        self.next_action_classifier = nn.Linear(dec_dim, num_next_classes) # optional +1 for the EOS (end of sequence token)
-        self.input_queries = nn.Parameter(torch.randn(1, num_ant_queries, d_model))
+        self.future_action_classifier = nn.Linear(dec_dim, num_future_classes) # optional +1 for the EOS (end of sequence token)
+        self.input_queries = nn.Parameter(torch.randn(1, self.num_ant_queries, d_model))
 
     def encoder(self, obs_video):
         """Follow the skit implementation."""
@@ -157,28 +156,30 @@ class SKITFuture(nn.Module):
         return past_present
     
     def forward(self, obs_video, train_mode=True):
-        print(f"[R2A2] obs_video: {obs_video.shape}")
+        print(f"[SKIT-F] obs_video: {obs_video.shape}")
         outputs = {}
         enc_out = self.encoder(obs_video)  # sliding window encoder
-        print(f"[R2A2] enc_out: {enc_out.shape}")
+        print(f"[SKIT-F] enc_out: {enc_out.shape}")
 
         enc_out_pooled, now_reduc_max = self.tokens_pooler(enc_out)
-        print(f"[R2A2] enc_out_pooled: {enc_out_pooled.shape}")
+        print(f"[SKIT-F] enc_out_pooled: {enc_out_pooled.shape}")
 
         enc_out_local = enc_out[:, -self.present_length:]
-        print(f"[R2A2] enc_out_local: {enc_out_local.shape}")
+        print(f"[SKIT-F] enc_out_local: {enc_out_local.shape}")
         
         enc_out = self.fusion_head1(enc_out_pooled, enc_out_local)
-        print(f"[R2A2] enc_out_fused: {enc_out.shape}")
+        print(f"[SKIT-F] enc_out_fused: {enc_out.shape}")
 
         curr_frames_cls = self.curr_frames_classifier(enc_out)
-        print(f"[R2A2] curr_frames: {curr_frames_cls.shape}")
+        print(f"[SKIT-F] curr_frames: {curr_frames_cls.shape}")
         outputs["curr_frames"] = curr_frames_cls
 
-        dec_in = self.proj_layer(enc_out)
-        next_action = self.frame_decoder(self.input_queries, dec_in)
-        next_frames_cls = self.next_action_classifier(next_action)
-        outputs["next_frames"] = next_frames_cls
-        print(f"[R2A2] next_frames: {next_frames_cls.shape}")
+        input_queries = self.input_queries.expand(enc_out.shape[0], -1, -1)
+        print(f"[SKIT-F] input_queries: {input_queries.shape}")
+        print(f"[SKIT-F] enc_out: {enc_out.shape}")
+        next_action = self.frame_decoder(input_queries, enc_out)
+        next_frames_cls = self.future_action_classifier(next_action)
+        outputs["future_frames"] = next_frames_cls
+        print(f"[SKIT-F] next_frames: {next_frames_cls.shape}")
 
         return outputs
