@@ -38,7 +38,10 @@ def plot_box_plot_figure(predicted_segments, data_dict,
     plt.grid(color='lightgray', linestyle='--', linewidth=1)
     plt.ylim(0, 1)
     plt.savefig(file_name, dpi=300)
-    # plt.show()
+    plt.close()
+    # remove all configurations for the next plot
+    plt.rcdefaults()
+
 
 def plot_figure(planning_length, data_dict, 
                 title='Planning Evaluation', 
@@ -79,8 +82,9 @@ def plot_figure(planning_length, data_dict,
     # Save plot with high resolution
     plt.savefig(file_name, dpi=300)
     
-    # Display the plot
-    # plt.show()
+    plt.close()
+    # remove all configurations for the next plot
+    plt.rcdefaults()
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -97,7 +101,9 @@ def plot_cumulative_time(cumulative_times):
     plt.ylabel('Cumulative Time (seconds)', weight='bold')
     plt.grid(color='lightgray', linestyle=':', linewidth=2.0)
     plt.savefig('plot_cumulative_time.png', dpi=300)
-    plt.show()
+    plt.close()
+    # remove all configurations for the next plot
+    plt.rcdefaults()
 
 
 if __name__ == '__main__':

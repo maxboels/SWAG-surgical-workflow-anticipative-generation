@@ -51,7 +51,7 @@ model_name: supra          # skit / supra
 informer:
   decoder: true             # default true
   d_model: 512
-# gpt-2:
+# future decoder: gpt-2 or transformer 
 vocab_size: 1000            # base: 100, mv: 1000, lv: 10000
 n_embd:     384
 n_layer:    2
@@ -263,7 +263,7 @@ model:
     num_curr_classes: 7
     num_future_classes: ${num_future_classes}
     max_anticip_time: 18
-    anticip_time: 60
+    anticip_time: ${anticip_time}
     pooling_dim: 64
     fusion_head:
       _target_: R2A2.model.r2a2.FusionHead
@@ -271,9 +271,9 @@ model:
     decoder:
       _target_: models.transformers.TransformerDecoder
       input_dim: 512
-      hidden_dim: 512
-      n_heads: 8
-      n_layers: 2
+      hidden_dim: ${n_embd}
+      n_heads: ${n_head}
+      n_layers: ${n_layer}
     informer:
       _target_: Informer2020.models.model.Informer
       enc_in: 768

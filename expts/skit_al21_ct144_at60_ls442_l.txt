@@ -2,19 +2,19 @@ test_only=false
 
 model_name=skit
 
-dataset_name=cholec80
+dataset_name=autolaparo21
 pooling_dim=64
 train_start=1
-train_end=40
-test_start=41
-test_end=80
+train_end=14
+test_start=15
+test_end=21
 
 informer.decoder=true
 informer.d_model=512
 vocab_size=1000
-n_embd=384
-n_layer=2
-n_head=4
+n_embd=512
+n_layer=4
+n_head=10
 fixed_ctx_length=true
 ctx_length=1440
 anticip_time=60
@@ -29,6 +29,21 @@ eos_class=7
 loss_w_curr=0.4
 loss_w_next=0.4
 loss_w_feats=0.2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

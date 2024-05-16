@@ -68,25 +68,27 @@ def plot_video_scatter_3D(preds, recs, tgt_preds, tgt_recs, anticip_time,
     # Scatter plot targets
     ax2.scatter(x_values, y_values, z_values, c=targets.flatten(), cmap=cmap, marker='o', s=400, 
                 vmin=padding_class, vmax=num_classes)
-    ax2.set_xlim(max(x_values), 0)  # Ensure x-axis is inverted
+    ax2.set_xlim(0, max(x_values))  # Ensure x-axis is left to right
+    # ax2.set_xlim(max(x_values), 0)  # Ensure x-axis is inverted
     ax2.set_title("Targets", fontdict=axis_fontdict)
-    ax2.set_xlabel("Video Duration (minutes)", fontdict=axis_fontdict)
-    ax2.set_ylabel("Anticipation (minutes)", fontdict=axis_fontdict)
+    ax2.set_xlabel("Observed Frames (1fps)", fontdict=axis_fontdict)
+    ax2.set_ylabel("Future Frames (minutes)", fontdict=axis_fontdict)
     ax2.set_ylim(0, anticip_time * preds.shape[1] / 60)  # Adjust y-axis limits to bring rows closer
     # set x ticks as every 3 minutes from 0 to 18
     tick_positions = np.arange(0, preds.shape[0], 1)
     ax2.set_xticks(tick_positions)
     ax2.set_xticklabels([f'{i}' if (i) % xticks_step == 0 else '' for i in range(len(tick_positions))], rotation=45)
     ax2.set_yticks(np.arange(0, (anticip_time * preds.shape[1])/60, anticip_time/60))  # Adjust y-ticks to match original data scale
-    ax2.view_init(elev=23., azim=-60)
+    ax2.view_init(elev=23., azim=-65)
 
     # Scatter plot predictions
     ax1.scatter(x_values, y_values, z_values, c=preds.flatten(), cmap=cmap, marker='o', s=400, 
                 vmin=padding_class, vmax=num_classes)
-    ax1.set_xlim(max(x_values), 0)  # Ensure x-axis is inverted
+    ax1.set_xlim(0, max(x_values))  # Ensure x-axis is left to right
+    # ax1.set_xlim(max(x_values), 0)  # Ensure x-axis is inverted
     ax1.set_title("Predictions", fontdict=axis_fontdict)
-    ax1.set_xlabel("Video Duration (minutes)", fontdict=axis_fontdict)
-    ax1.set_ylabel("Anticipation (minutes)", fontdict=axis_fontdict)
+    ax1.set_xlabel("Observed Frames (1fps)", fontdict=axis_fontdict)
+    ax1.set_ylabel("Future Frames (minutes)", fontdict=axis_fontdict)
     ax1.set_ylim(0, anticip_time * preds.shape[1] / 60)  # Adjust y-axis limits to bring rows closer
     # set x ticks as every 3 minutes from 0 to 18
     tick_positions = np.arange(0, preds.shape[0], 1)
@@ -94,7 +96,7 @@ def plot_video_scatter_3D(preds, recs, tgt_preds, tgt_recs, anticip_time,
     ax1.set_xticklabels([f'{i}' if (i) % xticks_step == 0 else '' for i in range(len(tick_positions))], rotation=45)
     ax1.set_yticks(np.arange(0, (anticip_time * preds.shape[1])/60, anticip_time/60))  # Adjust y-ticks to match original data scale
     # left side view
-    ax1.view_init(elev=23., azim=-60)
+    ax1.view_init(elev=23., azim=-65)
 
     # Set font size for axes
     ax1.tick_params(axis='both', which='major', labelsize=10)
@@ -166,6 +168,7 @@ def plot_video_contour_3D(preds, recs, tgt_preds, tgt_recs, anticip_time, video_
     cbar_ax = fig.add_axes([0.25, 0.08, 0.50, 0.02])
     fig.colorbar(target_plot, cax=cbar_ax, orientation='horizontal', label='Classes (phases)')
     plt.savefig(f'video_{video_idx}_preds.png', dpi=300)
+    plt.close()
 
 if __name__ == '__main__':
     preds = np.load('data/video_frame_preds_60_ep2.npy')
