@@ -35,7 +35,36 @@ model:
   temporal_aggregator:
     _target_: models.temporal_aggregation.Identity
   future_predictor:
-    _target_: models.future_prediction.AVTh
+    _target_: models.future_prediction.Identity
+    n_head: 4
+    n_layer: 6
+    output_len: 1
+    inter_dim: 2048
+    return_past_too: true
+    future_pred_loss:
+      _target_: torch.nn.MSELoss
+    future_pred_loss_wt: 1.0
+    avg_last_n: 1
+  temporal_aggregator_after_future_pred:
+    _target_: models.temporal_aggregation.Identity
+  classifier:
+    _target_: torch.nn.Linear
+    bias: true
+  model_name: ${model_name}
+  backbone_dim: 768
+  intermediate_featdim: null
+  backbone_last_n_modules_to_drop: 0
+  dropout: 0.3
+  project_dim_for_nce: null
+  add_regression_head: false
+  bn:
+    eps: 0.001
+    mom: 0.1
+  same_temp_agg_dim: false
+  use_cls_mappings: false
+  classifier_on_past: true
+  supra:
+    _target_: models.supra.AVTh
     r2a2_model:
       _target_: R2A2.model.r2a2.R2A2
       mutli_token: ${mutli_token}
@@ -113,32 +142,50 @@ model:
         distil: false
         mix: true
         use_decoder: ${informer.decoder}
-    n_head: 4
-    n_layer: 6
-    output_len: 1
-    inter_dim: 2048
-    return_past_too: true
-    future_pred_loss:
-      _target_: torch.nn.MSELoss
-    future_pred_loss_wt: 1.0
-    avg_last_n: 1
-  temporal_aggregator_after_future_pred:
-    _target_: models.temporal_aggregation.Identity
-  classifier:
-    _target_: torch.nn.Linear
-    bias: true
-  backbone_dim: 768
-  intermediate_featdim: null
-  backbone_last_n_modules_to_drop: 0
-  dropout: 0.3
-  project_dim_for_nce: null
-  add_regression_head: false
-  bn:
-    eps: 0.001
-    mom: 0.1
-  same_temp_agg_dim: false
-  use_cls_mappings: false
-  classifier_on_past: true
+  skit:
+    _target_: models.skit_future.SKITFuture
+    input_dim: 768
+    present_length: 20
+    past_sampling_rate: 10
+    d_model: ${informer.d_model}
+    dec_dim: ${n_embd}
+    num_curr_classes: 7
+    num_future_classes: ${num_future_classes}
+    max_anticip_time: 18
+    anticip_time: ${anticip_time}
+    pooling_dim: 64
+    fusion_head:
+      _target_: R2A2.model.r2a2.FusionHead
+      dim: ${informer.d_model}
+    decoder:
+      _target_: models.transformers.TransformerDecoder
+      input_dim: 512
+      hidden_dim: ${n_embd}
+      n_heads: ${n_head}
+      n_layers: ${n_layer}
+    informer:
+      _target_: Informer2020.models.model.Informer
+      enc_in: 768
+      dec_in: 768
+      c_out: 512
+      seq_len: 96
+      label_len: 48
+      out_len: 1
+      factor: 5
+      d_model: ${informer.d_model}
+      n_heads: 8
+      e_layers: 2
+      d_layers: 2
+      d_ff: 1024
+      dropout: 0.1
+      attn: full
+      embed: fixed
+      freq: h
+      activation: gelu
+      output_attention: false
+      distil: false
+      mix: true
+      use_decoder: ${informer.decoder}
 data_train:
   num_frames: 10
   frame_rate: 1
@@ -211,6 +258,7 @@ train_start: 1
 train_end: 14
 test_start: 15
 test_end: 21
+model_name: supra
 informer:
   decoder: false
   d_model: 256
@@ -222,6 +270,7 @@ fixed_ctx_length: true
 mutli_token: false
 num_curr_classes: 7
 num_next_classes: 8
+num_future_classes: 8
 eos_class: 7
 eos_regression: false
 eos_classification: true

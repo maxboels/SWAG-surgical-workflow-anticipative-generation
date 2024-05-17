@@ -479,8 +479,11 @@ class R2A2(nn.Module):
     
             frames_cls_preds = []
             dec_in = self.proj_layer(enc_out)
+
+            start_time = time.time()
+            iter_times = [] # in seconds
             for _ in range(max_num_steps):
-                start_time = time.time()
+
                 next_frames = self.frame_decoder(inputs_embeds=dec_in)
                 next_frame_embed = next_frames.last_hidden_state[:, -1:, :]
                 next_frame_cls = self.next_action_classifier(next_frame_embed) # (B, 1, num_curr_classes)
@@ -493,8 +496,17 @@ class R2A2(nn.Module):
                     dec_in = dec_in[:, 1:]
                 dec_in = torch.cat((dec_in, next_frame_embed), dim=1) # (B, T, D)
                 print(f"[R2A2] dec_in: {dec_in.shape}")
+
+                iter_times.append(time.time() - start_time)
+
+                # break if the model predicts the EOS token
+                # if torch.argmax(next_frame_cls, dim=-1) == num_curr_classes - 1:
+                #     break
+
             outputs["future_frames"] = torch.cat(frames_cls_preds, dim=1) # (B, num_future_preds, num_curr_classes)
             print(f"[R2A2] future_frames: {outputs['future_frames'].shape}")
+
+            outputs["iter_times"] = iter_times
 
         return outputs
 

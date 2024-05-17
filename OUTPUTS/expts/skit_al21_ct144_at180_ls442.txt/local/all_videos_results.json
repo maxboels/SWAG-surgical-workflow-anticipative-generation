@@ -16,3 +16,5 @@
 [{"epoch": 16, "acc_curr": 0.6324, "cum_acc_future": 0.4293, "cum_acc_future_t": [0.4787, 0.4519, 0.4333, 0.4172, 0.4037, 0.3908]}],
 [{"epoch": 17, "acc_curr": 0.6467, "cum_acc_future": 0.4167, "cum_acc_future_t": [0.4549, 0.4325, 0.4202, 0.4096, 0.3965, 0.3865]}],
 [{"epoch": 18, "acc_curr": 0.635, "cum_acc_future": 0.4226, "cum_acc_future_t": [0.4688, 0.4423, 0.4267, 0.4128, 0.3987, 0.3862]}],
+[{"epoch": 19, "acc_curr": 0.6378, "cum_acc_future": 0.4269, "cum_acc_future_t": [0.4721, 0.4472, 0.4311, 0.4172, 0.4026, 0.3913]}],
+[{"epoch": 20, "acc_curr": 0.6411, "cum_acc_future": 0.4239, "cum_acc_future_t": [0.468, 0.4426, 0.4278, 0.4148, 0.4005, 0.3895]}],

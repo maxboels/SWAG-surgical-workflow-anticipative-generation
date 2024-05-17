@@ -402,6 +402,8 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         video_seg_preds     = np.full((video_length, 1), -1)
         video_tgts_preds_seg = np.full((video_length, 1), -1)
 
+        video_mean_cum_iter_time = []
+
         start_idx = 0
         end_idx = start_idx + batch_size
         
@@ -449,6 +451,11 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                 
                 logger.info(f"[TESTING] video: {video_id} | "
                             f"frame: {curr_frame} / {video_length}")
+                
+                # iter_times
+                if "iter_times" in outputs.keys():
+                    iter_times = outputs["iter_times"]
+                    video_mean_cum_iter_time.append(iter_times)
 
             # update start index
             start_idx += batch_size
@@ -477,6 +484,11 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         mean_acc_future_frames      = np.round(np.nanmean(acc_future_frames), decimals=4).tolist()
         cum_acc_future_frames       = np.round(np.nancumsum(acc_future_frames) / np.arange(1,len(acc_future_frames)+1), decimals=4).tolist()
         mean_cum_acc_future_frames  = np.round(np.nanmean(cum_acc_future_frames), decimals=4).tolist()
+
+        # iter times per index in list of lists
+        mean_iter_times = np.round(np.mean(video_mean_cum_iter_time, axis=0), decimals=4).tolist()
+        all_videos_mean_cum_iter_time.append(mean_iter_times)
+
 
         # Video-level results
         video_results['mean_acc_curr_frames']       = mean_acc_curr_frames
@@ -555,7 +567,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     # compute the mean accuracy through all the videos and keep the time dimension
     all_videos_results["cum_acc_future_t"]      = all_videos_mean_cum_acc_future_t
     # all_videos_results["acc_future_t"]          = all_videos_mean_acc_future_t
-    # all_videos_results["mean_cum_iter_time"]    = np.round(np.mean(all_videos_mean_cum_iter_time, axis=0), decimals=2).tolist()
+    all_videos_results["mean_cum_iter_time"]    = np.round(np.mean(all_videos_mean_cum_iter_time, axis=0), decimals=4).tolist()
 
     with open(f'all_videos_results.json', 'a+') as f:
         all_videos_results = check_numpy_to_list(all_videos_results)
@@ -1075,9 +1087,11 @@ def main(cfg):
                                            world_size=dist_info['world_size'])
 
     if cfg.finetune_ckpt == "last":
-        saved_ckpt = CKPT_FNAME
-    else:
+        saved_ckpt = 'checkpoint.pth'
+    elif cfg.finetune_ckpt == "best":
         saved_ckpt = 'checkpoint_best.pth'
+    else:
+        saved_ckpt = f'checkpoint_{cfg.finetune_ckpt}.pth'
     start_epoch = 0
     if os.path.isfile(saved_ckpt):
         checkpoint = torch.load(saved_ckpt, map_location='cpu')

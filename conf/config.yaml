@@ -16,7 +16,7 @@ dist_backend: nccl
 # run mode
 test_only: false
 num_epochs: 20
-finetune_ckpt: last # or best
+finetune_ckpt: best # or best
 
 # dataset
 dataset_name: cholec80
@@ -258,8 +258,8 @@ model:
     input_dim: 768
     present_length: 20
     past_sampling_rate: 10
-    d_model: 512
-    dec_dim: 512
+    d_model: ${informer.d_model}
+    dec_dim: ${n_embd}
     num_curr_classes: 7
     num_future_classes: ${num_future_classes}
     max_anticip_time: 18
@@ -270,7 +270,7 @@ model:
       dim: ${informer.d_model}
     decoder:
       _target_: models.transformers.TransformerDecoder
-      input_dim: 512
+      input_dim: ${informer.d_model}
       hidden_dim: ${n_embd}
       n_heads: ${n_head}
       n_layers: ${n_layer}

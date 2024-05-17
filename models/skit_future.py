@@ -9,6 +9,8 @@ from Informer2020.models.model import Informer
 import hydra
 from hydra.types import TargetConf
 from omegaconf import DictConfig, OmegaConf
+
+import time
         
 class KeyRecorder(nn.Module):
     def __init__(self,
@@ -143,6 +145,8 @@ class SKITFuture(nn.Module):
         self.future_action_classifier = nn.Linear(dec_dim, num_future_classes) # optional +1 for the EOS (end of sequence token)
         self.input_queries = nn.Parameter(torch.randn(1, self.num_ant_queries, d_model))
 
+        self.mean_inference_time = 0.0
+
     def encoder(self, obs_video):
         """Follow the skit implementation."""
         B, _, _ = obs_video.shape
@@ -156,6 +160,7 @@ class SKITFuture(nn.Module):
         return past_present
     
     def forward(self, obs_video, train_mode=True):
+
         print(f"[SKIT-F] obs_video: {obs_video.shape}")
         outputs = {}
         enc_out = self.encoder(obs_video)  # sliding window encoder
@@ -174,12 +179,27 @@ class SKITFuture(nn.Module):
         print(f"[SKIT-F] curr_frames: {curr_frames_cls.shape}")
         outputs["curr_frames"] = curr_frames_cls
 
+
+        # start time tracking if inference mode
+        iter_times = []
+        if not train_mode:
+            start_time = time.time()
+
         input_queries = self.input_queries.expand(enc_out.shape[0], -1, -1)
         print(f"[SKIT-F] input_queries: {input_queries.shape}")
         print(f"[SKIT-F] enc_out: {enc_out.shape}")
         next_action = self.frame_decoder(input_queries, enc_out)
+        print(f"[SKIT-F] decoder out: {next_action.shape}")
         next_frames_cls = self.future_action_classifier(next_action)
         outputs["future_frames"] = next_frames_cls
         print(f"[SKIT-F] next_frames: {next_frames_cls.shape}")
 
+        # end time tracking if inference mode
+        if not train_mode:
+            iter_time = time.time() - start_time
+            # repeat iter time 18 times in list
+            iter_times = [iter_time] * self.num_ant_queries
+            iter_times.append(iter_time)
+            outputs["iter_times"] = iter_times
+            
         return outputs

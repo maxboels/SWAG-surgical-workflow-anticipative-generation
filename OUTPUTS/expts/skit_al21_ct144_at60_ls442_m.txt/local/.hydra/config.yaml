@@ -1,0 +1,326 @@
+train_eval_op:
+  _target_: func.train_eval_ops.Basic
+  cls_loss_acc_fn:
+    _target_: func.train_eval_ops.BasicLossAccuracy
+    loss_w_curr: ${loss_w_curr}
+    loss_w_next: ${loss_w_next}
+    loss_w_feats: ${loss_w_feats}
+opt:
+  optimizer:
+    _target_: torch.optim.SGD
+    momentum: 0.9
+    nesterov: true
+  scheduler:
+    _target_: common.scheduler.CosineLR
+    num_epochs: ${minus:${train.num_epochs},${opt.warmup.num_epochs}}
+    eta_min: 1.0e-07
+  lr_wd:
+  - - __all__
+    - 0.0003
+    - 1.0e-05
+  scale_lr_by_bs: false
+  classifier_only: false
+  bias_bn_wd_scale: 1.0
+  grad_clip:
+    max_norm: null
+    norm_type: 2
+  warmup:
+    _target_: common.scheduler.Warmup
+    init_lr_ratio: 0.0
+    num_epochs: 5
+model:
+  backbone:
+    _target_: models.video_classification.TIMMModel
+    model_type: vit_base_patch16_224
+  temporal_aggregator:
+    _target_: models.temporal_aggregation.Identity
+  future_predictor:
+    _target_: models.future_prediction.Identity
+    n_head: 4
+    n_layer: 6
+    output_len: 1
+    inter_dim: 2048
+    return_past_too: true
+    future_pred_loss:
+      _target_: torch.nn.MSELoss
+    future_pred_loss_wt: 1.0
+    avg_last_n: 1
+  temporal_aggregator_after_future_pred:
+    _target_: models.temporal_aggregation.Identity
+  classifier:
+    _target_: torch.nn.Linear
+    bias: true
+  model_name: ${model_name}
+  backbone_dim: 768
+  intermediate_featdim: null
+  backbone_last_n_modules_to_drop: 0
+  dropout: 0.3
+  project_dim_for_nce: null
+  add_regression_head: false
+  bn:
+    eps: 0.001
+    mom: 0.1
+  same_temp_agg_dim: false
+  use_cls_mappings: false
+  classifier_on_past: true
+  supra:
+    _target_: models.supra.AVTh
+    r2a2_model:
+      _target_: R2A2.model.r2a2.R2A2
+      mutli_token: ${mutli_token}
+      feature_loss: ${feature_loss}
+      decoder_type: ar_causal
+      eos_regression: ${eos_regression}
+      fixed_ctx_length: ${fixed_ctx_length}
+      input_dim: 768
+      present_length: 20
+      num_ant_queries: 6
+      past_sampling_rate: 10
+      d_model: ${informer.d_model}
+      num_curr_classes: ${num_curr_classes}
+      num_next_classes: ${num_next_classes}
+      max_anticip_time: ${max_anticip_time}
+      anticip_time: ${anticip_time}
+      pooling_dim: ${pooling_dim}
+      gpt_cfg:
+        vocab_size: ${vocab_size}
+        n_embd: ${n_embd}
+        n_layer: ${n_layer}
+        n_head: ${n_head}
+      key_recorder:
+        _target_: R2A2.model.key_recorder.KeyRecorder
+        dim: ${informer.d_model}
+        reduc_dim: 64
+        sampling_rate: 10
+        local_size: 20
+        pooling_method: max_abs
+        return_max_now_reduc: true
+        reduction: linear_relu
+      fusion_head:
+        _target_: R2A2.model.r2a2.FusionHead
+        dim: ${informer.d_model}
+      encoder:
+        _target_: R2A2.model.r2a2.TransformerEncoder
+        input_length: 20
+        input_dim: 768
+        d_model: 512
+        n_heads: 4
+        num_layers: 2
+        dim_ff: 1024
+        dropout: 0.3
+        activation: relu
+        reshape_output: false
+      decoder:
+        _target_: R2A2.model.r2a2.TransformerDecoder
+        input_dim: 512
+        d_model: 512
+        n_heads: 4
+        num_layers: 2
+        dim_ff: 1024
+        dropout: 0.1
+        activation: relu
+      informer:
+        _target_: Informer2020.models.model.Informer
+        enc_in: 768
+        dec_in: 768
+        c_out: 512
+        seq_len: 96
+        label_len: 48
+        out_len: 1
+        factor: 5
+        d_model: ${informer.d_model}
+        n_heads: 8
+        e_layers: 2
+        d_layers: 2
+        d_ff: 1024
+        dropout: 0.1
+        attn: full
+        embed: fixed
+        freq: h
+        activation: gelu
+        output_attention: false
+        distil: false
+        mix: true
+        use_decoder: ${informer.decoder}
+  skit:
+    _target_: models.skit_future.SKITFuture
+    input_dim: 768
+    present_length: 20
+    past_sampling_rate: 10
+    d_model: 512
+    dec_dim: 512
+    num_curr_classes: 7
+    num_future_classes: ${num_future_classes}
+    max_anticip_time: 18
+    anticip_time: ${anticip_time}
+    pooling_dim: 64
+    fusion_head:
+      _target_: R2A2.model.r2a2.FusionHead
+      dim: ${informer.d_model}
+    decoder:
+      _target_: models.transformers.TransformerDecoder
+      input_dim: 512
+      hidden_dim: ${n_embd}
+      n_heads: ${n_head}
+      n_layers: ${n_layer}
+    informer:
+      _target_: Informer2020.models.model.Informer
+      enc_in: 768
+      dec_in: 768
+      c_out: 512
+      seq_len: 96
+      label_len: 48
+      out_len: 1
+      factor: 5
+      d_model: ${informer.d_model}
+      n_heads: 8
+      e_layers: 2
+      d_layers: 2
+      d_ff: 1024
+      dropout: 0.1
+      attn: full
+      embed: fixed
+      freq: h
+      activation: gelu
+      output_attention: false
+      distil: false
+      mix: true
+      use_decoder: ${informer.decoder}
+data_train:
+  num_frames: 10
+  frame_rate: 1
+  subclips:
+    num_frames: 1
+    stride: 1
+  load_seg_labels: ${model.classifier_on_past}
+  train_bs_multiplier: 5
+  val_clips_per_video: 1
+  workers: 0
+  scale_h: 248-280
+  scale_w: -1
+  crop_size: 224
+  mean:
+  - 0.41757566
+  - 0.26098573
+  - 0.25888634
+  std:
+  - 0.21938758
+  - 0.1983
+  - 0.19342837
+  flip_p: 0.5
+  scale_pix_val: 1.0
+  reverse_channels: false
+  color_jitter_brightness: 0.1
+  color_jitter_contrast: 0.1
+  color_jitter_saturation: 0.1
+  color_jitter_hue: 0.1
+  use_dist_sampler: true
+  eval_num_crops: 1
+  eval_flip_crops: false
+data_eval:
+  num_frames: ${data_train.num_frames}
+  frame_rate: ${data_train.frame_rate}
+  subclips:
+    num_frames: ${data_train.subclips.num_frames}
+    stride: ${data_train.subclips.stride}
+  load_seg_labels: ${model.classifier_on_past}
+  train_bs_multiplier: 5
+  val_clips_per_video: 1
+  workers: 0
+  scale_h: 248
+  scale_w: -1
+  crop_size: 224
+  mean: ${data_train.mean}
+  std: ${data_train.std}
+  flip_p: 0.5
+  scale_pix_val: 1.0
+  reverse_channels: false
+  color_jitter_brightness: 0.1
+  color_jitter_contrast: 0.1
+  color_jitter_saturation: 0.1
+  color_jitter_hue: 0.1
+  use_dist_sampler: true
+  eval_num_crops: 1
+  eval_flip_crops: false
+expt_name: default
+run_id: 0
+seed: 42
+cwd: ${hydra:runtime.cwd}
+sync_bn: false
+data_parallel: true
+dist_backend: nccl
+test_only: false
+num_epochs: 20
+finetune_ckpt: last
+dataset_name: autolaparo21
+pooling_dim: 64
+train_start: 1
+train_end: 14
+test_start: 15
+test_end: 21
+model_name: skit
+informer:
+  decoder: true
+  d_model: 512
+vocab_size: 1000
+n_embd: 512
+n_layer: 2
+n_head: 8
+fixed_ctx_length: true
+mutli_token: false
+num_curr_classes: 7
+num_next_classes: 8
+num_future_classes: 8
+eos_class: 7
+eos_regression: false
+eos_classification: true
+ctx_length: 1440
+anticip_time: 60
+max_anticip_time: 18
+feature_loss: true
+loss_w_curr: 0.4
+loss_w_next: 0.4
+loss_w_feats: 0.2
+pytorch:
+  video_backend: video_reader
+train:
+  fn: train
+  batch_size: 32
+  init_from_model:
+  - - backbone.model
+    - ${cwd}/DATA/pretrained/TIMM/jx_vit_base_p16_224-80ecf9dd.pth
+  num_epochs: ${num_epochs}
+  eval_freq: 1
+  shuffle_data: true
+  store_best: false
+  train_one_epoch_fn:
+    _target_: func.train.train_one_epoch
+    print_freq: 10
+    print_large_freq: 1000
+    grad_clip_params: ${opt.grad_clip}
+    save_freq: null
+    save_freq_min: 60
+    save_intermediates: false
+    loss_wts:
+      cls_one: 1.0
+      pred: 1.0
+      feat: 1.0
+      past_cls_action: 1.0
+      past_cls_verb: 0.0
+      past_cls_noun: 0.0
+eval:
+  batch_size: 64
+  eval_fn:
+    _target_: func.train.evaluate
+    anticip_time: ${anticip_time}
+    max_anticip_time: ${max_anticip_time}
+    store: false
+    store_endpoint: logits
+    only_run_featext: false
+moco:
+  _target_: moco.moco.builder.MoCo
+  dim: 128
+  K: 65536
+  m: 0.999
+  T: 0.2
+  mlp: true

@@ -12,9 +12,11 @@ test_end=21
 informer.decoder=true
 informer.d_model=512
 vocab_size=1000
-n_embd=128
+
+n_embd=384
 n_layer=2
-n_head=4
+n_head=8
+
 fixed_ctx_length=true
 ctx_length=1440
 anticip_time=60

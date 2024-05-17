@@ -1,0 +1,6 @@
+[{"epoch": 0, "num_params": 20016214, "num_tokens": 86304, "acc_cur": 0.3675, "cum_acc_future": 0.1549}],
+[{"epoch": 0, "num_params": 20016214, "num_tokens": 86304, "acc_cur": 0.349, "cum_acc_future": 0.1549}],
+[{"epoch": 1, "num_params": 20016214, "num_tokens": 86304, "acc_cur": 0.8125, "cum_acc_future": 0.179}],
+[{"epoch": 2, "num_params": 20016214, "num_tokens": 86304, "acc_cur": 0.8796, "cum_acc_future": 0.3451}],
+[{"epoch": 3, "num_params": 20016214, "num_tokens": 86304, "acc_cur": 0.8728, "cum_acc_future": 0.5016}],
+[{"epoch": 4, "num_params": 20016214, "num_tokens": 86304, "acc_cur": 0.8843, "cum_acc_future": 0.5124}],

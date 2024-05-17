@@ -1,4 +1,4 @@
-- test_only=False
+- test_only=True
 - dataset_name=cholec80
 - pooling_dim=64
 - train_start=1
@@ -15,7 +15,7 @@
 - ctx_length=1440
 - anticip_time=60
 - max_anticip_time=18
-- feature_loss=False
+- feature_loss=True
 - eos_regression=False
 - eos_classification=True
 - num_curr_classes=7

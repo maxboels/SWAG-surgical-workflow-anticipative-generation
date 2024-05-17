@@ -14,3 +14,7 @@
 [{"epoch": 13, "num_params": 23278806, "num_tokens": 55183, "acc_cur": 0.7445, "cum_acc_future": 0.5077}],
 [{"epoch": 14, "num_params": 23278806, "num_tokens": 55183, "acc_cur": 0.7397, "cum_acc_future": 0.4946}],
 [{"epoch": 15, "num_params": 23278806, "num_tokens": 55183, "acc_cur": 0.7362, "cum_acc_future": 0.496}],
+[{"epoch": 16, "num_params": 23278806, "num_tokens": 55183, "acc_cur": 0.7529, "cum_acc_future": 0.4967}],
+[{"epoch": 17, "num_params": 23278806, "num_tokens": 55183, "acc_cur": 0.7398, "cum_acc_future": 0.4899}],
+[{"epoch": 18, "num_params": 23278806, "num_tokens": 55183, "acc_cur": 0.7437, "cum_acc_future": 0.4911}],
+[{"epoch": 19, "num_params": 23278806, "num_tokens": 55183, "acc_cur": 0.7421, "cum_acc_future": 0.4913}],
