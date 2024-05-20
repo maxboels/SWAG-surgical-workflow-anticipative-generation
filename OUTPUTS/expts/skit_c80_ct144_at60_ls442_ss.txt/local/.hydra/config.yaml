@@ -159,7 +159,7 @@ model:
       dim: ${informer.d_model}
     decoder:
       _target_: models.transformers.TransformerDecoder
-      input_dim: 512
+      input_dim: ${informer.d_model}
       hidden_dim: ${n_embd}
       n_heads: ${n_head}
       n_layers: ${n_layer}

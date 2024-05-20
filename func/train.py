@@ -343,7 +343,8 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
             store=False, 
             store_endpoint='logits', 
             only_run_featext=False,
-            best_acc1=0.0,):
+            best_acc=0.0,
+            ):
     
     
     
@@ -361,7 +362,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     model.eval()
     # -----------------select params----------------- #
     save_video_preds = False
-    save_all_video_preds = True
+    save_all_video_preds = False
 
     num_classes = 7
     plot_vid_ids = [41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 60, 70, 80]
@@ -552,11 +553,11 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     # all_videos_results["acc_future"]    = np.round(np.nanmean(all_videos_mean_acc_future_t), decimals=4).tolist()
 
     # update best_cum_acc
-    if all_videos_results["cum_acc_future"] > best_cum_acc_future:
-        best_cum_acc_future = all_videos_results["cum_acc_future"]
+    if all_videos_results["cum_acc_future"] > best_acc:
+        # best_cum_acc_future = all_videos_results["cum_acc_future"]
         best_epoch = epoch
         logger.info(f"[TESTING] Best epoch: {best_epoch} | "
-                    f"Best cum_acc_future: {best_cum_acc_future}")
+                    f"Best cum_acc_future: {best_acc}")
         if save_all_video_preds:
             np.save(f"all_videos_mean_acc_future_t_ep{epoch}.npy", all_videos_acc_future)
             np.save(f"all_videos_mean_cum_acc_future_t_ep{epoch}.npy", all_videos_cum_acc_future)
@@ -576,20 +577,22 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     
 
     # PLOTTING
-    if all_videos_results["cum_acc_future"] > best_acc1:
+    if all_videos_results["cum_acc_future"] > best_acc:
         # plot the mean accuracy over the videos
         y_values = {"Cholec80": all_videos_mean_acc_future_t}
         plot_figure(x_values, y_values,
                     title=f'Planning Evaluation (mean. acc. {np.nanmean(all_videos_mean_acc_future_t):.4f})',
                     x_axis_title='Predicted Sequence Length (in minutes)',
-                    y_axis_title='Mean Accuracy', file_name='planning_evaluation_mean_acc.png')
+                    y_axis_title='Mean Accuracy', 
+                    file_name=f'planning_evaluation_mean_acc_ep{epoch}.png')
         
         # plot the mean accuracy over the videos
         y_values = {"Cholec80": all_videos_mean_cum_acc_future_t}
         plot_figure(x_values, y_values,
                     title=f'Planning Evaluation (cumm. acc. {np.nanmean(all_videos_mean_cum_acc_future_t):.4f})',
                     x_axis_title='Predicted Sequence Length (in minutes)',
-                    y_axis_title='Mean Cummulative Accuracy', file_name='planning_evaluation_mean_cumm_acc.png')
+                    y_axis_title='Mean Cummulative Accuracy', 
+                    file_name=f'planning_evaluation_mean_cumm_acc_ep{epoch}.png')
         
         # plot box plots (keeping the video-level information)
         y_values = {"Cholec80": all_videos_acc_future}
@@ -1141,7 +1144,7 @@ def main(cfg):
 
     # Get training metric logger
     stat_loggers = get_default_loggers(tb_writer, start_epoch, logger)
-    best_acc1 = 0.2
+    best_acc = 0.2
     partial_epoch = start_epoch - int(start_epoch)
     start_epoch = int(start_epoch)
     last_saved_time = datetime.datetime(1, 1, 1, 0, 0)
@@ -1184,7 +1187,7 @@ def main(cfg):
                 tb_writer, 
                 logger,
                 epoch + 1,
-                best_acc1=best_acc1)
+                best_acc=best_acc)
 
             # Store the accuracies per number of parameters and tokens
             with open('acc_vs_params.json', 'a+') as f:
@@ -1199,9 +1202,10 @@ def main(cfg):
             accuracies["cum_acc_future"] = 0
         
         # Store the best model
-        if accuracies["cum_acc_future"] >= best_acc1:
+        if accuracies["cum_acc_future"] >= best_acc:
             store_checkpoint('checkpoint_best.pth', model, optimizer, lr_scheduler, epoch + 1)
-            best_acc1 = accuracies["cum_acc_future"]
+            # Update the best accuracy
+            best_acc = accuracies["cum_acc_future"]
         if isinstance(lr_scheduler.base_scheduler, scheduler.ReduceLROnPlateau):
             lr_scheduler.step(accuracies["cum_acc_future"])
 

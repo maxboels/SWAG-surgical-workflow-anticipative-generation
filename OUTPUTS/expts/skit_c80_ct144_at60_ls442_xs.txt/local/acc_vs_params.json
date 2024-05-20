@@ -17,3 +17,7 @@
 [{"epoch": 13, "num_params": 17310678, "num_tokens": 86304, "acc_cur": 0.8925, "cum_acc_future": 0.4429}],
 [{"epoch": 14, "num_params": 17310678, "num_tokens": 86304, "acc_cur": 0.8989, "cum_acc_future": 0.4602}],
 [{"epoch": 15, "num_params": 17310678, "num_tokens": 86304, "acc_cur": 0.8958, "cum_acc_future": 0.4565}],
+[{"epoch": 16, "num_params": 17310678, "num_tokens": 86304, "acc_cur": 0.8962, "cum_acc_future": 0.46}],
+[{"epoch": 17, "num_params": 17310678, "num_tokens": 86304, "acc_cur": 0.8943, "cum_acc_future": 0.4602}],
+[{"epoch": 18, "num_params": 17310678, "num_tokens": 86304, "acc_cur": 0.8947, "cum_acc_future": 0.4547}],
+[{"epoch": 19, "num_params": 17310678, "num_tokens": 86304, "acc_cur": 0.8944, "cum_acc_future": 0.4565}],
