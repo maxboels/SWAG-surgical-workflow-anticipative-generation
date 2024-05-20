@@ -567,7 +567,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
 
     # compute the mean accuracy through all the videos and keep the time dimension
     all_videos_results["cum_acc_future_t"]      = all_videos_mean_cum_acc_future_t
-    # all_videos_results["acc_future_t"]          = all_videos_mean_acc_future_t
+    all_videos_results["acc_future_t"]          = all_videos_mean_acc_future_t
     all_videos_results["mean_cum_iter_time"]    = np.round(np.mean(all_videos_mean_cum_iter_time, axis=0), decimals=4).tolist()
 
     with open(f'all_videos_results.json', 'a+') as f:
@@ -585,6 +585,8 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                     x_axis_title='Predicted Sequence Length (in minutes)',
                     y_axis_title='Mean Accuracy', 
                     file_name=f'planning_evaluation_mean_acc_ep{epoch}.png')
+        
+
         
         # plot the mean accuracy over the videos
         y_values = {"Cholec80": all_videos_mean_cum_acc_future_t}
