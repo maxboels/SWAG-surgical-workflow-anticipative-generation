@@ -361,8 +361,8 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
 
     model.eval()
     # -----------------select params----------------- #
-    save_video_preds = False
-    save_all_video_preds = False
+    save_best_video_preds = True
+    save_all_metrics = False
 
     num_classes = 7
     plot_vid_ids = [41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 60, 70, 80]
@@ -522,20 +522,20 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
 
         
         
-        # if mean_cum_acc_future_frames > best_cum_acc_future:
-        if video_id % plot_video_freq == 0:
-            plot_video_scatter_3D(video_frame_preds, video_frame_rec, video_tgts_preds, video_tgts_rec, anticip_time, 
-                                video_idx=video_id, 
-                                epoch=epoch,
-                                sampling_rate=60, # current frames axis (seconds to minutes)
-                                padding_class=-1, # padding class
-                                eos_class=7,
-                                num_classes=7,
-                                video_mean_curr_acc=mean_acc_curr_frames,
-                                video_mean_cum_acc_future=mean_cum_acc_future_frames,
-                                )    # don't include the eos class which is assigned to -1
+        if mean_cum_acc_future_frames > best_cum_acc_future:
+            if video_id % plot_video_freq == 0:
+                plot_video_scatter_3D(video_frame_preds, video_frame_rec, video_tgts_preds, video_tgts_rec, anticip_time, 
+                                    video_idx=video_id, 
+                                    epoch=epoch,
+                                    sampling_rate=60, # current frames axis (seconds to minutes)
+                                    padding_class=-1, # padding class
+                                    eos_class=7,
+                                    num_classes=7,
+                                    video_mean_curr_acc=mean_acc_curr_frames,
+                                    video_mean_cum_acc_future=mean_cum_acc_future_frames,
+                                    )    # don't include the eos class which is assigned to -1
 
-            if save_video_preds:
+            if save_best_video_preds:
                 np.save(f"video_frame_rec_{video_id}_ep{epoch}.npy", video_frame_rec)
                 np.save(f"video_tgts_rec_{video_id}_ep{epoch}.npy", video_tgts_rec)
                 np.save(f"video_frame_preds_{video_id}_ep{epoch}.npy", video_frame_preds)
@@ -558,7 +558,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         best_epoch = epoch
         logger.info(f"[TESTING] Best epoch: {best_epoch} | "
                     f"Best cum_acc_future: {best_acc}")
-        if save_all_video_preds:
+        if save_all_metrics:
             np.save(f"all_videos_mean_acc_future_t_ep{epoch}.npy", all_videos_acc_future)
             np.save(f"all_videos_mean_cum_acc_future_t_ep{epoch}.npy", all_videos_cum_acc_future)
 
@@ -1131,14 +1131,19 @@ def main(cfg):
 
     if cfg.test_only:
         logger.info("Starting test_only")
-        hydra.utils.call(
+        accuracies, step_val_now = hydra.utils.call(
             cfg.eval.eval_fn, 
             model,
-            train_eval_op, device, 1,
+            train_eval_op, 
+            device, 
+            1,
             dataloaders_test, 
             tb_writer, 
             logger, 
-            1)
+            1,
+            best_acc=0.2)
+        print(f"Accuracies: {accuracies}")
+        print("Test only done")
         return
 
     logger.info("Start training")
@@ -1205,8 +1210,7 @@ def main(cfg):
         
         # Store the best model
         if accuracies["cum_acc_future"] >= best_acc:
-            store_checkpoint('checkpoint_best.pth', model, optimizer, lr_scheduler, epoch + 1)
-            # Update the best accuracy
+            store_checkpoint(f'checkpoint_best.pth', model, optimizer, lr_scheduler, epoch + 1)
             best_acc = accuracies["cum_acc_future"]
         if isinstance(lr_scheduler.base_scheduler, scheduler.ReduceLROnPlateau):
             lr_scheduler.step(accuracies["cum_acc_future"])

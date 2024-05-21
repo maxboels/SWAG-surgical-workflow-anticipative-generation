@@ -198,7 +198,7 @@ class SKITFuture(nn.Module):
         if not train_mode:
             iter_time = time.time() - start_time
             # repeat iter time 18 times in list
-            iter_times = [iter_time] * self.num_ant_queries
+            iter_times = [iter_time] * (self.num_ant_queries - 1) 
             iter_times.append(iter_time)
             outputs["iter_times"] = iter_times
             
