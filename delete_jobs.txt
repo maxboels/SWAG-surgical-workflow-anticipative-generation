@@ -1,3 +1,8 @@
-skit-best-al21-ct144-at60-ls442
-skit-best-c80-ct144-at60-ls442
-sup-best-c80-ct144-at60-ls442
+sup-best-al21-ct144-at60-ls442-s 
+sup-best-al21-ct144-at60-ls442-ss
+sup-best-c80-ct144-at60-ls442    
+sup-best-c80-ct144-at60-ls442-s  
+skit-best-al21-ct144-at60-ls442  
+skit-best-c80-ct144-at60-ls442   
+sup-al21-ct144-at60-ls442-eos    
+sup-al21-ct144-at60-ls442-eos-div

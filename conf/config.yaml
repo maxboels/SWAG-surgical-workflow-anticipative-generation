@@ -30,7 +30,7 @@ test_end: 81        # last not included
 # 0. Trans-SVNeT (TSVN)
 # TODO:
 
-model_name: supra          # skit / supra
+model_name: supra          # skit / supra / lstm / gru
 
 # 1. SKiT
 # base:     512  /  x   / x     /   x     /   x     /   true  / KeyRecorder
@@ -59,12 +59,14 @@ n_head:     4
 fixed_ctx_length: true      # default true
 mutli_token: false          # default false
 # LABELS
-num_curr_classes: 7              # 7 classes for cholec80
+num_curr_classes: 7         # 7 classes for cholec80 and autolaparo
 num_next_classes: 8         # 7 classes for cholec80
 num_future_classes: 8       # 7 classes for cholec80
 eos_class: 7                # last class for EOS
 eos_regression: false
 eos_classification: true
+eos_weight: count     # count or mean
+
 # compression
 ctx_length: 1500            # 1500s = 25min, 3000s = 50min (avg video is 34min)
 # NOTE: we need long anticipation time to increase the number of transition samples for predicting transitions at inference.
@@ -297,6 +299,85 @@ model:
       distil: false
       mix: true
       use_decoder: ${informer.decoder}
+  lstm:
+    _target_: models.lstm.LSTM
+    r2a2_model:
+      _target_: R2A2.model.lstm_ar.LSTM
+      mutli_token: ${mutli_token}
+      feature_loss: ${feature_loss}
+      decoder_type: ar_causal
+      eos_regression: ${eos_regression}
+      fixed_ctx_length: ${fixed_ctx_length}
+      input_dim: 768
+      present_length: 20
+      num_ant_queries: 6
+      past_sampling_rate: 10
+      d_model: ${informer.d_model}
+      num_curr_classes: ${num_curr_classes} # possible obseved classes
+      num_next_classes: ${num_next_classes} # possible future classes (including EOS)
+      max_anticip_time: ${max_anticip_time}
+      anticip_time: ${anticip_time}
+      pooling_dim: ${pooling_dim}
+      gpt_cfg:
+        vocab_size: ${vocab_size}
+        n_embd: ${n_embd}
+        n_layer: ${n_layer}
+        n_head: ${n_head}
+      key_recorder:
+        _target_: R2A2.model.key_recorder.KeyRecorder
+        dim: ${informer.d_model}
+        reduc_dim: 64
+        sampling_rate: 10
+        local_size: 20
+        pooling_method: max_abs
+        return_max_now_reduc: true
+        reduction: linear_relu
+      fusion_head:
+        _target_: R2A2.model.r2a2.FusionHead
+        dim: ${informer.d_model}
+      encoder:
+        _target_: R2A2.model.r2a2.TransformerEncoder
+        input_length: 20
+        input_dim: 768
+        d_model: 512
+        n_heads: 4
+        num_layers: 2
+        dim_ff: 1024
+        dropout: 0.3
+        activation: relu
+        reshape_output: false
+      decoder:
+        _target_: R2A2.model.r2a2.TransformerDecoder
+        input_dim: 512
+        d_model: 512
+        n_heads: 4
+        num_layers: 2
+        dim_ff: 1024
+        dropout: 0.1
+        activation: relu
+      informer:
+        _target_: Informer2020.models.model.Informer
+        enc_in: 768
+        dec_in: 768
+        c_out: 512
+        seq_len: 96
+        label_len: 48
+        out_len: 1
+        factor: 5
+        d_model: ${informer.d_model}
+        n_heads: 8
+        e_layers: 2
+        d_layers: 2
+        d_ff: 1024
+        dropout: 0.1
+        attn: full
+        embed: fixed
+        freq: "h"
+        activation: gelu
+        output_attention: false
+        distil: false
+        mix: true
+        use_decoder: ${informer.decoder}
 
 
 

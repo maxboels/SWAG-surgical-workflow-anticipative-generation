@@ -57,12 +57,6 @@ def video_end_regression_values(video_length, eos_length=20*60):
     return values
 
 
-def compute_num_eos_values(anticip_time, num_videos):
-    """Calculate the number of eos values needed for anticipation time for the last samples
-    """
-    return anticip_time/2 * (anticip_time + 1) * num_videos
-
-
 class SelectDataset():
     def __init__(self, dataset_name="cholec80", logger=None):
         self.dataset_name = dataset_name
@@ -111,6 +105,8 @@ class SelectDataset():
     def get_dataframe(self):
         return self.df
 
+
+# Helper functions
 def calculate_total_padded_values(video_duration_seconds, fps, future_sampling_rate, future_samples):
     video_frames = video_duration_seconds * fps
     future_clip_count = video_frames // future_sampling_rate
@@ -118,6 +114,20 @@ def calculate_total_padded_values(video_duration_seconds, fps, future_sampling_r
     total_padded_values = future_clip_count * padded_values_per_clip
     return total_padded_values
 
+def compute_num_eos_values(anticip_time=60, full_anticip_time_minutes=18, auto_regressive=True, num_videos=40):
+    """Calculate the number of eos values needed for anticipation time for the last samples
+
+    Args:
+        anticip_time (int): Anticipation time in seconds
+        full_anticip_time_minutes (int): Full anticipation time in minutes
+        num_videos (int): Number of videos
+        num_targets (int, optional): Number of targets per token. Defaults to 18.
+    """
+    if auto_regressive:
+        total_eos_tokens = anticip_time * num_videos
+    else:
+        total_eos_tokens = full_anticip_time_minutes * 60 * num_videos
+    return total_eos_tokens
 
 class Medical_Dataset(Dataset):
         def __init__(self, cfg, dataframe, train_mode='train', dataset_name="cholec80", video_indices=None,
@@ -137,7 +147,7 @@ class Medical_Dataset(Dataset):
             self.num_classes = 7                                                    # AutoLapro: 7, Cholec80: 7
             self.attn_window_size = 20
             self.ctx_length = cfg.ctx_length                                        # 3000 or 1500 frames
-            self.num_ctx_tokens = int(cfg.ctx_length/cfg.anticip_time)                 # Compression Tokens: 100 or 50 tokens for curr and next frames
+            self.num_ctx_tokens = int(cfg.ctx_length/cfg.anticip_time)              # Compression Tokens: 100 or 50 tokens for curr and next frames
             self.anticip_time = cfg.anticip_time   
             self.max_anticip_sec = int(cfg.max_anticip_time * 60)  # 50 or 25 frames per token
             self.num_future_tokens = int(self.max_anticip_sec / cfg.anticip_time)   # 60 or 30 tokens (num auto-regressive steps)
@@ -156,14 +166,18 @@ class Medical_Dataset(Dataset):
             self.get_target_feats = False
             self.replace_current_with_next_class = False
             self.future_segmts_tgt = False
+
+            self.eos_weight = cfg.eos_weight # "count" or "mean"
             
             # observed targets
             if self.model_name == "supra":
                 self.curr_frames_tgt = "global" # "global" or "local"
                 self.next_frames_tgt = "next"
-            elif self.model_name == "skit":
+                self.auto_regressive = True
+            else:
                 self.curr_frames_tgt = "local"
                 self.next_frames_tgt = "future"
+                self.auto_regressive = False                
             
              # "global" or "local"
             params = {
@@ -234,14 +248,30 @@ class Medical_Dataset(Dataset):
                 random.shuffle(self.data_order)
                 classes = self.df_split['class'].tolist()
 
-                # CUUR AND NEXT CLASS WEIGHTS
+                # CURR AND NEXT CLASS WEIGHTS
                 classes_counts_dict = dict(zip(*np.unique(classes, return_counts=True)))
+                self.logger.info(f"[DATASET] classes_counts_dict: {classes_counts_dict}")
                 self.curr_class_weights = self._compute_class_weights(classes_counts_dict)
                 self.logger.info(f"[DATASET] curr_class_weights: {self.curr_class_weights}")
 
                 if self.eos_class == 7 and self.eos_classification:
-                    num_eos_vals = compute_num_eos_values(self.anticip_time, len(video_indices))
+
+                    if self.eos_weight=="count":
+                        self.logger.info(f"[DATASET] eos_weight: {self.eos_weight}")
+                        num_eos_vals = compute_num_eos_values(
+                            anticip_time=self.anticip_time,
+                            full_anticip_time_minutes=18,
+                            auto_regressive=self.auto_regressive,
+                            num_videos=len(video_indices)
+                        )
+                        self.logger.info(f"[DATASET] num_eos_vals: {num_eos_vals}")
+                    elif self.eos_weight=="mean":
+                        # EOS CLASS WEIGHTS to mean of other classes
+                        num_eos_vals = np.mean(list(classes_counts_dict.values()))
+                        self.logger.info(f"[DATASET] num_eos_vals: {num_eos_vals}")
+                    
                     classes_counts_dict[self.num_classes] = int(num_eos_vals)
+                    self.logger.info(f"[DATASET] classes_counts_dict: {classes_counts_dict}")
                     self.next_class_weights = self._compute_class_weights(classes_counts_dict)
                     self.logger.info(f"[DATASET] next_class_weights: {self.next_class_weights}")
 
@@ -316,6 +346,7 @@ class Medical_Dataset(Dataset):
                     self.videos.append(video)
 
             print(f"[DATASET] label_list sample: {self.labels[-1]}")
+            self.avg_video_length = np.mean(video_stats['video_lengths']) / 60
             self.logger.info(f"[DATASET] number of {self.train_mode} videos: {len(self.videos)}")
             self.logger.info(f"[DATASET] avg video length: {np.mean(video_stats['video_lengths']) / 60:.2f} minutes")
 
@@ -330,14 +361,16 @@ class Medical_Dataset(Dataset):
             else:
                 raise ValueError("eos_padding not found")
             
-        def _compute_class_weights(self, class_counts):
+        def _compute_class_weights(self, class_counts, normalize=False):
             total_samples = sum(class_counts.values())
             num_classes = len(class_counts)
             class_weights = torch.zeros(num_classes)
             for cls_id, count in class_counts.items():
                 class_weights[cls_id] = total_samples / (num_classes * count)
+            if normalize:
+                # Optional normalization (if you want the weights to sum to 1)
+                class_weights = class_weights / class_weights.sum()
             return class_weights
-
         
         def get_next_label(self, label_list, num_next_labels, end_class=7):
             """Next labels for each frame in the video

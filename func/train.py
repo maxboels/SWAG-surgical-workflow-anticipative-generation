@@ -343,7 +343,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
             store=False, 
             store_endpoint='logits', 
             only_run_featext=False,
-            best_acc=0.0,
+            best_cum_acc_future=0.0,
             ):
     
     
@@ -380,7 +380,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     all_videos_mean_cum_iter_time = []
     eval_start_time = time.time()
 
-    best_cum_acc_future = 0.2
+    # best_cum_acc_future = 0.2
     best_epoch = 0
 
 
@@ -553,11 +553,11 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     # all_videos_results["acc_future"]    = np.round(np.nanmean(all_videos_mean_acc_future_t), decimals=4).tolist()
 
     # update best_cum_acc
-    if all_videos_results["cum_acc_future"] > best_acc:
+    if all_videos_results["cum_acc_future"] > best_cum_acc_future:
         # best_cum_acc_future = all_videos_results["cum_acc_future"]
         best_epoch = epoch
         logger.info(f"[TESTING] Best epoch: {best_epoch} | "
-                    f"Best cum_acc_future: {best_acc}")
+                    f"Best cum_acc_future: {best_cum_acc_future}")
         if save_all_metrics:
             np.save(f"all_videos_mean_acc_future_t_ep{epoch}.npy", all_videos_acc_future)
             np.save(f"all_videos_mean_cum_acc_future_t_ep{epoch}.npy", all_videos_cum_acc_future)
@@ -577,7 +577,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     
 
     # PLOTTING
-    if all_videos_results["cum_acc_future"] > best_acc:
+    if all_videos_results["cum_acc_future"] > best_cum_acc_future:
         # plot the mean accuracy over the videos
         y_values = {"Cholec80": all_videos_mean_acc_future_t}
         plot_figure(x_values, y_values,
@@ -1141,7 +1141,7 @@ def main(cfg):
             tb_writer, 
             logger, 
             1,
-            best_acc=0.2)
+            best_cum_acc_future=0.2)
         print(f"Accuracies: {accuracies}")
         print("Test only done")
         return
@@ -1151,7 +1151,7 @@ def main(cfg):
 
     # Get training metric logger
     stat_loggers = get_default_loggers(tb_writer, start_epoch, logger)
-    best_acc = 0.2
+    best_cum_acc_future = 0.2
     partial_epoch = start_epoch - int(start_epoch)
     start_epoch = int(start_epoch)
     last_saved_time = datetime.datetime(1, 1, 1, 0, 0)
@@ -1194,7 +1194,7 @@ def main(cfg):
                 tb_writer, 
                 logger,
                 epoch + 1,
-                best_acc=best_acc)
+                best_cum_acc_future=best_cum_acc_future)
 
             # Store the accuracies per number of parameters and tokens
             with open('acc_vs_params.json', 'a+') as f:
@@ -1209,9 +1209,9 @@ def main(cfg):
             accuracies["cum_acc_future"] = 0
         
         # Store the best model
-        if accuracies["cum_acc_future"] >= best_acc:
+        if accuracies["cum_acc_future"] >= best_cum_acc_future:
             store_checkpoint(f'checkpoint_best.pth', model, optimizer, lr_scheduler, epoch + 1)
-            best_acc = accuracies["cum_acc_future"]
+            best_cum_acc_future = accuracies["cum_acc_future"]
         if isinstance(lr_scheduler.base_scheduler, scheduler.ReduceLROnPlateau):
             lr_scheduler.step(accuracies["cum_acc_future"])
 

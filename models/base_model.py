@@ -33,6 +33,8 @@ class BaseModel(nn.Module):
                 _recursive_=False)
         elif model_cfg.model_name=="skit":
             self.model = hydra.utils.instantiate(model_cfg.skit, _recursive_=False)
+        elif model_cfg.model_name == "lstm":
+            self.model = hydra.utils.instantiate(model_cfg.lstm, _recursive_=False)
         else:
             raise ValueError(f"model_name {model_cfg.model_name} not supported")
 

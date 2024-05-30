@@ -72,7 +72,7 @@ class BasicLossAccuracy(nn.Module):
         
         self.ce_loss_fn_curr = nn.CrossEntropyLoss(weight=curr_class_weights, reduction='none', ignore_index=-1)
         self.ce_loss_fn_next = nn.CrossEntropyLoss(weight=next_class_weights, reduction='none', ignore_index=-1)
-        self.ce_loss_fn_curr_eos = nn.MSELoss(reduction='none')
+        # self.ce_loss_fn_curr_eos = nn.MSELoss(reduction='none')
         self.ce_loss_fn_future = nn.CrossEntropyLoss(weight=next_class_weights, reduction='none', ignore_index=-1)
 
     def forward(self, outputs, targets):
@@ -169,7 +169,7 @@ class Basic:
         if train_mode:
             for key in outputs.keys():
                 if key == "feature_loss":
-                    continue#
+                    continue
                 print(f"[TRAIN] {key} output: {outputs[key].shape}")
                 targets[key] = data[key+'_tgt']
             losses, accs = self.cls_loss_acc_fn(outputs, targets)
