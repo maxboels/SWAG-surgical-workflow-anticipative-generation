@@ -186,6 +186,85 @@ model:
       distil: false
       mix: true
       use_decoder: ${informer.decoder}
+  lstm:
+    _target_: models.lstm.LSTM
+    r2a2_model:
+      _target_: R2A2.model.lstm_ar.LSTM
+      mutli_token: ${mutli_token}
+      feature_loss: ${feature_loss}
+      decoder_type: ar_causal
+      eos_regression: ${eos_regression}
+      fixed_ctx_length: ${fixed_ctx_length}
+      input_dim: 768
+      present_length: 20
+      num_ant_queries: 6
+      past_sampling_rate: 10
+      d_model: ${informer.d_model}
+      num_curr_classes: ${num_curr_classes}
+      num_next_classes: ${num_next_classes}
+      max_anticip_time: ${max_anticip_time}
+      anticip_time: ${anticip_time}
+      pooling_dim: ${pooling_dim}
+      gpt_cfg:
+        vocab_size: ${vocab_size}
+        n_embd: ${n_embd}
+        n_layer: ${n_layer}
+        n_head: ${n_head}
+      key_recorder:
+        _target_: R2A2.model.key_recorder.KeyRecorder
+        dim: ${informer.d_model}
+        reduc_dim: 64
+        sampling_rate: 10
+        local_size: 20
+        pooling_method: max_abs
+        return_max_now_reduc: true
+        reduction: linear_relu
+      fusion_head:
+        _target_: R2A2.model.r2a2.FusionHead
+        dim: ${informer.d_model}
+      encoder:
+        _target_: R2A2.model.r2a2.TransformerEncoder
+        input_length: 20
+        input_dim: 768
+        d_model: 512
+        n_heads: 4
+        num_layers: 2
+        dim_ff: 1024
+        dropout: 0.3
+        activation: relu
+        reshape_output: false
+      decoder:
+        _target_: R2A2.model.r2a2.TransformerDecoder
+        input_dim: 512
+        d_model: 512
+        n_heads: 4
+        num_layers: 2
+        dim_ff: 1024
+        dropout: 0.1
+        activation: relu
+      informer:
+        _target_: Informer2020.models.model.Informer
+        enc_in: 768
+        dec_in: 768
+        c_out: 512
+        seq_len: 96
+        label_len: 48
+        out_len: 1
+        factor: 5
+        d_model: ${informer.d_model}
+        n_heads: 8
+        e_layers: 2
+        d_layers: 2
+        d_ff: 1024
+        dropout: 0.1
+        attn: full
+        embed: fixed
+        freq: h
+        activation: gelu
+        output_attention: false
+        distil: false
+        mix: true
+        use_decoder: ${informer.decoder}
 data_train:
   num_frames: 10
   frame_rate: 1
@@ -252,19 +331,19 @@ dist_backend: nccl
 test_only: false
 num_epochs: 20
 finetune_ckpt: best
-dataset_name: autolaparo21
+dataset_name: cholec80
 pooling_dim: 64
 train_start: 1
-train_end: 14
-test_start: 15
-test_end: 21
-model_name: supra
+train_end: 40
+test_start: 41
+test_end: 80
+model_name: skit
 informer:
   decoder: true
   d_model: 512
 vocab_size: 1000
-n_embd: 256
-n_layer: 4
+n_embd: 512
+n_layer: 2
 n_head: 8
 fixed_ctx_length: true
 mutli_token: false

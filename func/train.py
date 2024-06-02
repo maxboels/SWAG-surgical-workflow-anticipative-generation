@@ -365,11 +365,10 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     save_all_metrics = False
 
     num_classes = 7
-    plot_vid_ids = [41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 60, 70, 80]
-    plot_vid_ids = [16, 17, 18, 19, 20, 21]
     plot_video_freq = 1
     # -----------------select params----------------- #
 
+    # init video metrics
     all_videos_results = OrderedDict()
     all_videos_mean_acc_curr    = []
     all_videos_mean_acc_future  = []
@@ -383,6 +382,15 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     # best_cum_acc_future = 0.2
     best_epoch = 0
 
+    # init video gt and preds
+    video_ids = []
+    all_video_frame_preds = {}
+    all_video_frame_rec = {}
+    all_video_tgts_preds = {}
+    all_video_tgts_rec = {}
+    all_video_mean_curr_acc = {}
+    all_video_mean_cum_acc_future = {}
+
 
     # FOR EACH VIDEO LOADER
     for data_loader in dataloaders:
@@ -390,6 +398,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         video_results = OrderedDict()
         video_length = len(data_loader.dataset)
         video_id = data_loader.dataset.video_indices[0] # int type
+        video_ids.append(video_id)
         batch_size = data_loader.batch_size
         
 
@@ -463,7 +472,6 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
             end_idx += batch_size
         
         # Video-level results
-
         vid_test_time = time.time() - vid_start_time
         test_time = time.time() - eval_start_time
         logger.info(f"[TESTING] video: {video_id} | "
@@ -476,15 +484,25 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         # compute eval metrics for each video
         # NOTE: make sure to ignore the -1 class for both padding the last class and video length
 
+        # Store the outputs and targets
+        all_video_frame_preds[video_id] = video_frame_preds
+        all_video_frame_rec[video_id] = video_frame_rec
+        all_video_tgts_preds[video_id] = video_tgts_preds
+        all_video_tgts_rec[video_id] = video_tgts_rec
+
         # Keep Time Dimension
         acc_curr_frames         = compute_accuracy(video_frame_rec, video_tgts_rec, return_mean=False)      # potential nans
         acc_future_frames       = compute_accuracy(video_frame_preds, video_tgts_preds, return_mean=False)  # potential nans
 
         # global video mean accuracy
-        mean_acc_curr_frames        = np.round(np.nanmean(acc_curr_frames), decimals=4).tolist()
+        video_mean_curr_acc        = np.round(np.nanmean(acc_curr_frames), decimals=4).tolist()
         mean_acc_future_frames      = np.round(np.nanmean(acc_future_frames), decimals=4).tolist()
         cum_acc_future_frames       = np.round(np.nancumsum(acc_future_frames) / np.arange(1,len(acc_future_frames)+1), decimals=4).tolist()
-        mean_cum_acc_future_frames  = np.round(np.nanmean(cum_acc_future_frames), decimals=4).tolist()
+        video_mean_cum_acc_future  = np.round(np.nanmean(cum_acc_future_frames), decimals=4).tolist()
+
+        # store the mean accuracy for the video
+        all_video_mean_curr_acc[video_id] = video_mean_curr_acc
+        all_video_mean_cum_acc_future[video_id] = video_mean_cum_acc_future
 
         # iter times per index in list of lists
         mean_iter_times = np.round(np.mean(video_mean_cum_iter_time, axis=0), decimals=4).tolist()
@@ -492,18 +510,18 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
 
 
         # Video-level results
-        video_results['mean_acc_curr_frames']       = mean_acc_curr_frames
+        video_results['video_mean_curr_acc']       = video_mean_curr_acc
         video_results['mean_acc_future_frames']     = mean_acc_future_frames
-        video_results['mean_cum_acc_future_frames'] = mean_cum_acc_future_frames
+        video_results['video_mean_cum_acc_future'] = video_mean_cum_acc_future
 
         for key in video_results.keys():
             print(f"{key} is data type: {type(video_results[key])}")
             print(f"{key}: {video_results[key]}")
         
         # video-level metrics
-        all_videos_mean_acc_curr.append(mean_acc_curr_frames)
+        all_videos_mean_acc_curr.append(video_mean_curr_acc)
         # all_videos_mean_acc_future.append(mean_acc_future_frames)
-        # all_videos_mean_cum_acc_future.append(mean_cum_acc_future_frames)
+        # all_videos_mean_cum_acc_future.append(video_mean_cum_acc_future)
 
         # keep temporal dimension
         all_videos_acc_future.append(acc_future_frames)
@@ -515,32 +533,11 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
             f.write(',\n')
 
         logger.info(f"[TESTING] video: {video_id} | "
-                    f"mean_acc_curr_frames: {mean_acc_curr_frames} | "
+                    f"video_mean_curr_acc: {video_mean_curr_acc} | "
                     f"mean_acc_future_frames: {mean_acc_future_frames} | "
-                    f"mean_cum_acc_future_frames: {mean_cum_acc_future_frames}")
-        print(f"mean_acc_curr_frames: {mean_acc_curr_frames}, mean_acc_future_frames: {mean_acc_future_frames}")
+                    f"video_mean_cum_acc_future: {video_mean_cum_acc_future}")
+        print(f"video_mean_curr_acc: {video_mean_curr_acc}, mean_acc_future_frames: {mean_acc_future_frames}")
 
-        
-        
-        if mean_cum_acc_future_frames > best_cum_acc_future:
-            if video_id % plot_video_freq == 0:
-                plot_video_scatter_3D(video_frame_preds, video_frame_rec, video_tgts_preds, video_tgts_rec, anticip_time, 
-                                    video_idx=video_id, 
-                                    epoch=epoch,
-                                    sampling_rate=60, # current frames axis (seconds to minutes)
-                                    padding_class=-1, # padding class
-                                    eos_class=7,
-                                    num_classes=7,
-                                    video_mean_curr_acc=mean_acc_curr_frames,
-                                    video_mean_cum_acc_future=mean_cum_acc_future_frames,
-                                    )    # don't include the eos class which is assigned to -1
-
-            if save_best_video_preds:
-                np.save(f"video_frame_rec_{video_id}_ep{epoch}.npy", video_frame_rec)
-                np.save(f"video_tgts_rec_{video_id}_ep{epoch}.npy", video_tgts_rec)
-                np.save(f"video_frame_preds_{video_id}_ep{epoch}.npy", video_frame_preds)
-                np.save(f"video_tgts_preds_{video_id}_ep{epoch}.npy", video_tgts_preds)
-                logger.info(f"[TESTING] video: {video_id} saved numpy arrays")
             
     # keep time dimension over all videos
     all_videos_mean_acc_future_t       = np.round(np.nanmean(all_videos_acc_future, axis=0), decimals=4).tolist()
@@ -561,6 +558,35 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         if save_all_metrics:
             np.save(f"all_videos_mean_acc_future_t_ep{epoch}.npy", all_videos_acc_future)
             np.save(f"all_videos_mean_cum_acc_future_t_ep{epoch}.npy", all_videos_cum_acc_future)
+        
+
+        # PLOT AND SAVE VIDEO DATA if best
+        for video_id in video_ids:
+            video_frame_preds           = all_video_frame_preds[video_id]
+            video_frame_rec             = all_video_frame_rec[video_id]
+            video_tgts_preds            = all_video_tgts_preds[video_id]
+            video_tgts_rec              = all_video_tgts_rec[video_id]
+            video_mean_curr_acc         = all_video_mean_curr_acc[video_id]
+            video_mean_cum_acc_future   = all_video_mean_cum_acc_future[video_id]
+
+            plot_video_scatter_3D(video_frame_preds, video_frame_rec, video_tgts_preds, video_tgts_rec, anticip_time, 
+                                video_idx=video_id, 
+                                epoch=epoch,
+                                sampling_rate=60, # current frames axis (seconds to minutes)
+                                padding_class=-1, # padding class
+                                eos_class=7,
+                                num_classes=7,
+                                video_mean_curr_acc=video_mean_curr_acc,
+                                video_mean_cum_acc_future=video_mean_cum_acc_future,
+                                )    # don't include the eos class which is assigned to -1
+
+            if save_best_video_preds:
+                np.save(f"video_frame_rec_{video_id}_ep{epoch}.npy", video_frame_rec)
+                np.save(f"video_tgts_rec_{video_id}_ep{epoch}.npy", video_tgts_rec)
+                np.save(f"video_frame_preds_{video_id}_ep{epoch}.npy", video_frame_preds)
+                np.save(f"video_tgts_preds_{video_id}_ep{epoch}.npy", video_tgts_preds)
+                logger.info(f"[TESTING] video: {video_id} saved numpy arrays")
+
 
     tb_writer.add_scalar(f'test/acc_curr', all_videos_results["acc_curr"], step_now)
     tb_writer.add_scalar(f'test/cum_acc_future', all_videos_results["cum_acc_future"], step_now)

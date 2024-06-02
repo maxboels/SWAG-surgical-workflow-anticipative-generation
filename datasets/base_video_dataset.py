@@ -241,39 +241,11 @@ class Medical_Dataset(Dataset):
             self.branch_dict = {}
 
             # MAIN CLASS METHOD
-            self.init_video_data(video_indices=video_indices)
+            self.init_video_data(video_indices=video_indices, mode=train_mode)
             self.data_order = list(range(len(self.frame_indices)))
 
             if self.train_mode == 'train':
                 random.shuffle(self.data_order)
-                classes = self.df_split['class'].tolist()
-
-                # CURR AND NEXT CLASS WEIGHTS
-                classes_counts_dict = dict(zip(*np.unique(classes, return_counts=True)))
-                self.logger.info(f"[DATASET] classes_counts_dict: {classes_counts_dict}")
-                self.curr_class_weights = self._compute_class_weights(classes_counts_dict)
-                self.logger.info(f"[DATASET] curr_class_weights: {self.curr_class_weights}")
-
-                if self.eos_class == 7 and self.eos_classification:
-
-                    if self.eos_weight=="count":
-                        self.logger.info(f"[DATASET] eos_weight: {self.eos_weight}")
-                        num_eos_vals = compute_num_eos_values(
-                            anticip_time=self.anticip_time,
-                            full_anticip_time_minutes=18,
-                            auto_regressive=self.auto_regressive,
-                            num_videos=len(video_indices)
-                        )
-                        self.logger.info(f"[DATASET] num_eos_vals: {num_eos_vals}")
-                    elif self.eos_weight=="mean":
-                        # EOS CLASS WEIGHTS to mean of other classes
-                        num_eos_vals = np.mean(list(classes_counts_dict.values()))
-                        self.logger.info(f"[DATASET] num_eos_vals: {num_eos_vals}")
-                    
-                    classes_counts_dict[self.num_classes] = int(num_eos_vals)
-                    self.logger.info(f"[DATASET] classes_counts_dict: {classes_counts_dict}")
-                    self.next_class_weights = self._compute_class_weights(classes_counts_dict)
-                    self.logger.info(f"[DATASET] next_class_weights: {self.next_class_weights}")
 
         def get_data_split(self, dataset_name="cholec80", split="train", video_indices=None):
             """
@@ -287,7 +259,7 @@ class Medical_Dataset(Dataset):
             df = df.reset_index() if not split == "train" else df
             return df
 
-        def init_video_data(self, video_indices=None):
+        def init_video_data(self, video_indices=None, mode='train'):
             self.videos = []
             self.labels = []
             self.next_segments_class = []
@@ -299,9 +271,13 @@ class Medical_Dataset(Dataset):
             video_stats = {
                 "video_lengths": [],
             }
+
+            # initialize class counts for 1fps
+            train_class_count_1fps = {}
             
             for video_indx in video_indices:
                 df_video = self.df_split[self.df_split.video_idx==video_indx]
+                # Sampling dataframe at fps
                 df_video = df_video[df_video.frame%self.frames_fps==0].reset_index(drop = True)
                 self.logger.info(f"[DATASET] Sampling video_idx: {video_indx} at {self.frames_fps} fps to {len(df_video)} frames")
                 video_length = len(df_video)
@@ -345,7 +321,6 @@ class Medical_Dataset(Dataset):
                     video = torch.from_numpy(video).float().to(self.device)
                     self.videos.append(video)
 
-            print(f"[DATASET] label_list sample: {self.labels[-1]}")
             self.avg_video_length = np.mean(video_stats['video_lengths']) / 60
             self.logger.info(f"[DATASET] number of {self.train_mode} videos: {len(self.videos)}")
             self.logger.info(f"[DATASET] avg video length: {np.mean(video_stats['video_lengths']) / 60:.2f} minutes")
@@ -360,6 +335,39 @@ class Medical_Dataset(Dataset):
                 self.eos = torch.full((self.max_anticip_sec,), self.eos_class).long().to(self.device)
             else:
                 raise ValueError("eos_padding not found")
+
+            # Class weights after sampling at 1fps
+            if self.train_mode == 'train':
+                # concatenate all labels in training dataset
+                classes = torch.cat(self.labels, 0).cpu().numpy()
+                self.logger.info(f"[DATASET] num classes at 1fps in {self.train_mode}: {classes.shape}")
+
+                # CURR AND NEXT CLASS WEIGHTS
+                classes_counts_dict = dict(zip(*np.unique(classes, return_counts=True)))
+                self.logger.info(f"[DATASET] classes_counts_dict: {classes_counts_dict}")
+                self.curr_class_weights = self._compute_class_weights(classes_counts_dict)
+                self.logger.info(f"[DATASET] curr_class_weights: {self.curr_class_weights}")
+
+                if self.eos_class == 7 and self.eos_classification:
+                    if self.eos_weight=="count":
+                        self.logger.info(f"[DATASET] eos_weight: {self.eos_weight}")
+                        num_eos_vals = compute_num_eos_values(
+                            anticip_time=self.anticip_time,
+                            full_anticip_time_minutes=18,
+                            auto_regressive=self.auto_regressive,
+                            num_videos=len(video_indices)
+                        )
+                        self.logger.info(f"[DATASET] num_eos_vals: {num_eos_vals}")
+                    elif self.eos_weight=="mean":
+                        num_eos_vals = np.mean(list(classes_counts_dict.values()))
+                        self.logger.info(f"[DATASET] num_eos_vals: {num_eos_vals}")
+                    else:
+                        raise ValueError("eos_weight not found")
+                    
+                    classes_counts_dict[self.num_classes] = int(num_eos_vals)
+                    self.logger.info(f"[DATASET] classes_counts_dict: {classes_counts_dict}")
+                    self.next_class_weights = self._compute_class_weights(classes_counts_dict)
+                    self.logger.info(f"[DATASET] next_class_weights: {self.next_class_weights}")
             
         def _compute_class_weights(self, class_counts, normalize=False):
             total_samples = sum(class_counts.values())
