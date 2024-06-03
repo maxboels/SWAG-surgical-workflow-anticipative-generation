@@ -1,6 +1,3 @@
-lstm-al21-ct144-at60-ls442-eosw       Succeeded  2d   -     aicregistry:5000/mboels:supra  Train  mboels   maxence.boels@kcl.ac.uk  - (1.00)                    0 (0)                   
-sup-al21-ct144-at60-ls442-eosw        Succeeded  2d   -     aicregistry:5000/mboels:supra  Train  mboels   maxence.boels@kcl.ac.uk  - (1.00)                    0 (0)                   
-sup-best-al21-ct144-at60-ls442-eosw1  Succeeded  2d   -     aicregistry:5000/mboels:supra  Train  mboels   maxence.boels@kcl.ac.uk  - (1.00)                    0 (0)                   
-sup-best-c80-ct144-at60-ls442-eosw    Succeeded  2d   -     aicregistry:5000/mboels:supra  Train  mboels   maxence.boels@kcl.ac.uk  - (1.00)                    0 (0)                   
-sup-best-c80-ct144-at60-ls442-eosw1   Succeeded  3d   -     aicregistry:5000/mboels:supra  Train  mboels   maxence.boels@kcl.ac.uk  - (1.00)                    0 (0)                   
-sup-c80-ct144-at60-ls442-eosw         Succeeded  2d   -     aicregistry:5000/mboels:supra  Train  mboels   maxence.boels@kcl.ac.uk  - (1.00)                    0 (0)      
+skit-best-c80-ct144-at60-ls442-eosw
+sup-best-al21-ct144-at60-ls442-eosw
+sup-best-c80-ct144-at60-ls442-eosw
