@@ -82,6 +82,8 @@ model:
       max_anticip_time: ${max_anticip_time}
       anticip_time: ${anticip_time}
       pooling_dim: ${pooling_dim}
+      ctx_pooling: ${ctx_pooling}
+      num_ctx_tokens: ${num_ctx_tokens}
       gpt_cfg:
         vocab_size: ${vocab_size}
         n_embd: ${n_embd}
@@ -154,6 +156,8 @@ model:
     max_anticip_time: 18
     anticip_time: ${anticip_time}
     pooling_dim: 64
+    ctx_pooling: ${ctx_pooling}
+    num_ctx_tokens: ${num_ctx_tokens}
     fusion_head:
       _target_: R2A2.model.r2a2.FusionHead
       dim: ${informer.d_model}
@@ -205,6 +209,8 @@ model:
       max_anticip_time: ${max_anticip_time}
       anticip_time: ${anticip_time}
       pooling_dim: ${pooling_dim}
+      ctx_pooling: ${ctx_pooling}
+      num_ctx_tokens: ${num_ctx_tokens}
       gpt_cfg:
         vocab_size: ${vocab_size}
         n_embd: ${n_embd}
@@ -328,7 +334,7 @@ cwd: ${hydra:runtime.cwd}
 sync_bn: false
 data_parallel: true
 dist_backend: nccl
-test_only: false
+test_only: true
 num_epochs: 20
 finetune_ckpt: best
 dataset_name: autolaparo21
@@ -338,6 +344,8 @@ train_end: 14
 test_start: 15
 test_end: 21
 model_name: lstm
+ctx_pooling: global
+num_ctx_tokens: 24
 informer:
   decoder: true
   d_model: 512

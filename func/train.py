@@ -263,6 +263,56 @@ def compute_accuracy(inputs, targets, return_list=True, ignore_index=-1, return_
         return accuracy.tolist()
     return accuracy
 
+def compute_transition_times(sequence):
+    transition_times = {}
+    prev_class = sequence[0]
+    for i in range(1, len(sequence)):
+        if sequence[i] != prev_class:
+            transition_times[sequence[i]] = i
+            prev_class = sequence[i]
+    return transition_times
+
+def compute_rmse_transition_times(targets, predictions, max_duration=18, min_duration=0):
+    total_mse = 0
+    count = 0
+
+    for i in range(len(targets)):
+        target_seq = targets[i]
+        pred_seq = predictions[i]
+        # print(f"target_seq: {target_seq}")
+        # print(f"pred_seq:   {pred_seq}")
+
+        # if target_seq[-1] == 2:
+        #     print("Last element is 2")
+        
+        target_transitions = compute_transition_times(target_seq)
+        pred_transitions = compute_transition_times(pred_seq)
+        
+        # Filter transitions within max_duration
+        target_transitions = {c: t for c, t in target_transitions.items() if t <= max_duration}
+        pred_transitions = {c: t for c, t in pred_transitions.items() if t <= max_duration}
+        
+        all_classes = set(target_transitions.keys()).union(pred_transitions.keys())
+        
+        for c in all_classes:
+            target_time = target_transitions.get(c, max_duration)
+            pred_time = pred_transitions.get(c, max_duration)
+
+            if pred_time != max_duration and target_time != max_duration:
+                error = (target_time - pred_time) ** 2
+            else:
+                error = min((target_time - min_duration) ** 2, (max_duration - target_time) ** 2)
+
+            # error = (target_time - pred_time) ** 2
+            total_mse += error
+            count += 1
+        # print(f"error: {np.sqrt(error)} minutes")
+        
+        # break
+
+    rmse = (total_mse / count) ** 0.5 if count != 0 else 0
+    return rmse
+
 def compute_f1_score(inputs, targets, return_list=True, ignore_index=-1, return_mean=True):
     # Ensure inputs and targets are numpy arrays
     inputs = np.array(inputs)
@@ -343,7 +393,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
             store=False, 
             store_endpoint='logits', 
             only_run_featext=False,
-            best_cum_acc_future=0.0,
+            best_cum_acc_future=0.4,
             ):
     
     
@@ -374,6 +424,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     all_videos_mean_acc_future  = []
     all_videos_acc_future       = []
     all_videos_cum_acc_future   = []
+    all_videos_rmse_future      = []
     all_videos_mean_f1_curr     = []
     all_videos_mean_f1_future   = []
     all_videos_mean_cum_iter_time = []
@@ -494,6 +545,9 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         acc_curr_frames         = compute_accuracy(video_frame_rec, video_tgts_rec, return_mean=False)      # potential nans
         acc_future_frames       = compute_accuracy(video_frame_preds, video_tgts_preds, return_mean=False)  # potential nans
 
+        # Compute Root Mean Squared Error
+        rmse_future_transitions = compute_rmse_transition_times(video_tgts_preds, video_frame_preds, max_duration=18)
+
         # global video mean accuracy
         video_mean_curr_acc        = np.round(np.nanmean(acc_curr_frames), decimals=4).tolist()
         mean_acc_future_frames      = np.round(np.nanmean(acc_future_frames), decimals=4).tolist()
@@ -520,6 +574,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         
         # video-level metrics
         all_videos_mean_acc_curr.append(video_mean_curr_acc)
+        all_videos_rmse_future.append(rmse_future_transitions)
         # all_videos_mean_acc_future.append(mean_acc_future_frames)
         # all_videos_mean_cum_acc_future.append(video_mean_cum_acc_future)
 
@@ -547,6 +602,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     all_videos_results["epoch"]         = epoch
     all_videos_results["acc_curr"]      = np.round(np.nanmean(all_videos_mean_acc_curr), decimals=4).tolist()
     all_videos_results["cum_acc_future"]= np.round(np.nanmean(all_videos_mean_cum_acc_future_t), decimals=4).tolist()
+    all_videos_results["rmse_future"]   = np.round(np.nanmean(all_videos_rmse_future), decimals=4).tolist()
     # all_videos_results["acc_future"]    = np.round(np.nanmean(all_videos_mean_acc_future_t), decimals=4).tolist()
 
     # update best_cum_acc
@@ -1167,7 +1223,7 @@ def main(cfg):
             tb_writer, 
             logger, 
             1,
-            best_cum_acc_future=0.2)
+            best_cum_acc_future=0.4)
         print(f"Accuracies: {accuracies}")
         print("Test only done")
         return
@@ -1177,7 +1233,7 @@ def main(cfg):
 
     # Get training metric logger
     stat_loggers = get_default_loggers(tb_writer, start_epoch, logger)
-    best_cum_acc_future = 0.2
+    best_cum_acc_future = 0.4
     partial_epoch = start_epoch - int(start_epoch)
     start_epoch = int(start_epoch)
     last_saved_time = datetime.datetime(1, 1, 1, 0, 0)

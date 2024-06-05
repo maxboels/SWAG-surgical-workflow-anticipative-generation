@@ -95,6 +95,7 @@ class TokenPoolerTopK(nn.Module):
         
 class KeyRecorder(nn.Module):
     def __init__(self,
+                num_ctx_tokens: int = 20,
                 dim: int = 512, 
                 reduc_dim: int = 64, 
                 sampling_rate: int = 10, 
@@ -123,7 +124,7 @@ class KeyRecorder(nn.Module):
             nn.LayerNorm(dim),
         )
         self._sampling_rate = sampling_rate
-        self._local_size = local_size
+        self._local_size = num_ctx_tokens # before was local_size but changed for ablations with num_ctx_tokens
         self.dropout = nn.Dropout(0.1)
         
     def compare_past_present(self, past_pooled_reduc: torch.Tensor, past_present: torch.Tensor) -> torch.Tensor:
@@ -146,13 +147,13 @@ class KeyRecorder(nn.Module):
         global_max = self._linear_expand(global_reduc_max)
         # global_max = self.dropout(global_max)
         
-        # comment out option
-        now_reduc_max = compressed_feats[:, -1:, :] # no pooling, just the last frame
+        # # comment out option
+        # now_reduc_max = compressed_feats[:, -1:, :] # no pooling, just the last frame
         
-        if self.return_max_now_reduc:
-            return global_max, now_reduc_max
+        # if self.return_max_now_reduc:
+        #     return global_max, now_reduc_max
         
-        return global_max, None
+        return global_max
 
 class TransformerEncoder(nn.Module):
     def __init__(self, input_length=20, input_dim=768, d_model=512, n_heads=8, num_layers=2,
@@ -285,6 +286,7 @@ class R2A2(nn.Module):
         decoder_type: str = "ar_causal",
         eos_regression: bool = False,
         fixed_ctx_length: bool = True,
+        max_seq_len: int = 24,
         input_dim: int = 768,
         present_length: int = 20,
         num_ant_queries: int = 20,
@@ -295,6 +297,8 @@ class R2A2(nn.Module):
         max_anticip_time: int = 20,
         anticip_time: int = 60,
         pooling_dim: int = 64,
+        ctx_pooling: str = "global",
+        num_ctx_tokens: int = 20,
         gpt_cfg: dict = None,
         key_recorder: TargetConf = None,
         fusion_head: TargetConf = None,
@@ -318,13 +322,15 @@ class R2A2(nn.Module):
 
         # other params
         self.relu_norm = True
-        self.pooling_method = "cum_max"         # compare with baseline: "key_recorder"
+        self.ctx_pooling = ctx_pooling
+        self.num_ctx_tokens = num_ctx_tokens
         self.frame_level = True
         self.segment_level = False
         self.multiscale = False
         self.use_key_recorder = True
         self.decoder_type = "ar_causal"
         self.fixed_ctx_length = fixed_ctx_length
+        self.max_seq_len = max_seq_len
         self.feature_loss = feature_loss
 
         # -----------------------------------------------------------------------
@@ -333,29 +339,19 @@ class R2A2(nn.Module):
 
         self.proj_layer = nn.Linear(d_model, gpt_cfg.n_embd)
 
-        # self.future_durations = nn.Sequential(
-        #     nn.Linear(512, 64),
-        #     nn.ReLU(),
-        #     nn.LayerNorm(64),
-        #     nn.Linear(64, 1),
-        # )
-        
-        # self.norm1 = nn.LayerNorm(d_model)
-
         self.informer = hydra.utils.instantiate(informer, _recursive_=False)
         # self.key_recorder = hydra.utils.instantiate(key_recorder, _recursive_=False)
         self.fusion_head1 = hydra.utils.instantiate(fusion_head, _recursive_=False)
 
-        if self.pooling_method == "cum_max":
+        if self.ctx_pooling == "local":
             self.tokens_pooler = TokenPoolerCumMax(dim=d_model, pooling_dim=pooling_dim, anticip_time=self.anticip_time,
                                                    relu_norm=self.relu_norm)
-        elif self.pooling_method == "top_k":
-            self.tokens_pooler = TokenPoolerTopK(dim=d_model, pooling_dim=pooling_dim, top_k=50, relu_norm=self.relu_norm)
-        elif self.pooling_method == "key_recorder":
-            self.tokens_pooler = KeyRecorder(dim=d_model, reduc_dim=pooling_dim, sampling_rate=10, local_size=20,
+        elif self.ctx_pooling == "global":
+            self.tokens_pooler = KeyRecorder(num_ctx_tokens=num_ctx_tokens,
+                                             dim=d_model, reduc_dim=pooling_dim, sampling_rate=10, local_size=20,
                                              relu_norm=self.relu_norm)
         else:
-            raise ValueError(f"Pooling method {self.pooling_method} not implemented.")
+            raise ValueError(f"Pooling method {self.ctx_pooling} not implemented.")
 
         # Current Token and EOS Time prediction
         self.curr_frames_classifier = nn.Linear(d_model, num_curr_classes)
@@ -410,26 +406,29 @@ class R2A2(nn.Module):
         enc_out = self.encoder(obs_video)  # sliding window encoder
         print(f"[R2A2] enc_out: {enc_out.shape}")
 
-        # TODO: ABLATIONS FOR FRAME AND SEGMENT DECODING
-        if lt_pooling == "key_recorder":
-            enc_out_pooled, now_reduc_max = self.tokens_pooler(enc_out)
-        elif lt_pooling == "token_pooling":
-            enc_out_pooled = self.tokens_pooler(enc_out)
+        enc_out_pooled = self.tokens_pooler(enc_out)
         print(f"[R2A2] enc_out_pooled: {enc_out_pooled.shape}")
 
         # Local Context skip connection fusion
-        if lt_pooling == "key_recorder":
-            enc_out_local = enc_out[:, -self.present_length:]
-        elif lt_pooling == "token_pooling":
-            enc_out_local = enc_out[:, self.anticip_time-1:enc_out.size(1):self.anticip_time, :]
+        if self.ctx_pooling == "global":
+            enc_out_local = enc_out[:, -self.num_ctx_tokens:]
+        elif self.ctx_pooling == "local":
+            enc_out_local = enc_out[:, self.anticip_time-1:enc_out.size(1):self.anticip_time, :] # sample every anticip_time
         print(f"[R2A2] enc_out_local: {enc_out_local.shape}")
         
         # Fusion Head (skip connection + linear layer)
         assert enc_out_pooled.size(1) == enc_out_local.size(1)
 
+
+        # Ablation: change the number of context tokens
+        if not train_mode:
+            enc_out_pooled = enc_out_pooled[:, -self.num_ctx_tokens:] # keep only the last num_ctx_tokens
+            enc_out_local = enc_out_local[:, -self.num_ctx_tokens:] # keep only the last num_ctx_tokens
+            print(f"[R2A2] keep only the last num_ctx_tokens: {enc_out_pooled.shape}")
+
+
         enc_out = self.fusion_head1(enc_out_pooled, enc_out_local)
         print(f"[R2A2] enc_out_fused: {enc_out.shape}")
-
 
         curr_frames_cls = self.curr_frames_classifier(enc_out)
         print(f"[R2A2] curr_frames: {curr_frames_cls.shape}")
@@ -493,7 +492,10 @@ class R2A2(nn.Module):
                 # the model will not be confused since the context length is fixed during training.
                 # shift the input sequence by one frame if fixed context length
                 if self.fixed_ctx_length:
-                    dec_in = dec_in[:, 1:]
+                    if dec_in.size(1) == self.max_seq_len:
+                        dec_in = dec_in[:, 1:]
+                # else:
+                #     dec_in = dec_in[:, 1:]
                 dec_in = torch.cat((dec_in, next_frame_embed), dim=1) # (B, T, D)
                 print(f"[R2A2] dec_in: {dec_in.shape}")
 

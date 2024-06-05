@@ -1,5 +1,7 @@
-- test_only=False
+- test_only=True
 - model_name=lstm
+- ctx_pooling=global
+- num_ctx_tokens=24
 - eos_weight=count
 - dataset_name=autolaparo21
 - pooling_dim=64

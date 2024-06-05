@@ -1,6 +1,9 @@
-test_only=false
+test_only=true
 
 model_name=lstm
+
+ctx_pooling=global
+num_ctx_tokens=24
 
 eos_weight=count
 

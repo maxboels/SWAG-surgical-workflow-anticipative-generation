@@ -1,3 +1,4 @@
-skit-best-c80-ct144-at60-ls442-eosw
-sup-best-al21-ct144-at60-ls442-eosw
-sup-best-c80-ct144-at60-ls442-eosw
+lstm-ac80-ct144-at60-ls442-eosw-loc24
+lstm-al21-ct144-at60-ls442-eosw
+lstm-c80-ct144-at60-ls442-eosw
+lstm-c80-ct144-at60-ls442-eosw-loc

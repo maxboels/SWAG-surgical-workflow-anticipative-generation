@@ -147,7 +147,12 @@ class Medical_Dataset(Dataset):
             self.num_classes = 7                                                    # AutoLapro: 7, Cholec80: 7
             self.attn_window_size = 20
             self.ctx_length = cfg.ctx_length                                        # 3000 or 1500 frames
+            
             self.num_ctx_tokens = int(cfg.ctx_length/cfg.anticip_time)              # Compression Tokens: 100 or 50 tokens for curr and next frames
+            
+            self.ctx_pooling = cfg.ctx_pooling
+            # self.num_ctx_tokens = cfg.num_ctx_tokens
+            
             self.anticip_time = cfg.anticip_time   
             self.max_anticip_sec = int(cfg.max_anticip_time * 60)  # 50 or 25 frames per token
             self.num_future_tokens = int(self.max_anticip_sec / cfg.anticip_time)   # 60 or 30 tokens (num auto-regressive steps)
@@ -170,12 +175,12 @@ class Medical_Dataset(Dataset):
             self.eos_weight = cfg.eos_weight # "count" or "mean"
             
             # observed targets
-            if self.model_name == "supra":
-                self.curr_frames_tgt = "global" # "global" or "local"
+            if self.model_name in ["supra", "lstm"]:
+                # self.curr_frames_tgt = "global" # "global" or "local"
                 self.next_frames_tgt = "next"
                 self.auto_regressive = True
             else:
-                self.curr_frames_tgt = "local"
+                # self.curr_frames_tgt = "local"
                 self.next_frames_tgt = "future"
                 self.auto_regressive = False                
             
@@ -456,19 +461,20 @@ class Medical_Dataset(Dataset):
             # ----------------- TRAINING LABELS -----------------
             
             # CURRENT FRAMES TARGETS
-            if self.curr_frames_tgt == "global":
+            if self.ctx_pooling == "local":
                 curr_frame_spacing = self.anticip_time
                 ends = frame_idx + 1
                 remainder = frame_idx  % self.anticip_time
                 # the target is the last frame in the attn window
                 starts = max(remainder, frame_idx - self.ctx_length + self.anticip_time)
-            elif self.curr_frames_tgt == "local":
+            elif self.ctx_pooling == "global":
                 curr_frame_spacing = 1
                 ends = frame_idx + 1
-                starts = max(0, frame_idx - self.attn_window_size + 1)
+                starts = max(0, frame_idx - self.num_ctx_tokens + 1)
                 self.num_ctx_tokens = self.attn_window_size
             else:
                 raise ValueError("curr_frames_tgt not found")
+            
             print(f"[DATASET] curr_frames_tgt starts: {starts} ends: {ends}")
             curr_frames_tgt = video_targets[starts: ends: curr_frame_spacing].to(self.device)
             print(f"[DATASET] curr_frames_tgt: {curr_frames_tgt.size()}")
@@ -477,6 +483,8 @@ class Medical_Dataset(Dataset):
             print(f"[DATASET] missing: {missing}")
             if missing > 0:
                 curr_frames_tgt = torch.cat(( -self.ones[:missing].long(), curr_frames_tgt), 0)
+            elif missing < 0:
+                curr_frames_tgt = curr_frames_tgt[-self.num_ctx_tokens:]
             data_now['curr_frames_tgt'] = curr_frames_tgt.to(self.device).long()
             print(f"[DATASET] curr_frames_tgt: {curr_frames_tgt.size()}")
 
@@ -495,12 +503,24 @@ class Medical_Dataset(Dataset):
                 if self.next_frames_tgt=="next":
                     excess_right = max(0, (frame_idx + self.anticip_time + 1) - video_targets.size(0))
                     ends = min(video_targets.size(0), frame_idx + self.anticip_time + 1)
-                    start_offset = frame_idx  % self.anticip_time
-                    starts = max(start_offset, frame_idx - self.ctx_length + (2*self.anticip_time))
-                    print(f"[DATASET] next_frames_tgt starts: {starts}, ends: {ends}")
+                    if self.ctx_pooling=="local":
+                        start_offset = frame_idx  % self.anticip_time
+                        starts = max(start_offset, frame_idx - self.ctx_length + (2*self.anticip_time))
+                        print(f"[DATASET] next_frames_tgt starts: {starts}, ends: {ends}")
+                    elif self.ctx_pooling=="global":
+                        starts = frame_idx + self.anticip_time
+                        print(f"[DATASET] next_frames_tgt starts: {starts}, ends: {ends}")
+                    else:
+                        raise ValueError("next_frames_tgt not found")
+                    
                     next_frames_tgt = video_targets[starts: ends: self.anticip_time].to(self.device)
                     print(f"[DATASET] next_frames_tgt: {next_frames_tgt.size()}")
-                    print(f"[DATASET] next_frames_tgt: {torch.arange(starts, ends, self.anticip_time)}")
+                    if starts < ends:
+                        print(f"[DATASET] next_frames_tgt: {torch.arange(starts, ends, self.anticip_time)}")
+
+                    # next_frames_tgt = next_frames_tgt[-self.num_ctx_tokens:]
+                    # print(f"[DATASET] next_frames_tgt (trimmed to num_ctx_tokens): {next_frames_tgt.size()}")
+
                     if excess_right > 0:
                         # only add 1 eos token since we use anticip window size
                         next_frames_tgt = torch.cat((next_frames_tgt, self.eos[:1].long()), 0)

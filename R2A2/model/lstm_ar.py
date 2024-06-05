@@ -307,6 +307,7 @@ class LSTM(nn.Module):
         self.decoder_type = decoder_type
         self.input_dim = input_dim
         self.d_model = d_model
+        self.gpt_cfg = gpt_cfg
         self.present_length = present_length
         self.past_sampling_rate = past_sampling_rate
         self.max_anticip_time = max_anticip_time        # is in minutes
@@ -328,6 +329,7 @@ class LSTM(nn.Module):
         self.feature_loss = feature_loss
 
         # -----------------------------------------------------------------------
+
         if self.feature_loss:   
             self.future_pred_loss = nn.MSELoss()
 
@@ -357,12 +359,11 @@ class LSTM(nn.Module):
         # Next Token Prediction
         self.next_action_classifier = nn.Linear(gpt_cfg.n_embd, num_next_classes) # optional +1 for the EOS (end of sequence token)
 
-        if self.decoder_type == "ar_causal":
-            if self.frame_level or self.multiscale:
-                # Frame Decoder
-                self.frame_decoder = nn.LSTM(gpt_cfg.n_embd, gpt_cfg.n_embd, num_layers=2, batch_first=True)
-                self.h0 = torch.randn(2, 1, gpt_cfg.n_embd)
-                self.c0 = torch.randn(2, 1, gpt_cfg.n_embd)
+
+        # Frame Decoder
+        self.frame_decoder = nn.LSTM(gpt_cfg.n_embd, gpt_cfg.n_embd, num_layers=2, batch_first=True)
+        self.h0 = nn.Parameter(torch.randn(2, 1, gpt_cfg.n_embd))
+        self.c0 = nn.Parameter(torch.randn(2, 1, gpt_cfg.n_embd))
         
     def encoder(self, obs_video):
         """Follow the skit implementation."""
@@ -414,16 +415,17 @@ class LSTM(nn.Module):
             curr_time2eos = self.curr_eos_rem_time_reg(enc_out)
             print(f"[R2A2] curr_time2eos: {curr_time2eos.shape}")
             outputs["curr_time2eos"] = curr_time2eos
+        
 
+        dec_in = self.proj_layer(enc_out)
+        print(f"[LSTM] dec_in: {dec_in.shape}")
+        batch_size = enc_out.size(0)
+        h0 = self.h0.expand(-1, batch_size, -1).contiguous()
+        c0 = self.c0.expand(-1, batch_size, -1).contiguous()
+        print(f"[LSTM] h0: {h0.shape}")
+        print(f"[LSTM] c0: {c0.shape}")
 
         if train_mode:
-            dec_in = self.proj_layer(enc_out)
-            batch_size = enc_in.size(0)
-            # LSTM decoder
-            h0 = torch.randn(2, batch_size, gpt_cfg['n_embd']).to(dec_in.device)
-            print(f"[LSTM] h0: {h0.shape}")
-            c0 = torch.randn(2, batch_size, gpt_cfg['n_embd']).to(dec_in.device)
-            print(f"[LSTM] c0: {c0.shape}")
             next_action, _ = self.frame_decoder(dec_in, (h0, c0))
             print(f"[LSTM] next_action: {next_action.shape}")
             next_frames_cls = self.next_action_classifier(next_action)
@@ -433,12 +435,11 @@ class LSTM(nn.Module):
                 # Future Prediction Loss with shifted predictions (shifted by 1) and decoded frames
                 # doesn't train on last class embedding (EOS token)
                 # PRBEM: we slice the last pred since no future features for last frame
-                feature_loss = self.future_pred_loss(next_action.last_hidden_state[:, :-1], dec_in[:, 1:])
+                feature_loss = self.future_pred_loss(next_action[:, :-1], dec_in[:, 1:])
                 outputs["feature_loss"] = feature_loss
         else:
             # Autoregressive decoding during inference
             # TODO: TRY WITH FIXED CONTEXT WINDOW TO PREVENT LATENCY DURING INFERENCE
-
             max_num_steps = int((self.max_anticip_time * 60) / self.anticip_time)
             print(f"[R2A2] initial max_num_steps: {max_num_steps}")
             
@@ -449,10 +450,8 @@ class LSTM(nn.Module):
                 max_num_steps = int(max_num_steps * mean_eos_estim_time)
                 print(f"[R2A2] time2eos selected max_num_steps: {max_num_steps}")
 
-    
             frames_cls_preds = []
             dec_in = self.proj_layer(enc_out)
-
             start_time = time.time()
             iter_times = [] # in seconds
             for _ in range(max_num_steps):

@@ -32,6 +32,10 @@ test_end: 81        # last not included
 
 model_name: supra          # skit / supra / lstm / gru
 
+ctx_pooling: global
+num_ctx_tokens: 20
+max_seq_len: 18
+
 # 1. SKiT
 # base:     512  /  x   / x     /   x     /   x     /   true  / KeyRecorder
 
@@ -57,6 +61,7 @@ n_embd:     384
 n_layer:    2
 n_head:     4
 fixed_ctx_length: true      # default true
+
 mutli_token: false          # default false
 # LABELS
 num_curr_classes: 7         # 7 classes for cholec80 and autolaparo
@@ -68,7 +73,7 @@ eos_classification: true
 eos_weight: count     # count or mean
 
 # compression
-ctx_length: 1500            # 1500s = 25min, 3000s = 50min (avg video is 34min)
+ctx_length: 1440            # 1500s = 25min, 3000s = 50min (avg video is 34min)
 # NOTE: we need long anticipation time to increase the number of transition samples for predicting transitions at inference.
 anticip_time: 60            # training: 30s / 60s / 120s / 240s / 300s / 600s (10min)
 max_anticip_time: 18        # inference: maximum duration (minutes)
@@ -97,7 +102,7 @@ pytorch:
 
 train:
   fn: 'train'  # Which file in func/ directory to use for training
-  batch_size: 32
+  batch_size: 64
   # This can have structure as follows:
   # <module name in model>:<module name in ckpt>:<path to ckpt> <>...
   # By default also supports just the <path to ckpt>
@@ -185,6 +190,7 @@ model:
       decoder_type: ar_causal
       eos_regression: ${eos_regression}
       fixed_ctx_length: ${fixed_ctx_length}
+      max_seq_len: ${max_seq_len}
       input_dim: 768
       present_length: 20
       num_ant_queries: 6
@@ -195,6 +201,8 @@ model:
       max_anticip_time: ${max_anticip_time}
       anticip_time: ${anticip_time}
       pooling_dim: ${pooling_dim}
+      ctx_pooling: ${ctx_pooling}
+      num_ctx_tokens: ${num_ctx_tokens}
       gpt_cfg:
         vocab_size: ${vocab_size}
         n_embd: ${n_embd}
@@ -267,6 +275,8 @@ model:
     max_anticip_time: 18
     anticip_time: ${anticip_time}
     pooling_dim: 64
+    ctx_pooling: ${ctx_pooling}
+    num_ctx_tokens: ${num_ctx_tokens}
     fusion_head:
       _target_: R2A2.model.r2a2.FusionHead
       dim: ${informer.d_model}
@@ -318,6 +328,8 @@ model:
       max_anticip_time: ${max_anticip_time}
       anticip_time: ${anticip_time}
       pooling_dim: ${pooling_dim}
+      ctx_pooling: ${ctx_pooling}
+      num_ctx_tokens: ${num_ctx_tokens}
       gpt_cfg:
         vocab_size: ${vocab_size}
         n_embd: ${n_embd}
