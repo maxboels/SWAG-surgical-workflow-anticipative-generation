@@ -14,6 +14,7 @@ import time
         
 class KeyRecorder(nn.Module):
     def __init__(self,
+                num_ctx_tokens: int = 20,
                 dim: int = 512, 
                 reduc_dim: int = 64, 
                 sampling_rate: int = 10, 
@@ -42,7 +43,7 @@ class KeyRecorder(nn.Module):
             nn.LayerNorm(dim),
         )
         self._sampling_rate = sampling_rate
-        self._local_size = local_size
+        self._local_size = num_ctx_tokens # before was local_size but changed for ablations with num_ctx_tokens
         self.dropout = nn.Dropout(0.1)
         
     def compare_past_present(self, past_pooled_reduc: torch.Tensor, past_present: torch.Tensor) -> torch.Tensor:
@@ -65,13 +66,48 @@ class KeyRecorder(nn.Module):
         global_max = self._linear_expand(global_reduc_max)
         # global_max = self.dropout(global_max)
         
-        # comment out option
-        now_reduc_max = compressed_feats[:, -1:, :] # no pooling, just the last frame
+        # # comment out option
+        # now_reduc_max = compressed_feats[:, -1:, :] # no pooling, just the last frame
         
-        if self.return_max_now_reduc:
-            return global_max, now_reduc_max
+        # if self.return_max_now_reduc:
+        #     return global_max, now_reduc_max
         
-        return global_max, None
+        return global_max
+
+class TokenPoolerCumMax(nn.Module):
+    def __init__(self, dim: int = 512, pooling_dim: int = 64, anticip_time: int = 60, 
+                 relu_norm: bool = True, **kwargs):
+        super().__init__()
+        self.dim = dim
+        self.pooling_dim = pooling_dim
+        self.anticip_time = anticip_time
+        
+        if relu_norm:
+            self.linear_reduction = nn.Sequential(
+                nn.Linear(dim, pooling_dim),
+                nn.ReLU(),
+                nn.LayerNorm(pooling_dim) # replace LayerNorm with Sonething for the Temporality
+            )
+        else:
+            self.linear_reduction = nn.Sequential(
+                nn.Linear(dim, pooling_dim),
+                nn.Sigmoid()
+            )
+        
+        self.linear_expand = nn.Sequential(
+            nn.Linear(pooling_dim, dim),
+            nn.ReLU(),
+            nn.LayerNorm(dim)
+        )
+    
+    def forward(self, x):
+        batch_size, seq_len, _ = x.size()
+        num_ctx_tokens = seq_len // self.anticip_time
+        x = x.view(batch_size, num_ctx_tokens, self.anticip_time, self.dim)
+        x = self.linear_reduction(x)
+        x, _ = torch.max(x, dim=2)
+        x = self.linear_expand(x)
+        return x
 
 class FusionHead(nn.Module):
     def __init__(
@@ -116,6 +152,8 @@ class SKITFuture(nn.Module):
         max_anticip_time: int = 18,
         anticip_time: int = 60,
         pooling_dim: int = 64,
+        ctx_pooling: str = "global",
+        num_ctx_tokens: int = 20,
         decoder: TargetConf = None,
         fusion_head: TargetConf = None,
         informer: TargetConf = None,
@@ -137,8 +175,20 @@ class SKITFuture(nn.Module):
         self.proj_layer = nn.Linear(d_model, dec_dim)
         self.informer = hydra.utils.instantiate(informer, _recursive_=False)
         self.fusion_head1 = hydra.utils.instantiate(fusion_head, _recursive_=False)
-        self.tokens_pooler = KeyRecorder(dim=d_model, reduc_dim=pooling_dim, sampling_rate=10, local_size=20,
+
+
+        self.ctx_pooling = ctx_pooling
+        self.num_ctx_tokens = num_ctx_tokens
+        if self.ctx_pooling == "local":
+            self.tokens_pooler = TokenPoolerCumMax(dim=d_model, pooling_dim=pooling_dim, anticip_time=self.anticip_time,
+                                                   relu_norm=self.relu_norm)
+        elif self.ctx_pooling == "global":
+            self.tokens_pooler = KeyRecorder(num_ctx_tokens=num_ctx_tokens,
+                                             dim=d_model, reduc_dim=pooling_dim, sampling_rate=10, local_size=20,
                                              relu_norm=self.relu_norm)
+        else:
+            raise ValueError(f"Pooling method {self.ctx_pooling} not implemented.")
+        
         self.frame_decoder = hydra.utils.instantiate(decoder, _recursive_=False)
 
         self.curr_frames_classifier = nn.Linear(d_model, num_curr_classes)
@@ -166,19 +216,32 @@ class SKITFuture(nn.Module):
         enc_out = self.encoder(obs_video)  # sliding window encoder
         print(f"[SKIT-F] enc_out: {enc_out.shape}")
 
-        enc_out_pooled, now_reduc_max = self.tokens_pooler(enc_out)
+        enc_out_pooled = self.tokens_pooler(enc_out)
         print(f"[SKIT-F] enc_out_pooled: {enc_out_pooled.shape}")
 
-        enc_out_local = enc_out[:, -self.present_length:]
-        print(f"[SKIT-F] enc_out_local: {enc_out_local.shape}")
+        # Local Context skip connection fusion
+        if self.ctx_pooling == "global":
+            enc_out_local = enc_out[:, -self.num_ctx_tokens:]
+        elif self.ctx_pooling == "local":
+            enc_out_local = enc_out[:, self.anticip_time-1:enc_out.size(1):self.anticip_time, :] # sample every anticip_time
+        print(f"[SKIT-F] enc_out ({self.ctx_pooling}): {enc_out_local.shape}")
         
+        # Fusion Head (skip connection + linear layer)
+        assert enc_out_pooled.size(1) == enc_out_local.size(1), "Global and Local context should have the same size"
+
+        # Ablation: change the number of context tokens
+        if not train_mode:
+            enc_out_pooled = enc_out_pooled[:, -self.num_ctx_tokens:] # keep only the last num_ctx_tokens
+            enc_out_local = enc_out_local[:, -self.num_ctx_tokens:] # keep only the last num_ctx_tokens
+            print(f"[SKIT-F] keep only the last num_ctx_tokens: {enc_out_pooled.shape}")
+
+
         enc_out = self.fusion_head1(enc_out_pooled, enc_out_local)
         print(f"[SKIT-F] enc_out_fused: {enc_out.shape}")
 
         curr_frames_cls = self.curr_frames_classifier(enc_out)
         print(f"[SKIT-F] curr_frames: {curr_frames_cls.shape}")
         outputs["curr_frames"] = curr_frames_cls
-
 
         # start time tracking if inference mode
         iter_times = []

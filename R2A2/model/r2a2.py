@@ -414,7 +414,7 @@ class R2A2(nn.Module):
             enc_out_local = enc_out[:, -self.num_ctx_tokens:]
         elif self.ctx_pooling == "local":
             enc_out_local = enc_out[:, self.anticip_time-1:enc_out.size(1):self.anticip_time, :] # sample every anticip_time
-        print(f"[R2A2] enc_out_local: {enc_out_local.shape}")
+        print(f"[R2A2] enc_out ({self.ctx_pooling}): {enc_out_local.shape}")
         
         # Fusion Head (skip connection + linear layer)
         assert enc_out_pooled.size(1) == enc_out_local.size(1)

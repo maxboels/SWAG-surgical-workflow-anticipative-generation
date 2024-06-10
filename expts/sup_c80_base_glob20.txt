@@ -1,26 +1,26 @@
 test_only=false
 
 model_name=supra
+ctx_pooling=global
 
-ctx_pooling=local
-num_ctx_tokens=12
+num_ctx_tokens=20
 max_seq_len=24
 
 eos_weight=count
 
-dataset_name=autolaparo21
+dataset_name=cholec80
 pooling_dim=64
 train_start=1
-train_end=14
-test_start=15
-test_end=21
+train_end=40
+test_start=41
+test_end=80
 
 informer.decoder=true
 informer.d_model=512
 vocab_size=1000
 
-n_embd=256
-n_layer=4
+n_embd=512
+n_layer=6
 n_head=8
 
 fixed_ctx_length=true

@@ -1,4 +1,11 @@
-lstm-ac80-ct144-at60-ls442-eosw-loc24
-lstm-al21-ct144-at60-ls442-eosw
-lstm-c80-ct144-at60-ls442-eosw
-lstm-c80-ct144-at60-ls442-eosw-loc
+sup-al21-base-loc1
+sup-al21-base-loc1-max24
+sup-al21-base-loc12-max24
+sup-al21-base-loc24-max24
+sup-al21-base-loc3-max24
+sup-al21-base-loc6-max24
+sup-c80-base-loc1-max18
+sup-c80-base-loc12-max24
+sup-c80-base-loc24-max24
+sup-c80-base-loc3-max24
+sup-c80-base-loc6-max24

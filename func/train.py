@@ -265,7 +265,7 @@ def compute_accuracy(inputs, targets, return_list=True, ignore_index=-1, return_
 
 def compute_transition_times(sequence):
     transition_times = {}
-    prev_class = sequence[0]
+    prev_class = sequence[0] # current frame recognition class
     for i in range(1, len(sequence)):
         if sequence[i] != prev_class:
             transition_times[sequence[i]] = i
@@ -282,12 +282,12 @@ def compute_rmse_transition_times(targets, predictions, max_duration=18, min_dur
         # print(f"target_seq: {target_seq}")
         # print(f"pred_seq:   {pred_seq}")
 
-        # if target_seq[-1] == 2:
-        #     print("Last element is 2")
         
         target_transitions = compute_transition_times(target_seq)
         pred_transitions = compute_transition_times(pred_seq)
-        
+        # print(f"")
+        # print
+
         # Filter transitions within max_duration
         target_transitions = {c: t for c, t in target_transitions.items() if t <= max_duration}
         pred_transitions = {c: t for c, t in pred_transitions.items() if t <= max_duration}
@@ -546,7 +546,11 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         acc_future_frames       = compute_accuracy(video_frame_preds, video_tgts_preds, return_mean=False)  # potential nans
 
         # Compute Root Mean Squared Error
-        rmse_future_transitions = compute_rmse_transition_times(video_tgts_preds, video_frame_preds, max_duration=18)
+        # Concatenate recognition and predictions
+        tgts = np.concatenate((video_tgts_rec, video_tgts_preds), axis=1)
+        preds = np.concatenate((video_frame_rec, video_frame_preds), axis=1)
+        rmse_future_transitions = compute_rmse_transition_times(tgts, preds, max_duration=18)
+        
 
         # global video mean accuracy
         video_mean_curr_acc        = np.round(np.nanmean(acc_curr_frames), decimals=4).tolist()

@@ -1,8 +1,12 @@
-test_only=true
+test_only=false
 
-model_name=skit
+model_name=lstm
 
-eos_weight=mean
+ctx_pooling=global
+num_ctx_tokens=24
+max_seq_len=24
+
+eos_weight=count
 
 dataset_name=autolaparo21
 pooling_dim=64
