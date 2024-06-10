@@ -2,7 +2,6 @@ test_only=false
 
 model_name=skit
 ctx_pooling=local
-
 num_ctx_tokens=12
 max_seq_len=24
 

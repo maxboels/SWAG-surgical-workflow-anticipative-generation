@@ -153,7 +153,7 @@ class SKITFuture(nn.Module):
         anticip_time: int = 60,
         pooling_dim: int = 64,
         ctx_pooling: str = "global",
-        num_ctx_tokens: int = 20,
+        num_ctx_tokens: int = 24,
         decoder: TargetConf = None,
         fusion_head: TargetConf = None,
         informer: TargetConf = None,
@@ -176,9 +176,9 @@ class SKITFuture(nn.Module):
         self.informer = hydra.utils.instantiate(informer, _recursive_=False)
         self.fusion_head1 = hydra.utils.instantiate(fusion_head, _recursive_=False)
 
-
         self.ctx_pooling = ctx_pooling
         self.num_ctx_tokens = num_ctx_tokens
+
         if self.ctx_pooling == "local":
             self.tokens_pooler = TokenPoolerCumMax(dim=d_model, pooling_dim=pooling_dim, anticip_time=self.anticip_time,
                                                    relu_norm=self.relu_norm)
@@ -230,10 +230,10 @@ class SKITFuture(nn.Module):
         assert enc_out_pooled.size(1) == enc_out_local.size(1), "Global and Local context should have the same size"
 
         # Ablation: change the number of context tokens
-        if not train_mode:
-            enc_out_pooled = enc_out_pooled[:, -self.num_ctx_tokens:] # keep only the last num_ctx_tokens
-            enc_out_local = enc_out_local[:, -self.num_ctx_tokens:] # keep only the last num_ctx_tokens
-            print(f"[SKIT-F] keep only the last num_ctx_tokens: {enc_out_pooled.shape}")
+        # if not train_mode:
+        enc_out_pooled = enc_out_pooled[:, -self.num_ctx_tokens:] # keep only the last num_ctx_tokens
+        enc_out_local = enc_out_local[:, -self.num_ctx_tokens:] # keep only the last num_ctx_tokens
+        print(f"[SKIT-F] keep only the last num_ctx_tokens: {enc_out_pooled.shape}")
 
 
         enc_out = self.fusion_head1(enc_out_pooled, enc_out_local)

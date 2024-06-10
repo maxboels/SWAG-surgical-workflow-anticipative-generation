@@ -1,0 +1,3 @@
+[{"epoch": 0, "num_params": 23278806, "num_tokens": 86304, "acc_cur": 0.3414, "cum_acc_future": 0.2291}],
+[{"epoch": 1, "num_params": 23278806, "num_tokens": 86304, "acc_cur": 0.7809, "cum_acc_future": 0.1723}],
+[{"epoch": 2, "num_params": 23278806, "num_tokens": 86304, "acc_cur": 0.8594, "cum_acc_future": 0.2501}],

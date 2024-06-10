@@ -148,10 +148,10 @@ class Medical_Dataset(Dataset):
             self.attn_window_size = 20
             self.ctx_length = cfg.ctx_length                                        # 3000 or 1500 frames
             
-            self.num_ctx_tokens = int(cfg.ctx_length/cfg.anticip_time)              # Compression Tokens: 100 or 50 tokens for curr and next frames
+            self.max_ctx_tokens = int(cfg.ctx_length/cfg.anticip_time)              # Compression Tokens: 100 or 50 tokens for curr and next frames
             
             self.ctx_pooling = cfg.ctx_pooling
-            # self.num_ctx_tokens = cfg.num_ctx_tokens
+            self.num_ctx_tokens = cfg.num_ctx_tokens
             
             self.anticip_time = cfg.anticip_time   
             self.max_anticip_sec = int(cfg.max_anticip_time * 60)  # 50 or 25 frames per token
@@ -471,7 +471,7 @@ class Medical_Dataset(Dataset):
                 curr_frame_spacing = 1
                 ends = frame_idx + 1
                 starts = max(0, frame_idx - self.num_ctx_tokens + 1)
-                self.num_ctx_tokens = self.attn_window_size
+                # self.num_ctx_tokens = self.attn_window_size
             else:
                 raise ValueError("curr_frames_tgt not found")
             

@@ -4,7 +4,7 @@ model_name=skit
 ctx_pooling=global
 
 num_ctx_tokens=3
-max_seq_len=6
+max_seq_len=24
 
 eos_weight=mean
 
