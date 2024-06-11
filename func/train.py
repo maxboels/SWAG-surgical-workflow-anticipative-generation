@@ -415,7 +415,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     save_all_metrics = False
 
     num_classes = 7
-    plot_video_freq = 1
+    plot_video_freq = 5
     # -----------------select params----------------- #
 
     # init video metrics
@@ -609,17 +609,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     all_videos_results["rmse_future"]   = np.round(np.nanmean(all_videos_rmse_future), decimals=4).tolist()
     # all_videos_results["acc_future"]    = np.round(np.nanmean(all_videos_mean_acc_future_t), decimals=4).tolist()
 
-    # update best_cum_acc
-    if all_videos_results["cum_acc_future"] > best_cum_acc_future:
-        # best_cum_acc_future = all_videos_results["cum_acc_future"]
-        best_epoch = epoch
-        logger.info(f"[TESTING] Best epoch: {best_epoch} | "
-                    f"Best cum_acc_future: {best_cum_acc_future}")
-        if save_all_metrics:
-            np.save(f"all_videos_mean_acc_future_t_ep{epoch}.npy", all_videos_acc_future)
-            np.save(f"all_videos_mean_cum_acc_future_t_ep{epoch}.npy", all_videos_cum_acc_future)
-        
-
+    if epoch % plot_video_freq == 0 or all_videos_results["cum_acc_future"] > best_cum_acc_future:
         # PLOT AND SAVE VIDEO DATA if best
         for video_id in video_ids:
             video_frame_preds           = all_video_frame_preds[video_id]
@@ -639,7 +629,17 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                                 video_mean_curr_acc=video_mean_curr_acc,
                                 video_mean_cum_acc_future=video_mean_cum_acc_future,
                                 )    # don't include the eos class which is assigned to -1
-
+    
+    # update best_cum_acc
+    if all_videos_results["cum_acc_future"] > best_cum_acc_future:
+        # best_cum_acc_future = all_videos_results["cum_acc_future"]
+        best_epoch = epoch
+        logger.info(f"[TESTING] Best epoch: {best_epoch} | "
+                    f"Best cum_acc_future: {best_cum_acc_future}")
+        if save_all_metrics:
+            np.save(f"all_videos_mean_acc_future_t_ep{epoch}.npy", all_videos_acc_future)
+            np.save(f"all_videos_mean_cum_acc_future_t_ep{epoch}.npy", all_videos_cum_acc_future)
+        
             if save_best_video_preds:
                 np.save(f"video_frame_rec_{video_id}_ep{epoch}.npy", video_frame_rec)
                 np.save(f"video_tgts_rec_{video_id}_ep{epoch}.npy", video_tgts_rec)
