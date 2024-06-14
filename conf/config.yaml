@@ -15,11 +15,12 @@ dist_backend: nccl
 
 # run mode
 test_only: false
+
 num_epochs: 20
 finetune_ckpt: best # or best
 
 # dataset
-dataset_name: cholec80
+dataset_name: cholec80 # cholec80 / autolaparo21
 pooling_dim: 64
 train_start: 1      # cholec80: 1-41, 
 train_end: 41       # last not included
@@ -30,7 +31,9 @@ test_end: 81        # last not included
 # 0. Trans-SVNeT (TSVN)
 # TODO:
 
-model_name: supra          # skit / supra / lstm / gru
+model_name: supra          # skit / supra / lstm / gru / naive1 / naive2
+naive1: false
+naive2: false
 
 ctx_pooling: global
 num_ctx_tokens: 20
@@ -185,6 +188,9 @@ model:
     _target_: models.supra.AVTh
     r2a2_model:
       _target_: R2A2.model.r2a2.R2A2
+      naive1: ${naive1}
+      naive2: ${naive2}
+      dataset: ${dataset_name}
       mutli_token: ${mutli_token}
       feature_loss: ${feature_loss}
       decoder_type: ar_causal
@@ -390,7 +396,6 @@ model:
         distil: false
         mix: true
         use_decoder: ${informer.decoder}
-
 
 
 opt:

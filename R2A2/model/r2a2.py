@@ -9,6 +9,8 @@ from . import transformer as tr
 import time
 import math
 from typing import List
+import json
+import numpy as np
 
 def corr_function(pred_values, eos_length=30*60):
     """ correct the predicted values by decrementing the values based on the time to the end of the sequence """
@@ -19,6 +21,35 @@ def corr_function(pred_values, eos_length=30*60):
         corrected_value = pred_values[i] - decrement
         corrected_values.append(corrected_value)
     return corrected_values
+
+
+class GaussianMixtureSamplerWithPosition:
+    def __init__(self, class_freq_positions, lookahead=18):
+        self.class_freq_positions = class_freq_positions
+        self.lookahead = lookahead
+        self.probabilities = self._compute_probabilities()
+    
+    def _compute_probabilities(self):
+        probabilities = {}
+        for cls, freq_list in self.class_freq_positions.items():
+            probabilities[int(cls)] = []
+            for freq_dict in freq_list:
+                total_count = sum(freq_dict.values())
+                probabilities[int(cls)].append({int(k): v / total_count for k, v in freq_dict.items()})
+        return probabilities
+    
+    def sample(self, current_class, num_samples=18):
+        if current_class not in self.probabilities:
+            raise ValueError(f"Class {current_class} not found in class frequencies.")
+        
+        samples = []
+        for j in range(num_samples):
+            possible_values = list(self.probabilities[current_class][j].keys())
+            probabilities = list(self.probabilities[current_class][j].values())
+            samples.append(np.random.choice(possible_values, p=probabilities))
+        
+        return samples
+
 
 class TokenPoolerCumMax(nn.Module):
     def __init__(self, dim: int = 512, pooling_dim: int = 64, anticip_time: int = 60, 
@@ -281,6 +312,9 @@ class R2A2(nn.Module):
     """ Reflective and Anticipative Action Recognition Model (R2A2) """
     def __init__(
         self,
+        naive1: bool = False,
+        naive2: bool = False,
+        dataset: str = "autolaparo21",
         multi_token: bool = False,
         feature_loss: bool = False,
         decoder_type: str = "ar_causal",
@@ -293,7 +327,7 @@ class R2A2(nn.Module):
         past_sampling_rate: int = 10,
         d_model: int = 512,
         num_curr_classes: int = 7,
-        num_next_classes: int = 7,
+        num_next_classes: int = 8,
         max_anticip_time: int = 20,
         anticip_time: int = 60,
         pooling_dim: int = 64,
@@ -308,9 +342,12 @@ class R2A2(nn.Module):
         **kwargs
     ):
         super().__init__()
+        self.naive1 = naive1
+        self.naive2 = naive2
         self.decoder_type = decoder_type
         self.input_dim = input_dim
         self.d_model = d_model
+        self.num_next_classes = num_next_classes
         self.present_length = present_length
         self.past_sampling_rate = past_sampling_rate
         self.max_anticip_time = max_anticip_time        # is in minutes
@@ -318,6 +355,15 @@ class R2A2(nn.Module):
         self.eos_regression = eos_regression
 
         self.multi_token = multi_token
+
+
+        if self.naive2:
+            # load the class frequencies
+            with open(f"/nfs/home/mboels/projects/SuPRA/datasets/{dataset}/naive2_{dataset}_class_freq_positions.json", "r") as f:
+                class_freq_positions = json.load(f)
+            class_freq_positions = {int(k): [{int(inner_k): inner_v for inner_k, inner_v in freq_dict.items()} for freq_dict in v] for k, v in class_freq_positions.items()}
+            print(f"[R2A2] class_freq_positions: {class_freq_positions}")
+            self.sampler_with_position = GaussianMixtureSamplerWithPosition(class_freq_positions, lookahead=18)
 
 
         # other params
@@ -422,9 +468,10 @@ class R2A2(nn.Module):
 
         # Ablation: change the number of context tokens
         if not train_mode:
-            enc_out_pooled = enc_out_pooled[:, -self.num_ctx_tokens:] # keep only the last num_ctx_tokens
-            enc_out_local = enc_out_local[:, -self.num_ctx_tokens:] # keep only the last num_ctx_tokens
-            print(f"[R2A2] keep only the last num_ctx_tokens: {enc_out_pooled.shape}")
+            if self.ctx_pooling == "global":
+                enc_out_pooled = enc_out_pooled[:, -self.num_ctx_tokens:] # keep only the last num_ctx_tokens
+                enc_out_local = enc_out_local[:, -self.num_ctx_tokens:] # keep only the last num_ctx_tokens
+                print(f"[R2A2] keep only the last num_ctx_tokens: {enc_out_pooled.shape}")
 
 
         enc_out = self.fusion_head1(enc_out_pooled, enc_out_local)
@@ -435,10 +482,10 @@ class R2A2(nn.Module):
         outputs["curr_frames"] = curr_frames_cls
 
         # Current EOS Time Prediction
-        if self.eos_regression:
-            curr_time2eos = self.curr_eos_rem_time_reg(enc_out)
-            print(f"[R2A2] curr_time2eos: {curr_time2eos.shape}")
-            outputs["curr_time2eos"] = curr_time2eos
+        # if self.eos_regression:
+        #     curr_time2eos = self.curr_eos_rem_time_reg(enc_out)
+        #     print(f"[R2A2] curr_time2eos: {curr_time2eos.shape}")
+        #     outputs["curr_time2eos"] = curr_time2eos
 
 
         if train_mode:
@@ -462,11 +509,41 @@ class R2A2(nn.Module):
                 feature_loss = self.future_pred_loss(next_action.last_hidden_state[:, :-1], dec_in[:, 1:])
                 outputs["feature_loss"] = feature_loss
         else:
-            # Autoregressive decoding during inference
-            # TODO: TRY WITH FIXED CONTEXT WINDOW TO PREVENT LATENCY DURING INFERENCE
 
             max_num_steps = int((self.max_anticip_time * 60) / self.anticip_time)
             print(f"[R2A2] initial max_num_steps: {max_num_steps}")
+
+            if self.naive1:
+                start_time = time.time() - time.time()
+                iter_times = [start_time] * max_num_steps
+                # if true then use curr_frames_cls and duplicate it for the future predictions
+                # this is a naive approach to predict the future frames
+                outputs["future_frames"] = curr_frames_cls[:, -1:, :].repeat(1, max_num_steps, 1)
+                outputs["iter_times"] = iter_times
+                return outputs
+            elif self.naive2:
+                start_time = time.time() - time.time()
+                iter_times = [start_time] * max_num_steps
+                next_classes = []
+                for batch_i in range(curr_frames_cls.size(0)):
+                    current_class = torch.argmax(curr_frames_cls[batch_i, -1, :])
+                    print(f"[R2A2] current_class: {current_class}")
+                    print(f"[R2A2] current_class (dtype): {current_class.dtype}")
+                    print(f"[R2A2] current_clas (int): {current_class.item()}")
+                    next_classes_i = self.sampler_with_position.sample(current_class.item(), num_samples=max_num_steps)
+                    print(f"[R2A2] next_classes_i: {next_classes_i}")
+                    # convert list to tensor
+                    next_classes_i = torch.tensor(next_classes_i)
+                    print(f"[R2A2] next_classes_i (unsqueezed): {next_classes_i.shape}")
+                    # convert to one-hot where the next class is 1 and the rest are 0 (including the EOS token)
+                    next_classes_i = F.one_hot(next_classes_i, num_classes=self.num_next_classes).float()
+                    print(f"[R2A2] next_classes_i (one-hot): {next_classes_i.shape}")
+                    next_classes.append(next_classes_i)
+                next_classes = torch.stack(next_classes, dim=0) # adds a new dimension for the batch
+                print(f"[R2A2] next_classes: {next_classes.shape}")
+                outputs["future_frames"] = next_classes
+                outputs["iter_times"] = iter_times
+                return outputs
             
             if "curr_time2eos" in outputs:
                 curr_time2eos = outputs["curr_time2eos"]

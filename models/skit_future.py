@@ -193,7 +193,9 @@ class SKITFuture(nn.Module):
 
         self.curr_frames_classifier = nn.Linear(d_model, num_curr_classes)
         self.future_action_classifier = nn.Linear(dec_dim, num_future_classes) # optional +1 for the EOS (end of sequence token)
+        # self.input_queries
         self.input_queries = nn.Parameter(torch.randn(1, self.num_ant_queries, d_model))
+
 
         self.mean_inference_time = 0.0
 

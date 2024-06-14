@@ -41,8 +41,6 @@ class BaseModel(nn.Module):
             raise ValueError(f"model_name {model_cfg.model_name} not supported")
 
 
-
-
         # Projection layer
         self.project_mlp = nn.Sequential()
         if model_cfg.project_dim_for_nce is not None:

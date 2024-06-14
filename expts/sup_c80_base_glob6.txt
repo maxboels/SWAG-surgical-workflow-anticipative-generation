@@ -1,6 +1,9 @@
 test_only=false
 
 model_name=supra
+
+
+
 ctx_pooling=global
 
 num_ctx_tokens=6

@@ -438,7 +438,7 @@ class Medical_Dataset(Dataset):
                 eos_values = self.eos_video_targets[video_idx]
                 print(f"[DATASET] eos_values: {eos_values.shape}")
             # video_next_seg_targets = self.next_segments_class[video_idx]
-            print(f"[DATASET] video_idx: {video_idx} (t={frame_idx}) with shape: {video.size()}")
+            print(f"[DATASET] video_idx: {video_idx} (t={frame_idx}) original: {video.size()}")
             print(f"[DATASET] video targets: {video_targets.size()}")
             # print(f"[DATASET] full video_next_seg_targets: {video_next_seg_targets.size()}")
 
@@ -449,7 +449,7 @@ class Medical_Dataset(Dataset):
             missing = self.ctx_length - video_now.size(1)
             if missing > 0:
                 video_now = torch.cat((self.zeros[:, :missing, :, :], video_now), 1)
-            print(f"[DATASET] video (t={frame_idx}) : {video_now.size()}")
+            print(f"[DATASET] video (t={frame_idx}) with ctx_length: {video_now.size()}")
 
             # ----------------- DATA DICTIONARY -----------------
             data_now = OrderedDict()
@@ -462,6 +462,7 @@ class Medical_Dataset(Dataset):
             
             # CURRENT FRAMES TARGETS
             if self.ctx_pooling == "local":
+                self.num_ctx_tokens = self.max_ctx_tokens # keep all context tokens for training
                 curr_frame_spacing = self.anticip_time
                 ends = frame_idx + 1
                 remainder = frame_idx  % self.anticip_time
@@ -479,14 +480,16 @@ class Medical_Dataset(Dataset):
             curr_frames_tgt = video_targets[starts: ends: curr_frame_spacing].to(self.device)
             print(f"[DATASET] curr_frames_tgt: {curr_frames_tgt.size()}")
             print(f"[DATASET] curr_frames_tgt: {torch.arange(starts, ends, curr_frame_spacing)}")
-            missing = self.num_ctx_tokens - curr_frames_tgt.size(0)
-            print(f"[DATASET] missing: {missing}")
-            if missing > 0:
-                curr_frames_tgt = torch.cat(( -self.ones[:missing].long(), curr_frames_tgt), 0)
-            elif missing < 0:
+            print(f"[DATASET] num_ctx_tokens: {self.num_ctx_tokens}")
+            diff = self.num_ctx_tokens - curr_frames_tgt.size(0)
+            if diff > 0:
+                print(f"[DATASET] missing: {diff}")
+                curr_frames_tgt = torch.cat(( -self.ones[:diff].long(), curr_frames_tgt), 0)
+            elif diff < 0:
+                print(f"[DATASET] excess: {diff}")
                 curr_frames_tgt = curr_frames_tgt[-self.num_ctx_tokens:]
             data_now['curr_frames_tgt'] = curr_frames_tgt.to(self.device).long()
-            print(f"[DATASET] curr_frames_tgt: {curr_frames_tgt.size()}")
+            print(f"[DATASET] curr_frames_tgt (new): {curr_frames_tgt.size()}")
 
             if self.eos_regression:
                 curr_eos_values = eos_values[starts: ends: self.anticip_time]
@@ -518,8 +521,10 @@ class Medical_Dataset(Dataset):
                     if starts < ends:
                         print(f"[DATASET] next_frames_tgt: {torch.arange(starts, ends, self.anticip_time)}")
 
-                    # next_frames_tgt = next_frames_tgt[-self.num_ctx_tokens:]
-                    # print(f"[DATASET] next_frames_tgt (trimmed to num_ctx_tokens): {next_frames_tgt.size()}")
+                    # We keep all the tokens for the training with supra
+                    # if self.ctx_pooling=="local":
+                    #     next_frames_tgt = next_frames_tgt[-self.num_ctx_tokens:]
+                    #     print(f"[DATASET] next_frames_tgt (trimmed to num_ctx_tokens): {next_frames_tgt.size()}")
 
                     if excess_right > 0:
                         # only add 1 eos token since we use anticip window size

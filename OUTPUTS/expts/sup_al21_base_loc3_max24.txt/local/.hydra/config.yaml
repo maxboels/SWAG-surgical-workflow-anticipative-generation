@@ -67,6 +67,7 @@ model:
     _target_: models.supra.AVTh
     r2a2_model:
       _target_: R2A2.model.r2a2.R2A2
+      naive1: ${naive1}
       mutli_token: ${mutli_token}
       feature_loss: ${feature_loss}
       decoder_type: ar_causal
@@ -335,7 +336,7 @@ cwd: ${hydra:runtime.cwd}
 sync_bn: false
 data_parallel: true
 dist_backend: nccl
-test_only: false
+test_only: true
 num_epochs: 20
 finetune_ckpt: best
 dataset_name: autolaparo21
@@ -345,6 +346,7 @@ train_end: 14
 test_start: 15
 test_end: 21
 model_name: supra
+naive1: true
 ctx_pooling: local
 num_ctx_tokens: 3
 max_seq_len: 24

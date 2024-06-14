@@ -1,4 +1,4 @@
-- test_only=False
+- test_only=True
 - model_name=supra
 - ctx_pooling=local
 - num_ctx_tokens=3

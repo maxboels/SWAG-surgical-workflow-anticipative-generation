@@ -396,8 +396,6 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
             best_cum_acc_future=0.4,
             ):
     
-    
-    
     step_size = int(anticip_time/60)
     max_num_steps = int((max_anticip_time * 60) / anticip_time)
     start = int(anticip_time / 60)
