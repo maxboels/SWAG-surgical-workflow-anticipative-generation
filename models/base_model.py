@@ -112,67 +112,12 @@ class BaseModel(nn.Module):
                 module.eps = bn_eps
                 module.momentum = bn_mom
 
-    def forward(self, video, train_mode=True):
-        """
-        Args:
-            video (torch.Tensor, Bx#clipsxCxTxHxW)
-            target_shape: The shape of the target. Some of these layers might
-                be able to use this information.
-        """
-        outputs = {}
-        aux_losses = {}
-        batch_size = video.size(0)
-        feats=[]
-        #print(video.shape)
-        video_lenth = video.size(2)
-        num=0
-        feats = video
-
-        # Mean pool the spatial dimensions
-        feats = torch.mean(feats, [-1, -2])
+    def forward(self, video, current_gt, train_mode=True):
+        # Mean pool the spatial dimensions = squeeze the spatial dims
+        video_feats = torch.mean(video, [-1, -2])
         # Move the time dimension inside: B,C,T -> B,T,C
-        feats = feats.permute((0, 2, 1))
-        # Map the feats to intermediate dimension, that rest of the code
-        # will operate on. Only if the original feature is not already
-        if feats.shape[-1] != self.cfg.intermediate_featdim:
-            assert self.mapper_to_inter is not None, (
-                f'The backbone feat does not match intermediate {feats.shape} '
-                f'and {self.cfg.intermediate_featdim}. Please set '
-                f'model.backbone_dim correctly.')
-            feats = self.mapper_to_inter(feats)
-        feats_past = feats
-
-        #-------------------select model-------------------
-        model = "r2d2_v_ant" # options: skit_x_ant, skit_v_ant, r2d2_x_ant, r2d2_v_ant
-        plot_maxpooled = False
-        #-------------------model-------------------
-
+        video_feats = video_feats.permute((0, 2, 1))
         # Forward Pass
-        outputs = self.model(feats_past, train_mode)
- 
-        if plot_maxpooled:
-            outputs['maxpooled'] = feats
+        outputs = self.model(video_feats, current_gt=current_gt, train_mode=train_mode)
 
-        return outputs
-
-    def _apply_classifier(self, input_feat, outputs_prefix=''):
-        outputs = {}
-        for key in self.num_classes.keys():
-            if key in self.classifiers:
-                outputs[f'{outputs_prefix}logits/{key}'] = input_feat#self.classifiers[
-                #    key](input_feat)
-                #print(f'{outputs_prefix}logits/{key}')
-                #print(outputs[f'{outputs_prefix}logits/{key}'].shape)
-            else:
-                # A mapping must exist, in order to compute this, and must
-                # have been computed already (so ordering in the config
-                # matters)
-                src_key = next(iter(self.classifiers.keys()))
-                src_tensor = outputs[f'{outputs_prefix}logits/{src_key}']
-                mapper = operator.attrgetter(
-                    f'{CLS_MAP_PREFIX}{key}_{src_key}')(self)
-                outputs[f'{outputs_prefix}logits/{key}'] = torch.mm(
-                    src_tensor, mapper)
-                #print(f'{outputs_prefix}logits/{key}')
-                #print(outputs[f'{outputs_prefix}logits/{key}'].shape)
         return outputs

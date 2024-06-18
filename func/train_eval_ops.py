@@ -15,7 +15,7 @@ from R2A2.common.utils import seq_accuracy, seq_accuracy_nans
 
 from datasets.base_video_dataset import FUTURE_PREFIX
 from models.base_model import PAST_LOGITS_PREFIX
-from loss_fn.multidim_xentropy import MultiDimCrossEntropy, MultiDimNN
+from loss_fn.multidim_xentropy import MultiDimCrossEntropy, MultiDimNN, PositionalCrossEntropyLoss
 from loss_fn.distance_loss import DistanceLoss
 import numpy as np
 
@@ -58,6 +58,7 @@ class BasicLossAccuracy(nn.Module):
         #     ])).to(device).float() # removed last weight
 
 
+        # Class weights
         if hasattr(dataset, "curr_class_weights"):
             curr_class_weights = dataset.curr_class_weights.to(device).float()
         else:
@@ -70,19 +71,30 @@ class BasicLossAccuracy(nn.Module):
             next_class_weights = curr_class_weights
         print(f"[LOSS] next class weights: {next_class_weights}")
         
-        self.ce_loss_fn_curr = nn.CrossEntropyLoss(weight=curr_class_weights, reduction='none', ignore_index=-1)
-        self.ce_loss_fn_next = nn.CrossEntropyLoss(weight=next_class_weights, reduction='none', ignore_index=-1)
-        # self.ce_loss_fn_curr_eos = nn.MSELoss(reduction='none')
-        self.ce_loss_fn_future = nn.CrossEntropyLoss(weight=next_class_weights, reduction='none', ignore_index=-1)
+        # Loss functions
+        self.ce_loss_fn_curr    = nn.CrossEntropyLoss(weight=curr_class_weights, reduction='none', ignore_index=-1)
+
+
+        if hasattr(dataset, "sampler_with_position"):
+            sampler_with_position = dataset.sampler_with_position
+            self.ce_loss_fn_next    = PositionalCrossEntropyLoss(weights_sampler=sampler_with_position,
+                                                                reduction='none', ignore_index=-1)
+            self.ce_loss_fn_future  = PositionalCrossEntropyLoss(weights_sampler=sampler_with_position,
+                                                                reduction='none', ignore_index=-1)
+        else:
+            self.ce_loss_fn_next    = nn.CrossEntropyLoss(weight=next_class_weights, reduction='none', ignore_index=-1)
+            self.ce_loss_fn_future  = nn.CrossEntropyLoss(weight=next_class_weights, reduction='none', ignore_index=-1)
+            
+
 
     def forward(self, outputs, targets):
         losses = {}
         accuracies = {}
 
         for key in outputs:
-            print(f"[LOSS] {key} output: {outputs[key].shape}")
+            print(f"[LOSS] {key} output: {outputs[key].shape}") # (B, N, C)
             if key in targets:
-                print(f"[LOSS] {key} target: {targets[key].shape}")
+                print(f"[LOSS] {key} target: {targets[key].shape}") # (B, N)
 
             if key == 'curr_frames':
                 losses[key + '_loss'] = self.ce_loss_fn_curr(outputs[key].permute(0, 2, 1), targets[key]).mean() * self.loss_w_curr
@@ -91,7 +103,7 @@ class BasicLossAccuracy(nn.Module):
                 accuracies[key + '_acc'] = seq_accuracy_nans(outputs[key], targets[key])
                 print(f"[LOSS] {key}_acc: {accuracies[key + '_acc']}")
             
-            elif key == 'next_frames':
+            elif key == 'next_frames': # for the auto-regressive approach
                 losses[key + '_loss'] = self.ce_loss_fn_next(outputs[key].permute(0, 2, 1), targets[key]).mean() * self.loss_w_next
                 print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
 
@@ -102,7 +114,7 @@ class BasicLossAccuracy(nn.Module):
                 losses[key + '_loss'] = outputs[key].mean() * self.loss_w_feats
                 print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
             
-            elif key == "future_frames":
+            elif key == "future_frames": # for the single-pass approach
                 losses[key + '_loss'] = self.ce_loss_fn_future(outputs[key].permute(0, 2, 1), targets[key]).mean() * self.loss_w_next
                 print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
 
@@ -164,7 +176,9 @@ class Basic:
         data = self._basic_preproc(data, train_mode)
 
         # Forward pass
-        outputs = self.model(data['video'], train_mode=train_mode)
+        outputs = self.model(data['video'], 
+                            current_gt=data['curr_frames_tgt'][:, -1], # t=0
+                            train_mode=train_mode)
         
         if train_mode:
             for key in outputs.keys():

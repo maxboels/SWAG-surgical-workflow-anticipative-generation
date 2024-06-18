@@ -7,6 +7,74 @@ import torch.nn as nn
 from common.cluster import KmeansAssigner
 import torch.nn.functional as F
 
+
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class PositionalCrossEntropyLoss(nn.CrossEntropyLoss):
+    """
+    Cross entropy loss with class weights based on the observed class and the prediction index position.
+    """
+
+    def __init__(self, weights_sampler, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.weights_sampler = weights_sampler
+
+    def forward(self, inp, tgt, *args, **kwargs):
+        """
+        Select the class weights from a dict for the CE loss based on the observed class.
+        Args:
+            inp: Predicted logits with shape (B, C, N)
+            tgt: Target tensor with shape (B, N)
+        """
+        batch_size = inp.shape[0]
+        num_classes = inp.shape[1]
+        num_preds = inp.shape[2]
+
+        losses = []
+        
+        for batch_idx in range(batch_size):
+            for pred_idx in range(num_preds):
+                observed_class = tgt[batch_idx, pred_idx].item()
+                print(f"Observed class: {observed_class}")
+                # if the target is -1, ignore this prediction
+                if observed_class == -1:
+                    continue
+                class_probs = self.weights_sampler.return_class_weights(observed_class, pred_idx)
+                print(f"Pred index: {pred_idx}")
+                print(f"Class probs: {class_probs}")
+
+                # Initialize class_weights with small values to avoid log(0)
+                class_weights = torch.zeros(num_classes) + 0.001
+
+                # Update class_weights based on the sampler
+                for key, value in class_probs.items():
+                    class_weights[key] = value
+                
+                # Ensure class_weights are on the same device as input
+                class_weights = class_weights.to(inp.device)
+                print(f"Class weights: {class_weights}")
+                print(f"Class weights shape: {class_weights.shape}")
+                print(f"Class weights device: {class_weights.device}")
+
+                # Compute cross-entropy loss for this specific batch and class index
+                loss = F.cross_entropy(inp[batch_idx:batch_idx+1, :, pred_idx:pred_idx+1],
+                                       tgt[batch_idx:batch_idx+1, pred_idx:pred_idx+1],
+                                       weight=class_weights, 
+                                       *args, **kwargs)
+                losses.append(loss)
+        
+        # TODO: add the class frequencies to the loss
+
+        return torch.stack(losses).mean()
+
+
+
+
+
+
 class MultiDimCrossEntropy(nn.CrossEntropyLoss):
     def forward(self, inp, tgt, *args, **kwargs):
         """

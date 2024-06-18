@@ -142,6 +142,8 @@ class SKITFuture(nn.Module):
     """
     def __init__(
         self,
+        input_tokens: str = "normal", # class_conditioned
+        dataset: str = "cholec80",
         input_dim: int = 768,
         present_length: int = 20,
         past_sampling_rate: int = 10,
@@ -155,12 +157,15 @@ class SKITFuture(nn.Module):
         ctx_pooling: str = "global",
         num_ctx_tokens: int = 24,
         decoder: TargetConf = None,
+        decoder_cc: TargetConf = None,
         fusion_head: TargetConf = None,
         informer: TargetConf = None,
         **kwargs
     ):
         super().__init__()
         # self.decoder_type = decoder_type
+        self.input_tokens = input_tokens
+        self.dataset = dataset
         self.input_dim = input_dim
         self.d_model = d_model
         self.present_length = present_length
@@ -189,11 +194,20 @@ class SKITFuture(nn.Module):
         else:
             raise ValueError(f"Pooling method {self.ctx_pooling} not implemented.")
         
-        self.frame_decoder = hydra.utils.instantiate(decoder, _recursive_=False)
+        if self.input_tokens == "normal":
+            self.frame_decoder = hydra.utils.instantiate(decoder, _recursive_=False)
+        elif self.input_tokens == "class_conditioned":
+            num_classes = 7 + 1
+            root = "/nfs/home/mboels/projects/SuPRA/datasets"
+            path_class_freq = root + f"/{self.dataset}/naive2_{self.dataset}_class_freq_positions.json"
+            with open(path_class_freq, 'r') as f:
+                class_freq_pos = json.load(f)
+            class_freq_pos = {int(k): [{int(inner_k): inner_v for inner_k, inner_v in freq_dict.items()} for freq_dict in v] for k, v in class_freq_pos.items()}
+            self.frame_decoder = hydra.utils.instantiate(decoder_cc, num_classes, class_freq_pos,
+                                                        _recursive_=False)
 
         self.curr_frames_classifier = nn.Linear(d_model, num_curr_classes)
         self.future_action_classifier = nn.Linear(dec_dim, num_future_classes) # optional +1 for the EOS (end of sequence token)
-        # self.input_queries
         self.input_queries = nn.Parameter(torch.randn(1, self.num_ant_queries, d_model))
 
 
@@ -211,7 +225,7 @@ class SKITFuture(nn.Module):
         past_present = torch.cat((past, present), dim=1)
         return past_present
     
-    def forward(self, obs_video, train_mode=True):
+    def forward(self, obs_video, current_gt=None, train_mode=True):
 
         print(f"[SKIT-F] obs_video: {obs_video.shape}")
         outputs = {}
@@ -241,9 +255,9 @@ class SKITFuture(nn.Module):
         enc_out = self.fusion_head1(enc_out_pooled, enc_out_local)
         print(f"[SKIT-F] enc_out_fused: {enc_out.shape}")
 
-        curr_frames_cls = self.curr_frames_classifier(enc_out)
-        print(f"[SKIT-F] curr_frames: {curr_frames_cls.shape}")
-        outputs["curr_frames"] = curr_frames_cls
+        curr_frames_pred = self.curr_frames_classifier(enc_out)
+        print(f"[SKIT-F] curr_frames: {curr_frames_pred.shape}")
+        outputs["curr_frames"] = curr_frames_pred
 
         # start time tracking if inference mode
         iter_times = []
@@ -253,8 +267,15 @@ class SKITFuture(nn.Module):
         input_queries = self.input_queries.expand(enc_out.shape[0], -1, -1)
         print(f"[SKIT-F] input_queries: {input_queries.shape}")
         print(f"[SKIT-F] enc_out: {enc_out.shape}")
-        next_action = self.frame_decoder(input_queries, enc_out)
-        print(f"[SKIT-F] decoder out: {next_action.shape}")
+
+        # decoder: forward(self, tgt, memory, current_pred=None, current_gt=None):
+        if train_mode:
+            next_action = frame_decoder(input_queries, enc_out, current_gt=current_gt)
+        else:
+            next_action = frame_decoder(input_queries, enc_out, current_pred=curr_frames_pred[:, -1, :])
+        print(f"[SKIT-F] next_action: {next_action.shape}")
+
+
         next_frames_cls = self.future_action_classifier(next_action)
         outputs["future_frames"] = next_frames_cls
         print(f"[SKIT-F] next_frames: {next_frames_cls.shape}")

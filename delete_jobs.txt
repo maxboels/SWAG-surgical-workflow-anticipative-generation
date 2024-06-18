@@ -1,3 +1,4 @@
-skit-c80-base-loc3-naive1
-sup-al21-base-loc3
-sup-c80-base-loc12-v2
+skit-c80-base-glob3-naive1
+sup-al21-base-glob12-naive2
+sup-c80-base-glob12-naive2
+skit-al21-base-glob-naive1

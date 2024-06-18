@@ -1,5 +1,7 @@
 test_only=true
 
+save_video_labels_to_npy=false
+
 model_name=supra
 naive1=false
 naive2=true

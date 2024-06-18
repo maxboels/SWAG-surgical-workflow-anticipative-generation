@@ -347,6 +347,7 @@ train_start: 1
 train_end: 40
 test_start: 41
 test_end: 80
+save_video_labels_to_npy: false
 model_name: supra
 naive1: false
 naive2: true

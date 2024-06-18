@@ -26,12 +26,14 @@ train_start: 1      # cholec80: 1-41,
 train_end: 41       # last not included
 test_start: 41      # cholec80: 41-81, 
 test_end: 81        # last not included
+save_video_labels_to_npy: false
 
 # Comparison with other models
 # 0. Trans-SVNeT (TSVN)
 # TODO:
 
 model_name: supra          # skit / supra / lstm / gru / naive1 / naive2
+input_tokens: normal  # class_conditioned / normal
 naive1: false
 naive2: false
 
@@ -74,6 +76,7 @@ eos_class: 7                # last class for EOS
 eos_regression: false
 eos_classification: true
 eos_weight: count     # count or mean
+class_weight: frequency # frequency or positional: n-grames based on observed class and future prediction index.
 
 # compression
 ctx_length: 1440            # 1500s = 25min, 3000s = 50min (avg video is 34min)
@@ -271,6 +274,8 @@ model:
         use_decoder: ${informer.decoder}
   skit:
     _target_: models.skit_future.SKITFuture
+    input_tokens: ${input_tokens}
+    dataset: ${dataset_name}
     input_dim: 768
     present_length: 20
     past_sampling_rate: 10
@@ -288,6 +293,12 @@ model:
       dim: ${informer.d_model}
     decoder:
       _target_: models.transformers.TransformerDecoder
+      input_dim: ${informer.d_model}
+      hidden_dim: ${n_embd}
+      n_heads: ${n_head}
+      n_layers: ${n_layer}
+    decoder_cc:
+      _target_: models.transformers.ClassConditionedTransformerDecoder
       input_dim: ${informer.d_model}
       hidden_dim: ${n_embd}
       n_heads: ${n_head}

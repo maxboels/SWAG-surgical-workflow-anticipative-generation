@@ -57,6 +57,42 @@ def video_end_regression_values(video_length, eos_length=20*60):
     return values
 
 
+
+
+class GaussianMixtureSamplerWithPosition:
+    def __init__(self, class_freq_positions, lookahead=18):
+        self.class_freq_positions = class_freq_positions
+        self.lookahead = lookahead
+        self.probabilities = self._compute_probabilities()
+    
+    def _compute_probabilities(self):
+        probabilities = {}
+        for cls, freq_list in self.class_freq_positions.items():
+            probabilities[int(cls)] = []
+            for freq_dict in freq_list:
+                total_count = sum(freq_dict.values())
+                probabilities[int(cls)].append({int(k): v / total_count for k, v in freq_dict.items()})
+        return probabilities
+    
+    def return_class_weights(self, current_class, position):
+        if current_class not in self.probabilities:
+            raise ValueError(f"Class {current_class} not found in class frequencies.")
+        
+        return self.probabilities[current_class][position]
+    
+    def sample(self, current_class, num_samples=18):
+        if current_class not in self.probabilities:
+            raise ValueError(f"Class {current_class} not found in class frequencies.")
+        
+        samples = []
+        for j in range(num_samples):
+            possible_values = list(self.probabilities[current_class][j].keys())
+            probabilities = list(self.probabilities[current_class][j].values())
+            samples.append(np.random.choice(possible_values, p=probabilities))
+        
+        return samples
+
+
 class SelectDataset():
     def __init__(self, dataset_name="cholec80", logger=None):
         self.dataset_name = dataset_name
@@ -140,6 +176,8 @@ class Medical_Dataset(Dataset):
             self.device = device
             self.logger = logger
             # self.project_path = "/nfs/home/mboels/projects/SKiT_video_augmentation"
+            self.dataset_local_path = f'/nfs/home/mboels/projects/SuPRA/datasets/{dataset_name}/'
+            self.save_video_labels_to_npy = cfg.save_video_labels_to_npy
             #-----------------select arguments-----------------
             self.model_name = cfg.model_name
             self.debug = False
@@ -173,6 +211,7 @@ class Medical_Dataset(Dataset):
             self.future_segmts_tgt = False
 
             self.eos_weight = cfg.eos_weight # "count" or "mean"
+            self.class_weight = cfg.class_weight # "positional" or "uniform"
             
             # observed targets
             if self.model_name in ["supra", "lstm"]:
@@ -281,10 +320,13 @@ class Medical_Dataset(Dataset):
             train_class_count_1fps = {}
             
             for video_indx in video_indices:
+
+                # VIDEO DATAFRAME
                 df_video = self.df_split[self.df_split.video_idx==video_indx]
-                # Sampling dataframe at fps
-                df_video = df_video[df_video.frame%self.frames_fps==0].reset_index(drop = True)
-                self.logger.info(f"[DATASET] Sampling video_idx: {video_indx} at {self.frames_fps} fps to {len(df_video)} frames")
+
+                # SAMPLE VIDEO DATAFRAME AT 1FPS (25fps to 1fps)
+                df_video = df_video[df_video.frame % self.frames_fps==0].reset_index(drop = True)
+                self.logger.info(f"[DATASET] Sampled video_idx: {video_indx} at {self.frames_fps} fps to {len(df_video)} frames")
                 video_length = len(df_video)
                 video_stats['video_lengths'].append(video_length)
                 if video_length==0:
@@ -292,6 +334,11 @@ class Medical_Dataset(Dataset):
                     continue
                 path_list = df_video.image_path.tolist()
                 label_list = df_video['class'].tolist()
+
+                if self.save_video_labels_to_npy:
+                    np.save(self.dataset_local_path + 'labels' + '/' + f"video_{video_indx}_labels.npy", label_list)
+                    self.logger.info(f"[DATASET] Saved labels for video {video_indx}")
+
 
                 #-----------------mb added-----------------
                 if self.eos_regression:
@@ -326,6 +373,7 @@ class Medical_Dataset(Dataset):
                     video = torch.from_numpy(video).float().to(self.device)
                     self.videos.append(video)
 
+            # End of video loop
             self.avg_video_length = np.mean(video_stats['video_lengths']) / 60
             self.logger.info(f"[DATASET] number of {self.train_mode} videos: {len(self.videos)}")
             self.logger.info(f"[DATASET] avg video length: {np.mean(video_stats['video_lengths']) / 60:.2f} minutes")
@@ -353,26 +401,40 @@ class Medical_Dataset(Dataset):
                 self.curr_class_weights = self._compute_class_weights(classes_counts_dict)
                 self.logger.info(f"[DATASET] curr_class_weights: {self.curr_class_weights}")
 
-                if self.eos_class == 7 and self.eos_classification:
-                    if self.eos_weight=="count":
-                        self.logger.info(f"[DATASET] eos_weight: {self.eos_weight}")
-                        num_eos_vals = compute_num_eos_values(
-                            anticip_time=self.anticip_time,
-                            full_anticip_time_minutes=18,
-                            auto_regressive=self.auto_regressive,
-                            num_videos=len(video_indices)
-                        )
-                        self.logger.info(f"[DATASET] num_eos_vals: {num_eos_vals}")
-                    elif self.eos_weight=="mean":
-                        num_eos_vals = np.mean(list(classes_counts_dict.values()))
-                        self.logger.info(f"[DATASET] num_eos_vals: {num_eos_vals}")
-                    else:
-                        raise ValueError("eos_weight not found")
+                if self.class_weight=="positional":
+                    # Class weights for an observed class and different future predicted index positions
                     
-                    classes_counts_dict[self.num_classes] = int(num_eos_vals)
-                    self.logger.info(f"[DATASET] classes_counts_dict: {classes_counts_dict}")
-                    self.next_class_weights = self._compute_class_weights(classes_counts_dict)
-                    self.logger.info(f"[DATASET] next_class_weights: {self.next_class_weights}")
+                    path_class_freq = f"/nfs/home/mboels/projects/SuPRA/datasets/{self.dataset_name}/naive2_{self.dataset_name}_class_freq_positions.json"
+                    # load from json file
+                    with open(path_class_freq, 'r') as f:
+                        class_freq_positions = json.load(f)
+                    class_freq_positions = {int(k): [{int(inner_k): inner_v for inner_k, inner_v in freq_dict.items()} for freq_dict in v] for k, v in class_freq_positions.items()}
+                    self.logger.info(f"[DATASET] class_freq_positions: {class_freq_positions}")
+                    # convert the probabilities to class weights
+                    self.sampler_with_position = GaussianMixtureSamplerWithPosition(class_freq_positions, lookahead=18)
+                    
+                    # self.logger.info(f"[DATASET] next_class_weights: {self.next_class_weights}")
+                else:
+                    if self.eos_class == 7 and self.eos_classification:
+                        if self.eos_weight=="count":
+                            self.logger.info(f"[DATASET] eos_weight: {self.eos_weight}")
+                            num_eos_vals = compute_num_eos_values(
+                                anticip_time=self.anticip_time,
+                                full_anticip_time_minutes=18,
+                                auto_regressive=self.auto_regressive,
+                                num_videos=len(video_indices)
+                            )
+                            self.logger.info(f"[DATASET] num_eos_vals: {num_eos_vals}")
+                        elif self.eos_weight=="mean":
+                            num_eos_vals = np.mean(list(classes_counts_dict.values()))
+                            self.logger.info(f"[DATASET] num_eos_vals: {num_eos_vals}")
+                        else:
+                            raise ValueError("eos_weight not found")
+                        
+                        classes_counts_dict[self.num_classes] = int(num_eos_vals)
+                        self.logger.info(f"[DATASET] classes_counts_dict: {classes_counts_dict}")
+                        self.next_class_weights = self._compute_class_weights(classes_counts_dict)
+                        self.logger.info(f"[DATASET] next_class_weights: {self.next_class_weights}")
             
         def _compute_class_weights(self, class_counts, normalize=False):
             total_samples = sum(class_counts.values())

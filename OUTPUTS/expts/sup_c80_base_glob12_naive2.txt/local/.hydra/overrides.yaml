@@ -1,4 +1,5 @@
 - test_only=True
+- save_video_labels_to_npy=False
 - model_name=supra
 - naive1=False
 - naive2=True
