@@ -170,7 +170,8 @@ def train_one_epoch(
                              lr_scheduler, cur_epoch)
             last_saved_time = time_now
 
-        data, _, losses, accuracies = train_eval_op(data, train_mode=True)
+        data, _, losses, accuracies = train_eval_op(data,
+                                                    train_mode=True)
 
         remaining_time = (time.time() - start_time) / (i + 1) * (len(dataloader_train) - i - 1) / 60.0
 
@@ -475,7 +476,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
 
             with torch.no_grad():
                         
-                outputs = model(data['video'], train_mode=False)
+                outputs = model(data['video'], data['curr_frames_tgt'], train_mode=False)
 
                 # FRAME LEVEL STATE RECOGNITION
                 # (there is no autoregressive prediction here)
@@ -601,20 +602,20 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     all_videos_mean_cum_acc_future_t   = np.round(np.nanmean(all_videos_cum_acc_future, axis=0), decimals=4).tolist()
 
     # concat the current accuracy and future accuracies
-    acc_curr        = np.round(np.nanmean(all_videos_mean_acc_curr), decimals=4).tolist()
-    acc_future_t    = np.round(np.nanmean(all_videos_mean_acc_future_t), decimals=4).tolist()
-    acc_curr_and_future_t =  np.round(np.nanmean([acc_curr] + all_videos_mean_acc_future_t), decimals=4).tolist()
+    acc_curr                = np.round(np.nanmean(all_videos_mean_acc_curr), decimals=4).tolist()
+    acc_future              = np.round(np.nanmean(all_videos_mean_acc_future_t), decimals=4).tolist()
+    acc_curr_and_future_t   = np.round(np.nanmean([acc_curr] + all_videos_mean_acc_future_t), decimals=4).tolist()
     
     # Epoch level results
     all_videos_results["epoch"]             = epoch
     all_videos_results["acc_curr"]          = acc_curr
-    all_videos_results["acc_future_t"]      = acc_future_t
-    all_videos_results["acc_curr_future_t"] = acc_curr_and_future_t
-    # all_videos_results["acc_curr_future_t"]  = np.round(np.nanmean(all_videos_mean_cum_acc_future_t), decimals=4).tolist()
+    all_videos_results["acc_future"]        = acc_future
+    all_videos_results["acc_curr_future"]   = acc_curr_and_future_t
+    # all_videos_results["acc_curr_future"]  = np.round(np.nanmean(all_videos_mean_cum_acc_future_t), decimals=4).tolist()
     all_videos_results["rmse_future"]       = np.round(np.nanmean(all_videos_rmse_future), decimals=4).tolist()
-    # all_videos_results["acc_future"]      = np.round(np.nanmean(all_videos_mean_acc_future_t), decimals=4).tolist()
+    all_videos_results["acc_future_t"]      = all_videos_mean_acc_future_t
 
-    if epoch % plot_video_freq == 0 or all_videos_results["acc_curr_future_t"] > best_cum_acc_future:
+    if epoch % plot_video_freq == 0 or all_videos_results["acc_curr_future"] > best_cum_acc_future:
         # PLOT AND SAVE VIDEO DATA if best
         for video_id in video_ids:
             video_frame_preds           = all_video_frame_preds[video_id]
@@ -636,11 +637,11 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                                 )    # don't include the eos class which is assigned to -1
     
     # update best_cum_acc
-    if all_videos_results["acc_curr_future_t"] > best_cum_acc_future:
-        # best_cum_acc_future = all_videos_results["acc_curr_future_t"]
+    if all_videos_results["acc_curr_future"] > best_cum_acc_future:
+        # best_cum_acc_future = all_videos_results["acc_curr_future"]
         best_epoch = epoch
         logger.info(f"[TESTING] Best epoch: {best_epoch} | "
-                    f"Best acc_curr_future_t: {best_cum_acc_future}")
+                    f"Best acc_curr_future: {best_cum_acc_future}")
         if save_all_metrics:
             np.save(f"all_videos_mean_acc_future_t_ep{epoch}.npy", all_videos_acc_future)
             np.save(f"all_videos_mean_cum_acc_future_t_ep{epoch}.npy", all_videos_cum_acc_future)
@@ -654,7 +655,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
 
 
     tb_writer.add_scalar(f'test/acc_curr', all_videos_results["acc_curr"], step_now)
-    tb_writer.add_scalar(f'test/acc_curr_future_t', all_videos_results["acc_curr_future_t"], step_now)
+    tb_writer.add_scalar(f'test/acc_curr_future', all_videos_results["acc_curr_future"], step_now)
 
     # compute the mean accuracy through all the videos and keep the time dimension
     all_videos_results["cum_acc_future_t"]      = all_videos_mean_cum_acc_future_t
@@ -667,7 +668,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     
 
     # PLOTTING
-    if all_videos_results["acc_curr_future_t"] > best_cum_acc_future:
+    if all_videos_results["acc_curr_future"] > best_cum_acc_future:
         # plot the mean accuracy over the videos
         y_values = {"Cholec80": all_videos_mean_acc_future_t}
         plot_figure(x_values, y_values,
@@ -699,7 +700,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
 
     accuracies = {
         "acc_cur": all_videos_results["acc_curr"],
-        "acc_curr_future_t": all_videos_results["acc_curr_future_t"]
+        "acc_curr_future": all_videos_results["acc_curr_future"]
     }
 
     return accuracies, step_now+1
@@ -1296,14 +1297,14 @@ def main(cfg):
                 f.write(',\n')
 
         else:
-            accuracies["acc_curr_future_t"] = 0
+            accuracies["acc_curr_future"] = 0
         
         # Store the best model
-        if accuracies["acc_curr_future_t"] >= best_cum_acc_future:
+        if accuracies["acc_curr_future"] >= best_cum_acc_future:
             store_checkpoint(f'checkpoint_best.pth', model, optimizer, lr_scheduler, epoch + 1)
-            best_cum_acc_future = accuracies["acc_curr_future_t"]
+            best_cum_acc_future = accuracies["acc_curr_future"]
         if isinstance(lr_scheduler.base_scheduler, scheduler.ReduceLROnPlateau):
-            lr_scheduler.step(accuracies["acc_curr_future_t"])
+            lr_scheduler.step(accuracies["acc_curr_future"])
 
         # reset all meters in the metric logger
         for log in stat_loggers:

@@ -40,6 +40,7 @@ naive2: false
 ctx_pooling: global
 num_ctx_tokens: 20
 max_seq_len: 18
+num_ant_queries: 18 # int(self.max_anticip_time * 60 / self.anticip_time)
 
 # 1. SKiT
 # base:     512  /  x   / x     /   x     /   x     /   true  / KeyRecorder
@@ -202,7 +203,7 @@ model:
       max_seq_len: ${max_seq_len}
       input_dim: 768
       present_length: 20
-      num_ant_queries: 6
+      num_ant_queries: ${num_ant_queries}
       past_sampling_rate: 10
       d_model: ${informer.d_model}
       num_curr_classes: ${num_curr_classes} # possible obseved classes
@@ -299,6 +300,7 @@ model:
       n_layers: ${n_layer}
     decoder_cc:
       _target_: models.transformers.ClassConditionedTransformerDecoder
+      num_queries: ${num_ant_queries}
       input_dim: ${informer.d_model}
       hidden_dim: ${n_embd}
       n_heads: ${n_head}

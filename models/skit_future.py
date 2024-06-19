@@ -10,6 +10,8 @@ import hydra
 from hydra.types import TargetConf
 from omegaconf import DictConfig, OmegaConf
 
+import json
+
 import time
         
 class KeyRecorder(nn.Module):
@@ -203,15 +205,19 @@ class SKITFuture(nn.Module):
             with open(path_class_freq, 'r') as f:
                 class_freq_pos = json.load(f)
             class_freq_pos = {int(k): [{int(inner_k): inner_v for inner_k, inner_v in freq_dict.items()} for freq_dict in v] for k, v in class_freq_pos.items()}
-            self.frame_decoder = hydra.utils.instantiate(decoder_cc, num_classes, class_freq_pos,
+            self.frame_decoder = hydra.utils.instantiate(decoder_cc,
+                                                        num_classes=num_classes, 
+                                                        class_freq_positions=class_freq_pos, 
                                                         _recursive_=False)
 
         self.curr_frames_classifier = nn.Linear(d_model, num_curr_classes)
         self.future_action_classifier = nn.Linear(dec_dim, num_future_classes) # optional +1 for the EOS (end of sequence token)
-        self.input_queries = nn.Parameter(torch.randn(1, self.num_ant_queries, d_model))
+        
+        # Initialize input queries
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.input_queries = nn.Parameter(torch.randn(self.num_ant_queries, d_model).to(device))
+        nn.init.xavier_uniform_(self.input_queries)
 
-
-        self.mean_inference_time = 0.0
 
     def encoder(self, obs_video):
         """Follow the skit implementation."""
@@ -265,16 +271,14 @@ class SKITFuture(nn.Module):
             start_time = time.time()
 
         input_queries = self.input_queries.expand(enc_out.shape[0], -1, -1)
-        print(f"[SKIT-F] input_queries: {input_queries.shape}")
-        print(f"[SKIT-F] enc_out: {enc_out.shape}")
+        print(f"[SKIT-F] input_queries (nn.Parameter with xavier init): {input_queries.shape}")
 
         # decoder: forward(self, tgt, memory, current_pred=None, current_gt=None):
         if train_mode:
-            next_action = frame_decoder(input_queries, enc_out, current_gt=current_gt)
+            next_action = self.frame_decoder(input_queries, enc_out, current_gt=current_gt)
         else:
-            next_action = frame_decoder(input_queries, enc_out, current_pred=curr_frames_pred[:, -1, :])
+            next_action = self.frame_decoder(input_queries, enc_out, current_pred=curr_frames_pred[:, -1, :])
         print(f"[SKIT-F] next_action: {next_action.shape}")
-
 
         next_frames_cls = self.future_action_classifier(next_action)
         outputs["future_frames"] = next_frames_cls

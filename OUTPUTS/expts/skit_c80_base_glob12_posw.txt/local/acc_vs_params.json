@@ -17,3 +17,4 @@
 [{"epoch": 16, "num_params": 23278806, "num_tokens": 86304, "acc_cur": 0.8495, "acc_curr_future_t": 0.5434}],
 [{"epoch": 17, "num_params": 23278806, "num_tokens": 86304, "acc_cur": 0.8509, "acc_curr_future_t": 0.5493}],
 [{"epoch": 18, "num_params": 23278806, "num_tokens": 86304, "acc_cur": 0.8499, "acc_curr_future_t": 0.5469}],
+[{"epoch": 19, "num_params": 23278806, "num_tokens": 86304, "acc_cur": 0.8503, "acc_curr_future_t": 0.5472}],

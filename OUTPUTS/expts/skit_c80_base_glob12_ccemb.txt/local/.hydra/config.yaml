@@ -350,12 +350,12 @@ dist_backend: nccl
 test_only: false
 num_epochs: 20
 finetune_ckpt: best
-dataset_name: autolaparo21
+dataset_name: cholec80
 pooling_dim: 64
 train_start: 1
-train_end: 14
-test_start: 15
-test_end: 21
+train_end: 40
+test_start: 41
+test_end: 80
 save_video_labels_to_npy: false
 model_name: skit
 input_tokens: class_conditioned
@@ -370,7 +370,7 @@ informer:
   d_model: 512
 vocab_size: 1000
 n_embd: 512
-n_layer: 4
+n_layer: 2
 n_head: 8
 fixed_ctx_length: true
 mutli_token: false

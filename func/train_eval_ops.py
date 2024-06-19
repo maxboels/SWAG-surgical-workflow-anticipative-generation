@@ -147,38 +147,19 @@ class Basic:
         self.cls_loss_acc_fn = hydra.utils.instantiate(cls_loss_acc_fn,
                                                        dataset, device)
 
-    def _basic_preproc(self, data, train_mode):
-        self.train_mode = train_mode
-        if not isinstance(data, dict):
-            video, target, heatmap_target = data
-            # Make a dict so that later code can use it
-            data = {}
-            data['video'] = video
-            data['curr_frames_tgt'] = target
-            data['idx'] = -torch.ones_like(target)
-            data['heatmap'] = heatmap_target
+    def __call__(
+            self,
+            data: dict,
+            train_mode: bool = True):
+        targets = {}
+
         if train_mode:
             self.model.train()
         else:
             self.model.eval()
-        return data
 
-    def __call__(
-            self,
-            data: Union[Dict[str, torch.Tensor],  # If dict
-                        Tuple[torch.Tensor, torch.Tensor]],  # vid, target
-            train_mode: bool = True):
-        """
-        Args:
-            data (dict): Dictionary of all the data from the data loader
-        """
-        targets = {}
-        data = self._basic_preproc(data, train_mode)
-
-        # Forward pass
-        outputs = self.model(data['video'], 
-                            current_gt=data['curr_frames_tgt'][:, -1], # t=0
-                            train_mode=train_mode)
+        # Forward pass (training only)
+        outputs = self.model(data['video'], data['curr_frames_tgt'], train_mode)
         
         if train_mode:
             for key in outputs.keys():

@@ -12,7 +12,7 @@ class TransformerDecoder(nn.Module):
         self.transformer_decoder = nn.TransformerDecoder(decoder_layer, num_layers=n_layers)
         self.output_layer = nn.Linear(hidden_dim, hidden_dim)  # Output layer to map to future embeddings
 
-    def forward(self, queries, memory, current_pred=None, current_gt=None):
+    def forward(self, queries, memory):
         tgt_embedded = self.embedding(queries) + self.positional_encoding[:, :queries.size(1), :]
         memory_embedded = self.embedding(memory) + self.positional_encoding[:, :memory.size(1), :]
 
@@ -24,7 +24,11 @@ class TransformerDecoder(nn.Module):
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+import torch
+import torch.nn as nn
 import numpy as np
+import json
 
 class GaussianMixtureSamplerWithPosition:
     def __init__(self, class_freq_positions, lookahead=18):
@@ -44,37 +48,34 @@ class GaussianMixtureSamplerWithPosition:
     def class_probs(self, current_class, position):
         if current_class not in self.probabilities:
             raise ValueError(f"Class {current_class} not found in class frequencies.")
+        
         return self.probabilities[current_class][position]
     
     def sample_class(self, current_class, num_samples=18):
         if current_class not in self.probabilities:
             raise ValueError(f"Class {current_class} not found in class frequencies.")
+        
         samples = []
         for j in range(num_samples):
             possible_values = list(self.probabilities[current_class][j].keys())
             probabilities = list(self.probabilities[current_class][j].values())
             samples.append(np.random.choice(possible_values, p=probabilities))
+        
         return samples
 
 class PositionalEncoding(nn.Module):
-    def __init__(self, d_model):
+    def __init__(self, d_model, max_len=1000):
         super(PositionalEncoding, self).__init__()
-        self.d_model = d_model
-
-    def forward(self, x):
-        seq_len = x.size(1)
-        self.pe = self._compute_pe(seq_len)
-        self.pe = self.pe.to(x.device)  # move self.pe to the same device as x
-        return x + self.pe[:seq_len, :]
-
-    def _compute_pe(self, length):
-        pe = torch.zeros(length, self.d_model)
-        position = torch.arange(0, length, dtype=torch.float).unsqueeze(1)
-        div_term = torch.exp(torch.arange(0, self.d_model, 2).float() * (-torch.log(torch.tensor(10000.0)) / self.d_model))
+        pe = torch.zeros(max_len, d_model)
+        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-torch.log(torch.tensor(10000.0)) / d_model))
         pe[:, 0::2] = torch.sin(position * div_term)
         pe[:, 1::2] = torch.cos(position * div_term)
-        pe = pe.unsqueeze(0)  # (1, length, d_model)
-        return pe
+        pe = pe.unsqueeze(0).transpose(0, 1)
+        self.register_buffer('pe', pe)
+
+    def forward(self, x):
+        return x + self.pe[:x.size(0), :]
 
 
 class ClassConditionedTransformerDecoder(nn.Module):
@@ -83,69 +84,69 @@ class ClassConditionedTransformerDecoder(nn.Module):
 
         self.num_classes = num_classes
 
-        self.norm_layer = nn.LayerNorm(input_dim)  # Normalization layer before linear projection
         self.embedding = nn.Linear(input_dim, hidden_dim)
         self.class_projection_layer = nn.Linear(num_classes, hidden_dim)
-        self.positional_encoding = PositionalEncoding(hidden_dim)
-
+        # self.positional_encoding = nn.Parameter(torch.zeros(1, 1000, hidden_dim))  # Assuming max sequence length of 1000
+        # self.positional_encoding = nn.Embedding(1000, hidden_dim)
+        self.positional_encoding = PositionalEncoding(embedding_dim, max_len)
+        self.query_embeddings = nn.Embedding(num_queries, embedding_dim)
+        nn.init.xavier_uniform_(self.query_embeddings.weight)
         decoder_layer = nn.TransformerDecoderLayer(d_model=hidden_dim, nhead=n_heads, dim_feedforward=dim_feedforward, dropout=dropout)
         self.transformer_decoder = nn.TransformerDecoder(decoder_layer, num_layers=n_layers)
-        self.output_layer = nn.Linear(hidden_dim, hidden_dim)
+        self.output_layer = nn.Linear(hidden_dim, hidden_dim)  # Output layer to map to future embeddings
         self.sampler = GaussianMixtureSamplerWithPosition(class_freq_positions, lookahead=18)
 
+        # Check if a GPU is available and if not, use a CPU
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    def forward(self, query_embeddings, memory, current_pred=None, current_gt=None):
-        batch_size, seq_len, _ = query_embeddings.size()
-        print(f"[ClassConditionedTransformerDecoder] query_embeddings: {query_embeddings.shape}")
+    def forward(self, queries, memory, current_pred=None, current_gt=None):
+        batch_size, seq_len, _ = queries.size()
 
-        # Positional encoding for query_embeddings
+        # Embedding for queries with dimension (num_queries, hidden_dim)
+        query_embeddings = self.query_embedding(queries)
         query_embeddings = self.positional_encoding(query_embeddings)
-        print(f"[ClassConditionedTransformerDecoder] query_embeddings (with PE): {query_embeddings.shape}")
+        
+        # Adding positional encoding to the input embeddings
+        tgt_embedded = self.embedding(queries) + self.positional_encoding[:, :seq_len, :]
+        memory_embedded = self.embedding(memory) + self.positional_encoding[:, :memory.size(1), :]
+        print(f"[Decoder CC] tgt_embedded: {tgt_embedded.size()}")
+        print(f"[Decoder CC] memory_embedded: {memory_embedded.size()}")
 
-        # Embedding for memory 
-        memory_embedded = self.embedding(memory) + self.positional_encoding(memory) # NOTE: no need for embedding layer
-        print(f"[ClassConditionedTransformerDecoder] memory_embedded (with LN+PE): {memory_embedded.shape}")
+        # Init combined embeddings with size (seq_len, batch_size, hidden_dim)
+        combined_embeddings = torch.zeros_like(tgt_embedded).to(self.device)
+        print(f"[Decoder CC] combined_embeddings (init): {combined_embeddings.size()}")
 
-        # Initialize combined embeddings
-        combined_embeddings = query_embeddings.clone().to(self.device)
-        print(f"[ClassConditionedTransformerDecoder] combined_embeddings (cloned query_embeddings): {combined_embeddings.shape}")
-
-        # Initialize future class probabilities
-        future_class_probs = torch.zeros(batch_size, seq_len, self.num_classes, device=self.device) + 1e-6
-        print(f"[ClassConditionedTransformerDecoder] future_class_probs (init 1e-6): {future_class_probs.shape}")
+        # Init class probs vector with size (seq_len, num_classes)
+        future_class_probs = torch.zeros(batch_size, seq_len, self.num_classes) + 1e-6
+        future_class_probs = future_class_probs.to(self.device)
+        print(f"[Decoder CC] future_class_probs (init): {future_class_probs.size()}")
 
         for i in range(batch_size):
             for j in range(seq_len):
                 if current_gt is not None:
-                    current_class = current_gt[i, -1].item()
                     # Use ground truth class for teacher forcing
+                    current_class = current_gt[i].item()
                     class_probs = self.sampler.class_probs(current_class, j)
                     for k, v in class_probs.items():
                         future_class_probs[i, j, k] = v
                 elif current_pred is not None:
                     # Use predicted class for inference
+                    print(f"[Decoder CC] current_pred: {current_pred.size()}")
                     current_class = torch.argmax(F.softmax(current_pred[i], dim=-1), dim=-1).item()
                     class_probs = self.sampler.class_probs(current_class, j)
                     for k, v in class_probs.items():
                         future_class_probs[i, j, k] = v
                 else:
                     raise ValueError("Either current_pred or current_gt must be provided.")
-        
-        print(f"[ClassConditionedTransformerDecoder] future_class_probs: {future_class_probs.shape}")
-        print(f"[ClassConditionedTransformerDecoder] future_class_probs: {future_class_probs}")
-
-        # TODO: try to Normalize future_class_probs before passing to linear layer
-        # future_class_probs = self.norm_layer(future_class_probs)
-
-        # Compute class-conditioned embeddings
+                
+        # Compute class conditioned embeddings in batch
         class_conditioned_embedding = self.class_projection_layer(future_class_probs)
-        print(f"[ClassConditionedTransformerDecoder] class_conditioned_embedding (linear): {class_conditioned_embedding.shape}")
-        combined_embeddings += class_conditioned_embedding
-        print(f"[ClassConditionedTransformerDecoder] combined_embeddings (addition): {combined_embeddings.shape}")
+        combined_embeddings = tgt_embedded + class_conditioned_embedding
+        print(f"[Decoder CC] combined_embeddings: {combined_embeddings.size()}")
 
-        # Transformer decoder
         output = self.transformer_decoder(combined_embeddings.transpose(0, 1), memory_embedded.transpose(0, 1))
+        print(f"[Decoder CC] output (transformer): {output.size()}")
         output = self.output_layer(output.transpose(0, 1))
+        print(f"[Decoder CC] output (linear): {output.size()}")
 
         return output

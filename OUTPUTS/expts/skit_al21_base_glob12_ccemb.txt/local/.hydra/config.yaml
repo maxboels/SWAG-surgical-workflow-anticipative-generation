@@ -78,7 +78,7 @@ model:
       max_seq_len: ${max_seq_len}
       input_dim: 768
       present_length: 20
-      num_ant_queries: 6
+      num_ant_queries: ${num_ant_queries}
       past_sampling_rate: 10
       d_model: ${informer.d_model}
       num_curr_classes: ${num_curr_classes}
@@ -175,6 +175,7 @@ model:
       n_layers: ${n_layer}
     decoder_cc:
       _target_: models.transformers.ClassConditionedTransformerDecoder
+      num_queries: ${num_ant_queries}
       input_dim: ${informer.d_model}
       hidden_dim: ${n_embd}
       n_heads: ${n_head}
@@ -363,6 +364,7 @@ naive2: false
 ctx_pooling: global
 num_ctx_tokens: 12
 max_seq_len: 24
+num_ant_queries: 18
 informer:
   decoder: true
   d_model: 512
