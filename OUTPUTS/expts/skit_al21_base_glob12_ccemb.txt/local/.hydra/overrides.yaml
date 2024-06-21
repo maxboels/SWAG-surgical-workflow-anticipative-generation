@@ -1,4 +1,4 @@
-- test_only=False
+- test_only=True
 - model_name=skit
 - ctx_pooling=global
 - num_ctx_tokens=12

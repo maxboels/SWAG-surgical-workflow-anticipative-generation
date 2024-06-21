@@ -78,7 +78,7 @@ model:
       max_seq_len: ${max_seq_len}
       input_dim: 768
       present_length: 20
-      num_ant_queries: 6
+      num_ant_queries: ${num_ant_queries}
       past_sampling_rate: 10
       d_model: ${informer.d_model}
       num_curr_classes: ${num_curr_classes}
@@ -150,6 +150,8 @@ model:
         use_decoder: ${informer.decoder}
   skit:
     _target_: models.skit_future.SKITFuture
+    input_tokens: ${input_tokens}
+    dataset: ${dataset_name}
     input_dim: 768
     present_length: 20
     past_sampling_rate: 10
@@ -171,6 +173,14 @@ model:
       hidden_dim: ${n_embd}
       n_heads: ${n_head}
       n_layers: ${n_layer}
+    decoder_cc:
+      _target_: models.transformers.ClassConditionedTransformerDecoder
+      num_queries: ${num_ant_queries}
+      input_dim: ${informer.d_model}
+      hidden_dim: ${n_embd}
+      n_heads: ${n_head}
+      n_layers: ${n_layer}
+      normalize_priors: ${normalize_priors}
     informer:
       _target_: Informer2020.models.model.Informer
       enc_in: 768
@@ -349,11 +359,14 @@ test_start: 41
 test_end: 80
 save_video_labels_to_npy: false
 model_name: supra
+input_tokens: normal
+normalize_priors: false
 naive1: false
 naive2: true
 ctx_pooling: global
 num_ctx_tokens: 12
 max_seq_len: 24
+num_ant_queries: 18
 informer:
   decoder: true
   d_model: 512
@@ -370,6 +383,7 @@ eos_class: 7
 eos_regression: false
 eos_classification: true
 eos_weight: count
+class_weight: frequency
 ctx_length: 1440
 anticip_time: 60
 max_anticip_time: 18

@@ -388,13 +388,227 @@ def check_numpy_to_list(dictionay):
             print(f"converted {key} np.ndarray to list")
     return dictionay
 
+
+def np_round(value, n=4):
+    return np.round(value, n).tolist()
+
+import numpy as np
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, confusion_matrix
+from scipy.stats import entropy
+import matplotlib.pyplot as plt
+
+def calculate_metrics(y_true, y_pred):
+    """
+    Calculate various metrics for the video classification task using both
+    flattened and frame-by-frame approaches.
+    
+    Args:
+    y_true (np.array): Ground truth labels, shape (video_length, 18)
+    y_pred (np.array): Predicted labels, shape (video_length, 18)
+    
+    Returns:
+    dict: A dictionary containing calculated metrics and frame-by-frame metrics
+    """
+    metrics = {}
+    
+    # Flattened metrics
+    y_true_flat = y_true.flatten()
+    y_pred_flat = y_pred.flatten()
+    
+    metrics['flat_accuracy']            = np_round(accuracy_score(y_true_flat, y_pred_flat))
+    metrics['flat_macro_f1']            = np_round(f1_score(y_true_flat, y_pred_flat, average='macro', zero_division=0))
+    metrics['flat_weighted_f1']         = np_round(f1_score(y_true_flat, y_pred_flat, average='weighted', zero_division=0))
+    metrics['flat_macro_precision']     = np_round(precision_score(y_true_flat, y_pred_flat, average='macro', zero_division=0))
+    metrics['flat_weighted_precision']  = np_round(precision_score(y_true_flat, y_pred_flat, average='weighted', zero_division=0))
+    metrics['flat_macro_recall']        = np_round(recall_score(y_true_flat, y_pred_flat, average='macro', zero_division=0))
+    metrics['flat_weighted_recall']     = np_round(recall_score(y_true_flat, y_pred_flat, average='weighted', zero_division=0))
+    
+    # Frame-by-frame metrics
+    frame_metrics = {
+        'accuracy': [],
+        'macro_f1': [],
+        'weighted_f1': [],
+        'macro_precision': [],
+        'weighted_precision': [],
+        'macro_recall': [],
+        'weighted_recall': []
+    }
+    
+    for i in range(y_true.shape[1]):  # Iterate over each frame in the anticipated window
+        y_true_frame = y_true[:, i]
+        y_pred_frame = y_pred[:, i]
+        
+        frame_metrics['accuracy'].append(np_round(accuracy_score(y_true_frame, y_pred_frame)))
+        frame_metrics['macro_f1'].append(np_round(f1_score(y_true_frame, y_pred_frame, average='macro', zero_division=0)))
+        frame_metrics['weighted_f1'].append(np_round(f1_score(y_true_frame, y_pred_frame, average='weighted', zero_division=0)))
+        frame_metrics['macro_precision'].append(np_round(precision_score(y_true_frame, y_pred_frame, average='macro', zero_division=0)))
+        frame_metrics['weighted_precision'].append(np_round(precision_score(y_true_frame, y_pred_frame, average='weighted', zero_division=0)))
+        frame_metrics['macro_recall'].append(np_round(recall_score(y_true_frame, y_pred_frame, average='macro', zero_division=0)))
+        frame_metrics['weighted_recall'].append(np_round(recall_score(y_true_frame, y_pred_frame, average='weighted', zero_division=0)))
+    
+    # Average the frame-by-frame metrics
+    for metric, values in frame_metrics.items():
+        metrics[f'frame_{metric}_avg'] = np_round(np.mean(values))
+        metrics[f'frame_{metric}_std'] = np_round(np.std(values))
+    
+    # Other metrics (unchanged)
+    metrics['confusion_matrix']                 = confusion_matrix(y_true_flat, y_pred_flat)
+    metrics['segment_continuity']               = np_round(segment_continuity_score(y_true, y_pred))
+    metrics['temporal_consistency']             = np_round(temporal_consistency_score(y_pred))
+    metrics['class_distribution_divergence']    = np_round(class_distribution_divergence(y_true, y_pred))
+    
+    return metrics, frame_metrics
+
+
+import seaborn as sns
+
+def plot_performance_over_time(frame_metrics):
+    """
+    Plot the performance of various metrics over the anticipated time window.
+    
+    Args:
+    frame_metrics (dict): Dictionary containing frame-by-frame metrics
+    """
+    time_steps = range(1, 19)  # 18 minutes
+    
+    plt.figure(figsize=(15, 10))
+    
+    # Use a color palette for other metrics
+    colors = sns.color_palette("husl", len(frame_metrics) - 1)
+    color_iter = iter(colors)
+
+    min_y = 1
+    max_y = 0
+    y_space = 0.05
+    
+    # Plot accuracy separately with a distinct style
+    plt.plot(time_steps, frame_metrics['accuracy'], label='accuracy', 
+             linewidth=3, color='black', linestyle='--', marker='o')
+    min_y = min(min_y, min(frame_metrics['accuracy']))
+    max_y = max(max_y, max(frame_metrics['accuracy']))
+    
+    # Plot other metrics
+    for metric, values in frame_metrics.items():
+        if metric != 'accuracy':
+            plt.plot(time_steps, values, label=metric, color=next(color_iter))
+            min_y = min(min_y, min(values)) - y_space
+            max_y = max(max_y, max(values)) + y_space
+    
+    plt.xlabel('Minutes into the future')
+    plt.ylabel('Metric Value')
+    plt.title('Performance Metrics over Anticipated Time Window')
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.grid(True, alpha=0.3)
+    plt.ylim(min_y, max_y)  # Assuming all metrics are between 0 and 1
+    
+    # Add horizontal lines for better readability
+    plt.axhline(y=0.5, color='gray', linestyle=':', alpha=0.5)
+    plt.axhline(y=0.25, color='gray', linestyle=':', alpha=0.5)
+    plt.axhline(y=0.75, color='gray', linestyle=':', alpha=0.5)
+    
+    plt.tight_layout()
+    # plt.show()
+    plt.savefig('performance_over_time.png')
+
+def segment_continuity_score(y_true, y_pred):
+    """
+    Calculate a score based on the continuity of predicted segments.
+    
+    This function compares the lengths of continuous segments in the
+    ground truth and predictions, rewarding longer matching segments.
+    """
+    score = 0
+    for t in range(y_true.shape[0]):
+        true_segment = y_true[t]
+        pred_segment = y_pred[t]
+        
+        # Find the longest matching subsequence
+        longest_match = 0
+        current_match = 0
+        for i in range(18):
+            if true_segment[i] == pred_segment[i]:
+                current_match += 1
+                longest_match = max(longest_match, current_match)
+            else:
+                current_match = 0
+        
+        # Score is the square of the longest match, normalized
+        score += (longest_match ** 2) / 324  # 324 is 18^2
+    
+    return score / y_true.shape[0]
+
+def temporal_consistency_score(y_pred):
+    """
+    Calculate a score based on the temporal consistency of predictions.
+    
+    This function rewards predictions that are consistent over time,
+    penalizing frequent changes in predicted classes.
+    """
+    changes = np.sum(np.diff(y_pred, axis=0) != 0)
+    max_possible_changes = y_pred.shape[0] * y_pred.shape[1]
+    return 1 - (changes / max_possible_changes)
+
+def class_distribution_divergence(y_true, y_pred):
+    """
+    Calculate the divergence between true and predicted class distributions.
+    
+    This function uses KL divergence to measure how different the
+    predicted class distribution is from the true distribution.
+    """
+    true_dist = np.bincount(y_true.flatten(), minlength=9) / len(y_true.flatten())
+    pred_dist = np.bincount(y_pred.flatten(), minlength=9) / len(y_pred.flatten())
+    
+    # Add small epsilon to avoid division by zero in KL divergence
+    epsilon = 1e-10
+    true_dist += epsilon
+    pred_dist += epsilon
+    
+    return entropy(true_dist, pred_dist)
+
+def aggregate_metrics(all_metrics, all_frame_metrics):
+    """
+    Aggregate metrics across all videos, handling different-sized confusion matrices.
+    
+    Args:
+    all_metrics (list): List of metric dictionaries for each video
+    all_frame_metrics (list): List of frame metric dictionaries for each video
+    
+    Returns:
+    dict, dict: Aggregated metrics and aggregated frame metrics
+    """
+    agg_metrics = {}
+    agg_frame_metrics = {metric: [] for metric in all_frame_metrics[0].keys()}
+    
+    # Aggregate flattened metrics
+    for metric in all_metrics[0].keys():
+        if metric != 'confusion_matrix':
+            agg_metrics[metric] = np.round(np.mean([m[metric] for m in all_metrics]), 4).tolist()
+    
+    # Aggregate confusion matrices
+    max_classes = max(cm.shape[0] for cm in [m['confusion_matrix'] for m in all_metrics])
+    agg_confusion_matrix = np.zeros((max_classes, max_classes), dtype=int)
+    
+    for m in all_metrics:
+        cm = m['confusion_matrix']
+        n_classes = cm.shape[0]
+        agg_confusion_matrix[:n_classes, :n_classes] += cm
+    
+    agg_metrics['confusion_matrix'] = agg_confusion_matrix.tolist()
+    
+    # Aggregate frame metrics
+    for metric in agg_frame_metrics.keys():
+        # mean over all videos but keep the temporal dimension
+        agg_frame_metrics[metric] = np.round(np.mean([fm[metric] for fm in all_frame_metrics], axis=0), 4).tolist()
+    
+    return agg_metrics, agg_frame_metrics
+
 def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_writer, logger, epoch: float,
             anticip_time: int,
             max_anticip_time: int, 
             store=False, 
             store_endpoint='logits', 
             only_run_featext=False,
-            best_cum_acc_future=0.4,
+            best_acc_curr_future=0.4,
             ):
     
     step_size = int(anticip_time/60)
@@ -429,7 +643,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     all_videos_mean_cum_iter_time = []
     eval_start_time = time.time()
 
-    # best_cum_acc_future = 0.2
+    # best_acc_curr_future = 0.2
     best_epoch = 0
 
     # init video gt and preds
@@ -440,6 +654,14 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     all_video_tgts_rec = {}
     all_video_mean_curr_acc = {}
     all_video_mean_cum_acc_future = {}
+
+    all_vids_acc = []
+    all_vids_prec = []
+    all_vids_recall = []
+    all_vids_f1 = []
+
+    all_metrics = []
+    all_frame_metrics = []
 
 
     # FOR EACH VIDEO LOADER
@@ -540,6 +762,39 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         all_video_tgts_preds[video_id] = video_tgts_preds
         all_video_tgts_rec[video_id] = video_tgts_rec
 
+        # all metrics
+        metrics, frame_metrics = calculate_metrics(y_true=video_tgts_preds, y_pred=video_frame_preds)
+        all_metrics.append(metrics)
+        all_frame_metrics.append(frame_metrics)
+
+        # Frame-level metrics
+        # Weighted Averages:
+        # Iterative Method: This method calculates the metrics for each sequence and then averages these values, 
+        # effectively giving more influence to sequences with more accurate predictions for less frequent classes. 
+        # This often results in higher precision because the model might perform better on sequences 
+        # where it correctly predicts less frequent classes.
+        from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+        video_accuracy = []
+        video_prec = []
+        video_recall = []
+        video_f1 = []
+
+        # compute the accuracy for the video (frame-level flattened)
+        video_accuracy = accuracy_score(video_tgts_preds.flatten(), video_frame_preds.flatten())
+        all_vids_acc.append(video_accuracy)
+
+        # compute the weighted precision, recall, f1 per anticipated segment
+        for i in range(video_frame_preds.shape[0]):
+            y_true = video_tgts_preds[i]
+            y_pred = video_frame_preds[i]
+            precision, recall, f1, _ = precision_recall_fscore_support(y_true, y_pred, average='weighted', zero_division=0)
+            video_prec.append(precision)
+            video_recall.append(recall)
+            video_f1.append(f1)
+        all_vids_prec.append(np.mean(video_prec))
+        all_vids_recall.append(np.mean(video_recall))
+        all_vids_f1.append(np.mean(video_f1))
+
         # Keep Time Dimension
         acc_curr_frames         = compute_accuracy(video_frame_rec, video_tgts_rec, return_mean=False)      # potential nans
         acc_future_frames       = compute_accuracy(video_frame_preds, video_tgts_preds, return_mean=False)  # potential nans
@@ -595,8 +850,18 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                     f"mean_acc_future_frames: {mean_acc_future_frames} | "
                     f"video_mean_cum_acc_future: {video_mean_cum_acc_future}")
         print(f"video_mean_curr_acc: {video_mean_curr_acc}, mean_acc_future_frames: {mean_acc_future_frames}")
+    
+    # Aggregate metrics across all videos
+    agg_metrics, agg_frame_metrics = aggregate_metrics(all_metrics, all_frame_metrics)
+    # Plot aggregated performance over time
+    plot_performance_over_time(agg_frame_metrics)
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(agg_metrics['confusion_matrix'], annot=True, fmt='d', cmap='Blues')
+    plt.title('Aggregated Confusion Matrix')
+    plt.xlabel('Predicted')
+    plt.ylabel('True')
+    plt.savefig(f'confusion_matrix_ep{epoch}.png')
 
-            
     # keep time dimension over all videos
     all_videos_mean_acc_future_t       = np.round(np.nanmean(all_videos_acc_future, axis=0), decimals=4).tolist()
     all_videos_mean_cum_acc_future_t   = np.round(np.nanmean(all_videos_cum_acc_future, axis=0), decimals=4).tolist()
@@ -614,8 +879,16 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     # all_videos_results["acc_curr_future"]  = np.round(np.nanmean(all_videos_mean_cum_acc_future_t), decimals=4).tolist()
     all_videos_results["rmse_future"]       = np.round(np.nanmean(all_videos_rmse_future), decimals=4).tolist()
     all_videos_results["acc_future_t"]      = all_videos_mean_acc_future_t
+    all_videos_results.update(agg_metrics)
+    all_videos_results.update(agg_frame_metrics) # keep the temporal dimension
 
-    if epoch % plot_video_freq == 0 or all_videos_results["acc_curr_future"] > best_cum_acc_future:
+    # frame-level metrics
+    all_videos_results["accuracy"]              = np.round(np.nanmean(all_vids_acc), decimals=4).tolist()
+    all_videos_results["precision_weighted"]    = np.round(np.nanmean(all_vids_prec), decimals=4).tolist()
+    all_videos_results["recall_weighted"]       = np.round(np.nanmean(all_vids_recall), decimals=4).tolist()
+    all_videos_results["f1_weighted"]           = np.round(np.nanmean(all_vids_f1), decimals=4).tolist()
+
+    if epoch % plot_video_freq == 0 or all_videos_results["acc_curr_future"] > best_acc_curr_future:
         # PLOT AND SAVE VIDEO DATA if best
         for video_id in video_ids:
             video_frame_preds           = all_video_frame_preds[video_id]
@@ -637,11 +910,11 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                                 )    # don't include the eos class which is assigned to -1
     
     # update best_cum_acc
-    if all_videos_results["acc_curr_future"] > best_cum_acc_future:
-        # best_cum_acc_future = all_videos_results["acc_curr_future"]
+    if all_videos_results["acc_curr_future"] > best_acc_curr_future:
+        # best_acc_curr_future = all_videos_results["acc_curr_future"]
         best_epoch = epoch
         logger.info(f"[TESTING] Best epoch: {best_epoch} | "
-                    f"Best acc_curr_future: {best_cum_acc_future}")
+                    f"Best acc_curr_future: {best_acc_curr_future}")
         if save_all_metrics:
             np.save(f"all_videos_mean_acc_future_t_ep{epoch}.npy", all_videos_acc_future)
             np.save(f"all_videos_mean_cum_acc_future_t_ep{epoch}.npy", all_videos_cum_acc_future)
@@ -668,7 +941,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     
 
     # PLOTTING
-    if all_videos_results["acc_curr_future"] > best_cum_acc_future:
+    if all_videos_results["acc_curr_future"] > best_acc_curr_future:
         # plot the mean accuracy over the videos
         y_values = {"Cholec80": all_videos_mean_acc_future_t}
         plot_figure(x_values, y_values,
@@ -1232,7 +1505,7 @@ def main(cfg):
             tb_writer, 
             logger, 
             1,
-            best_cum_acc_future=0.4)
+            best_acc_curr_future=0.4)
         print(f"Accuracies: {accuracies}")
         print("Test only done")
         return
@@ -1242,7 +1515,7 @@ def main(cfg):
 
     # Get training metric logger
     stat_loggers = get_default_loggers(tb_writer, start_epoch, logger)
-    best_cum_acc_future = 0.4
+    best_acc_curr_future = 0.4
     partial_epoch = start_epoch - int(start_epoch)
     start_epoch = int(start_epoch)
     last_saved_time = datetime.datetime(1, 1, 1, 0, 0)
@@ -1285,7 +1558,7 @@ def main(cfg):
                 tb_writer, 
                 logger,
                 epoch + 1,
-                best_cum_acc_future=best_cum_acc_future)
+                best_acc_curr_future=best_acc_curr_future)
 
             # Store the accuracies per number of parameters and tokens
             with open('acc_vs_params.json', 'a+') as f:
@@ -1300,9 +1573,9 @@ def main(cfg):
             accuracies["acc_curr_future"] = 0
         
         # Store the best model
-        if accuracies["acc_curr_future"] >= best_cum_acc_future:
+        if accuracies["acc_curr_future"] >= best_acc_curr_future:
             store_checkpoint(f'checkpoint_best.pth', model, optimizer, lr_scheduler, epoch + 1)
-            best_cum_acc_future = accuracies["acc_curr_future"]
+            best_acc_curr_future = accuracies["acc_curr_future"]
         if isinstance(lr_scheduler.base_scheduler, scheduler.ReduceLROnPlateau):
             lr_scheduler.step(accuracies["acc_curr_future"])
 

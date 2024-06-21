@@ -444,7 +444,7 @@ class R2A2(nn.Module):
         past_present = torch.cat((past, present), dim=1)
         return past_present
     
-    def forward(self, obs_video, train_mode=True,
+    def forward(self, obs_video, train_mode=True, current_gt=None,
                 future_labels=None, pad_mask=None,
                 level="frame", multiscale=False, lt_pooling="token_pooling"):
         print(f"[R2A2] obs_video: {obs_video.shape}")
@@ -481,12 +481,44 @@ class R2A2(nn.Module):
         print(f"[R2A2] curr_frames: {curr_frames_cls.shape}")
         outputs["curr_frames"] = curr_frames_cls
 
-        # Current EOS Time Prediction
-        # if self.eos_regression:
-        #     curr_time2eos = self.curr_eos_rem_time_reg(enc_out)
-        #     print(f"[R2A2] curr_time2eos: {curr_time2eos.shape}")
-        #     outputs["curr_time2eos"] = curr_time2eos
-
+        # # Class Conditioned Transformer Decoder
+        # num_classes = 7 + 1
+        # root = "/nfs/home/mboels/projects/SuPRA/datasets"
+        # path_class_freq = root + f"/{self.dataset}/naive2_{self.dataset}_class_freq_positions.json"
+        # with open(path_class_freq, 'r') as f:
+        #     class_freq_pos = json.load(f)
+        # class_freq_pos = {int(k): [{int(inner_k): inner_v for inner_k, inner_v in freq_dict.items()} for freq_dict in v] for k, v in class_freq_pos.items()}
+        # self.frame_decoder = hydra.utils.instantiate(decoder_cc,
+        #                                             num_classes=num_classes, 
+        #                                             class_freq_positions=class_freq_pos, 
+        #                                             _recursive_=False)
+        # self.sampler = GaussianMixtureSamplerWithPosition(class_freq_positions, lookahead=18)
+        # self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # batch_size, seq_len, _ = query_embeddings.size()
+        # # Positional encoding for query_embeddings
+        # query_embeddings = self.positional_encoding(query_embeddings)
+        # # Embedding for memory 
+        # memory_embedded = self.embedding(memory) + self.positional_encoding(memory) # NOTE: no need for embedding layer
+        # # Initialize combined embeddings
+        # combined_embeddings = query_embeddings.clone().to(self.device)
+        # # Initialize future class probabilities
+        # future_class_probs = torch.zeros(batch_size, seq_len, self.num_classes, device=self.device) + 1e-6
+        # for i in range(batch_size):
+        #     for j in range(seq_len):
+        #         if current_gt is not None:
+        #             current_class = current_gt[i, -1].item()
+        #             # Use ground truth class for teacher forcing
+        #             class_probs = self.sampler.class_probs(current_class, j)
+        #             for k, v in class_probs.items():
+        #                 future_class_probs[i, j, k] = v
+        #         elif current_pred is not None:
+        #             # Use predicted class for inference
+        #             current_class = torch.argmax(F.softmax(current_pred[i], dim=-1), dim=-1).item()
+        #             class_probs = self.sampler.class_probs(current_class, j)
+        #             for k, v in class_probs.items():
+        #                 future_class_probs[i, j, k] = v
+        #         else:
+        #             raise ValueError("Either current_pred or current_gt must be provided.")
 
         if train_mode:
             # GPT-2 decoder takes a single sequence as input prompt and predicts the next token.

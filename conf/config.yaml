@@ -34,6 +34,8 @@ save_video_labels_to_npy: false
 
 model_name: supra          # skit / supra / lstm / gru / naive1 / naive2
 input_tokens: normal  # class_conditioned / normal
+normalize_priors: false
+
 naive1: false
 naive2: false
 
@@ -77,7 +79,7 @@ eos_class: 7                # last class for EOS
 eos_regression: false
 eos_classification: true
 eos_weight: count     # count or mean
-class_weight: frequency # frequency or positional: n-grames based on observed class and future prediction index.
+class_weight: frequency # frequency / positional_inverse_frequency or positional: n-grames based on observed class and future prediction index.
 
 # compression
 ctx_length: 1440            # 1500s = 25min, 3000s = 50min (avg video is 34min)
@@ -305,6 +307,7 @@ model:
       hidden_dim: ${n_embd}
       n_heads: ${n_head}
       n_layers: ${n_layer}
+      normalize_priors: ${normalize_priors}
     informer:
       _target_: Informer2020.models.model.Informer
       enc_in: 768

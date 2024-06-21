@@ -13,14 +13,20 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+
+
+
 class PositionalCrossEntropyLoss(nn.CrossEntropyLoss):
     """
     Cross entropy loss with class weights based on the observed class and the prediction index position.
     """
 
-    def __init__(self, weights_sampler, *args, **kwargs):
+    def __init__(self, weights_sampler, class_weight="positional",
+                *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.weights_sampler = weights_sampler
+        self.class_weight = class_weight
+
 
     def forward(self, inp, tgt, *args, **kwargs):
         """
@@ -47,11 +53,16 @@ class PositionalCrossEntropyLoss(nn.CrossEntropyLoss):
                 print(f"Class probs: {class_probs}")
 
                 # Initialize class_weights with small values to avoid log(0)
-                class_weights = torch.zeros(num_classes) + 0.001
+                class_weights = torch.zeros(num_classes) + 0.01
 
                 # Update class_weights based on the sampler
                 for key, value in class_probs.items():
                     class_weights[key] = value
+                
+                if self.class_weight == "inverse_frequency_positional":
+                    class_weights = 1 / class_weights
+                    # Normalize the class weights
+                    class_weights = class_weights / class_weights.sum()
                 
                 # Ensure class_weights are on the same device as input
                 class_weights = class_weights.to(inp.device)

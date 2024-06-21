@@ -211,7 +211,7 @@ class Medical_Dataset(Dataset):
             self.future_segmts_tgt = False
 
             self.eos_weight = cfg.eos_weight # "count" or "mean"
-            self.class_weight = cfg.class_weight # "positional" or "uniform"
+            self.class_weight = cfg.class_weight # "positional" or "frequency", positional_inverse_frequency
             
             # observed targets
             if self.model_name in ["supra", "lstm"]:
@@ -401,9 +401,8 @@ class Medical_Dataset(Dataset):
                 self.curr_class_weights = self._compute_class_weights(classes_counts_dict)
                 self.logger.info(f"[DATASET] curr_class_weights: {self.curr_class_weights}")
 
-                if self.class_weight=="positional":
+                if self.class_weight in ["positional", "positional_inverse_frequency"]:
                     # Class weights for an observed class and different future predicted index positions
-                    
                     path_class_freq = f"/nfs/home/mboels/projects/SuPRA/datasets/{self.dataset_name}/naive2_{self.dataset_name}_class_freq_positions.json"
                     # load from json file
                     with open(path_class_freq, 'r') as f:

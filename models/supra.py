@@ -98,8 +98,8 @@ class AVTh(nn.Module):
 
         self.r2a2_model = hydra.utils.instantiate(r2a2_model, _recursive_=False)
         
-    def forward(self, obs_video, train_mode=True):
-        return self.r2a2_model(obs_video, train_mode=train_mode)
+    def forward(self, obs_video, current_gt=None, train_mode=True):
+        return self.r2a2_model(obs_video, current_gt=None, train_mode=train_mode)
 
 
     @property

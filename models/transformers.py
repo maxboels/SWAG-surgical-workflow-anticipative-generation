@@ -78,12 +78,14 @@ class PositionalEncoding(nn.Module):
 
 
 class ClassConditionedTransformerDecoder(nn.Module):
-    def __init__(self, num_queries, input_dim, hidden_dim, n_heads, n_layers, num_classes, class_freq_positions, dim_feedforward=2048, dropout=0.1):
+    def __init__(self, num_queries, input_dim, hidden_dim, n_heads, n_layers, num_classes, class_freq_positions, normalize_priors=False, dim_feedforward=2048, dropout=0.1):
         super(ClassConditionedTransformerDecoder, self).__init__()
 
         self.num_classes = num_classes
+        self.normalize_priors = normalize_priors
 
-        self.norm_layer = nn.LayerNorm(input_dim)  # Normalization layer before linear projection
+        if self.normalize_priors:
+            self.norm_layer = nn.LayerNorm(num_classes)      
         self.embedding = nn.Linear(input_dim, hidden_dim)
         self.class_projection_layer = nn.Linear(num_classes, hidden_dim)
         self.positional_encoding = PositionalEncoding(hidden_dim)
@@ -136,7 +138,8 @@ class ClassConditionedTransformerDecoder(nn.Module):
         print(f"[ClassConditionedTransformerDecoder] future_class_probs: {future_class_probs}")
 
         # TODO: try to Normalize future_class_probs before passing to linear layer
-        # future_class_probs = self.norm_layer(future_class_probs)
+        if self.normalize_priors:
+            future_class_probs = self.norm_layer(future_class_probs)
 
         # Compute class-conditioned embeddings
         class_conditioned_embedding = self.class_projection_layer(future_class_probs)

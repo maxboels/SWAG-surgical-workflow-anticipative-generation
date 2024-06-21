@@ -180,6 +180,7 @@ model:
       hidden_dim: ${n_embd}
       n_heads: ${n_head}
       n_layers: ${n_layer}
+      normalize_priors: ${normalize_priors}
     informer:
       _target_: Informer2020.models.model.Informer
       enc_in: 768
@@ -347,7 +348,7 @@ cwd: ${hydra:runtime.cwd}
 sync_bn: false
 data_parallel: true
 dist_backend: nccl
-test_only: false
+test_only: true
 num_epochs: 20
 finetune_ckpt: best
 dataset_name: cholec80
@@ -359,6 +360,7 @@ test_end: 80
 save_video_labels_to_npy: false
 model_name: skit
 input_tokens: class_conditioned
+normalize_priors: false
 naive1: false
 naive2: false
 ctx_pooling: global

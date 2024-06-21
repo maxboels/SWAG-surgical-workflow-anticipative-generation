@@ -78,8 +78,10 @@ class BasicLossAccuracy(nn.Module):
         if hasattr(dataset, "sampler_with_position"):
             sampler_with_position = dataset.sampler_with_position
             self.ce_loss_fn_next    = PositionalCrossEntropyLoss(weights_sampler=sampler_with_position,
+                                                                class_weight=dataset.class_weight,
                                                                 reduction='none', ignore_index=-1)
             self.ce_loss_fn_future  = PositionalCrossEntropyLoss(weights_sampler=sampler_with_position,
+                                                                class_weight=dataset.class_weight,
                                                                 reduction='none', ignore_index=-1)
         else:
             self.ce_loss_fn_next    = nn.CrossEntropyLoss(weight=next_class_weights, reduction='none', ignore_index=-1)

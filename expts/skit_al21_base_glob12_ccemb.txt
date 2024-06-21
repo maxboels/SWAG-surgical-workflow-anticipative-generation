@@ -1,4 +1,4 @@
-test_only=false
+test_only=true
 
 model_name=skit
 ctx_pooling=global
@@ -9,7 +9,6 @@ eos_weight=mean
 
 class_weight=frequency
 input_tokens=class_conditioned
-
 
 dataset_name=autolaparo21
 pooling_dim=64
