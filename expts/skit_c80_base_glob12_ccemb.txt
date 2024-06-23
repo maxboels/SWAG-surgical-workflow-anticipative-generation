@@ -10,7 +10,6 @@ eos_weight=mean
 class_weight=frequency
 input_tokens=class_conditioned
 
-
 dataset_name=cholec80
 pooling_dim=64
 train_start=1

@@ -10,6 +10,9 @@ max_seq_len=24
 
 eos_weight=count
 
+class_weight=frequency
+input_tokens=normal
+
 dataset_name=cholec80
 pooling_dim=64
 train_start=1

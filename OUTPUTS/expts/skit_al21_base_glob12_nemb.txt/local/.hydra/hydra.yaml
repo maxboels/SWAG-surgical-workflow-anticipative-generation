@@ -1,6 +1,6 @@
 hydra:
   run:
-    dir: /nfs/home/mboels/projects/SuPRA/OUTPUTS/expts/skit_al21_base_glob12.txt/local
+    dir: /nfs/home/mboels/projects/SuPRA/OUTPUTS/expts/skit_al21_base_glob12_nemb.txt/local
   sweep:
     dir: ${hydra.run.dir}
     subdir: ${hydra.job.num}
@@ -127,7 +127,7 @@ hydra:
   output_subdir: .hydra
   overrides:
     hydra:
-    - hydra.run.dir=/nfs/home/mboels/projects/SuPRA/OUTPUTS/expts/skit_al21_base_glob12.txt/local
+    - hydra.run.dir=/nfs/home/mboels/projects/SuPRA/OUTPUTS/expts/skit_al21_base_glob12_nemb.txt/local
     - hydra.launcher.nodes=8
     - hydra.launcher.gpus_per_node=8
     - hydra.launcher.nodes=1
@@ -244,7 +244,7 @@ hydra:
     - path: ''
       schema: structured
       provider: schema
-    output_dir: /nfs/home/mboels/projects/SuPRA/OUTPUTS/expts/skit_al21_base_glob12.txt/local
+    output_dir: /nfs/home/mboels/projects/SuPRA/OUTPUTS/expts/skit_al21_base_glob12_nemb.txt/local
     choices:
       data@data_eval: default
       data@data_train: default

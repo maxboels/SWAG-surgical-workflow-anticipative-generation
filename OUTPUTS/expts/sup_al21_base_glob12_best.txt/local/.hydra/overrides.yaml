@@ -1,9 +1,9 @@
 - test_only=False
-- model_name=skit
+- model_name=supra
 - ctx_pooling=global
 - num_ctx_tokens=12
 - max_seq_len=24
-- eos_weight=mean
+- eos_weight=count
 - class_weight=frequency
 - input_tokens=normal
 - dataset_name=autolaparo21
@@ -15,7 +15,7 @@
 - informer.decoder=True
 - informer.d_model=512
 - vocab_size=1000
-- n_embd=512
+- n_embd=256
 - n_layer=4
 - n_head=8
 - fixed_ctx_length=True
