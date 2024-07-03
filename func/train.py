@@ -64,6 +64,9 @@ from R2A2.eval.plot_metrics import plot_figure, plot_box_plot_figure, plot_cumul
 from R2A2.eval.plot_video_3D import plot_video_contour_3D, plot_video_scatter_3D
 
 
+from loss_fn.mae import anticipation_mae
+
+
 #--maxence boels- debugging cuda error
 import os
 os.environ['TORCH_USE_CUDA_DSA'] = '1'
@@ -434,7 +437,7 @@ def calculate_metrics(y_true, y_pred):
         'weighted_recall': []
     }
     
-    for i in range(y_true.shape[1]):  # Iterate over each frame in the anticipated window
+    for i in range(y_true.shape[1]):  # Iterate over each anticipation time index
         y_true_frame = y_true[:, i]
         y_pred_frame = y_pred[:, i]
         
@@ -446,10 +449,10 @@ def calculate_metrics(y_true, y_pred):
         frame_metrics['macro_recall'].append(np_round(recall_score(y_true_frame, y_pred_frame, average='macro', zero_division=0)))
         frame_metrics['weighted_recall'].append(np_round(recall_score(y_true_frame, y_pred_frame, average='weighted', zero_division=0)))
     
-    # Average the frame-by-frame metrics
+    # Average the 
     for metric, values in frame_metrics.items():
-        metrics[f'frame_{metric}_avg'] = np_round(np.mean(values))
-        metrics[f'frame_{metric}_std'] = np_round(np.std(values))
+        metrics[f'{metric}_avg'] = np_round(np.mean(values))
+        metrics[f'{metric}_std'] = np_round(np.std(values))
     
     # Other metrics (unchanged)
     metrics['confusion_matrix']                 = confusion_matrix(y_true_flat, y_pred_flat)
@@ -469,7 +472,8 @@ def plot_performance_over_time(frame_metrics):
     Args:
     frame_metrics (dict): Dictionary containing frame-by-frame metrics
     """
-    time_steps = range(1, 19)  # 18 minutes
+    length = len(frame_metrics['accuracy'])
+    time_steps = range(0, length)
     
     plt.figure(figsize=(15, 10))
     
@@ -525,7 +529,7 @@ def segment_continuity_score(y_true, y_pred):
         # Find the longest matching subsequence
         longest_match = 0
         current_match = 0
-        for i in range(18):
+        for i in range(len(true_segment)):
             if true_segment[i] == pred_segment[i]:
                 current_match += 1
                 longest_match = max(longest_match, current_match)
@@ -602,6 +606,46 @@ def aggregate_metrics(all_metrics, all_frame_metrics):
     
     return agg_metrics, agg_frame_metrics
 
+def classification_to_remaining_time(class_probs, time_steps, h, num_classes=7):
+    """
+    Convert classification probabilities to remaining time for each phase.
+
+    Args:
+    class_probs (torch.Tensor): Classification probabilities, shape (batch_size, num_steps, num_phases)
+    time_steps (torch.Tensor): Time steps, shape (num_steps,)
+    h (int): Maximum anticipation time default is 18 minutes
+    num_classes (int): Total number of classes in the dataset (default: 7)
+    """
+    batch_size, num_steps, _ = class_probs.size()
+    remaining_time = torch.full((batch_size, num_classes), h, device=class_probs.device)
+    for phase in range(num_classes):
+        if phase < class_probs.size(2):
+            phase_probs = class_probs[:, :, phase]
+            expected_time = torch.sum(phase_probs * time_steps, dim=1)
+            remaining_time[:, phase] = torch.min(expected_time, torch.tensor(h, device=class_probs.device))
+    return remaining_time
+
+def ground_truth_remaining_time(phase_labels, current_step, h, num_classes=7):
+    """
+    Compute the remaining time for each phase based on ground truth labels.
+
+    Args:
+    phase_labels (torch.Tensor): Ground truth phase labels, shape (batch_size, seq_len)
+    current_step (int): Current time step
+    h (int): Maximum anticipation time
+    num_classes (int): Total number of anticipation classes in the dataset (default: 7)
+    """
+    batch_size, seq_len = phase_labels.size()
+    remaining_time = torch.full((batch_size, num_classes), h, device=phase_labels.device)
+    for b in range(batch_size):
+        for phase in range(num_classes):
+            future_occurrences = torch.where(phase_labels[b, current_step:] == phase)[0]
+            if len(future_occurrences) > 0:
+                remaining_time[b, phase] = min(future_occurrences[0].item(), h)
+            elif phase_labels[b, current_step] == phase:
+                remaining_time[b, phase] = 0
+    return remaining_time
+
 def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_writer, logger, epoch: float,
             anticip_time: int,
             max_anticip_time: int, 
@@ -663,6 +707,38 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     all_metrics = []
     all_frame_metrics = []
 
+    # Add new metrics for regression evaluation
+    all_videos_wMAE_18 = []
+    all_videos_inMAE_18 = []
+    all_videos_pMAE_18 = []
+    all_videos_eMAE_18 = []
+
+    all_videos_wMAE_5 = []
+    all_videos_inMAE_5 = []
+    all_videos_pMAE_5 = []
+    all_videos_eMAE_5 = []
+
+    all_videos_wMAE_3 = []
+    all_videos_inMAE_3 = []
+    all_videos_pMAE_3 = []
+    all_videos_eMAE_3 = []
+
+    all_videos_wMAE_2 = []
+    all_videos_inMAE_2 = []
+    all_videos_pMAE_2 = []
+    all_videos_eMAE_2 = []
+
+
+    mae_metric_18 = anticipation_mae(h=18*60)  # 18 minutes in seconds
+    mae_metric_5 = anticipation_mae(h=5*60)   # 5 minutes in seconds
+    mae_metric_3 = anticipation_mae(h=3*60)   # 3 minutes in seconds
+    mae_metric_2 = anticipation_mae(h=2*60)   # 2 minutes in seconds
+
+    # Initialize lists for each time horizon
+    for horizon in [18, 5, 3, 2]:
+        for metric in ['wMAE', 'inMAE', 'pMAE', 'eMAE']:
+            locals()[f'all_videos_{metric}_{horizon}'] = []
+
 
     # FOR EACH VIDEO LOADER
     for data_loader in dataloaders:
@@ -718,6 +794,37 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                         # targets = np.pad(targets, ((0,0), (0, max_num_steps-targets.shape[1])), mode='constant', constant_values=-1)
                     video_frame_preds[start_idx:end_idx] = preds
                     video_tgts_preds[start_idx:end_idx] = targets # NOTE: those targets are for inference only
+
+                if "future_frames" in outputs.keys():
+                    class_probs = torch.softmax(outputs['future_frames'], dim=2)
+                    class_gt = data["future_frames_tgt"]
+                    print(f"class_probs: {class_probs.shape}")
+                    print(f"class_gt: {class_gt.shape}")
+
+                    time_steps = torch.arange(class_probs.size(1), device=class_probs.device) * anticip_time / 60  # Convert to minutes
+                    
+                    for horizon in [18, 5, 3, 2]:
+                        num_ant_classes = 8 # TODO: remove class 0: "Preparation"
+                        output_remaining_time = classification_to_remaining_time(class_probs, time_steps, h=horizon, num_classes=num_ant_classes)
+                        target_remaining_time = ground_truth_remaining_time(class_gt, 0, h=horizon, num_classes=num_ant_classes)
+                        
+                        print(f"output_remaining_time ({horizon}m): {output_remaining_time.shape}")
+                        print(f"target_remaining_time ({horizon}m): {target_remaining_time.shape}")
+                        
+                        assert output_remaining_time.shape == target_remaining_time.shape, f"Shape mismatch: output {output_remaining_time.shape}, target {target_remaining_time.shape}"
+                        
+                        mae_metric = locals()[f'mae_metric_{horizon}']
+                        wMAE, inMAE, pMAE, eMAE = mae_metric(output_remaining_time.unsqueeze(1), target_remaining_time.unsqueeze(1))
+                        
+                        # ... rest of your code ...
+                        for metric, value in zip(['wMAE', 'inMAE', 'pMAE', 'eMAE'], [wMAE, inMAE, pMAE, eMAE]):
+                            locals()[f'all_videos_{metric}_{horizon}'].append(value.item())
+                        
+                        logger.info(f"[TESTING] video: {video_id} | Horizon: {horizon}m | "
+                                        f"wMAE: {wMAE.item():.4f} | "
+                                        f"inMAE: {inMAE.item():.4f} | "
+                                        f"pMAE: {pMAE.item():.4f} | "
+                                        f"eMAE: {eMAE.item():.4f}")
                     
                 # SEGMENT LEVEL PREDICTION
                 # (possible auto-regressive predictions)
@@ -753,17 +860,19 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         # Store the results
         video_results["video_id"] = video_id
             
-        # compute eval metrics for each video
-        # NOTE: make sure to ignore the -1 class for both padding the last class and video length
-
-        # Store the outputs and targets
-        all_video_frame_preds[video_id] = video_frame_preds
+        # recognition
         all_video_frame_rec[video_id] = video_frame_rec
-        all_video_tgts_preds[video_id] = video_tgts_preds
         all_video_tgts_rec[video_id] = video_tgts_rec
+        # predictions
+        all_video_tgts_preds[video_id] = video_tgts_preds
+        all_video_frame_preds[video_id] = video_frame_preds
 
-        # all metrics
-        metrics, frame_metrics = calculate_metrics(y_true=video_tgts_preds, y_pred=video_frame_preds)
+        # concatenate the recognition and predictions y_true and y_pred
+        y_true = np.concatenate((video_tgts_rec, video_tgts_preds), axis=1)
+        y_pred = np.concatenate((video_frame_rec, video_frame_preds), axis=1)
+
+        # all metrics for predictions
+        metrics, frame_metrics = calculate_metrics(y_true=y_true, y_pred=y_pred)
         all_metrics.append(metrics)
         all_frame_metrics.append(frame_metrics)
 
@@ -780,14 +889,14 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         video_f1 = []
 
         # compute the accuracy for the video (frame-level flattened)
-        video_accuracy = accuracy_score(video_tgts_preds.flatten(), video_frame_preds.flatten())
+        video_accuracy = accuracy_score(y_true.flatten(), y_pred.flatten())
         all_vids_acc.append(video_accuracy)
 
         # compute the weighted precision, recall, f1 per anticipated segment
         for i in range(video_frame_preds.shape[0]):
-            y_true = video_tgts_preds[i]
-            y_pred = video_frame_preds[i]
-            precision, recall, f1, _ = precision_recall_fscore_support(y_true, y_pred, average='weighted', zero_division=0)
+            y_true_i = y_true[i]
+            y_pred_i = y_pred[i]
+            precision, recall, f1, _ = precision_recall_fscore_support(y_true_i, y_pred_i, average='weighted', zero_division=0)
             video_prec.append(precision)
             video_recall.append(recall)
             video_f1.append(f1)
@@ -795,7 +904,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         all_vids_recall.append(np.mean(video_recall))
         all_vids_f1.append(np.mean(video_f1))
 
-        # Keep Time Dimension
+        # Accuracy for recognition and predictions (Keep Time Dimension)
         acc_curr_frames         = compute_accuracy(video_frame_rec, video_tgts_rec, return_mean=False)      # potential nans
         acc_future_frames       = compute_accuracy(video_frame_preds, video_tgts_preds, return_mean=False)  # potential nans
 
@@ -887,6 +996,19 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     all_videos_results["precision_weighted"]    = np.round(np.nanmean(all_vids_prec), decimals=4).tolist()
     all_videos_results["recall_weighted"]       = np.round(np.nanmean(all_vids_recall), decimals=4).tolist()
     all_videos_results["f1_weighted"]           = np.round(np.nanmean(all_vids_f1), decimals=4).tolist()
+
+
+    # Add regression metrics to all_videos_results
+    all_videos_results["wMAE_18"] = np.round(np.mean(all_videos_wMAE_18), decimals=4).tolist()
+    all_videos_results["inMAE_18"] = np.round(np.mean(all_videos_inMAE_18), decimals=4).tolist()
+    all_videos_results["pMAE_18"] = np.round(np.mean(all_videos_pMAE_18), decimals=4).tolist()
+    all_videos_results["eMAE_18"] = np.round(np.mean(all_videos_eMAE_18), decimals=4).tolist()
+
+    # Add regression metrics to tensorboard
+    tb_writer.add_scalar(f'test/wMAE_18', all_videos_results["wMAE_18"], step_now)
+    tb_writer.add_scalar(f'test/inMAE_18', all_videos_results["inMAE_18"], step_now)
+    tb_writer.add_scalar(f'test/pMAE_18', all_videos_results["pMAE_18"], step_now)
+    tb_writer.add_scalar(f'test/eMAE_18', all_videos_results["eMAE_18"], step_now)
 
     if epoch % plot_video_freq == 0 or all_videos_results["acc_curr_future"] > best_acc_curr_future:
         # PLOT AND SAVE VIDEO DATA if best

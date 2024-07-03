@@ -4,7 +4,6 @@ model_name=supra
 naive1=true
 
 ctx_pooling=global
-
 num_ctx_tokens=12
 max_seq_len=24
 

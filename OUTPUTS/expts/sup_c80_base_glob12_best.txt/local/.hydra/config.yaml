@@ -348,7 +348,7 @@ cwd: ${hydra:runtime.cwd}
 sync_bn: false
 data_parallel: true
 dist_backend: nccl
-test_only: false
+test_only: true
 num_epochs: 20
 finetune_ckpt: best
 dataset_name: cholec80

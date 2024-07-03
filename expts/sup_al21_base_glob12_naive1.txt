@@ -4,11 +4,13 @@ model_name=supra
 naive1=true
 
 ctx_pooling=global
-
 num_ctx_tokens=12
 max_seq_len=24
 
 eos_weight=count
+
+class_weight=frequency
+input_tokens=normal
 
 dataset_name=autolaparo21
 pooling_dim=64

@@ -11399,3 +11399,1001 @@
 [2024-06-21 19:25:58,021][func.train][INFO] - [TESTING] video: 21 | video test time: 0.76 min | total test time: 5.19 min
 [2024-06-21 19:26:01,126][func.train][INFO] - [TESTING] video: 21 | video_mean_curr_acc: 0.5095 | mean_acc_future_frames: 0.4759 | video_mean_cum_acc_future: 0.4698
 [2024-06-21 19:26:17,249][func.train][INFO] - [TESTING] Best epoch: 1 | Best acc_curr_future: 0.4
+[2024-06-24 13:06:09,608][func.train][INFO] - Dist info:
+[2024-06-24 13:06:09,608][func.train][INFO] - torch version: 2.2.2+cu121
+[2024-06-24 13:06:09,609][func.train][INFO] - torchvision version: 0.17.2+cu121
+[2024-06-24 13:06:09,609][func.train][INFO] - hydra version: 1.3.2
+[2024-06-24 13:06:09,632][func.train][INFO] - Loading data
+[2024-06-24 13:06:09,632][func.train][INFO] - Loading datasets
+[2024-06-24 13:06:09,663][func.train][INFO] - [SELECT DATASET] ALL loaded dataframe in 0m 0s
+[2024-06-24 13:06:09,664][func.train][INFO] - [SELECT DATASET] ALL loaded dataframe: (83243, 4)
+[2024-06-24 13:06:09,670][func.train][INFO] - [SELECT DATASET] labels are already starting from 0
+[2024-06-24 13:06:09,677][func.train][INFO] - [SELECT DATASET] ALL unique classes: [0 1 2 3 4 5 6]
+[2024-06-24 13:06:09,687][func.train][INFO] - [SELECT DATASET] aLL dataframe (head):                                           image_path  video_idx frame_idx class
+0  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...          1         1     1
+1  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...          1         2     1
+2  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...          1         3     1
+3  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...          1         4     1
+4  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...          1         5     1
+[2024-06-24 13:06:09,695][func.train][INFO] - [SELECT DATASET] ALL dataframe (tail):                                               image_path  ...  class
+83238  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...  ...      6
+83239  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...  ...      6
+83240  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...  ...      6
+83241  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...  ...      6
+83242  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...  ...      6
+
+[5 rows x 4 columns]
+[2024-06-24 13:06:09,696][func.train][INFO] - [DATASET] params: {'debug': False, 'dataset_name': 'autolaparo21', 'reduc_feats_folder': 'train_targets_x_mp/', 'num_classes': 7, 'num_next_labels': 6, 'last_seg_class': 7, 'predict_next_phase': True, 'get_target_feats': False, 'replace_current_with_next_class': False}
+[2024-06-24 13:06:09,729][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-06-24 13:06:09,729][func.train][INFO] - [DATASET] split: train video_indices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+[2024-06-24 13:06:09,746][func.train][INFO] - [DATASET] train size: 55183
+[2024-06-24 13:06:09,746][func.train][INFO] - [DATASET] train video_indices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+[2024-06-24 13:06:09,749][func.train][INFO] - [DATASET] Sampled video_idx: 1 at 1 fps to 6388 frames
+[2024-06-24 13:06:09,753][func.train][INFO] - [DATASET] video 1 label_list: torch.Size([6388])
+[2024-06-24 13:06:10,141][func.train][INFO] - [DATASET] Sampled video_idx: 2 at 1 fps to 3620 frames
+[2024-06-24 13:06:10,142][func.train][INFO] - [DATASET] video 2 label_list: torch.Size([3620])
+[2024-06-24 13:06:10,158][func.train][INFO] - [DATASET] Sampled video_idx: 3 at 1 fps to 3000 frames
+[2024-06-24 13:06:10,159][func.train][INFO] - [DATASET] video 3 label_list: torch.Size([3000])
+[2024-06-24 13:06:10,169][func.train][INFO] - [DATASET] Sampled video_idx: 4 at 1 fps to 2938 frames
+[2024-06-24 13:06:10,170][func.train][INFO] - [DATASET] video 4 label_list: torch.Size([2938])
+[2024-06-24 13:06:10,179][func.train][INFO] - [DATASET] Sampled video_idx: 5 at 1 fps to 3220 frames
+[2024-06-24 13:06:10,180][func.train][INFO] - [DATASET] video 5 label_list: torch.Size([3220])
+[2024-06-24 13:06:10,190][func.train][INFO] - [DATASET] Sampled video_idx: 6 at 1 fps to 3908 frames
+[2024-06-24 13:06:10,191][func.train][INFO] - [DATASET] video 6 label_list: torch.Size([3908])
+[2024-06-24 13:06:10,204][func.train][INFO] - [DATASET] Sampled video_idx: 7 at 1 fps to 1645 frames
+[2024-06-24 13:06:10,204][func.train][INFO] - [DATASET] video 7 label_list: torch.Size([1645])
+[2024-06-24 13:06:10,211][func.train][INFO] - [DATASET] Sampled video_idx: 8 at 1 fps to 4692 frames
+[2024-06-24 13:06:10,212][func.train][INFO] - [DATASET] video 8 label_list: torch.Size([4692])
+[2024-06-24 13:06:10,228][func.train][INFO] - [DATASET] Sampled video_idx: 9 at 1 fps to 5736 frames
+[2024-06-24 13:06:10,229][func.train][INFO] - [DATASET] video 9 label_list: torch.Size([5736])
+[2024-06-24 13:06:10,257][func.train][INFO] - [DATASET] Sampled video_idx: 10 at 1 fps to 5064 frames
+[2024-06-24 13:06:10,258][func.train][INFO] - [DATASET] video 10 label_list: torch.Size([5064])
+[2024-06-24 13:06:10,273][func.train][INFO] - [DATASET] Sampled video_idx: 11 at 1 fps to 4720 frames
+[2024-06-24 13:06:10,274][func.train][INFO] - [DATASET] video 11 label_list: torch.Size([4720])
+[2024-06-24 13:06:10,289][func.train][INFO] - [DATASET] Sampled video_idx: 12 at 1 fps to 2916 frames
+[2024-06-24 13:06:10,290][func.train][INFO] - [DATASET] video 12 label_list: torch.Size([2916])
+[2024-06-24 13:06:10,299][func.train][INFO] - [DATASET] Sampled video_idx: 13 at 1 fps to 2597 frames
+[2024-06-24 13:06:10,300][func.train][INFO] - [DATASET] video 13 label_list: torch.Size([2597])
+[2024-06-24 13:06:10,309][func.train][INFO] - [DATASET] Sampled video_idx: 14 at 1 fps to 4739 frames
+[2024-06-24 13:06:10,310][func.train][INFO] - [DATASET] video 14 label_list: torch.Size([4739])
+[2024-06-24 13:06:10,322][func.train][INFO] - [DATASET] number of train videos: 14
+[2024-06-24 13:06:10,322][func.train][INFO] - [DATASET] avg video length: 65.69 minutes
+[2024-06-24 13:06:10,357][func.train][INFO] - [DATASET] num classes at 1fps in train: (55183,)
+[2024-06-24 13:06:10,358][func.train][INFO] - [DATASET] classes_counts_dict: {0: 1408, 1: 19287, 2: 12545, 3: 7511, 4: 1333, 5: 8184, 6: 4915}
+[2024-06-24 13:06:10,360][func.train][INFO] - [DATASET] curr_class_weights: tensor([5.5989, 0.4087, 0.6284, 1.0496, 5.9139, 0.9633, 1.6039])
+[2024-06-24 13:06:10,360][func.train][INFO] - [DATASET] num_eos_vals: 7883.285714285715
+[2024-06-24 13:06:10,360][func.train][INFO] - [DATASET] classes_counts_dict: {0: 1408, 1: 19287, 2: 12545, 3: 7511, 4: 1333, 5: 8184, 6: 4915, 7: 7883}
+[2024-06-24 13:06:10,361][func.train][INFO] - [DATASET] next_class_weights: tensor([5.5989, 0.4087, 0.6284, 1.0496, 5.9139, 0.9633, 1.6039, 1.0000])
+[2024-06-24 13:06:10,424][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-06-24 13:06:10,424][func.train][INFO] - [DATASET] split: test video_indices: [15]
+[2024-06-24 13:06:10,427][func.train][INFO] - [DATASET] test size: 3653
+[2024-06-24 13:06:10,427][func.train][INFO] - [DATASET] test video_indices: [15]
+[2024-06-24 13:06:10,429][func.train][INFO] - [DATASET] Sampled video_idx: 15 at 1 fps to 3653 frames
+[2024-06-24 13:06:10,430][func.train][INFO] - [DATASET] video 15 label_list: torch.Size([3653])
+[2024-06-24 13:06:10,442][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-06-24 13:06:10,442][func.train][INFO] - [DATASET] avg video length: 60.88 minutes
+[2024-06-24 13:06:10,482][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-06-24 13:06:10,482][func.train][INFO] - [DATASET] split: test video_indices: [16]
+[2024-06-24 13:06:10,485][func.train][INFO] - [DATASET] test size: 3612
+[2024-06-24 13:06:10,485][func.train][INFO] - [DATASET] test video_indices: [16]
+[2024-06-24 13:06:10,487][func.train][INFO] - [DATASET] Sampled video_idx: 16 at 1 fps to 3612 frames
+[2024-06-24 13:06:10,488][func.train][INFO] - [DATASET] video 16 label_list: torch.Size([3612])
+[2024-06-24 13:06:10,497][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-06-24 13:06:10,497][func.train][INFO] - [DATASET] avg video length: 60.20 minutes
+[2024-06-24 13:06:10,537][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-06-24 13:06:10,538][func.train][INFO] - [DATASET] split: test video_indices: [17]
+[2024-06-24 13:06:10,540][func.train][INFO] - [DATASET] test size: 4678
+[2024-06-24 13:06:10,541][func.train][INFO] - [DATASET] test video_indices: [17]
+[2024-06-24 13:06:10,543][func.train][INFO] - [DATASET] Sampled video_idx: 17 at 1 fps to 4678 frames
+[2024-06-24 13:06:10,544][func.train][INFO] - [DATASET] video 17 label_list: torch.Size([4678])
+[2024-06-24 13:06:10,557][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-06-24 13:06:10,557][func.train][INFO] - [DATASET] avg video length: 77.97 minutes
+[2024-06-24 13:06:10,653][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-06-24 13:06:10,653][func.train][INFO] - [DATASET] split: test video_indices: [18]
+[2024-06-24 13:06:10,659][func.train][INFO] - [DATASET] test size: 3546
+[2024-06-24 13:06:10,659][func.train][INFO] - [DATASET] test video_indices: [18]
+[2024-06-24 13:06:10,664][func.train][INFO] - [DATASET] Sampled video_idx: 18 at 1 fps to 3546 frames
+[2024-06-24 13:06:10,666][func.train][INFO] - [DATASET] video 18 label_list: torch.Size([3546])
+[2024-06-24 13:06:10,683][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-06-24 13:06:10,684][func.train][INFO] - [DATASET] avg video length: 59.10 minutes
+[2024-06-24 13:06:10,754][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-06-24 13:06:10,754][func.train][INFO] - [DATASET] split: test video_indices: [19]
+[2024-06-24 13:06:10,757][func.train][INFO] - [DATASET] test size: 3413
+[2024-06-24 13:06:10,757][func.train][INFO] - [DATASET] test video_indices: [19]
+[2024-06-24 13:06:10,759][func.train][INFO] - [DATASET] Sampled video_idx: 19 at 1 fps to 3413 frames
+[2024-06-24 13:06:10,760][func.train][INFO] - [DATASET] video 19 label_list: torch.Size([3413])
+[2024-06-24 13:06:10,771][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-06-24 13:06:10,771][func.train][INFO] - [DATASET] avg video length: 56.88 minutes
+[2024-06-24 13:06:10,809][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-06-24 13:06:10,809][func.train][INFO] - [DATASET] split: test video_indices: [20]
+[2024-06-24 13:06:10,812][func.train][INFO] - [DATASET] test size: 4832
+[2024-06-24 13:06:10,812][func.train][INFO] - [DATASET] test video_indices: [20]
+[2024-06-24 13:06:10,815][func.train][INFO] - [DATASET] Sampled video_idx: 20 at 1 fps to 4832 frames
+[2024-06-24 13:06:10,816][func.train][INFO] - [DATASET] video 20 label_list: torch.Size([4832])
+[2024-06-24 13:06:10,832][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-06-24 13:06:10,832][func.train][INFO] - [DATASET] avg video length: 80.53 minutes
+[2024-06-24 13:06:10,873][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-06-24 13:06:10,874][func.train][INFO] - [DATASET] split: test video_indices: [21]
+[2024-06-24 13:06:10,877][func.train][INFO] - [DATASET] test size: 4326
+[2024-06-24 13:06:10,877][func.train][INFO] - [DATASET] test video_indices: [21]
+[2024-06-24 13:06:10,879][func.train][INFO] - [DATASET] Sampled video_idx: 21 at 1 fps to 4326 frames
+[2024-06-24 13:06:10,880][func.train][INFO] - [DATASET] video 21 label_list: torch.Size([4326])
+[2024-06-24 13:06:10,893][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-06-24 13:06:10,894][func.train][INFO] - [DATASET] avg video length: 72.10 minutes
+[2024-06-24 13:06:10,901][func.train][INFO] - Time to load datasets: 0.02 min
+[2024-06-24 13:06:10,901][func.train][INFO] - Creating data loaders
+[2024-06-24 13:06:10,902][func.train][INFO] - Creating model with {'one': 7} classes
+[2024-06-24 13:06:11,960][func.train][INFO] - [MAIN] Number of tokens: 55183
+[2024-06-24 13:06:11,961][func.train][INFO] - [MAIN] Number of parameters: 31179478
+[2024-06-24 13:06:11,961][func.train][INFO] - [MAIN] Token-to-Parameter Ratio is ideally between [1:1 to 10:1]: 0.001770
+[2024-06-24 13:06:11,961][func.train][WARNING] - [MAIN] Data-to-Parameter-Ratio is outside the interval [1:1 to 10:1]
+[2024-06-24 13:06:11,962][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-06-24 13:06:11,963][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-06-24 13:06:12,719][func.train][WARNING] - Loaded model from checkpoint_best.pth (ep 0.000000)
+[2024-06-24 13:06:12,719][func.train][INFO] - Wrapping model into DP
+[2024-06-24 13:06:12,888][func.train][INFO] - Starting test_only
+[2024-06-24 13:06:12,891][func.train][INFO] - [EVAL] Epoch: 1 | Anticipation time (s): 60 | Max anticipation time (m): 18 | Step size (m): 1 | Max auto-reg. steps: 18
+[2024-06-24 13:06:12,892][func.train][INFO] - [EVAL] X-axis values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+[2024-06-24 13:06:14,767][func.train][INFO] - [TESTING] video: 15 | frame: 63 / 3653
+[2024-06-24 13:06:15,414][func.train][INFO] - [TESTING] video: 15 | frame: 127 / 3653
+[2024-06-24 13:06:16,098][func.train][INFO] - [TESTING] video: 15 | frame: 191 / 3653
+[2024-06-24 13:06:16,688][func.train][INFO] - [TESTING] video: 15 | frame: 255 / 3653
+[2024-06-24 13:06:17,276][func.train][INFO] - [TESTING] video: 15 | frame: 319 / 3653
+[2024-06-24 13:06:17,868][func.train][INFO] - [TESTING] video: 15 | frame: 383 / 3653
+[2024-06-24 13:06:18,475][func.train][INFO] - [TESTING] video: 15 | frame: 447 / 3653
+[2024-06-24 13:06:19,094][func.train][INFO] - [TESTING] video: 15 | frame: 511 / 3653
+[2024-06-24 13:06:19,724][func.train][INFO] - [TESTING] video: 15 | frame: 575 / 3653
+[2024-06-24 13:06:20,393][func.train][INFO] - [TESTING] video: 15 | frame: 639 / 3653
+[2024-06-24 13:06:21,042][func.train][INFO] - [TESTING] video: 15 | frame: 703 / 3653
+[2024-06-24 13:06:21,675][func.train][INFO] - [TESTING] video: 15 | frame: 767 / 3653
+[2024-06-24 13:06:22,258][func.train][INFO] - [TESTING] video: 15 | frame: 831 / 3653
+[2024-06-24 13:06:22,886][func.train][INFO] - [TESTING] video: 15 | frame: 895 / 3653
+[2024-06-24 13:06:23,501][func.train][INFO] - [TESTING] video: 15 | frame: 959 / 3653
+[2024-06-24 13:06:24,114][func.train][INFO] - [TESTING] video: 15 | frame: 1023 / 3653
+[2024-06-24 13:06:24,825][func.train][INFO] - [TESTING] video: 15 | frame: 1087 / 3653
+[2024-06-24 13:06:25,488][func.train][INFO] - [TESTING] video: 15 | frame: 1151 / 3653
+[2024-06-24 13:06:26,135][func.train][INFO] - [TESTING] video: 15 | frame: 1215 / 3653
+[2024-06-24 13:06:26,806][func.train][INFO] - [TESTING] video: 15 | frame: 1279 / 3653
+[2024-06-24 13:06:27,424][func.train][INFO] - [TESTING] video: 15 | frame: 1343 / 3653
+[2024-06-24 13:06:28,046][func.train][INFO] - [TESTING] video: 15 | frame: 1407 / 3653
+[2024-06-24 13:06:28,678][func.train][INFO] - [TESTING] video: 15 | frame: 1471 / 3653
+[2024-06-24 13:06:29,301][func.train][INFO] - [TESTING] video: 15 | frame: 1535 / 3653
+[2024-06-24 13:06:29,965][func.train][INFO] - [TESTING] video: 15 | frame: 1599 / 3653
+[2024-06-24 13:06:30,611][func.train][INFO] - [TESTING] video: 15 | frame: 1663 / 3653
+[2024-06-24 13:06:31,213][func.train][INFO] - [TESTING] video: 15 | frame: 1727 / 3653
+[2024-06-24 13:06:31,859][func.train][INFO] - [TESTING] video: 15 | frame: 1791 / 3653
+[2024-06-24 13:06:32,548][func.train][INFO] - [TESTING] video: 15 | frame: 1855 / 3653
+[2024-06-24 13:06:33,158][func.train][INFO] - [TESTING] video: 15 | frame: 1919 / 3653
+[2024-06-24 13:06:33,762][func.train][INFO] - [TESTING] video: 15 | frame: 1983 / 3653
+[2024-06-24 13:06:34,326][func.train][INFO] - [TESTING] video: 15 | frame: 2047 / 3653
+[2024-06-24 13:06:34,924][func.train][INFO] - [TESTING] video: 15 | frame: 2111 / 3653
+[2024-06-24 13:06:35,523][func.train][INFO] - [TESTING] video: 15 | frame: 2175 / 3653
+[2024-06-24 13:06:36,078][func.train][INFO] - [TESTING] video: 15 | frame: 2239 / 3653
+[2024-06-24 13:06:36,720][func.train][INFO] - [TESTING] video: 15 | frame: 2303 / 3653
+[2024-06-24 13:06:37,263][func.train][INFO] - [TESTING] video: 15 | frame: 2367 / 3653
+[2024-06-24 13:06:37,840][func.train][INFO] - [TESTING] video: 15 | frame: 2431 / 3653
+[2024-06-24 13:06:38,376][func.train][INFO] - [TESTING] video: 15 | frame: 2495 / 3653
+[2024-06-24 13:06:38,897][func.train][INFO] - [TESTING] video: 15 | frame: 2559 / 3653
+[2024-06-24 13:06:39,459][func.train][INFO] - [TESTING] video: 15 | frame: 2623 / 3653
+[2024-06-24 13:06:40,026][func.train][INFO] - [TESTING] video: 15 | frame: 2687 / 3653
+[2024-06-24 13:06:40,566][func.train][INFO] - [TESTING] video: 15 | frame: 2751 / 3653
+[2024-06-24 13:06:41,101][func.train][INFO] - [TESTING] video: 15 | frame: 2815 / 3653
+[2024-06-24 13:06:41,629][func.train][INFO] - [TESTING] video: 15 | frame: 2879 / 3653
+[2024-06-24 13:06:42,164][func.train][INFO] - [TESTING] video: 15 | frame: 2943 / 3653
+[2024-06-24 13:06:42,701][func.train][INFO] - [TESTING] video: 15 | frame: 3007 / 3653
+[2024-06-24 13:06:43,314][func.train][INFO] - [TESTING] video: 15 | frame: 3071 / 3653
+[2024-06-24 13:06:43,940][func.train][INFO] - [TESTING] video: 15 | frame: 3135 / 3653
+[2024-06-24 13:06:44,507][func.train][INFO] - [TESTING] video: 15 | frame: 3199 / 3653
+[2024-06-24 13:06:45,078][func.train][INFO] - [TESTING] video: 15 | frame: 3263 / 3653
+[2024-06-24 13:06:45,615][func.train][INFO] - [TESTING] video: 15 | frame: 3327 / 3653
+[2024-06-24 13:06:46,150][func.train][INFO] - [TESTING] video: 15 | frame: 3391 / 3653
+[2024-06-24 13:06:46,725][func.train][INFO] - [TESTING] video: 15 | frame: 3455 / 3653
+[2024-06-24 13:06:47,256][func.train][INFO] - [TESTING] video: 15 | frame: 3519 / 3653
+[2024-06-24 13:06:47,804][func.train][INFO] - [TESTING] video: 15 | frame: 3583 / 3653
+[2024-06-24 13:06:48,387][func.train][INFO] - [TESTING] video: 15 | frame: 3647 / 3653
+[2024-06-24 13:06:48,675][func.train][INFO] - [TESTING] video: 15 | frame: 3652 / 3653
+[2024-06-24 13:06:48,676][func.train][INFO] - [TESTING] video: 15 | video test time: 0.60 min | total test time: 0.60 min
+[2024-06-24 13:06:52,324][func.train][INFO] - [TESTING] video: 15 | video_mean_curr_acc: 0.7848 | mean_acc_future_frames: 0.4621 | video_mean_cum_acc_future: 0.5371
+[2024-06-24 13:06:52,903][func.train][INFO] - [TESTING] video: 16 | frame: 63 / 3612
+[2024-06-24 13:06:53,436][func.train][INFO] - [TESTING] video: 16 | frame: 127 / 3612
+[2024-06-24 13:06:53,985][func.train][INFO] - [TESTING] video: 16 | frame: 191 / 3612
+[2024-06-24 13:06:54,595][func.train][INFO] - [TESTING] video: 16 | frame: 255 / 3612
+[2024-06-24 13:06:55,172][func.train][INFO] - [TESTING] video: 16 | frame: 319 / 3612
+[2024-06-24 13:06:55,757][func.train][INFO] - [TESTING] video: 16 | frame: 383 / 3612
+[2024-06-24 13:06:56,336][func.train][INFO] - [TESTING] video: 16 | frame: 447 / 3612
+[2024-06-24 13:06:56,918][func.train][INFO] - [TESTING] video: 16 | frame: 511 / 3612
+[2024-06-24 13:06:57,485][func.train][INFO] - [TESTING] video: 16 | frame: 575 / 3612
+[2024-06-24 13:06:58,096][func.train][INFO] - [TESTING] video: 16 | frame: 639 / 3612
+[2024-06-24 13:06:58,753][func.train][INFO] - [TESTING] video: 16 | frame: 703 / 3612
+[2024-06-24 13:06:59,331][func.train][INFO] - [TESTING] video: 16 | frame: 767 / 3612
+[2024-06-24 13:06:59,932][func.train][INFO] - [TESTING] video: 16 | frame: 831 / 3612
+[2024-06-24 13:07:00,506][func.train][INFO] - [TESTING] video: 16 | frame: 895 / 3612
+[2024-06-24 13:07:01,082][func.train][INFO] - [TESTING] video: 16 | frame: 959 / 3612
+[2024-06-24 13:07:01,746][func.train][INFO] - [TESTING] video: 16 | frame: 1023 / 3612
+[2024-06-24 13:07:02,338][func.train][INFO] - [TESTING] video: 16 | frame: 1087 / 3612
+[2024-06-24 13:07:02,940][func.train][INFO] - [TESTING] video: 16 | frame: 1151 / 3612
+[2024-06-24 13:07:03,574][func.train][INFO] - [TESTING] video: 16 | frame: 1215 / 3612
+[2024-06-24 13:07:04,220][func.train][INFO] - [TESTING] video: 16 | frame: 1279 / 3612
+[2024-06-24 13:07:04,951][func.train][INFO] - [TESTING] video: 16 | frame: 1343 / 3612
+[2024-06-24 13:07:05,600][func.train][INFO] - [TESTING] video: 16 | frame: 1407 / 3612
+[2024-06-24 13:07:06,280][func.train][INFO] - [TESTING] video: 16 | frame: 1471 / 3612
+[2024-06-24 13:07:06,970][func.train][INFO] - [TESTING] video: 16 | frame: 1535 / 3612
+[2024-06-24 13:07:07,717][func.train][INFO] - [TESTING] video: 16 | frame: 1599 / 3612
+[2024-06-24 13:07:08,403][func.train][INFO] - [TESTING] video: 16 | frame: 1663 / 3612
+[2024-06-24 13:07:09,019][func.train][INFO] - [TESTING] video: 16 | frame: 1727 / 3612
+[2024-06-24 13:07:09,634][func.train][INFO] - [TESTING] video: 16 | frame: 1791 / 3612
+[2024-06-24 13:07:10,311][func.train][INFO] - [TESTING] video: 16 | frame: 1855 / 3612
+[2024-06-24 13:07:10,947][func.train][INFO] - [TESTING] video: 16 | frame: 1919 / 3612
+[2024-06-24 13:07:11,529][func.train][INFO] - [TESTING] video: 16 | frame: 1983 / 3612
+[2024-06-24 13:07:12,171][func.train][INFO] - [TESTING] video: 16 | frame: 2047 / 3612
+[2024-06-24 13:07:12,774][func.train][INFO] - [TESTING] video: 16 | frame: 2111 / 3612
+[2024-06-24 13:07:13,363][func.train][INFO] - [TESTING] video: 16 | frame: 2175 / 3612
+[2024-06-24 13:07:13,974][func.train][INFO] - [TESTING] video: 16 | frame: 2239 / 3612
+[2024-06-24 13:07:14,510][func.train][INFO] - [TESTING] video: 16 | frame: 2303 / 3612
+[2024-06-24 13:07:15,092][func.train][INFO] - [TESTING] video: 16 | frame: 2367 / 3612
+[2024-06-24 13:07:15,636][func.train][INFO] - [TESTING] video: 16 | frame: 2431 / 3612
+[2024-06-24 13:07:16,165][func.train][INFO] - [TESTING] video: 16 | frame: 2495 / 3612
+[2024-06-24 13:07:16,715][func.train][INFO] - [TESTING] video: 16 | frame: 2559 / 3612
+[2024-06-24 13:07:17,239][func.train][INFO] - [TESTING] video: 16 | frame: 2623 / 3612
+[2024-06-24 13:07:17,815][func.train][INFO] - [TESTING] video: 16 | frame: 2687 / 3612
+[2024-06-24 13:07:18,368][func.train][INFO] - [TESTING] video: 16 | frame: 2751 / 3612
+[2024-06-24 13:07:18,907][func.train][INFO] - [TESTING] video: 16 | frame: 2815 / 3612
+[2024-06-24 13:07:19,516][func.train][INFO] - [TESTING] video: 16 | frame: 2879 / 3612
+[2024-06-24 13:07:20,063][func.train][INFO] - [TESTING] video: 16 | frame: 2943 / 3612
+[2024-06-24 13:07:20,600][func.train][INFO] - [TESTING] video: 16 | frame: 3007 / 3612
+[2024-06-24 13:07:21,129][func.train][INFO] - [TESTING] video: 16 | frame: 3071 / 3612
+[2024-06-24 13:07:21,712][func.train][INFO] - [TESTING] video: 16 | frame: 3135 / 3612
+[2024-06-24 13:07:22,247][func.train][INFO] - [TESTING] video: 16 | frame: 3199 / 3612
+[2024-06-24 13:07:22,780][func.train][INFO] - [TESTING] video: 16 | frame: 3263 / 3612
+[2024-06-24 13:07:23,360][func.train][INFO] - [TESTING] video: 16 | frame: 3327 / 3612
+[2024-06-24 13:07:23,933][func.train][INFO] - [TESTING] video: 16 | frame: 3391 / 3612
+[2024-06-24 13:07:24,518][func.train][INFO] - [TESTING] video: 16 | frame: 3455 / 3612
+[2024-06-24 13:07:25,042][func.train][INFO] - [TESTING] video: 16 | frame: 3519 / 3612
+[2024-06-24 13:07:25,588][func.train][INFO] - [TESTING] video: 16 | frame: 3583 / 3612
+[2024-06-24 13:07:27,174][func.train][INFO] - [TESTING] video: 16 | frame: 3611 / 3612
+[2024-06-24 13:07:27,175][func.train][INFO] - [TESTING] video: 16 | video test time: 0.58 min | total test time: 1.24 min
+[2024-06-24 13:07:30,532][func.train][INFO] - [TESTING] video: 16 | video_mean_curr_acc: 0.7949 | mean_acc_future_frames: 0.5402 | video_mean_cum_acc_future: 0.5886
+[2024-06-24 13:07:31,070][func.train][INFO] - [TESTING] video: 17 | frame: 63 / 4678
+[2024-06-24 13:07:31,571][func.train][INFO] - [TESTING] video: 17 | frame: 127 / 4678
+[2024-06-24 13:07:32,113][func.train][INFO] - [TESTING] video: 17 | frame: 191 / 4678
+[2024-06-24 13:07:32,737][func.train][INFO] - [TESTING] video: 17 | frame: 255 / 4678
+[2024-06-24 13:07:33,297][func.train][INFO] - [TESTING] video: 17 | frame: 319 / 4678
+[2024-06-24 13:07:33,855][func.train][INFO] - [TESTING] video: 17 | frame: 383 / 4678
+[2024-06-24 13:07:34,420][func.train][INFO] - [TESTING] video: 17 | frame: 447 / 4678
+[2024-06-24 13:07:35,021][func.train][INFO] - [TESTING] video: 17 | frame: 511 / 4678
+[2024-06-24 13:07:35,622][func.train][INFO] - [TESTING] video: 17 | frame: 575 / 4678
+[2024-06-24 13:07:36,192][func.train][INFO] - [TESTING] video: 17 | frame: 639 / 4678
+[2024-06-24 13:07:36,793][func.train][INFO] - [TESTING] video: 17 | frame: 703 / 4678
+[2024-06-24 13:07:37,368][func.train][INFO] - [TESTING] video: 17 | frame: 767 / 4678
+[2024-06-24 13:07:37,942][func.train][INFO] - [TESTING] video: 17 | frame: 831 / 4678
+[2024-06-24 13:07:38,533][func.train][INFO] - [TESTING] video: 17 | frame: 895 / 4678
+[2024-06-24 13:07:39,108][func.train][INFO] - [TESTING] video: 17 | frame: 959 / 4678
+[2024-06-24 13:07:39,688][func.train][INFO] - [TESTING] video: 17 | frame: 1023 / 4678
+[2024-06-24 13:07:40,274][func.train][INFO] - [TESTING] video: 17 | frame: 1087 / 4678
+[2024-06-24 13:07:40,897][func.train][INFO] - [TESTING] video: 17 | frame: 1151 / 4678
+[2024-06-24 13:07:41,522][func.train][INFO] - [TESTING] video: 17 | frame: 1215 / 4678
+[2024-06-24 13:07:42,098][func.train][INFO] - [TESTING] video: 17 | frame: 1279 / 4678
+[2024-06-24 13:07:42,790][func.train][INFO] - [TESTING] video: 17 | frame: 1343 / 4678
+[2024-06-24 13:07:43,398][func.train][INFO] - [TESTING] video: 17 | frame: 1407 / 4678
+[2024-06-24 13:07:43,982][func.train][INFO] - [TESTING] video: 17 | frame: 1471 / 4678
+[2024-06-24 13:07:44,556][func.train][INFO] - [TESTING] video: 17 | frame: 1535 / 4678
+[2024-06-24 13:07:45,173][func.train][INFO] - [TESTING] video: 17 | frame: 1599 / 4678
+[2024-06-24 13:07:45,781][func.train][INFO] - [TESTING] video: 17 | frame: 1663 / 4678
+[2024-06-24 13:07:46,509][func.train][INFO] - [TESTING] video: 17 | frame: 1727 / 4678
+[2024-06-24 13:07:47,183][func.train][INFO] - [TESTING] video: 17 | frame: 1791 / 4678
+[2024-06-24 13:07:47,813][func.train][INFO] - [TESTING] video: 17 | frame: 1855 / 4678
+[2024-06-24 13:07:48,409][func.train][INFO] - [TESTING] video: 17 | frame: 1919 / 4678
+[2024-06-24 13:07:49,048][func.train][INFO] - [TESTING] video: 17 | frame: 1983 / 4678
+[2024-06-24 13:07:49,661][func.train][INFO] - [TESTING] video: 17 | frame: 2047 / 4678
+[2024-06-24 13:07:50,273][func.train][INFO] - [TESTING] video: 17 | frame: 2111 / 4678
+[2024-06-24 13:07:50,902][func.train][INFO] - [TESTING] video: 17 | frame: 2175 / 4678
+[2024-06-24 13:07:51,520][func.train][INFO] - [TESTING] video: 17 | frame: 2239 / 4678
+[2024-06-24 13:07:52,117][func.train][INFO] - [TESTING] video: 17 | frame: 2303 / 4678
+[2024-06-24 13:07:52,759][func.train][INFO] - [TESTING] video: 17 | frame: 2367 / 4678
+[2024-06-24 13:07:53,376][func.train][INFO] - [TESTING] video: 17 | frame: 2431 / 4678
+[2024-06-24 13:07:53,995][func.train][INFO] - [TESTING] video: 17 | frame: 2495 / 4678
+[2024-06-24 13:07:54,606][func.train][INFO] - [TESTING] video: 17 | frame: 2559 / 4678
+[2024-06-24 13:07:55,218][func.train][INFO] - [TESTING] video: 17 | frame: 2623 / 4678
+[2024-06-24 13:07:55,883][func.train][INFO] - [TESTING] video: 17 | frame: 2687 / 4678
+[2024-06-24 13:07:56,450][func.train][INFO] - [TESTING] video: 17 | frame: 2751 / 4678
+[2024-06-24 13:07:57,025][func.train][INFO] - [TESTING] video: 17 | frame: 2815 / 4678
+[2024-06-24 13:07:57,610][func.train][INFO] - [TESTING] video: 17 | frame: 2879 / 4678
+[2024-06-24 13:07:58,366][func.train][INFO] - [TESTING] video: 17 | frame: 2943 / 4678
+[2024-06-24 13:07:58,965][func.train][INFO] - [TESTING] video: 17 | frame: 3007 / 4678
+[2024-06-24 13:07:59,540][func.train][INFO] - [TESTING] video: 17 | frame: 3071 / 4678
+[2024-06-24 13:08:00,134][func.train][INFO] - [TESTING] video: 17 | frame: 3135 / 4678
+[2024-06-24 13:08:00,713][func.train][INFO] - [TESTING] video: 17 | frame: 3199 / 4678
+[2024-06-24 13:08:01,286][func.train][INFO] - [TESTING] video: 17 | frame: 3263 / 4678
+[2024-06-24 13:08:01,898][func.train][INFO] - [TESTING] video: 17 | frame: 3327 / 4678
+[2024-06-24 13:08:02,518][func.train][INFO] - [TESTING] video: 17 | frame: 3391 / 4678
+[2024-06-24 13:08:03,139][func.train][INFO] - [TESTING] video: 17 | frame: 3455 / 4678
+[2024-06-24 13:08:03,695][func.train][INFO] - [TESTING] video: 17 | frame: 3519 / 4678
+[2024-06-24 13:08:04,354][func.train][INFO] - [TESTING] video: 17 | frame: 3583 / 4678
+[2024-06-24 13:08:04,952][func.train][INFO] - [TESTING] video: 17 | frame: 3647 / 4678
+[2024-06-24 13:08:05,478][func.train][INFO] - [TESTING] video: 17 | frame: 3711 / 4678
+[2024-06-24 13:08:06,023][func.train][INFO] - [TESTING] video: 17 | frame: 3775 / 4678
+[2024-06-24 13:08:06,552][func.train][INFO] - [TESTING] video: 17 | frame: 3839 / 4678
+[2024-06-24 13:08:07,152][func.train][INFO] - [TESTING] video: 17 | frame: 3903 / 4678
+[2024-06-24 13:08:07,710][func.train][INFO] - [TESTING] video: 17 | frame: 3967 / 4678
+[2024-06-24 13:08:08,290][func.train][INFO] - [TESTING] video: 17 | frame: 4031 / 4678
+[2024-06-24 13:08:08,934][func.train][INFO] - [TESTING] video: 17 | frame: 4095 / 4678
+[2024-06-24 13:08:09,493][func.train][INFO] - [TESTING] video: 17 | frame: 4159 / 4678
+[2024-06-24 13:08:10,073][func.train][INFO] - [TESTING] video: 17 | frame: 4223 / 4678
+[2024-06-24 13:08:10,649][func.train][INFO] - [TESTING] video: 17 | frame: 4287 / 4678
+[2024-06-24 13:08:11,252][func.train][INFO] - [TESTING] video: 17 | frame: 4351 / 4678
+[2024-06-24 13:08:11,818][func.train][INFO] - [TESTING] video: 17 | frame: 4415 / 4678
+[2024-06-24 13:08:12,409][func.train][INFO] - [TESTING] video: 17 | frame: 4479 / 4678
+[2024-06-24 13:08:12,959][func.train][INFO] - [TESTING] video: 17 | frame: 4543 / 4678
+[2024-06-24 13:08:13,598][func.train][INFO] - [TESTING] video: 17 | frame: 4607 / 4678
+[2024-06-24 13:08:14,123][func.train][INFO] - [TESTING] video: 17 | frame: 4671 / 4678
+[2024-06-24 13:08:14,479][func.train][INFO] - [TESTING] video: 17 | frame: 4677 / 4678
+[2024-06-24 13:08:14,480][func.train][INFO] - [TESTING] video: 17 | video test time: 0.73 min | total test time: 2.03 min
+[2024-06-24 13:08:18,991][func.train][INFO] - [TESTING] video: 17 | video_mean_curr_acc: 0.9091 | mean_acc_future_frames: 0.37 | video_mean_cum_acc_future: 0.4484
+[2024-06-24 13:08:19,594][func.train][INFO] - [TESTING] video: 18 | frame: 63 / 3546
+[2024-06-24 13:08:20,113][func.train][INFO] - [TESTING] video: 18 | frame: 127 / 3546
+[2024-06-24 13:08:20,687][func.train][INFO] - [TESTING] video: 18 | frame: 191 / 3546
+[2024-06-24 13:08:21,234][func.train][INFO] - [TESTING] video: 18 | frame: 255 / 3546
+[2024-06-24 13:08:21,839][func.train][INFO] - [TESTING] video: 18 | frame: 319 / 3546
+[2024-06-24 13:08:22,414][func.train][INFO] - [TESTING] video: 18 | frame: 383 / 3546
+[2024-06-24 13:08:23,004][func.train][INFO] - [TESTING] video: 18 | frame: 447 / 3546
+[2024-06-24 13:08:23,692][func.train][INFO] - [TESTING] video: 18 | frame: 511 / 3546
+[2024-06-24 13:08:24,364][func.train][INFO] - [TESTING] video: 18 | frame: 575 / 3546
+[2024-06-24 13:08:24,941][func.train][INFO] - [TESTING] video: 18 | frame: 639 / 3546
+[2024-06-24 13:08:25,509][func.train][INFO] - [TESTING] video: 18 | frame: 703 / 3546
+[2024-06-24 13:08:26,145][func.train][INFO] - [TESTING] video: 18 | frame: 767 / 3546
+[2024-06-24 13:08:26,798][func.train][INFO] - [TESTING] video: 18 | frame: 831 / 3546
+[2024-06-24 13:08:27,501][func.train][INFO] - [TESTING] video: 18 | frame: 895 / 3546
+[2024-06-24 13:08:28,204][func.train][INFO] - [TESTING] video: 18 | frame: 959 / 3546
+[2024-06-24 13:08:28,909][func.train][INFO] - [TESTING] video: 18 | frame: 1023 / 3546
+[2024-06-24 13:08:29,521][func.train][INFO] - [TESTING] video: 18 | frame: 1087 / 3546
+[2024-06-24 13:08:30,192][func.train][INFO] - [TESTING] video: 18 | frame: 1151 / 3546
+[2024-06-24 13:08:30,777][func.train][INFO] - [TESTING] video: 18 | frame: 1215 / 3546
+[2024-06-24 13:08:31,373][func.train][INFO] - [TESTING] video: 18 | frame: 1279 / 3546
+[2024-06-24 13:08:32,018][func.train][INFO] - [TESTING] video: 18 | frame: 1343 / 3546
+[2024-06-24 13:08:32,648][func.train][INFO] - [TESTING] video: 18 | frame: 1407 / 3546
+[2024-06-24 13:08:33,325][func.train][INFO] - [TESTING] video: 18 | frame: 1471 / 3546
+[2024-06-24 13:08:33,959][func.train][INFO] - [TESTING] video: 18 | frame: 1535 / 3546
+[2024-06-24 13:08:34,598][func.train][INFO] - [TESTING] video: 18 | frame: 1599 / 3546
+[2024-06-24 13:08:35,222][func.train][INFO] - [TESTING] video: 18 | frame: 1663 / 3546
+[2024-06-24 13:08:35,885][func.train][INFO] - [TESTING] video: 18 | frame: 1727 / 3546
+[2024-06-24 13:08:36,503][func.train][INFO] - [TESTING] video: 18 | frame: 1791 / 3546
+[2024-06-24 13:08:37,165][func.train][INFO] - [TESTING] video: 18 | frame: 1855 / 3546
+[2024-06-24 13:08:37,874][func.train][INFO] - [TESTING] video: 18 | frame: 1919 / 3546
+[2024-06-24 13:08:38,583][func.train][INFO] - [TESTING] video: 18 | frame: 1983 / 3546
+[2024-06-24 13:08:39,181][func.train][INFO] - [TESTING] video: 18 | frame: 2047 / 3546
+[2024-06-24 13:08:39,842][func.train][INFO] - [TESTING] video: 18 | frame: 2111 / 3546
+[2024-06-24 13:08:40,466][func.train][INFO] - [TESTING] video: 18 | frame: 2175 / 3546
+[2024-06-24 13:08:41,055][func.train][INFO] - [TESTING] video: 18 | frame: 2239 / 3546
+[2024-06-24 13:08:41,607][func.train][INFO] - [TESTING] video: 18 | frame: 2303 / 3546
+[2024-06-24 13:08:42,140][func.train][INFO] - [TESTING] video: 18 | frame: 2367 / 3546
+[2024-06-24 13:08:42,689][func.train][INFO] - [TESTING] video: 18 | frame: 2431 / 3546
+[2024-06-24 13:08:43,237][func.train][INFO] - [TESTING] video: 18 | frame: 2495 / 3546
+[2024-06-24 13:08:43,856][func.train][INFO] - [TESTING] video: 18 | frame: 2559 / 3546
+[2024-06-24 13:08:44,477][func.train][INFO] - [TESTING] video: 18 | frame: 2623 / 3546
+[2024-06-24 13:08:45,024][func.train][INFO] - [TESTING] video: 18 | frame: 2687 / 3546
+[2024-06-24 13:08:45,619][func.train][INFO] - [TESTING] video: 18 | frame: 2751 / 3546
+[2024-06-24 13:08:46,296][func.train][INFO] - [TESTING] video: 18 | frame: 2815 / 3546
+[2024-06-24 13:08:46,848][func.train][INFO] - [TESTING] video: 18 | frame: 2879 / 3546
+[2024-06-24 13:08:47,463][func.train][INFO] - [TESTING] video: 18 | frame: 2943 / 3546
+[2024-06-24 13:08:48,029][func.train][INFO] - [TESTING] video: 18 | frame: 3007 / 3546
+[2024-06-24 13:08:48,607][func.train][INFO] - [TESTING] video: 18 | frame: 3071 / 3546
+[2024-06-24 13:08:49,164][func.train][INFO] - [TESTING] video: 18 | frame: 3135 / 3546
+[2024-06-24 13:08:49,713][func.train][INFO] - [TESTING] video: 18 | frame: 3199 / 3546
+[2024-06-24 13:08:50,345][func.train][INFO] - [TESTING] video: 18 | frame: 3263 / 3546
+[2024-06-24 13:08:50,955][func.train][INFO] - [TESTING] video: 18 | frame: 3327 / 3546
+[2024-06-24 13:08:51,559][func.train][INFO] - [TESTING] video: 18 | frame: 3391 / 3546
+[2024-06-24 13:08:52,109][func.train][INFO] - [TESTING] video: 18 | frame: 3455 / 3546
+[2024-06-24 13:08:52,702][func.train][INFO] - [TESTING] video: 18 | frame: 3519 / 3546
+[2024-06-24 13:08:54,197][func.train][INFO] - [TESTING] video: 18 | frame: 3545 / 3546
+[2024-06-24 13:08:54,198][func.train][INFO] - [TESTING] video: 18 | video test time: 0.59 min | total test time: 2.69 min
+[2024-06-24 13:08:57,840][func.train][INFO] - [TESTING] video: 18 | video_mean_curr_acc: 0.7524 | mean_acc_future_frames: 0.5248 | video_mean_cum_acc_future: 0.5704
+[2024-06-24 13:08:58,391][func.train][INFO] - [TESTING] video: 19 | frame: 63 / 3413
+[2024-06-24 13:08:58,909][func.train][INFO] - [TESTING] video: 19 | frame: 127 / 3413
+[2024-06-24 13:08:59,472][func.train][INFO] - [TESTING] video: 19 | frame: 191 / 3413
+[2024-06-24 13:09:00,062][func.train][INFO] - [TESTING] video: 19 | frame: 255 / 3413
+[2024-06-24 13:09:00,624][func.train][INFO] - [TESTING] video: 19 | frame: 319 / 3413
+[2024-06-24 13:09:01,274][func.train][INFO] - [TESTING] video: 19 | frame: 383 / 3413
+[2024-06-24 13:09:01,940][func.train][INFO] - [TESTING] video: 19 | frame: 447 / 3413
+[2024-06-24 13:09:02,649][func.train][INFO] - [TESTING] video: 19 | frame: 511 / 3413
+[2024-06-24 13:09:03,280][func.train][INFO] - [TESTING] video: 19 | frame: 575 / 3413
+[2024-06-24 13:09:03,887][func.train][INFO] - [TESTING] video: 19 | frame: 639 / 3413
+[2024-06-24 13:09:04,471][func.train][INFO] - [TESTING] video: 19 | frame: 703 / 3413
+[2024-06-24 13:09:05,138][func.train][INFO] - [TESTING] video: 19 | frame: 767 / 3413
+[2024-06-24 13:09:05,828][func.train][INFO] - [TESTING] video: 19 | frame: 831 / 3413
+[2024-06-24 13:09:06,434][func.train][INFO] - [TESTING] video: 19 | frame: 895 / 3413
+[2024-06-24 13:09:07,146][func.train][INFO] - [TESTING] video: 19 | frame: 959 / 3413
+[2024-06-24 13:09:07,792][func.train][INFO] - [TESTING] video: 19 | frame: 1023 / 3413
+[2024-06-24 13:09:08,500][func.train][INFO] - [TESTING] video: 19 | frame: 1087 / 3413
+[2024-06-24 13:09:09,127][func.train][INFO] - [TESTING] video: 19 | frame: 1151 / 3413
+[2024-06-24 13:09:09,815][func.train][INFO] - [TESTING] video: 19 | frame: 1215 / 3413
+[2024-06-24 13:09:10,481][func.train][INFO] - [TESTING] video: 19 | frame: 1279 / 3413
+[2024-06-24 13:09:11,129][func.train][INFO] - [TESTING] video: 19 | frame: 1343 / 3413
+[2024-06-24 13:09:11,847][func.train][INFO] - [TESTING] video: 19 | frame: 1407 / 3413
+[2024-06-24 13:09:12,548][func.train][INFO] - [TESTING] video: 19 | frame: 1471 / 3413
+[2024-06-24 13:09:13,205][func.train][INFO] - [TESTING] video: 19 | frame: 1535 / 3413
+[2024-06-24 13:09:13,886][func.train][INFO] - [TESTING] video: 19 | frame: 1599 / 3413
+[2024-06-24 13:09:14,541][func.train][INFO] - [TESTING] video: 19 | frame: 1663 / 3413
+[2024-06-24 13:09:15,264][func.train][INFO] - [TESTING] video: 19 | frame: 1727 / 3413
+[2024-06-24 13:09:15,943][func.train][INFO] - [TESTING] video: 19 | frame: 1791 / 3413
+[2024-06-24 13:09:16,598][func.train][INFO] - [TESTING] video: 19 | frame: 1855 / 3413
+[2024-06-24 13:09:17,207][func.train][INFO] - [TESTING] video: 19 | frame: 1919 / 3413
+[2024-06-24 13:09:17,910][func.train][INFO] - [TESTING] video: 19 | frame: 1983 / 3413
+[2024-06-24 13:09:18,526][func.train][INFO] - [TESTING] video: 19 | frame: 2047 / 3413
+[2024-06-24 13:09:19,173][func.train][INFO] - [TESTING] video: 19 | frame: 2111 / 3413
+[2024-06-24 13:09:19,807][func.train][INFO] - [TESTING] video: 19 | frame: 2175 / 3413
+[2024-06-24 13:09:20,515][func.train][INFO] - [TESTING] video: 19 | frame: 2239 / 3413
+[2024-06-24 13:09:21,234][func.train][INFO] - [TESTING] video: 19 | frame: 2303 / 3413
+[2024-06-24 13:09:21,842][func.train][INFO] - [TESTING] video: 19 | frame: 2367 / 3413
+[2024-06-24 13:09:22,467][func.train][INFO] - [TESTING] video: 19 | frame: 2431 / 3413
+[2024-06-24 13:09:23,026][func.train][INFO] - [TESTING] video: 19 | frame: 2495 / 3413
+[2024-06-24 13:09:23,645][func.train][INFO] - [TESTING] video: 19 | frame: 2559 / 3413
+[2024-06-24 13:09:24,230][func.train][INFO] - [TESTING] video: 19 | frame: 2623 / 3413
+[2024-06-24 13:09:24,850][func.train][INFO] - [TESTING] video: 19 | frame: 2687 / 3413
+[2024-06-24 13:09:25,490][func.train][INFO] - [TESTING] video: 19 | frame: 2751 / 3413
+[2024-06-24 13:09:26,040][func.train][INFO] - [TESTING] video: 19 | frame: 2815 / 3413
+[2024-06-24 13:09:26,641][func.train][INFO] - [TESTING] video: 19 | frame: 2879 / 3413
+[2024-06-24 13:09:27,179][func.train][INFO] - [TESTING] video: 19 | frame: 2943 / 3413
+[2024-06-24 13:09:27,761][func.train][INFO] - [TESTING] video: 19 | frame: 3007 / 3413
+[2024-06-24 13:09:28,349][func.train][INFO] - [TESTING] video: 19 | frame: 3071 / 3413
+[2024-06-24 13:09:28,897][func.train][INFO] - [TESTING] video: 19 | frame: 3135 / 3413
+[2024-06-24 13:09:29,423][func.train][INFO] - [TESTING] video: 19 | frame: 3199 / 3413
+[2024-06-24 13:09:30,001][func.train][INFO] - [TESTING] video: 19 | frame: 3263 / 3413
+[2024-06-24 13:09:30,636][func.train][INFO] - [TESTING] video: 19 | frame: 3327 / 3413
+[2024-06-24 13:09:31,185][func.train][INFO] - [TESTING] video: 19 | frame: 3391 / 3413
+[2024-06-24 13:09:32,485][func.train][INFO] - [TESTING] video: 19 | frame: 3412 / 3413
+[2024-06-24 13:09:32,486][func.train][INFO] - [TESTING] video: 19 | video test time: 0.58 min | total test time: 3.33 min
+[2024-06-24 13:09:36,283][func.train][INFO] - [TESTING] video: 19 | video_mean_curr_acc: 0.6619 | mean_acc_future_frames: 0.4727 | video_mean_cum_acc_future: 0.4934
+[2024-06-24 13:09:36,904][func.train][INFO] - [TESTING] video: 20 | frame: 63 / 4832
+[2024-06-24 13:09:37,437][func.train][INFO] - [TESTING] video: 20 | frame: 127 / 4832
+[2024-06-24 13:09:38,027][func.train][INFO] - [TESTING] video: 20 | frame: 191 / 4832
+[2024-06-24 13:09:38,646][func.train][INFO] - [TESTING] video: 20 | frame: 255 / 4832
+[2024-06-24 13:09:39,220][func.train][INFO] - [TESTING] video: 20 | frame: 319 / 4832
+[2024-06-24 13:09:39,929][func.train][INFO] - [TESTING] video: 20 | frame: 383 / 4832
+[2024-06-24 13:09:40,533][func.train][INFO] - [TESTING] video: 20 | frame: 447 / 4832
+[2024-06-24 13:09:41,184][func.train][INFO] - [TESTING] video: 20 | frame: 511 / 4832
+[2024-06-24 13:09:41,861][func.train][INFO] - [TESTING] video: 20 | frame: 575 / 4832
+[2024-06-24 13:09:42,576][func.train][INFO] - [TESTING] video: 20 | frame: 639 / 4832
+[2024-06-24 13:09:43,252][func.train][INFO] - [TESTING] video: 20 | frame: 703 / 4832
+[2024-06-24 13:09:43,919][func.train][INFO] - [TESTING] video: 20 | frame: 767 / 4832
+[2024-06-24 13:09:44,569][func.train][INFO] - [TESTING] video: 20 | frame: 831 / 4832
+[2024-06-24 13:09:45,152][func.train][INFO] - [TESTING] video: 20 | frame: 895 / 4832
+[2024-06-24 13:09:45,816][func.train][INFO] - [TESTING] video: 20 | frame: 959 / 4832
+[2024-06-24 13:09:46,471][func.train][INFO] - [TESTING] video: 20 | frame: 1023 / 4832
+[2024-06-24 13:09:47,153][func.train][INFO] - [TESTING] video: 20 | frame: 1087 / 4832
+[2024-06-24 13:09:47,779][func.train][INFO] - [TESTING] video: 20 | frame: 1151 / 4832
+[2024-06-24 13:09:48,435][func.train][INFO] - [TESTING] video: 20 | frame: 1215 / 4832
+[2024-06-24 13:09:49,046][func.train][INFO] - [TESTING] video: 20 | frame: 1279 / 4832
+[2024-06-24 13:09:49,736][func.train][INFO] - [TESTING] video: 20 | frame: 1343 / 4832
+[2024-06-24 13:09:50,323][func.train][INFO] - [TESTING] video: 20 | frame: 1407 / 4832
+[2024-06-24 13:09:50,951][func.train][INFO] - [TESTING] video: 20 | frame: 1471 / 4832
+[2024-06-24 13:09:51,684][func.train][INFO] - [TESTING] video: 20 | frame: 1535 / 4832
+[2024-06-24 13:09:52,343][func.train][INFO] - [TESTING] video: 20 | frame: 1599 / 4832
+[2024-06-24 13:09:53,058][func.train][INFO] - [TESTING] video: 20 | frame: 1663 / 4832
+[2024-06-24 13:09:53,734][func.train][INFO] - [TESTING] video: 20 | frame: 1727 / 4832
+[2024-06-24 13:09:54,514][func.train][INFO] - [TESTING] video: 20 | frame: 1791 / 4832
+[2024-06-24 13:09:55,261][func.train][INFO] - [TESTING] video: 20 | frame: 1855 / 4832
+[2024-06-24 13:09:56,016][func.train][INFO] - [TESTING] video: 20 | frame: 1919 / 4832
+[2024-06-24 13:09:56,804][func.train][INFO] - [TESTING] video: 20 | frame: 1983 / 4832
+[2024-06-24 13:09:57,494][func.train][INFO] - [TESTING] video: 20 | frame: 2047 / 4832
+[2024-06-24 13:09:58,218][func.train][INFO] - [TESTING] video: 20 | frame: 2111 / 4832
+[2024-06-24 13:09:58,961][func.train][INFO] - [TESTING] video: 20 | frame: 2175 / 4832
+[2024-06-24 13:09:59,629][func.train][INFO] - [TESTING] video: 20 | frame: 2239 / 4832
+[2024-06-24 13:10:00,339][func.train][INFO] - [TESTING] video: 20 | frame: 2303 / 4832
+[2024-06-24 13:10:01,126][func.train][INFO] - [TESTING] video: 20 | frame: 2367 / 4832
+[2024-06-24 13:10:01,902][func.train][INFO] - [TESTING] video: 20 | frame: 2431 / 4832
+[2024-06-24 13:10:02,561][func.train][INFO] - [TESTING] video: 20 | frame: 2495 / 4832
+[2024-06-24 13:10:03,211][func.train][INFO] - [TESTING] video: 20 | frame: 2559 / 4832
+[2024-06-24 13:10:03,911][func.train][INFO] - [TESTING] video: 20 | frame: 2623 / 4832
+[2024-06-24 13:10:04,567][func.train][INFO] - [TESTING] video: 20 | frame: 2687 / 4832
+[2024-06-24 13:10:05,219][func.train][INFO] - [TESTING] video: 20 | frame: 2751 / 4832
+[2024-06-24 13:10:05,860][func.train][INFO] - [TESTING] video: 20 | frame: 2815 / 4832
+[2024-06-24 13:10:06,522][func.train][INFO] - [TESTING] video: 20 | frame: 2879 / 4832
+[2024-06-24 13:10:07,164][func.train][INFO] - [TESTING] video: 20 | frame: 2943 / 4832
+[2024-06-24 13:10:07,780][func.train][INFO] - [TESTING] video: 20 | frame: 3007 / 4832
+[2024-06-24 13:10:08,352][func.train][INFO] - [TESTING] video: 20 | frame: 3071 / 4832
+[2024-06-24 13:10:09,065][func.train][INFO] - [TESTING] video: 20 | frame: 3135 / 4832
+[2024-06-24 13:10:09,762][func.train][INFO] - [TESTING] video: 20 | frame: 3199 / 4832
+[2024-06-24 13:10:10,409][func.train][INFO] - [TESTING] video: 20 | frame: 3263 / 4832
+[2024-06-24 13:10:11,016][func.train][INFO] - [TESTING] video: 20 | frame: 3327 / 4832
+[2024-06-24 13:10:11,624][func.train][INFO] - [TESTING] video: 20 | frame: 3391 / 4832
+[2024-06-24 13:10:12,246][func.train][INFO] - [TESTING] video: 20 | frame: 3455 / 4832
+[2024-06-24 13:10:12,876][func.train][INFO] - [TESTING] video: 20 | frame: 3519 / 4832
+[2024-06-24 13:10:13,452][func.train][INFO] - [TESTING] video: 20 | frame: 3583 / 4832
+[2024-06-24 13:10:14,022][func.train][INFO] - [TESTING] video: 20 | frame: 3647 / 4832
+[2024-06-24 13:10:14,595][func.train][INFO] - [TESTING] video: 20 | frame: 3711 / 4832
+[2024-06-24 13:10:15,305][func.train][INFO] - [TESTING] video: 20 | frame: 3775 / 4832
+[2024-06-24 13:10:15,852][func.train][INFO] - [TESTING] video: 20 | frame: 3839 / 4832
+[2024-06-24 13:10:16,466][func.train][INFO] - [TESTING] video: 20 | frame: 3903 / 4832
+[2024-06-24 13:10:17,063][func.train][INFO] - [TESTING] video: 20 | frame: 3967 / 4832
+[2024-06-24 13:10:17,735][func.train][INFO] - [TESTING] video: 20 | frame: 4031 / 4832
+[2024-06-24 13:10:18,355][func.train][INFO] - [TESTING] video: 20 | frame: 4095 / 4832
+[2024-06-24 13:10:18,937][func.train][INFO] - [TESTING] video: 20 | frame: 4159 / 4832
+[2024-06-24 13:10:19,540][func.train][INFO] - [TESTING] video: 20 | frame: 4223 / 4832
+[2024-06-24 13:10:20,171][func.train][INFO] - [TESTING] video: 20 | frame: 4287 / 4832
+[2024-06-24 13:10:20,734][func.train][INFO] - [TESTING] video: 20 | frame: 4351 / 4832
+[2024-06-24 13:10:21,288][func.train][INFO] - [TESTING] video: 20 | frame: 4415 / 4832
+[2024-06-24 13:10:21,940][func.train][INFO] - [TESTING] video: 20 | frame: 4479 / 4832
+[2024-06-24 13:10:22,557][func.train][INFO] - [TESTING] video: 20 | frame: 4543 / 4832
+[2024-06-24 13:10:23,149][func.train][INFO] - [TESTING] video: 20 | frame: 4607 / 4832
+[2024-06-24 13:10:23,798][func.train][INFO] - [TESTING] video: 20 | frame: 4671 / 4832
+[2024-06-24 13:10:24,342][func.train][INFO] - [TESTING] video: 20 | frame: 4735 / 4832
+[2024-06-24 13:10:24,969][func.train][INFO] - [TESTING] video: 20 | frame: 4799 / 4832
+[2024-06-24 13:10:26,784][func.train][INFO] - [TESTING] video: 20 | frame: 4831 / 4832
+[2024-06-24 13:10:26,784][func.train][INFO] - [TESTING] video: 20 | video test time: 0.84 min | total test time: 4.23 min
+[2024-06-24 13:10:32,528][func.train][INFO] - [TESTING] video: 20 | video_mean_curr_acc: 0.7939 | mean_acc_future_frames: 0.6406 | video_mean_cum_acc_future: 0.7068
+[2024-06-24 13:10:33,177][func.train][INFO] - [TESTING] video: 21 | frame: 63 / 4326
+[2024-06-24 13:10:33,752][func.train][INFO] - [TESTING] video: 21 | frame: 127 / 4326
+[2024-06-24 13:10:34,377][func.train][INFO] - [TESTING] video: 21 | frame: 191 / 4326
+[2024-06-24 13:10:35,004][func.train][INFO] - [TESTING] video: 21 | frame: 255 / 4326
+[2024-06-24 13:10:35,612][func.train][INFO] - [TESTING] video: 21 | frame: 319 / 4326
+[2024-06-24 13:10:36,250][func.train][INFO] - [TESTING] video: 21 | frame: 383 / 4326
+[2024-06-24 13:10:36,923][func.train][INFO] - [TESTING] video: 21 | frame: 447 / 4326
+[2024-06-24 13:10:37,515][func.train][INFO] - [TESTING] video: 21 | frame: 511 / 4326
+[2024-06-24 13:10:38,191][func.train][INFO] - [TESTING] video: 21 | frame: 575 / 4326
+[2024-06-24 13:10:38,811][func.train][INFO] - [TESTING] video: 21 | frame: 639 / 4326
+[2024-06-24 13:10:39,509][func.train][INFO] - [TESTING] video: 21 | frame: 703 / 4326
+[2024-06-24 13:10:40,253][func.train][INFO] - [TESTING] video: 21 | frame: 767 / 4326
+[2024-06-24 13:10:40,864][func.train][INFO] - [TESTING] video: 21 | frame: 831 / 4326
+[2024-06-24 13:10:41,494][func.train][INFO] - [TESTING] video: 21 | frame: 895 / 4326
+[2024-06-24 13:10:42,216][func.train][INFO] - [TESTING] video: 21 | frame: 959 / 4326
+[2024-06-24 13:10:42,926][func.train][INFO] - [TESTING] video: 21 | frame: 1023 / 4326
+[2024-06-24 13:10:43,637][func.train][INFO] - [TESTING] video: 21 | frame: 1087 / 4326
+[2024-06-24 13:10:44,376][func.train][INFO] - [TESTING] video: 21 | frame: 1151 / 4326
+[2024-06-24 13:10:45,139][func.train][INFO] - [TESTING] video: 21 | frame: 1215 / 4326
+[2024-06-24 13:10:45,816][func.train][INFO] - [TESTING] video: 21 | frame: 1279 / 4326
+[2024-06-24 13:10:46,463][func.train][INFO] - [TESTING] video: 21 | frame: 1343 / 4326
+[2024-06-24 13:10:47,217][func.train][INFO] - [TESTING] video: 21 | frame: 1407 / 4326
+[2024-06-24 13:10:47,912][func.train][INFO] - [TESTING] video: 21 | frame: 1471 / 4326
+[2024-06-24 13:10:48,682][func.train][INFO] - [TESTING] video: 21 | frame: 1535 / 4326
+[2024-06-24 13:10:49,354][func.train][INFO] - [TESTING] video: 21 | frame: 1599 / 4326
+[2024-06-24 13:10:50,006][func.train][INFO] - [TESTING] video: 21 | frame: 1663 / 4326
+[2024-06-24 13:10:50,767][func.train][INFO] - [TESTING] video: 21 | frame: 1727 / 4326
+[2024-06-24 13:10:51,481][func.train][INFO] - [TESTING] video: 21 | frame: 1791 / 4326
+[2024-06-24 13:10:52,235][func.train][INFO] - [TESTING] video: 21 | frame: 1855 / 4326
+[2024-06-24 13:10:53,012][func.train][INFO] - [TESTING] video: 21 | frame: 1919 / 4326
+[2024-06-24 13:10:53,702][func.train][INFO] - [TESTING] video: 21 | frame: 1983 / 4326
+[2024-06-24 13:10:54,487][func.train][INFO] - [TESTING] video: 21 | frame: 2047 / 4326
+[2024-06-24 13:10:55,240][func.train][INFO] - [TESTING] video: 21 | frame: 2111 / 4326
+[2024-06-24 13:10:56,047][func.train][INFO] - [TESTING] video: 21 | frame: 2175 / 4326
+[2024-06-24 13:10:56,738][func.train][INFO] - [TESTING] video: 21 | frame: 2239 / 4326
+[2024-06-24 13:10:57,467][func.train][INFO] - [TESTING] video: 21 | frame: 2303 / 4326
+[2024-06-24 13:10:58,258][func.train][INFO] - [TESTING] video: 21 | frame: 2367 / 4326
+[2024-06-24 13:10:59,043][func.train][INFO] - [TESTING] video: 21 | frame: 2431 / 4326
+[2024-06-24 13:10:59,808][func.train][INFO] - [TESTING] video: 21 | frame: 2495 / 4326
+[2024-06-24 13:11:00,582][func.train][INFO] - [TESTING] video: 21 | frame: 2559 / 4326
+[2024-06-24 13:11:01,369][func.train][INFO] - [TESTING] video: 21 | frame: 2623 / 4326
+[2024-06-24 13:11:02,033][func.train][INFO] - [TESTING] video: 21 | frame: 2687 / 4326
+[2024-06-24 13:11:02,795][func.train][INFO] - [TESTING] video: 21 | frame: 2751 / 4326
+[2024-06-24 13:11:03,481][func.train][INFO] - [TESTING] video: 21 | frame: 2815 / 4326
+[2024-06-24 13:11:04,168][func.train][INFO] - [TESTING] video: 21 | frame: 2879 / 4326
+[2024-06-24 13:11:04,846][func.train][INFO] - [TESTING] video: 21 | frame: 2943 / 4326
+[2024-06-24 13:11:05,481][func.train][INFO] - [TESTING] video: 21 | frame: 3007 / 4326
+[2024-06-24 13:11:06,205][func.train][INFO] - [TESTING] video: 21 | frame: 3071 / 4326
+[2024-06-24 13:11:06,874][func.train][INFO] - [TESTING] video: 21 | frame: 3135 / 4326
+[2024-06-24 13:11:07,581][func.train][INFO] - [TESTING] video: 21 | frame: 3199 / 4326
+[2024-06-24 13:11:08,305][func.train][INFO] - [TESTING] video: 21 | frame: 3263 / 4326
+[2024-06-24 13:11:08,984][func.train][INFO] - [TESTING] video: 21 | frame: 3327 / 4326
+[2024-06-24 13:11:09,733][func.train][INFO] - [TESTING] video: 21 | frame: 3391 / 4326
+[2024-06-24 13:11:10,419][func.train][INFO] - [TESTING] video: 21 | frame: 3455 / 4326
+[2024-06-24 13:11:11,070][func.train][INFO] - [TESTING] video: 21 | frame: 3519 / 4326
+[2024-06-24 13:11:11,692][func.train][INFO] - [TESTING] video: 21 | frame: 3583 / 4326
+[2024-06-24 13:11:12,253][func.train][INFO] - [TESTING] video: 21 | frame: 3647 / 4326
+[2024-06-24 13:11:12,860][func.train][INFO] - [TESTING] video: 21 | frame: 3711 / 4326
+[2024-06-24 13:11:13,558][func.train][INFO] - [TESTING] video: 21 | frame: 3775 / 4326
+[2024-06-24 13:11:14,154][func.train][INFO] - [TESTING] video: 21 | frame: 3839 / 4326
+[2024-06-24 13:11:14,798][func.train][INFO] - [TESTING] video: 21 | frame: 3903 / 4326
+[2024-06-24 13:11:15,354][func.train][INFO] - [TESTING] video: 21 | frame: 3967 / 4326
+[2024-06-24 13:11:15,999][func.train][INFO] - [TESTING] video: 21 | frame: 4031 / 4326
+[2024-06-24 13:11:16,628][func.train][INFO] - [TESTING] video: 21 | frame: 4095 / 4326
+[2024-06-24 13:11:17,215][func.train][INFO] - [TESTING] video: 21 | frame: 4159 / 4326
+[2024-06-24 13:11:17,801][func.train][INFO] - [TESTING] video: 21 | frame: 4223 / 4326
+[2024-06-24 13:11:18,455][func.train][INFO] - [TESTING] video: 21 | frame: 4287 / 4326
+[2024-06-24 13:11:20,553][func.train][INFO] - [TESTING] video: 21 | frame: 4325 / 4326
+[2024-06-24 13:11:20,554][func.train][INFO] - [TESTING] video: 21 | video test time: 0.80 min | total test time: 5.13 min
+[2024-06-24 13:11:25,979][func.train][INFO] - [TESTING] video: 21 | video_mean_curr_acc: 0.5095 | mean_acc_future_frames: 0.4759 | video_mean_cum_acc_future: 0.4698
+[2024-06-24 13:11:49,984][func.train][INFO] - [TESTING] Best epoch: 1 | Best acc_curr_future: 0.4
+[2024-07-03 17:39:31,546][func.train][INFO] - Dist info:
+[2024-07-03 17:39:31,546][func.train][INFO] - torch version: 2.2.2+cu121
+[2024-07-03 17:39:31,547][func.train][INFO] - torchvision version: 0.17.2+cu121
+[2024-07-03 17:39:31,547][func.train][INFO] - hydra version: 1.3.2
+[2024-07-03 17:39:31,552][func.train][INFO] - Loading data
+[2024-07-03 17:39:31,552][func.train][INFO] - Loading datasets
+[2024-07-03 17:39:31,602][func.train][INFO] - [SELECT DATASET] ALL loaded dataframe in 0m 0s
+[2024-07-03 17:39:31,602][func.train][INFO] - [SELECT DATASET] ALL loaded dataframe: (83243, 4)
+[2024-07-03 17:39:31,608][func.train][INFO] - [SELECT DATASET] labels are already starting from 0
+[2024-07-03 17:39:31,616][func.train][INFO] - [SELECT DATASET] ALL unique classes: [0 1 2 3 4 5 6]
+[2024-07-03 17:39:31,624][func.train][INFO] - [SELECT DATASET] aLL dataframe (head):                                           image_path  video_idx frame_idx class
+0  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...          1         1     1
+1  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...          1         2     1
+2  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...          1         3     1
+3  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...          1         4     1
+4  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...          1         5     1
+[2024-07-03 17:39:31,632][func.train][INFO] - [SELECT DATASET] ALL dataframe (tail):                                               image_path  ...  class
+83238  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...  ...      6
+83239  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...  ...      6
+83240  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...  ...      6
+83241  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...  ...      6
+83242  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...  ...      6
+
+[5 rows x 4 columns]
+[2024-07-03 17:39:31,633][func.train][INFO] - [DATASET] params: {'debug': False, 'dataset_name': 'autolaparo21', 'reduc_feats_folder': 'train_targets_x_mp/', 'num_classes': 7, 'num_next_labels': 6, 'last_seg_class': 7, 'predict_next_phase': True, 'get_target_feats': False, 'replace_current_with_next_class': False}
+[2024-07-03 17:39:31,671][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 17:39:31,672][func.train][INFO] - [DATASET] split: train video_indices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+[2024-07-03 17:39:31,690][func.train][INFO] - [DATASET] train size: 55183
+[2024-07-03 17:39:31,690][func.train][INFO] - [DATASET] train video_indices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+[2024-07-03 17:39:31,693][func.train][INFO] - [DATASET] Sampled video_idx: 1 at 1 fps to 6388 frames
+[2024-07-03 17:39:31,697][func.train][INFO] - [DATASET] video 1 label_list: torch.Size([6388])
+[2024-07-03 17:39:33,493][func.train][INFO] - [DATASET] Sampled video_idx: 2 at 1 fps to 3620 frames
+[2024-07-03 17:39:33,494][func.train][INFO] - [DATASET] video 2 label_list: torch.Size([3620])
+[2024-07-03 17:39:33,536][func.train][INFO] - [DATASET] Sampled video_idx: 3 at 1 fps to 3000 frames
+[2024-07-03 17:39:33,537][func.train][INFO] - [DATASET] video 3 label_list: torch.Size([3000])
+[2024-07-03 17:39:33,575][func.train][INFO] - [DATASET] Sampled video_idx: 4 at 1 fps to 2938 frames
+[2024-07-03 17:39:33,576][func.train][INFO] - [DATASET] video 4 label_list: torch.Size([2938])
+[2024-07-03 17:39:33,612][func.train][INFO] - [DATASET] Sampled video_idx: 5 at 1 fps to 3220 frames
+[2024-07-03 17:39:33,613][func.train][INFO] - [DATASET] video 5 label_list: torch.Size([3220])
+[2024-07-03 17:39:33,652][func.train][INFO] - [DATASET] Sampled video_idx: 6 at 1 fps to 3908 frames
+[2024-07-03 17:39:33,653][func.train][INFO] - [DATASET] video 6 label_list: torch.Size([3908])
+[2024-07-03 17:39:33,697][func.train][INFO] - [DATASET] Sampled video_idx: 7 at 1 fps to 1645 frames
+[2024-07-03 17:39:33,698][func.train][INFO] - [DATASET] video 7 label_list: torch.Size([1645])
+[2024-07-03 17:39:33,723][func.train][INFO] - [DATASET] Sampled video_idx: 8 at 1 fps to 4692 frames
+[2024-07-03 17:39:33,724][func.train][INFO] - [DATASET] video 8 label_list: torch.Size([4692])
+[2024-07-03 17:39:33,776][func.train][INFO] - [DATASET] Sampled video_idx: 9 at 1 fps to 5736 frames
+[2024-07-03 17:39:33,779][func.train][INFO] - [DATASET] video 9 label_list: torch.Size([5736])
+[2024-07-03 17:39:33,840][func.train][INFO] - [DATASET] Sampled video_idx: 10 at 1 fps to 5064 frames
+[2024-07-03 17:39:33,841][func.train][INFO] - [DATASET] video 10 label_list: torch.Size([5064])
+[2024-07-03 17:39:33,898][func.train][INFO] - [DATASET] Sampled video_idx: 11 at 1 fps to 4720 frames
+[2024-07-03 17:39:33,899][func.train][INFO] - [DATASET] video 11 label_list: torch.Size([4720])
+[2024-07-03 17:39:33,951][func.train][INFO] - [DATASET] Sampled video_idx: 12 at 1 fps to 2916 frames
+[2024-07-03 17:39:33,952][func.train][INFO] - [DATASET] video 12 label_list: torch.Size([2916])
+[2024-07-03 17:39:33,990][func.train][INFO] - [DATASET] Sampled video_idx: 13 at 1 fps to 2597 frames
+[2024-07-03 17:39:33,991][func.train][INFO] - [DATASET] video 13 label_list: torch.Size([2597])
+[2024-07-03 17:39:34,026][func.train][INFO] - [DATASET] Sampled video_idx: 14 at 1 fps to 4739 frames
+[2024-07-03 17:39:34,027][func.train][INFO] - [DATASET] video 14 label_list: torch.Size([4739])
+[2024-07-03 17:39:34,079][func.train][INFO] - [DATASET] number of train videos: 14
+[2024-07-03 17:39:34,079][func.train][INFO] - [DATASET] avg video length: 65.69 minutes
+[2024-07-03 17:39:34,101][func.train][INFO] - [DATASET] num classes at 1fps in train: (55183,)
+[2024-07-03 17:39:34,102][func.train][INFO] - [DATASET] classes_counts_dict: {0: 1408, 1: 19287, 2: 12545, 3: 7511, 4: 1333, 5: 8184, 6: 4915}
+[2024-07-03 17:39:34,105][func.train][INFO] - [DATASET] curr_class_weights: tensor([5.5989, 0.4087, 0.6284, 1.0496, 5.9139, 0.9633, 1.6039])
+[2024-07-03 17:39:34,105][func.train][INFO] - [DATASET] num_eos_vals: 7883.285714285715
+[2024-07-03 17:39:34,105][func.train][INFO] - [DATASET] classes_counts_dict: {0: 1408, 1: 19287, 2: 12545, 3: 7511, 4: 1333, 5: 8184, 6: 4915, 7: 7883}
+[2024-07-03 17:39:34,106][func.train][INFO] - [DATASET] next_class_weights: tensor([5.5989, 0.4087, 0.6284, 1.0496, 5.9139, 0.9633, 1.6039, 1.0000])
+[2024-07-03 17:39:34,173][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 17:39:34,173][func.train][INFO] - [DATASET] split: test video_indices: [15]
+[2024-07-03 17:39:34,176][func.train][INFO] - [DATASET] test size: 3653
+[2024-07-03 17:39:34,176][func.train][INFO] - [DATASET] test video_indices: [15]
+[2024-07-03 17:39:34,178][func.train][INFO] - [DATASET] Sampled video_idx: 15 at 1 fps to 3653 frames
+[2024-07-03 17:39:34,179][func.train][INFO] - [DATASET] video 15 label_list: torch.Size([3653])
+[2024-07-03 17:39:34,221][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-03 17:39:34,221][func.train][INFO] - [DATASET] avg video length: 60.88 minutes
+[2024-07-03 17:39:34,262][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 17:39:34,263][func.train][INFO] - [DATASET] split: test video_indices: [16]
+[2024-07-03 17:39:34,266][func.train][INFO] - [DATASET] test size: 3612
+[2024-07-03 17:39:34,266][func.train][INFO] - [DATASET] test video_indices: [16]
+[2024-07-03 17:39:34,268][func.train][INFO] - [DATASET] Sampled video_idx: 16 at 1 fps to 3612 frames
+[2024-07-03 17:39:34,269][func.train][INFO] - [DATASET] video 16 label_list: torch.Size([3612])
+[2024-07-03 17:39:34,310][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-03 17:39:34,310][func.train][INFO] - [DATASET] avg video length: 60.20 minutes
+[2024-07-03 17:39:34,353][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 17:39:34,354][func.train][INFO] - [DATASET] split: test video_indices: [17]
+[2024-07-03 17:39:34,357][func.train][INFO] - [DATASET] test size: 4678
+[2024-07-03 17:39:34,357][func.train][INFO] - [DATASET] test video_indices: [17]
+[2024-07-03 17:39:34,359][func.train][INFO] - [DATASET] Sampled video_idx: 17 at 1 fps to 4678 frames
+[2024-07-03 17:39:34,360][func.train][INFO] - [DATASET] video 17 label_list: torch.Size([4678])
+[2024-07-03 17:39:34,407][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-03 17:39:34,408][func.train][INFO] - [DATASET] avg video length: 77.97 minutes
+[2024-07-03 17:39:34,453][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 17:39:34,454][func.train][INFO] - [DATASET] split: test video_indices: [18]
+[2024-07-03 17:39:34,457][func.train][INFO] - [DATASET] test size: 3546
+[2024-07-03 17:39:34,458][func.train][INFO] - [DATASET] test video_indices: [18]
+[2024-07-03 17:39:34,460][func.train][INFO] - [DATASET] Sampled video_idx: 18 at 1 fps to 3546 frames
+[2024-07-03 17:39:34,461][func.train][INFO] - [DATASET] video 18 label_list: torch.Size([3546])
+[2024-07-03 17:39:34,500][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-03 17:39:34,500][func.train][INFO] - [DATASET] avg video length: 59.10 minutes
+[2024-07-03 17:39:34,540][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 17:39:34,541][func.train][INFO] - [DATASET] split: test video_indices: [19]
+[2024-07-03 17:39:34,543][func.train][INFO] - [DATASET] test size: 3413
+[2024-07-03 17:39:34,543][func.train][INFO] - [DATASET] test video_indices: [19]
+[2024-07-03 17:39:34,546][func.train][INFO] - [DATASET] Sampled video_idx: 19 at 1 fps to 3413 frames
+[2024-07-03 17:39:34,546][func.train][INFO] - [DATASET] video 19 label_list: torch.Size([3413])
+[2024-07-03 17:39:34,585][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-03 17:39:34,586][func.train][INFO] - [DATASET] avg video length: 56.88 minutes
+[2024-07-03 17:39:34,625][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 17:39:34,626][func.train][INFO] - [DATASET] split: test video_indices: [20]
+[2024-07-03 17:39:34,629][func.train][INFO] - [DATASET] test size: 4832
+[2024-07-03 17:39:34,629][func.train][INFO] - [DATASET] test video_indices: [20]
+[2024-07-03 17:39:34,632][func.train][INFO] - [DATASET] Sampled video_idx: 20 at 1 fps to 4832 frames
+[2024-07-03 17:39:34,633][func.train][INFO] - [DATASET] video 20 label_list: torch.Size([4832])
+[2024-07-03 17:39:34,689][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-03 17:39:34,690][func.train][INFO] - [DATASET] avg video length: 80.53 minutes
+[2024-07-03 17:39:34,730][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 17:39:34,731][func.train][INFO] - [DATASET] split: test video_indices: [21]
+[2024-07-03 17:39:34,734][func.train][INFO] - [DATASET] test size: 4326
+[2024-07-03 17:39:34,734][func.train][INFO] - [DATASET] test video_indices: [21]
+[2024-07-03 17:39:34,737][func.train][INFO] - [DATASET] Sampled video_idx: 21 at 1 fps to 4326 frames
+[2024-07-03 17:39:34,738][func.train][INFO] - [DATASET] video 21 label_list: torch.Size([4326])
+[2024-07-03 17:39:34,787][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-03 17:39:34,788][func.train][INFO] - [DATASET] avg video length: 72.10 minutes
+[2024-07-03 17:39:34,791][func.train][INFO] - Time to load datasets: 0.05 min
+[2024-07-03 17:39:34,792][func.train][INFO] - Creating data loaders
+[2024-07-03 17:39:34,793][func.train][INFO] - Creating model with {'one': 7} classes
+[2024-07-03 17:39:35,672][func.train][INFO] - [MAIN] Number of tokens: 55183
+[2024-07-03 17:39:35,673][func.train][INFO] - [MAIN] Number of parameters: 31179478
+[2024-07-03 17:39:35,673][func.train][INFO] - [MAIN] Token-to-Parameter Ratio is ideally between [1:1 to 10:1]: 0.001770
+[2024-07-03 17:39:35,674][func.train][WARNING] - [MAIN] Data-to-Parameter-Ratio is outside the interval [1:1 to 10:1]
+[2024-07-03 17:39:35,675][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-07-03 17:39:35,675][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-07-03 17:39:36,523][func.train][WARNING] - Loaded model from checkpoint_best.pth (ep 0.000000)
+[2024-07-03 17:39:36,523][func.train][INFO] - Wrapping model into DP
+[2024-07-03 17:39:36,699][func.train][INFO] - Starting test_only
+[2024-07-03 17:39:36,703][func.train][INFO] - [EVAL] Epoch: 1 | Anticipation time (s): 60 | Max anticipation time (m): 18 | Step size (m): 1 | Max auto-reg. steps: 18
+[2024-07-03 17:39:36,703][func.train][INFO] - [EVAL] X-axis values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+[2024-07-03 18:07:49,630][func.train][INFO] - Dist info:
+[2024-07-03 18:07:49,630][func.train][INFO] - torch version: 2.2.2+cu121
+[2024-07-03 18:07:49,631][func.train][INFO] - torchvision version: 0.17.2+cu121
+[2024-07-03 18:07:49,631][func.train][INFO] - hydra version: 1.3.2
+[2024-07-03 18:07:49,635][func.train][INFO] - Loading data
+[2024-07-03 18:07:49,636][func.train][INFO] - Loading datasets
+[2024-07-03 18:07:49,680][func.train][INFO] - [SELECT DATASET] ALL loaded dataframe in 0m 0s
+[2024-07-03 18:07:49,680][func.train][INFO] - [SELECT DATASET] ALL loaded dataframe: (83243, 4)
+[2024-07-03 18:07:49,686][func.train][INFO] - [SELECT DATASET] labels are already starting from 0
+[2024-07-03 18:07:49,693][func.train][INFO] - [SELECT DATASET] ALL unique classes: [0 1 2 3 4 5 6]
+[2024-07-03 18:07:49,703][func.train][INFO] - [SELECT DATASET] aLL dataframe (head):                                           image_path  video_idx frame_idx class
+0  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...          1         1     1
+1  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...          1         2     1
+2  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...          1         3     1
+3  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...          1         4     1
+4  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...          1         5     1
+[2024-07-03 18:07:49,712][func.train][INFO] - [SELECT DATASET] ALL dataframe (tail):                                               image_path  ...  class
+83238  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...  ...      6
+83239  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...  ...      6
+83240  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...  ...      6
+83241  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...  ...      6
+83242  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...  ...      6
+
+[5 rows x 4 columns]
+[2024-07-03 18:07:49,713][func.train][INFO] - [DATASET] params: {'debug': False, 'dataset_name': 'autolaparo21', 'reduc_feats_folder': 'train_targets_x_mp/', 'num_classes': 7, 'num_next_labels': 6, 'last_seg_class': 7, 'predict_next_phase': True, 'get_target_feats': False, 'replace_current_with_next_class': False}
+[2024-07-03 18:07:49,747][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 18:07:49,747][func.train][INFO] - [DATASET] split: train video_indices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+[2024-07-03 18:07:49,766][func.train][INFO] - [DATASET] train size: 55183
+[2024-07-03 18:07:49,766][func.train][INFO] - [DATASET] train video_indices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+[2024-07-03 18:07:49,769][func.train][INFO] - [DATASET] Sampled video_idx: 1 at 1 fps to 6388 frames
+[2024-07-03 18:07:49,773][func.train][INFO] - [DATASET] video 1 label_list: torch.Size([6388])
+[2024-07-03 18:07:50,167][func.train][INFO] - [DATASET] Sampled video_idx: 2 at 1 fps to 3620 frames
+[2024-07-03 18:07:50,168][func.train][INFO] - [DATASET] video 2 label_list: torch.Size([3620])
+[2024-07-03 18:07:50,212][func.train][INFO] - [DATASET] Sampled video_idx: 3 at 1 fps to 3000 frames
+[2024-07-03 18:07:50,213][func.train][INFO] - [DATASET] video 3 label_list: torch.Size([3000])
+[2024-07-03 18:07:50,249][func.train][INFO] - [DATASET] Sampled video_idx: 4 at 1 fps to 2938 frames
+[2024-07-03 18:07:50,250][func.train][INFO] - [DATASET] video 4 label_list: torch.Size([2938])
+[2024-07-03 18:07:50,285][func.train][INFO] - [DATASET] Sampled video_idx: 5 at 1 fps to 3220 frames
+[2024-07-03 18:07:50,285][func.train][INFO] - [DATASET] video 5 label_list: torch.Size([3220])
+[2024-07-03 18:07:50,324][func.train][INFO] - [DATASET] Sampled video_idx: 6 at 1 fps to 3908 frames
+[2024-07-03 18:07:50,325][func.train][INFO] - [DATASET] video 6 label_list: torch.Size([3908])
+[2024-07-03 18:07:50,367][func.train][INFO] - [DATASET] Sampled video_idx: 7 at 1 fps to 1645 frames
+[2024-07-03 18:07:50,368][func.train][INFO] - [DATASET] video 7 label_list: torch.Size([1645])
+[2024-07-03 18:07:50,390][func.train][INFO] - [DATASET] Sampled video_idx: 8 at 1 fps to 4692 frames
+[2024-07-03 18:07:50,391][func.train][INFO] - [DATASET] video 8 label_list: torch.Size([4692])
+[2024-07-03 18:07:50,443][func.train][INFO] - [DATASET] Sampled video_idx: 9 at 1 fps to 5736 frames
+[2024-07-03 18:07:50,444][func.train][INFO] - [DATASET] video 9 label_list: torch.Size([5736])
+[2024-07-03 18:07:50,499][func.train][INFO] - [DATASET] Sampled video_idx: 10 at 1 fps to 5064 frames
+[2024-07-03 18:07:50,500][func.train][INFO] - [DATASET] video 10 label_list: torch.Size([5064])
+[2024-07-03 18:07:50,554][func.train][INFO] - [DATASET] Sampled video_idx: 11 at 1 fps to 4720 frames
+[2024-07-03 18:07:50,555][func.train][INFO] - [DATASET] video 11 label_list: torch.Size([4720])
+[2024-07-03 18:07:50,605][func.train][INFO] - [DATASET] Sampled video_idx: 12 at 1 fps to 2916 frames
+[2024-07-03 18:07:50,606][func.train][INFO] - [DATASET] video 12 label_list: torch.Size([2916])
+[2024-07-03 18:07:50,641][func.train][INFO] - [DATASET] Sampled video_idx: 13 at 1 fps to 2597 frames
+[2024-07-03 18:07:50,642][func.train][INFO] - [DATASET] video 13 label_list: torch.Size([2597])
+[2024-07-03 18:07:50,681][func.train][INFO] - [DATASET] Sampled video_idx: 14 at 1 fps to 4739 frames
+[2024-07-03 18:07:50,683][func.train][INFO] - [DATASET] video 14 label_list: torch.Size([4739])
+[2024-07-03 18:07:50,735][func.train][INFO] - [DATASET] number of train videos: 14
+[2024-07-03 18:07:50,735][func.train][INFO] - [DATASET] avg video length: 65.69 minutes
+[2024-07-03 18:07:50,763][func.train][INFO] - [DATASET] num classes at 1fps in train: (55183,)
+[2024-07-03 18:07:50,764][func.train][INFO] - [DATASET] classes_counts_dict: {0: 1408, 1: 19287, 2: 12545, 3: 7511, 4: 1333, 5: 8184, 6: 4915}
+[2024-07-03 18:07:50,766][func.train][INFO] - [DATASET] curr_class_weights: tensor([5.5989, 0.4087, 0.6284, 1.0496, 5.9139, 0.9633, 1.6039])
+[2024-07-03 18:07:50,767][func.train][INFO] - [DATASET] num_eos_vals: 7883.285714285715
+[2024-07-03 18:07:50,767][func.train][INFO] - [DATASET] classes_counts_dict: {0: 1408, 1: 19287, 2: 12545, 3: 7511, 4: 1333, 5: 8184, 6: 4915, 7: 7883}
+[2024-07-03 18:07:50,767][func.train][INFO] - [DATASET] next_class_weights: tensor([5.5989, 0.4087, 0.6284, 1.0496, 5.9139, 0.9633, 1.6039, 1.0000])
+[2024-07-03 18:07:50,833][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 18:07:50,833][func.train][INFO] - [DATASET] split: test video_indices: [15]
+[2024-07-03 18:07:50,836][func.train][INFO] - [DATASET] test size: 3653
+[2024-07-03 18:07:50,836][func.train][INFO] - [DATASET] test video_indices: [15]
+[2024-07-03 18:07:50,838][func.train][INFO] - [DATASET] Sampled video_idx: 15 at 1 fps to 3653 frames
+[2024-07-03 18:07:50,839][func.train][INFO] - [DATASET] video 15 label_list: torch.Size([3653])
+[2024-07-03 18:07:50,883][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-03 18:07:50,884][func.train][INFO] - [DATASET] avg video length: 60.88 minutes
+[2024-07-03 18:07:50,923][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 18:07:50,923][func.train][INFO] - [DATASET] split: test video_indices: [16]
+[2024-07-03 18:07:50,926][func.train][INFO] - [DATASET] test size: 3612
+[2024-07-03 18:07:50,926][func.train][INFO] - [DATASET] test video_indices: [16]
+[2024-07-03 18:07:50,928][func.train][INFO] - [DATASET] Sampled video_idx: 16 at 1 fps to 3612 frames
+[2024-07-03 18:07:50,929][func.train][INFO] - [DATASET] video 16 label_list: torch.Size([3612])
+[2024-07-03 18:07:50,968][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-03 18:07:50,968][func.train][INFO] - [DATASET] avg video length: 60.20 minutes
+[2024-07-03 18:07:51,044][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 18:07:51,044][func.train][INFO] - [DATASET] split: test video_indices: [17]
+[2024-07-03 18:07:51,049][func.train][INFO] - [DATASET] test size: 4678
+[2024-07-03 18:07:51,049][func.train][INFO] - [DATASET] test video_indices: [17]
+[2024-07-03 18:07:51,053][func.train][INFO] - [DATASET] Sampled video_idx: 17 at 1 fps to 4678 frames
+[2024-07-03 18:07:51,055][func.train][INFO] - [DATASET] video 17 label_list: torch.Size([4678])
+[2024-07-03 18:07:51,105][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-03 18:07:51,105][func.train][INFO] - [DATASET] avg video length: 77.97 minutes
+[2024-07-03 18:07:51,189][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 18:07:51,190][func.train][INFO] - [DATASET] split: test video_indices: [18]
+[2024-07-03 18:07:51,195][func.train][INFO] - [DATASET] test size: 3546
+[2024-07-03 18:07:51,195][func.train][INFO] - [DATASET] test video_indices: [18]
+[2024-07-03 18:07:51,199][func.train][INFO] - [DATASET] Sampled video_idx: 18 at 1 fps to 3546 frames
+[2024-07-03 18:07:51,200][func.train][INFO] - [DATASET] video 18 label_list: torch.Size([3546])
+[2024-07-03 18:07:51,240][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-03 18:07:51,240][func.train][INFO] - [DATASET] avg video length: 59.10 minutes
+[2024-07-03 18:07:51,283][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 18:07:51,283][func.train][INFO] - [DATASET] split: test video_indices: [19]
+[2024-07-03 18:07:51,286][func.train][INFO] - [DATASET] test size: 3413
+[2024-07-03 18:07:51,287][func.train][INFO] - [DATASET] test video_indices: [19]
+[2024-07-03 18:07:51,289][func.train][INFO] - [DATASET] Sampled video_idx: 19 at 1 fps to 3413 frames
+[2024-07-03 18:07:51,290][func.train][INFO] - [DATASET] video 19 label_list: torch.Size([3413])
+[2024-07-03 18:07:51,328][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-03 18:07:51,328][func.train][INFO] - [DATASET] avg video length: 56.88 minutes
+[2024-07-03 18:07:51,367][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 18:07:51,368][func.train][INFO] - [DATASET] split: test video_indices: [20]
+[2024-07-03 18:07:51,371][func.train][INFO] - [DATASET] test size: 4832
+[2024-07-03 18:07:51,371][func.train][INFO] - [DATASET] test video_indices: [20]
+[2024-07-03 18:07:51,374][func.train][INFO] - [DATASET] Sampled video_idx: 20 at 1 fps to 4832 frames
+[2024-07-03 18:07:51,375][func.train][INFO] - [DATASET] video 20 label_list: torch.Size([4832])
+[2024-07-03 18:07:51,426][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-03 18:07:51,426][func.train][INFO] - [DATASET] avg video length: 80.53 minutes
+[2024-07-03 18:07:51,509][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 18:07:51,509][func.train][INFO] - [DATASET] split: test video_indices: [21]
+[2024-07-03 18:07:51,515][func.train][INFO] - [DATASET] test size: 4326
+[2024-07-03 18:07:51,515][func.train][INFO] - [DATASET] test video_indices: [21]
+[2024-07-03 18:07:51,519][func.train][INFO] - [DATASET] Sampled video_idx: 21 at 1 fps to 4326 frames
+[2024-07-03 18:07:51,521][func.train][INFO] - [DATASET] video 21 label_list: torch.Size([4326])
+[2024-07-03 18:07:51,568][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-03 18:07:51,569][func.train][INFO] - [DATASET] avg video length: 72.10 minutes
+[2024-07-03 18:07:51,573][func.train][INFO] - Time to load datasets: 0.03 min
+[2024-07-03 18:07:51,573][func.train][INFO] - Creating data loaders
+[2024-07-03 18:07:51,575][func.train][INFO] - Creating model with {'one': 7} classes
+[2024-07-03 18:07:52,715][func.train][INFO] - [MAIN] Number of tokens: 55183
+[2024-07-03 18:07:52,715][func.train][INFO] - [MAIN] Number of parameters: 31179478
+[2024-07-03 18:07:52,715][func.train][INFO] - [MAIN] Token-to-Parameter Ratio is ideally between [1:1 to 10:1]: 0.001770
+[2024-07-03 18:07:52,716][func.train][WARNING] - [MAIN] Data-to-Parameter-Ratio is outside the interval [1:1 to 10:1]
+[2024-07-03 18:07:52,717][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-07-03 18:07:52,717][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-07-03 18:07:53,520][func.train][WARNING] - Loaded model from checkpoint_best.pth (ep 0.000000)
+[2024-07-03 18:07:53,521][func.train][INFO] - Wrapping model into DP
+[2024-07-03 18:07:53,728][func.train][INFO] - Starting test_only
+[2024-07-03 18:07:53,732][func.train][INFO] - [EVAL] Epoch: 1 | Anticipation time (s): 60 | Max anticipation time (m): 18 | Step size (m): 1 | Max auto-reg. steps: 18
+[2024-07-03 18:07:53,732][func.train][INFO] - [EVAL] X-axis values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+[2024-07-03 18:26:23,003][func.train][INFO] - Dist info:
+[2024-07-03 18:26:23,004][func.train][INFO] - torch version: 2.2.2+cu121
+[2024-07-03 18:26:23,005][func.train][INFO] - torchvision version: 0.17.2+cu121
+[2024-07-03 18:26:23,005][func.train][INFO] - hydra version: 1.3.2
+[2024-07-03 18:26:23,009][func.train][INFO] - Loading data
+[2024-07-03 18:26:23,009][func.train][INFO] - Loading datasets
+[2024-07-03 18:26:23,055][func.train][INFO] - [SELECT DATASET] ALL loaded dataframe in 0m 0s
+[2024-07-03 18:26:23,056][func.train][INFO] - [SELECT DATASET] ALL loaded dataframe: (83243, 4)
+[2024-07-03 18:26:23,061][func.train][INFO] - [SELECT DATASET] labels are already starting from 0
+[2024-07-03 18:26:23,069][func.train][INFO] - [SELECT DATASET] ALL unique classes: [0 1 2 3 4 5 6]
+[2024-07-03 18:26:23,078][func.train][INFO] - [SELECT DATASET] aLL dataframe (head):                                           image_path  video_idx frame_idx class
+0  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...          1         1     1
+1  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...          1         2     1
+2  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...          1         3     1
+3  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...          1         4     1
+4  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...          1         5     1
+[2024-07-03 18:26:23,085][func.train][INFO] - [SELECT DATASET] ALL dataframe (tail):                                               image_path  ...  class
+83238  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...  ...      6
+83239  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...  ...      6
+83240  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...  ...      6
+83241  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...  ...      6
+83242  /nfs/home/yangliu/dataset/AutoLaparo_Task1/Aut...  ...      6
+
+[5 rows x 4 columns]
+[2024-07-03 18:26:23,086][func.train][INFO] - [DATASET] params: {'debug': False, 'dataset_name': 'autolaparo21', 'reduc_feats_folder': 'train_targets_x_mp/', 'num_classes': 7, 'num_next_labels': 6, 'last_seg_class': 7, 'predict_next_phase': True, 'get_target_feats': False, 'replace_current_with_next_class': False}
+[2024-07-03 18:26:23,118][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 18:26:23,118][func.train][INFO] - [DATASET] split: train video_indices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+[2024-07-03 18:26:23,135][func.train][INFO] - [DATASET] train size: 55183
+[2024-07-03 18:26:23,136][func.train][INFO] - [DATASET] train video_indices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+[2024-07-03 18:26:23,139][func.train][INFO] - [DATASET] Sampled video_idx: 1 at 1 fps to 6388 frames
+[2024-07-03 18:26:23,143][func.train][INFO] - [DATASET] video 1 label_list: torch.Size([6388])
+[2024-07-03 18:26:23,520][func.train][INFO] - [DATASET] Sampled video_idx: 2 at 1 fps to 3620 frames
+[2024-07-03 18:26:23,521][func.train][INFO] - [DATASET] video 2 label_list: torch.Size([3620])
+[2024-07-03 18:26:23,546][func.train][INFO] - [DATASET] Sampled video_idx: 3 at 1 fps to 3000 frames
+[2024-07-03 18:26:23,547][func.train][INFO] - [DATASET] video 3 label_list: torch.Size([3000])
+[2024-07-03 18:26:23,586][func.train][INFO] - [DATASET] Sampled video_idx: 4 at 1 fps to 2938 frames
+[2024-07-03 18:26:23,587][func.train][INFO] - [DATASET] video 4 label_list: torch.Size([2938])
+[2024-07-03 18:26:23,620][func.train][INFO] - [DATASET] Sampled video_idx: 5 at 1 fps to 3220 frames
+[2024-07-03 18:26:23,620][func.train][INFO] - [DATASET] video 5 label_list: torch.Size([3220])
+[2024-07-03 18:26:23,630][func.train][INFO] - [DATASET] Sampled video_idx: 6 at 1 fps to 3908 frames
+[2024-07-03 18:26:23,631][func.train][INFO] - [DATASET] video 6 label_list: torch.Size([3908])
+[2024-07-03 18:26:23,659][func.train][INFO] - [DATASET] Sampled video_idx: 7 at 1 fps to 1645 frames
+[2024-07-03 18:26:23,660][func.train][INFO] - [DATASET] video 7 label_list: torch.Size([1645])
+[2024-07-03 18:26:23,666][func.train][INFO] - [DATASET] Sampled video_idx: 8 at 1 fps to 4692 frames
+[2024-07-03 18:26:23,667][func.train][INFO] - [DATASET] video 8 label_list: torch.Size([4692])
+[2024-07-03 18:26:23,681][func.train][INFO] - [DATASET] Sampled video_idx: 9 at 1 fps to 5736 frames
+[2024-07-03 18:26:23,683][func.train][INFO] - [DATASET] video 9 label_list: torch.Size([5736])
+[2024-07-03 18:26:23,700][func.train][INFO] - [DATASET] Sampled video_idx: 10 at 1 fps to 5064 frames
+[2024-07-03 18:26:23,701][func.train][INFO] - [DATASET] video 10 label_list: torch.Size([5064])
+[2024-07-03 18:26:23,716][func.train][INFO] - [DATASET] Sampled video_idx: 11 at 1 fps to 4720 frames
+[2024-07-03 18:26:23,717][func.train][INFO] - [DATASET] video 11 label_list: torch.Size([4720])
+[2024-07-03 18:26:23,729][func.train][INFO] - [DATASET] Sampled video_idx: 12 at 1 fps to 2916 frames
+[2024-07-03 18:26:23,730][func.train][INFO] - [DATASET] video 12 label_list: torch.Size([2916])
+[2024-07-03 18:26:23,739][func.train][INFO] - [DATASET] Sampled video_idx: 13 at 1 fps to 2597 frames
+[2024-07-03 18:26:23,739][func.train][INFO] - [DATASET] video 13 label_list: torch.Size([2597])
+[2024-07-03 18:26:23,747][func.train][INFO] - [DATASET] Sampled video_idx: 14 at 1 fps to 4739 frames
+[2024-07-03 18:26:23,748][func.train][INFO] - [DATASET] video 14 label_list: torch.Size([4739])
+[2024-07-03 18:26:23,759][func.train][INFO] - [DATASET] number of train videos: 14
+[2024-07-03 18:26:23,760][func.train][INFO] - [DATASET] avg video length: 65.69 minutes
+[2024-07-03 18:26:23,780][func.train][INFO] - [DATASET] num classes at 1fps in train: (55183,)
+[2024-07-03 18:26:23,781][func.train][INFO] - [DATASET] classes_counts_dict: {0: 1408, 1: 19287, 2: 12545, 3: 7511, 4: 1333, 5: 8184, 6: 4915}
+[2024-07-03 18:26:23,783][func.train][INFO] - [DATASET] curr_class_weights: tensor([5.5989, 0.4087, 0.6284, 1.0496, 5.9139, 0.9633, 1.6039])
+[2024-07-03 18:26:23,783][func.train][INFO] - [DATASET] num_eos_vals: 7883.285714285715
+[2024-07-03 18:26:23,783][func.train][INFO] - [DATASET] classes_counts_dict: {0: 1408, 1: 19287, 2: 12545, 3: 7511, 4: 1333, 5: 8184, 6: 4915, 7: 7883}
+[2024-07-03 18:26:23,784][func.train][INFO] - [DATASET] next_class_weights: tensor([5.5989, 0.4087, 0.6284, 1.0496, 5.9139, 0.9633, 1.6039, 1.0000])
+[2024-07-03 18:26:23,841][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 18:26:23,841][func.train][INFO] - [DATASET] split: test video_indices: [15]
+[2024-07-03 18:26:23,844][func.train][INFO] - [DATASET] test size: 3653
+[2024-07-03 18:26:23,844][func.train][INFO] - [DATASET] test video_indices: [15]
+[2024-07-03 18:26:23,846][func.train][INFO] - [DATASET] Sampled video_idx: 15 at 1 fps to 3653 frames
+[2024-07-03 18:26:23,847][func.train][INFO] - [DATASET] video 15 label_list: torch.Size([3653])
+[2024-07-03 18:26:23,858][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-03 18:26:23,859][func.train][INFO] - [DATASET] avg video length: 60.88 minutes
+[2024-07-03 18:26:23,895][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 18:26:23,895][func.train][INFO] - [DATASET] split: test video_indices: [16]
+[2024-07-03 18:26:23,897][func.train][INFO] - [DATASET] test size: 3612
+[2024-07-03 18:26:23,898][func.train][INFO] - [DATASET] test video_indices: [16]
+[2024-07-03 18:26:23,900][func.train][INFO] - [DATASET] Sampled video_idx: 16 at 1 fps to 3612 frames
+[2024-07-03 18:26:23,900][func.train][INFO] - [DATASET] video 16 label_list: torch.Size([3612])
+[2024-07-03 18:26:23,910][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-03 18:26:23,911][func.train][INFO] - [DATASET] avg video length: 60.20 minutes
+[2024-07-03 18:26:23,973][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 18:26:23,974][func.train][INFO] - [DATASET] split: test video_indices: [17]
+[2024-07-03 18:26:23,978][func.train][INFO] - [DATASET] test size: 4678
+[2024-07-03 18:26:23,978][func.train][INFO] - [DATASET] test video_indices: [17]
+[2024-07-03 18:26:23,981][func.train][INFO] - [DATASET] Sampled video_idx: 17 at 1 fps to 4678 frames
+[2024-07-03 18:26:23,983][func.train][INFO] - [DATASET] video 17 label_list: torch.Size([4678])
+[2024-07-03 18:26:24,002][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-03 18:26:24,003][func.train][INFO] - [DATASET] avg video length: 77.97 minutes
+[2024-07-03 18:26:24,041][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 18:26:24,041][func.train][INFO] - [DATASET] split: test video_indices: [18]
+[2024-07-03 18:26:24,044][func.train][INFO] - [DATASET] test size: 3546
+[2024-07-03 18:26:24,044][func.train][INFO] - [DATASET] test video_indices: [18]
+[2024-07-03 18:26:24,046][func.train][INFO] - [DATASET] Sampled video_idx: 18 at 1 fps to 3546 frames
+[2024-07-03 18:26:24,047][func.train][INFO] - [DATASET] video 18 label_list: torch.Size([3546])
+[2024-07-03 18:26:24,055][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-03 18:26:24,055][func.train][INFO] - [DATASET] avg video length: 59.10 minutes
+[2024-07-03 18:26:24,099][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 18:26:24,099][func.train][INFO] - [DATASET] split: test video_indices: [19]
+[2024-07-03 18:26:24,102][func.train][INFO] - [DATASET] test size: 3413
+[2024-07-03 18:26:24,102][func.train][INFO] - [DATASET] test video_indices: [19]
+[2024-07-03 18:26:24,104][func.train][INFO] - [DATASET] Sampled video_idx: 19 at 1 fps to 3413 frames
+[2024-07-03 18:26:24,105][func.train][INFO] - [DATASET] video 19 label_list: torch.Size([3413])
+[2024-07-03 18:26:24,114][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-03 18:26:24,114][func.train][INFO] - [DATASET] avg video length: 56.88 minutes
+[2024-07-03 18:26:24,179][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 18:26:24,179][func.train][INFO] - [DATASET] split: test video_indices: [20]
+[2024-07-03 18:26:24,184][func.train][INFO] - [DATASET] test size: 4832
+[2024-07-03 18:26:24,184][func.train][INFO] - [DATASET] test video_indices: [20]
+[2024-07-03 18:26:24,187][func.train][INFO] - [DATASET] Sampled video_idx: 20 at 1 fps to 4832 frames
+[2024-07-03 18:26:24,189][func.train][INFO] - [DATASET] video 20 label_list: torch.Size([4832])
+[2024-07-03 18:26:24,210][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-03 18:26:24,211][func.train][INFO] - [DATASET] avg video length: 80.53 minutes
+[2024-07-03 18:26:24,262][func.train][INFO] - [DATASET] df unique videos: [ 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21]
+[2024-07-03 18:26:24,262][func.train][INFO] - [DATASET] split: test video_indices: [21]
+[2024-07-03 18:26:24,265][func.train][INFO] - [DATASET] test size: 4326
+[2024-07-03 18:26:24,265][func.train][INFO] - [DATASET] test video_indices: [21]
+[2024-07-03 18:26:24,267][func.train][INFO] - [DATASET] Sampled video_idx: 21 at 1 fps to 4326 frames
+[2024-07-03 18:26:24,268][func.train][INFO] - [DATASET] video 21 label_list: torch.Size([4326])
+[2024-07-03 18:26:24,280][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-03 18:26:24,280][func.train][INFO] - [DATASET] avg video length: 72.10 minutes
+[2024-07-03 18:26:24,285][func.train][INFO] - Time to load datasets: 0.02 min
+[2024-07-03 18:26:24,285][func.train][INFO] - Creating data loaders
+[2024-07-03 18:26:24,286][func.train][INFO] - Creating model with {'one': 7} classes
+[2024-07-03 18:26:25,262][func.train][INFO] - [MAIN] Number of tokens: 55183
+[2024-07-03 18:26:25,262][func.train][INFO] - [MAIN] Number of parameters: 31179478
+[2024-07-03 18:26:25,262][func.train][INFO] - [MAIN] Token-to-Parameter Ratio is ideally between [1:1 to 10:1]: 0.001770
+[2024-07-03 18:26:25,263][func.train][WARNING] - [MAIN] Data-to-Parameter-Ratio is outside the interval [1:1 to 10:1]
+[2024-07-03 18:26:25,264][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-07-03 18:26:25,264][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-07-03 18:26:25,529][func.train][WARNING] - Loaded model from checkpoint_best.pth (ep 0.000000)
+[2024-07-03 18:26:25,530][func.train][INFO] - Wrapping model into DP
+[2024-07-03 18:26:25,680][func.train][INFO] - Starting test_only
+[2024-07-03 18:26:25,684][func.train][INFO] - [EVAL] Epoch: 1 | Anticipation time (s): 60 | Max anticipation time (m): 18 | Step size (m): 1 | Max auto-reg. steps: 18
+[2024-07-03 18:26:25,684][func.train][INFO] - [EVAL] X-axis values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
