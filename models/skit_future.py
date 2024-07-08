@@ -212,6 +212,15 @@ class SKITFuture(nn.Module):
 
         self.curr_frames_classifier = nn.Linear(d_model, num_curr_classes)
         self.future_action_classifier = nn.Linear(dec_dim, num_future_classes) # optional +1 for the EOS (end of sequence token)
+
+        # Regression Head
+        # each phase occurance is regressed from 0 to 1 (normalized remaining time)
+        self.regression_head = nn.Linear(dec_dim, num_future_classes)
+        # TODO: add a sigmoid activation function to the regression head
+        # TODO: use 1 - sigmoid to get the remaining time
+
+
+
         
         # Initialize input queries
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -280,6 +289,13 @@ class SKITFuture(nn.Module):
             next_action = self.frame_decoder(input_queries, enc_out, current_pred=curr_frames_pred[:, -1, :])
         print(f"[SKIT-F] next_action: {next_action.shape}")
 
+        # Regression of future transitions (remaining time until occurrence of future states)
+        next_phase_regression = self.regression_head(next_action)
+        next_phase_regression = (1 - torch.sigmoid(next_phase_regression)) * self.max_anticip_time
+        outputs["remaining_time_h"] = next_phase_regression
+        print(f"[SKIT-F] next_phase_regression: {next_phase_regression.shape}")
+
+        # Classification of future segments
         next_frames_cls = self.future_action_classifier(next_action)
         outputs["future_frames"] = next_frames_cls
         print(f"[SKIT-F] next_frames: {next_frames_cls.shape}")

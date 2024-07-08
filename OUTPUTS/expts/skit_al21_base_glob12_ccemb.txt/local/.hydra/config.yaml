@@ -361,6 +361,7 @@ save_video_labels_to_npy: false
 model_name: skit
 input_tokens: class_conditioned
 normalize_priors: false
+probs_to_regression_method: first_occurrence
 naive1: false
 naive2: false
 ctx_pooling: global
@@ -427,6 +428,8 @@ eval:
     store: false
     store_endpoint: logits
     only_run_featext: false
+    probs_to_regression_method: ${probs_to_regression_method}
+    confidence_threshold: 0.5
 moco:
   _target_: moco.moco.builder.MoCo
   dim: 128

@@ -16,6 +16,8 @@ dist_backend: nccl
 # run mode
 test_only: false
 
+# h_values: 3 # 2, 3, 5, 18
+
 num_epochs: 20
 finetune_ckpt: best # or best
 
@@ -35,6 +37,8 @@ save_video_labels_to_npy: false
 model_name: supra          # skit / supra / lstm / gru / naive1 / naive2
 input_tokens: normal  # class_conditioned / normal
 normalize_priors: false
+
+probs_to_regression_method: first_occurrence # first_occurrence / mean / median
 
 naive1: false
 naive2: false
@@ -159,6 +163,9 @@ eval:
     store: false
     store_endpoint: logits
     only_run_featext: false
+    probs_to_regression_method: ${probs_to_regression_method}
+    confidence_threshold: 0.5
+
 
 model:
   model_name: ${model_name}

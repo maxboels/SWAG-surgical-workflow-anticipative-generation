@@ -36,6 +36,65 @@ def pil_loader(path):
         with Image.open(f) as img:
             return np.array(img.convert('RGB'))
 
+def plot_remaining_time(phase_labels, gt_remaining_time, h, num_obs_classes, video_idx=0, dataset="Cholec80"):
+    fig, axs = plt.subplots(num_obs_classes + 1, 1, figsize=(15, 3*(num_obs_classes + 1)), sharex=True)
+    time_steps = np.arange(len(phase_labels))
+    colors = plt.cm.tab10(np.linspace(0, 1, num_obs_classes + 1))
+
+    y_min, y_max = -0.1, h + 0.5
+    for i in range(num_obs_classes + 1):
+        remaining_time = gt_remaining_time[i].numpy()
+        axs[i].plot(time_steps, remaining_time, label=f'Class {i if i < num_obs_classes else "EOS"}', linewidth=2.5, color=colors[i])
+
+        regression_mask = (remaining_time > 0) & (remaining_time < h)
+        axs[i].fill_between(time_steps, y_min, y_max, where=regression_mask, color='lightgray', alpha=0.3)
+
+        active_mask = remaining_time == 0
+        axs[i].fill_between(time_steps, y_min, y_max, where=active_mask, color=colors[i], alpha=0.3)
+
+        axs[i].set_ylim(y_min, y_max)
+        axs[i].set_ylabel("Ant. Time (m)")
+        axs[i].legend(loc='upper right')
+        axs[i].grid(True, linestyle='--', alpha=0.7)
+
+        regression_ranges = np.where(np.diff(np.concatenate(([False], regression_mask, [False]))))[0].reshape(-1, 2)
+        active_ranges = np.where(np.diff(np.concatenate(([False], active_mask, [False]))))[0].reshape(-1, 2)
+
+        for start, end in regression_ranges:
+            axs[i].text((start + end) / 2, y_max, f'<{h} min.', ha='center', va='bottom', fontsize=8, color='gray')
+
+        for start, end in active_ranges:
+            axs[i].text((start + end) / 2, y_max, 'Active', ha='center', va='bottom', fontsize=8, color=colors[i])
+
+    axs[-1].set_xlabel("Video Time Steps (seconds)")
+    plt.tight_layout()
+    plt.savefig(f"./plots/{dataset}/rtd/remaining_time_gt_{video_idx}.png")
+    plt.show()
+    plt.close()
+
+def ground_truth_remaining_time(phase_labels, h=5, num_classes=7):
+    seq_len = phase_labels.shape[0]
+    remaining_time = torch.full((seq_len, num_classes + 1), h, device=phase_labels.device, dtype=torch.float32)
+    
+    for phase in range(num_classes):
+        phase_indices = torch.where(phase_labels == phase)[0]
+        if len(phase_indices) == 0:
+            continue
+        phase_start = phase_indices[0]
+        phase_end = phase_indices[-1]
+
+        pre_phase_start = max(0, phase_start - int(h*60))
+
+        for i in range(pre_phase_start, phase_start):
+            remaining_time[i, phase] = (phase_start - i) / 60.0
+        remaining_time[phase_start:phase_end+1, phase] = 0.0
+    
+    # Handle EOS class
+    eos_start = seq_len - int(h*60)
+    for i in range(eos_start, seq_len):
+        remaining_time[i, -1] = (seq_len - i) / 60.0
+    
+    return remaining_time
 
 def video_end_regression_values(video_length, eos_length=20*60):
     """ Here, 60 frames is 1/30 of the eos length. And 3 minutes is 1/10 of the eos length.
@@ -191,7 +250,7 @@ class Medical_Dataset(Dataset):
             self.ctx_pooling = cfg.ctx_pooling
             self.num_ctx_tokens = cfg.num_ctx_tokens
             
-            self.anticip_time = cfg.anticip_time   
+            self.anticip_time = cfg.anticip_time
             self.max_anticip_sec = int(cfg.max_anticip_time * 60)  # 50 or 25 frames per token
             self.num_future_tokens = int(self.max_anticip_sec / cfg.anticip_time)   # 60 or 30 tokens (num auto-regressive steps)
             self.eos_class = cfg.eos_class
@@ -237,6 +296,11 @@ class Medical_Dataset(Dataset):
             }
             if self.train_mode == "train":
                 self.logger.info(f"[DATASET] params: {params}")
+
+
+            self.horizons = [18] #2, 3, 5, 18]
+            self.num_obs_classes = self.num_classes
+            
             #-----------------end select arguments-----------------
             if self.dataset_name == "autolaparo21":
                 self.frames_fps = 1
@@ -306,6 +370,7 @@ class Medical_Dataset(Dataset):
         def init_video_data(self, video_indices=None, mode='train'):
             self.videos = []
             self.labels = []
+            self.gt_remaining_time = []
             self.next_segments_class = []
             self.heatmap = []
             self.eos_video_targets = []
@@ -320,6 +385,7 @@ class Medical_Dataset(Dataset):
             train_class_count_1fps = {}
             
             for video_indx in video_indices:
+                self.logger.info(f"[DATASET] video_idx: {video_indx}")
 
                 # VIDEO DATAFRAME
                 df_video = self.df_split[self.df_split.video_idx==video_indx]
@@ -333,10 +399,10 @@ class Medical_Dataset(Dataset):
                     print(f'[SKIP] video_idx:{video_indx} video_length:{video_length}') 
                     continue
                 path_list = df_video.image_path.tolist()
-                label_list = df_video['class'].tolist()
+                phase_labels = df_video['class'].tolist()
 
                 if self.save_video_labels_to_npy:
-                    np.save(self.dataset_local_path + 'labels' + '/' + f"video_{video_indx}_labels.npy", label_list)
+                    np.save(self.dataset_local_path + 'labels' + '/' + f"video_{video_indx}_labels.npy", phase_labels)
                     self.logger.info(f"[DATASET] Saved labels for video {video_indx}")
 
 
@@ -354,8 +420,8 @@ class Medical_Dataset(Dataset):
                         plt.close()
 
                 # to tensors
-                label_list = torch.Tensor(label_list).long()
-                self.logger.info(f"[DATASET] video {video_indx} label_list: {label_list.size()}")
+                phase_labels = torch.Tensor(phase_labels).long()
+                self.logger.info(f"[DATASET] video {video_indx} phase_labels: {phase_labels.size()}")
                 
                 new_id += 1
                 num=0
@@ -367,11 +433,21 @@ class Medical_Dataset(Dataset):
                     self.video_lengths.append(len(df_video))
 
                 with torch.no_grad():
-                    self.labels.append(label_list)
+                    self.labels.append(phase_labels)
                     with open(self.extracted_feats_path + f"video_{video_indx}.pkl", 'rb') as f:
                         video = pickle.load(f)
                     video = torch.from_numpy(video).float().to(self.device)
                     self.videos.append(video)
+                
+                # regression labels (remaining time until occurrence of each phases)
+                gt_remaining_time = {}
+                for h in self.horizons:
+                    gt_remaining_time[h] = ground_truth_remaining_time(phase_labels, h=h, num_classes=self.num_obs_classes)
+                    self.logger.info(f"[DATASET] gt_remaining_time h={h}: {gt_remaining_time[h].size()}")
+                    # plot_remaining_time(phase_labels, gt_remaining_time[h], h, self.num_obs_classes, video_idx)
+                self.gt_remaining_time.append(gt_remaining_time)
+
+                self.logger.info(f"\n")
 
             # End of video loop
             self.avg_video_length = np.mean(video_stats['video_lengths']) / 60
@@ -446,11 +522,11 @@ class Medical_Dataset(Dataset):
                 class_weights = class_weights / class_weights.sum()
             return class_weights
         
-        def get_next_label(self, label_list, num_next_labels, end_class=7):
+        def get_next_label(self, phase_labels, num_next_labels, end_class=7):
             """Next labels for each frame in the video
             Returns: a tensor of size (video_length, num_next_labels)
             """
-            next_labels_tensor = - torch.ones((len(label_list), num_next_labels)).long()
+            next_labels_tensor = - torch.ones((len(phase_labels), num_next_labels)).long()
             def find_next_classes(index, labels, num_next_class=1, end_class_id=7):
                 next_classes = []
                 current_class = labels[index]
@@ -464,8 +540,8 @@ class Medical_Dataset(Dataset):
                     next_classes += [end_class_id] * (num_next_class - len(next_classes))
                 next_classes = torch.Tensor(next_classes).long()
                 return next_classes
-            for i in range(len(label_list) - 1):
-                next_labels_tensor[i] = find_next_classes(i, label_list, num_next_labels, end_class)
+            for i in range(len(phase_labels) - 1):
+                next_labels_tensor[i] = find_next_classes(i, phase_labels, num_next_labels, end_class)
             next_labels_tensor[-1] = torch.Tensor([end_class] * num_next_labels).long()
             return next_labels_tensor
 
@@ -493,8 +569,9 @@ class Medical_Dataset(Dataset):
                 self.video_lengths.append(end_idx)
         
         def get_video_data(self, video_idx, frame_idx):
-            video = self.videos[video_idx]
-            video_targets = self.labels[video_idx]
+            video               = self.videos[video_idx]
+            video_targets       = self.labels[video_idx]
+            gt_remaining_time   = self.gt_remaining_time[video_idx]
             if self.eos_regression:
                 eos_values = self.eos_video_targets[video_idx]
                 print(f"[DATASET] eos_values: {eos_values.shape}")
@@ -502,6 +579,9 @@ class Medical_Dataset(Dataset):
             print(f"[DATASET] video_idx: {video_idx} (t={frame_idx}) original: {video.size()}")
             print(f"[DATASET] video targets: {video_targets.size()}")
             # print(f"[DATASET] full video_next_seg_targets: {video_next_seg_targets.size()}")
+
+            for h in self.horizons:
+                print(f"[DATASET] gt_remaining_time {h}: {gt_remaining_time[h].size()}")
 
             # VIDEO FEED
             # NOTE: index 0 is included in the frame id so it is not necessary to add 1 !!!
@@ -537,6 +617,7 @@ class Medical_Dataset(Dataset):
             else:
                 raise ValueError("curr_frames_tgt not found")
             
+            # CURRENT FRAMES TARGETS
             print(f"[DATASET] curr_frames_tgt starts: {starts} ends: {ends}")
             curr_frames_tgt = video_targets[starts: ends: curr_frame_spacing].to(self.device)
             print(f"[DATASET] curr_frames_tgt: {curr_frames_tgt.size()}")
@@ -552,6 +633,20 @@ class Medical_Dataset(Dataset):
             data_now['curr_frames_tgt'] = curr_frames_tgt.to(self.device).long()
             print(f"[DATASET] curr_frames_tgt (new): {curr_frames_tgt.size()}")
 
+            # REGRESSION REMAINING TIME TARGETS
+            for h in self.horizons:
+                start_reg = max(0, frame_idx + 60)
+                end_reg = min(video_targets.size(0), start_reg + h*60)
+                remaining_time = gt_remaining_time[h][start_reg: end_reg: self.anticip_time, :]
+                # padding
+                missing = self.num_future_tokens - remaining_time.size(0)
+                if missing > 0:
+                    remaining_time = torch.cat((remaining_time, torch.ones(missing, self.num_classes + 1).float() * h), 0)
+                    print(f"[DATASET] EOS padding for gt_remaining_time_{h}: {missing}")
+                # remaining_time = gt_remaining_time[h][:, frame_idx].unsqueeze(1)
+                print(f"[DATASET] gt_remaining_time_{h}: {remaining_time.size()}")
+                data_now[f'remaining_time_h'] = remaining_time.to(self.device).float()
+ 
             if self.eos_regression:
                 curr_eos_values = eos_values[starts: ends: self.anticip_time]
                 if missing > 0:
@@ -560,7 +655,7 @@ class Medical_Dataset(Dataset):
                 print(f"[DATASET] curr_time2eos_tgt: {curr_eos_values.size()}")
 
             assert curr_frames_tgt.size(0) == self.num_ctx_tokens, f"num_ctx_tokens size not equal to curr_frames_tgt: {curr_frames_tgt.size(0)}"
-            
+
             if self.train_mode == 'train':
 
                 # NEXT FRAMES TARGETS (SHIFTED BY 2x Window size or 2x Frames per tokens)

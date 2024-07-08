@@ -5,6 +5,8 @@ ctx_pooling=global
 num_ctx_tokens=12
 max_seq_len=24
 
+probs_to_regression_method=first_occurrence
+
 eos_weight=mean
 
 class_weight=frequency

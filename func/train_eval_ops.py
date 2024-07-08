@@ -74,6 +74,8 @@ class BasicLossAccuracy(nn.Module):
         # Loss functions
         self.ce_loss_fn_curr    = nn.CrossEntropyLoss(weight=curr_class_weights, reduction='none', ignore_index=-1)
 
+        self.l1_smooth_loss_fn = nn.SmoothL1Loss(reduction='none')
+
 
         if hasattr(dataset, "sampler_with_position"):
             sampler_with_position = dataset.sampler_with_position
@@ -122,6 +124,10 @@ class BasicLossAccuracy(nn.Module):
 
                 accuracies[key + '_acc'] = seq_accuracy_nans(outputs[key], targets[key])
                 print(f"[LOSS] {key}_acc: {accuracies[key + '_acc']}")
+            
+            elif key == "remaining_time_h":
+                losses[key + '_loss'] = self.l1_smooth_loss_fn(outputs[key], targets[key]).mean()
+                print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
 
             else:
                 raise ValueError(f"Unknown key: {key}")
