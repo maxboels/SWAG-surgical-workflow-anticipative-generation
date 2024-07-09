@@ -63,6 +63,8 @@ from R2A2.eval.plot_segments.plot_video import plot_video_segments
 from R2A2.eval.plot_metrics import plot_figure, plot_box_plot_figure, plot_cumulative_time
 from R2A2.eval.plot_video_3D import plot_video_contour_3D, plot_video_scatter_3D
 
+from R2A2.eval.plot_remaining_time import plot_remaining_time_video
+
 
 from loss_fn.mae import anticipation_mae
 
@@ -727,6 +729,9 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     all_video_tgts_rec = {}
     all_video_mean_curr_acc = {}
     all_video_mean_cum_acc_future = {}
+    # regression remaining time
+    all_video_remaining_time_tgts = {}
+    all_video_remaining_time_preds = {}
 
     all_vids_acc = []
     all_vids_prec = []
@@ -737,25 +742,25 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     all_frame_metrics = []
 
     # Add new metrics for regression evaluation
-    all_videos_wMAE_18 = []
-    all_videos_inMAE_18 = []
-    all_videos_pMAE_18 = []
-    all_videos_eMAE_18 = []
+    # all_videos_wMAE_18 = []
+    # all_videos_inMAE_18 = []
+    # all_videos_pMAE_18 = []
+    # all_videos_eMAE_18 = []
 
-    all_videos_wMAE_5 = []
-    all_videos_inMAE_5 = []
-    all_videos_pMAE_5 = []
-    all_videos_eMAE_5 = []
+    # all_videos_wMAE_5 = []
+    # all_videos_inMAE_5 = []
+    # all_videos_pMAE_5 = []
+    # all_videos_eMAE_5 = []
 
-    all_videos_wMAE_3 = []
-    all_videos_inMAE_3 = []
-    all_videos_pMAE_3 = []
-    all_videos_eMAE_3 = []
+    # all_videos_wMAE_3 = []
+    # all_videos_inMAE_3 = []
+    # all_videos_pMAE_3 = []
+    # all_videos_eMAE_3 = []
 
-    all_videos_wMAE_2 = []
-    all_videos_inMAE_2 = []
-    all_videos_pMAE_2 = []
-    all_videos_eMAE_2 = []
+    # all_videos_wMAE_2 = []
+    # all_videos_inMAE_2 = []
+    # all_videos_pMAE_2 = []
+    # all_videos_eMAE_2 = []
 
 
     mae_metric_18 = anticipation_mae(h=18*60)  # 18 minutes in seconds
@@ -782,13 +787,6 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
 
         print(f"[EVAL] video (i={video_idx}) id={video_id} | video_length={video_length}")
 
-        # select remaining time gt
-        # gt_remaining_time = data_loader.dataset.gt_remaining_time[0] # TODO: use batches instead of whole video
-        # for h in gt_remaining_time.keys():
-        #     print(f"[TESTING] gt_remaining_time h={h}: {gt_remaining_time[h].shape}")
-        
-        # variables fixed for each video
-        # horizons = [18] #[2, 3, 5, 18]  # in minutes
         num_ant_classes = num_classes + 1  # Add end-of-surgery class
 
         iters_times = []
@@ -803,8 +801,10 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
 
         video_frame_probs_preds   = np.full((video_length, max_num_steps, num_ant_classes), -1)
 
-        # data_now[f'gt_remaining_time_{h}']
-        # video_tgts_remaining_time = np.full((video_length, num_classes), -1)
+
+        # save remaining time gt and predictions
+        video_remaining_time_tgts = np.full((video_length, num_ant_classes), -1)
+        video_remaining_time_preds = np.full((video_length, num_ant_classes), -1)
 
         video_mean_cum_iter_time = []
 
@@ -850,39 +850,21 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                     time_steps = torch.arange(probs.shape[1]) * anticip_time / 60  # Convert to minutes
                     for h in horizons:
                         # Get the target remaining time for the current horizon
-                        target_remaining_time = data[f'remaining_time_h'].detach()#.cpu()#.numpy()
-                        # target_remaining_time_h = target_remaining_time[h][start_idx:end_idx].detach().cpu().numpy()
-                        # print(f"[TESTING] target_remaining_time {h}: {target_remaining_time}")
+                        target_remaining_time = data[f'remaining_time_tgt'].detach()#.cpu()#.numpy()
                         print(f"[TESTING] target_remaining_time {h}: {target_remaining_time.shape}")
 
-                        pred_remaining_time = outputs[f'remaining_time_h'].detach()#.cpu()#.numpy()
-                        # print(f"[TESTING] pred_remaining_time {h}: {pred_remaining_time}")
+                        pred_remaining_time = outputs[f'remaining_time'].detach()#.cpu()#.numpy()
                         print(f"[TESTING] pred_remaining_time {h}: {pred_remaining_time.shape}")
+
+                        # loss
                         reg_loss = regression_loss(pred_remaining_time, target_remaining_time).mean().item()
                         reg_losses.append(reg_loss)
                         print(f"[TESTING] reg_loss {h}: {reg_loss}")
-
-                        logger.info(f"[TESTING] video: {video_id} | Horizon: {h}m | "
-                                    f"reg_loss: {reg_loss:.4f}")
-             
-                        # # Generate predictions using the specified method
-                        # output_remaining_time = classification_to_remaining_time(
-                        #     probs, time_steps, h=h, num_classes=num_classes,
-                        #     method=probs_to_regression_method, confidence_threshold=confidence_threshold
-                        # )
-             
-                        # # Compute metrics
-                        # mae_metric = locals()[f'mae_metric_{horizon}']
-                        # wMAE, inMAE, pMAE, eMAE = mae_metric(output_remaining_time.unsqueeze(1), target_remaining_time_h.unsqueeze(1))
                         
-                        # # Store metrics
-                        # for metric, value in zip(['wMAE', 'inMAE', 'pMAE', 'eMAE'], [wMAE, inMAE, pMAE, eMAE]):
-                        #     locals()[f'all_videos_{metric}_{horizon}'].append(value.item())
-                        
-                        # logger.info(f"[TESTING] video: {video_id} | Horizon: {horizon}m | Method: {probs_to_regression_method} | "
-                        #             f"inMAE: {inMAE.item():.4f} | pMAE: {pMAE.item():.4f} | eMAE: {eMAE.item():.4f}")
-
-                    
+                        # store remaining time gt and predictions
+                        video_remaining_time_tgts[start_idx:end_idx] = target_remaining_time.cpu().numpy()
+                        video_remaining_time_preds[start_idx:end_idx] = pred_remaining_time.cpu().numpy()
+                                 
                 # SEGMENT LEVEL PREDICTION
                 # (possible auto-regressive predictions)
                 if "future_segmts_cls" in outputs.keys():
@@ -928,6 +910,9 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         # predictions
         all_video_tgts_preds[video_id] = video_tgts_preds
         all_video_frame_preds[video_id] = video_frame_preds
+        # regression remaining time
+        all_video_remaining_time_tgts[video_id] = video_remaining_time_tgts
+        all_video_remaining_time_preds[video_id] = video_remaining_time_preds
 
         # concatenate the recognition and predictions y_true and y_pred
         y_true = np.concatenate((video_tgts_rec, video_tgts_preds), axis=1)
@@ -966,6 +951,16 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         all_vids_recall.append(np.mean(video_recall))
         all_vids_f1.append(np.mean(video_f1))
 
+        # Compute remaining time for each phase per video
+        for video_id in video_ids:
+            for horizon in horizons:
+                mae_metric = locals()[f'mae_metric_{horizon}']                
+                wMAE, inMAE, pMAE, eMAE = mae_metric(all_video_remaining_time_preds[video_id].unsqueeze(1),
+                                                     all_video_remaining_time_tgts[video_id].unsqueeze(1))
+                # Store metrics for all videos
+                for metric, value in zip(['wMAE', 'inMAE', 'pMAE', 'eMAE'], [wMAE, inMAE, pMAE, eMAE]):
+                    locals()[f'all_videos_{metric}_{horizon}'].append(value.item())
+        
         # Accuracy for recognition and predictions (Keep Time Dimension)
         acc_curr_frames         = compute_accuracy(video_frame_rec, video_tgts_rec, return_mean=False)      # potential nans
         acc_future_frames       = compute_accuracy(video_frame_preds, video_tgts_preds, return_mean=False)  # potential nans
@@ -1051,14 +1046,13 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     all_videos_results["rmse_future"]       = np.round(np.nanmean(all_videos_rmse_future), decimals=4).tolist()
     all_videos_results["acc_future_t"]      = all_videos_mean_acc_future_t
 
-    # # Define evaluation horizons
-    # horizons = [2, 3, 5]  # in minutes
-    # # After processing all videos, compute average metrics
-    # for horizon in horizons:
-    #     for metric in ['inMAE', 'pMAE', 'eMAE']:
-    #         metric_name = f"{metric}_{horizon}"
-    #         all_videos_results[metric_name] = np.round(np.mean(locals()[f'all_videos_{metric}_{horizon}']), decimals=4).tolist()
-    #         logger.info(f"Average {metric_name}: {all_videos_results[metric_name]:.4f}")
+
+    # Define evaluation horizons
+    for horizon in horizons:
+        for metric in ['inMAE', 'pMAE', 'eMAE']:
+            metric_name = f"{metric}_{horizon}"
+            all_videos_results[metric_name] = np.round(np.mean(locals()[f'all_videos_{metric}_{horizon}']), decimals=4).tolist()
+            logger.info(f"Average {metric_name} h={horizon}: {all_videos_results[metric_name]:.4f}")
     
     # Precision, Recall, F1
     all_videos_results.update(agg_metrics)
@@ -1073,13 +1067,15 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     if epoch % plot_video_freq == 0 or all_videos_results["acc_curr_future"] > best_acc_curr_future:
         # PLOT AND SAVE VIDEO DATA if best
         for video_id in video_ids:
+
+            # plot the classification task
             video_frame_preds           = all_video_frame_preds[video_id]
             video_frame_rec             = all_video_frame_rec[video_id]
             video_tgts_preds            = all_video_tgts_preds[video_id]
             video_tgts_rec              = all_video_tgts_rec[video_id]
             video_mean_curr_acc         = all_video_mean_curr_acc[video_id]
             video_mean_cum_acc_future   = all_video_mean_cum_acc_future[video_id]
-
+            
             plot_video_scatter_3D(video_frame_preds, video_frame_rec, video_tgts_preds, video_tgts_rec, anticip_time, 
                                 video_idx=video_id, 
                                 epoch=epoch,
@@ -1090,6 +1086,14 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                                 video_mean_curr_acc=video_mean_curr_acc,
                                 video_mean_cum_acc_future=video_mean_cum_acc_future,
                                 )    # don't include the eos class which is assigned to -1
+            
+            # plot regression remaining time
+            plot_remaining_time_video(all_video_remaining_time_tgts[video_id], all_video_remaining_time_preds[video_id],
+                                        h=anticip_time, 
+                                        num_obs_classes=7, 
+                                        video_idx=video_id, 
+                                        epoch=epoch, 
+                                        save_video=False)
     
     # update best_cum_acc
     if all_videos_results["acc_curr_future"] > best_acc_curr_future:

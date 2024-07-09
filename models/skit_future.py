@@ -290,9 +290,14 @@ class SKITFuture(nn.Module):
         print(f"[SKIT-F] next_action: {next_action.shape}")
 
         # Regression of future transitions (remaining time until occurrence of future states)
-        next_phase_regression = self.regression_head(next_action)
+        # maxpooling over the temporal dimension
+        max_next_action = torch.max(next_action, dim=1)[0] # (B, d_model)
+        print(f"[SKIT-F] max_next_action: {max_next_action.shape}")
+        next_phase_regression = self.regression_head(max_next_action)
+        print(f"[SKIT-F] next_phase_regression: {next_phase_regression.shape}")
+        # 1 - sigmoid to get the remaining time
         next_phase_regression = (1 - torch.sigmoid(next_phase_regression)) * self.max_anticip_time
-        outputs["remaining_time_h"] = next_phase_regression
+        outputs["remaining_time"] = next_phase_regression
         print(f"[SKIT-F] next_phase_regression: {next_phase_regression.shape}")
 
         # Classification of future segments

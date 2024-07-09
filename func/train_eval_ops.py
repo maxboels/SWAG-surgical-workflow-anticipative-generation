@@ -125,8 +125,8 @@ class BasicLossAccuracy(nn.Module):
                 accuracies[key + '_acc'] = seq_accuracy_nans(outputs[key], targets[key])
                 print(f"[LOSS] {key}_acc: {accuracies[key + '_acc']}")
             
-            elif key == "remaining_time_h":
-                losses[key + '_loss'] = self.l1_smooth_loss_fn(outputs[key], targets[key]).mean()
+            elif key == "remaining_time":
+                losses[key + '_loss'] = self.l1_smooth_loss_fn(outputs[key], targets[key]).mean() * 0.1
                 print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
 
             else:

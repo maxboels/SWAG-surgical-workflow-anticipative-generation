@@ -2,6 +2,11 @@ import torch
 import torch.nn as nn
 
 class anticipation_mae(nn.Module):
+    """ Anticipation Mean Absolute Error
+    Inputs:
+    - output_rsd: (B, T, C) tensor of predicted remaining time
+    - target_rsd: (B, T, C) tensor of ground truth remaining time
+    """
 
     def __init__(self, h=7500):
         super(anticipation_mae, self).__init__()

@@ -635,17 +635,20 @@ class Medical_Dataset(Dataset):
 
             # REGRESSION REMAINING TIME TARGETS
             for h in self.horizons:
-                start_reg = max(0, frame_idx + 60)
-                end_reg = min(video_targets.size(0), start_reg + h*60)
-                remaining_time = gt_remaining_time[h][start_reg: end_reg: self.anticip_time, :]
-                # padding
-                missing = self.num_future_tokens - remaining_time.size(0)
-                if missing > 0:
-                    remaining_time = torch.cat((remaining_time, torch.ones(missing, self.num_classes + 1).float() * h), 0)
-                    print(f"[DATASET] EOS padding for gt_remaining_time_{h}: {missing}")
-                # remaining_time = gt_remaining_time[h][:, frame_idx].unsqueeze(1)
+                multiple_horizons = False
+                if multiple_horizons:
+                    start_reg = max(0, frame_idx + 60)
+                    end_reg = min(video_targets.size(0), start_reg + h*60)
+                    remaining_time = gt_remaining_time[h][start_sreg: end_reg: self.anticip_time, :]
+                    # padding
+                    missing = self.num_future_tokens - remaining_time.size(0)
+                    if missing > 0:
+                        remaining_time = torch.cat((remaining_time, torch.ones(missing, self.num_classes + 1).float() * h), 0)
+                        print(f"[DATASET] EOS padding for gt_remaining_time_{h}: {missing}")
+                else:
+                    remaining_time = gt_remaining_time[h][frame_idx + 1, :].unsqueeze(0)
                 print(f"[DATASET] gt_remaining_time_{h}: {remaining_time.size()}")
-                data_now[f'remaining_time_h'] = remaining_time.to(self.device).float()
+                data_now[f'remaining_time_tgt'] = remaining_time.to(self.device).float()
  
             if self.eos_regression:
                 curr_eos_values = eos_values[starts: ends: self.anticip_time]
