@@ -19,6 +19,7 @@ test_only: false
 # h_values: 3 # 2, 3, 5, 18
 
 num_epochs: 20
+best_acc_curr_future: 0.4
 finetune_ckpt: best # or best
 
 # dataset
@@ -38,14 +39,19 @@ model_name: supra          # skit / supra / lstm / gru / naive1 / naive2
 input_tokens: normal  # class_conditioned / normal
 normalize_priors: false
 
+decoder_anticipation: models.transformers.ClassConditionedTransformerDecoder
+
 probs_to_regression_method: first_occurrence # first_occurrence / mean / median
 
 naive1: false
 naive2: false
 
+do_classification_task: true
+do_regression_task: true
+
 ctx_pooling: global
 num_ctx_tokens: 20
-max_seq_len: 18
+max_seq_len: 24
 num_ant_queries: 18 # int(self.max_anticip_time * 60 / self.anticip_time)
 
 # 1. SKiT
@@ -293,11 +299,13 @@ model:
     dec_dim: ${n_embd}
     num_curr_classes: 7
     num_future_classes: ${num_future_classes}
-    max_anticip_time: 18
+    max_anticip_time: ${max_anticip_time}
     anticip_time: ${anticip_time}
     pooling_dim: 64
     ctx_pooling: ${ctx_pooling}
     num_ctx_tokens: ${num_ctx_tokens}
+    do_classification_task: ${do_classification_task}
+    do_regression_task: ${do_regression_task}
     fusion_head:
       _target_: R2A2.model.r2a2.FusionHead
       dim: ${informer.d_model}
@@ -308,7 +316,10 @@ model:
       n_heads: ${n_head}
       n_layers: ${n_layer}
     decoder_cc:
-      _target_: models.transformers.ClassConditionedTransformerDecoder
+      _target_: ${decoder_anticipation}
+      cfg:
+        dataset: ${dataset_name}
+        horizon: ${max_anticip_time}
       num_queries: ${num_ant_queries}
       input_dim: ${informer.d_model}
       hidden_dim: ${n_embd}

@@ -2,6 +2,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+
+
+
+
+
 class TransformerDecoder(nn.Module):
     def __init__(self, input_dim, hidden_dim, n_heads, n_layers, dim_feedforward=2048, dropout=0.1):
         super(TransformerDecoder, self).__init__()
@@ -20,41 +25,6 @@ class TransformerDecoder(nn.Module):
         output = self.output_layer(output.transpose(0, 1))
 
         return output
-
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import numpy as np
-
-class GaussianMixtureSamplerWithPosition:
-    def __init__(self, class_freq_positions, lookahead=18):
-        self.class_freq_positions = class_freq_positions
-        self.lookahead = lookahead
-        self.probabilities = self._compute_probabilities()
-    
-    def _compute_probabilities(self):
-        probabilities = {}
-        for cls, freq_list in self.class_freq_positions.items():
-            probabilities[int(cls)] = []
-            for freq_dict in freq_list:
-                total_count = sum(freq_dict.values())
-                probabilities[int(cls)].append({int(k): v / total_count for k, v in freq_dict.items()})
-        return probabilities
-    
-    def class_probs(self, current_class, position):
-        if current_class not in self.probabilities:
-            raise ValueError(f"Class {current_class} not found in class frequencies.")
-        return self.probabilities[current_class][position]
-    
-    def sample_class(self, current_class, num_samples=18):
-        if current_class not in self.probabilities:
-            raise ValueError(f"Class {current_class} not found in class frequencies.")
-        samples = []
-        for j in range(num_samples):
-            possible_values = list(self.probabilities[current_class][j].keys())
-            probabilities = list(self.probabilities[current_class][j].values())
-            samples.append(np.random.choice(possible_values, p=probabilities))
-        return samples
 
 class PositionalEncoding(nn.Module):
     def __init__(self, d_model):
@@ -75,86 +45,3 @@ class PositionalEncoding(nn.Module):
         pe[:, 1::2] = torch.cos(position * div_term)
         pe = pe.unsqueeze(0)  # (1, length, d_model)
         return pe
-
-
-class ClassConditionedTransformerDecoder(nn.Module):
-    def __init__(self, num_queries, input_dim, hidden_dim, n_heads, n_layers, num_classes, class_freq_positions, normalize_priors=False, dim_feedforward=2048, dropout=0.1):
-        super(ClassConditionedTransformerDecoder, self).__init__()
-
-        self.num_classes = num_classes
-        self.normalize_priors = normalize_priors
-
-        if self.normalize_priors:
-            self.norm_layer = nn.LayerNorm(num_classes)      
-        self.embedding = nn.Linear(input_dim, hidden_dim)
-        self.class_projection_layer = nn.Linear(num_classes, hidden_dim)
-        self.positional_encoding = PositionalEncoding(hidden_dim)
-
-        decoder_layer = nn.TransformerDecoderLayer(d_model=hidden_dim, nhead=n_heads, dim_feedforward=dim_feedforward, dropout=dropout)
-        self.transformer_decoder = nn.TransformerDecoder(decoder_layer, num_layers=n_layers)
-        self.output_layer = nn.Linear(hidden_dim, hidden_dim)
-        
-        file_path = "datasets/cholec80/rem_time_18_conditional_probs.npy"
-        self.weight_matrix = np.load(file_path)
-        print(f"[ClassConditionedTransformerDecoder] weight_matrix: {self.weight_matrix.shape}")
-
-        # No need to sample classes here
-        # self.sampler = GaussianMixtureSamplerWithPosition(class_freq_positions, lookahead=18)
-
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    def forward(self, query_embeddings, memory, current_pred=None, current_gt=None):
-        batch_size, seq_len, _ = query_embeddings.size()
-        print(f"[ClassConditionedTransformerDecoder] query_embeddings: {query_embeddings.shape}")
-
-        # Positional encoding for query_embeddings
-        query_embeddings = self.positional_encoding(query_embeddings)
-        print(f"[ClassConditionedTransformerDecoder] query_embeddings (with PE): {query_embeddings.shape}")
-
-        # Embedding for memory 
-        memory_embedded = self.embedding(memory) + self.positional_encoding(memory) # NOTE: no need for embedding layer
-        print(f"[ClassConditionedTransformerDecoder] memory_embedded (with LN+PE): {memory_embedded.shape}")
-
-        # Initialize combined embeddings
-        combined_embeddings = query_embeddings.clone().to(self.device)
-        print(f"[ClassConditionedTransformerDecoder] combined_embeddings (cloned query_embeddings): {combined_embeddings.shape}")
-
-        # Initialize future class probabilities
-        future_class_probs = torch.zeros(batch_size, seq_len, self.num_classes, device=self.device) + 1e-6
-        print(f"[ClassConditionedTransformerDecoder] future_class_probs (init 1e-6): {future_class_probs.shape}")
-
-        for i in range(batch_size):
-            for j in range(seq_len):
-                if current_gt is not None:
-                    current_class = current_gt[i, -1].item()
-                    # Use ground truth class for teacher forcing
-                    class_probs = self.sampler.class_probs(current_class, j)
-                    for k, v in class_probs.items():
-                        future_class_probs[i, j, k] = v
-                elif current_pred is not None:
-                    # Use predicted class for inference
-                    current_class = torch.argmax(F.softmax(current_pred[i], dim=-1), dim=-1).item()
-                    class_probs = self.sampler.class_probs(current_class, j)
-                    for k, v in class_probs.items():
-                        future_class_probs[i, j, k] = v
-                else:
-                    raise ValueError("Either current_pred or current_gt must be provided.")
-        
-        print(f"[ClassConditionedTransformerDecoder] future_class_probs: {future_class_probs.shape}")
-        print(f"[ClassConditionedTransformerDecoder] future_class_probs: {future_class_probs}")
-
-        # TODO: try to Normalize future_class_probs before passing to linear layer
-        if self.normalize_priors:
-            future_class_probs = self.norm_layer(future_class_probs)
-
-        # Compute class-conditioned embeddings
-        class_conditioned_embedding = self.class_projection_layer(future_class_probs)
-        print(f"[ClassConditionedTransformerDecoder] class_conditioned_embedding (linear): {class_conditioned_embedding.shape}")
-        combined_embeddings += class_conditioned_embedding
-        print(f"[ClassConditionedTransformerDecoder] combined_embeddings (addition): {combined_embeddings.shape}")
-
-        # Transformer decoder
-        output = self.transformer_decoder(combined_embeddings.transpose(0, 1), memory_embedded.transpose(0, 1))
-        output = self.output_layer(output.transpose(0, 1))
-
-        return output

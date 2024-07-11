@@ -4,13 +4,6 @@ model_name=skit
 ctx_pooling=global
 num_ctx_tokens=12
 
-do_classification_task=false
-do_regression_task=true
-
-max_seq_len=24
-
-decoder_anticipation=models.transformers.ClassConditionedTransformerDecoderRegression
-
 probs_to_regression_method=first_occurrence
 
 eos_weight=mean
@@ -36,7 +29,10 @@ n_head=8
 fixed_ctx_length=true
 ctx_length=1440
 anticip_time=60
-max_anticip_time=1
+
+max_anticip_time=5
+num_ant_queries=5
+
 feature_loss=true
 
 eos_classification=true
@@ -47,6 +43,11 @@ eos_class=7
 loss_w_curr=0.4
 loss_w_next=0.4
 loss_w_feats=0.2
+
+
+
+
+
 
 
 

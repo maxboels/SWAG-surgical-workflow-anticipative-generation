@@ -3,6 +3,7 @@ test_only=false
 model_name=skit
 ctx_pooling=global
 num_ctx_tokens=12
+max_seq_len=24
 
 do_classification_task=false
 do_regression_task=true
@@ -10,7 +11,6 @@ do_regression_task=true
 max_seq_len=24
 
 decoder_anticipation=models.transformers.ClassConditionedTransformerDecoderRegression
-
 probs_to_regression_method=first_occurrence
 
 eos_weight=mean
@@ -18,19 +18,19 @@ eos_weight=mean
 class_weight=frequency
 input_tokens=class_conditioned
 
-dataset_name=cholec80
+dataset_name=autolaparo21
 pooling_dim=64
 train_start=1
-train_end=40
-test_start=41
-test_end=80
+train_end=14
+test_start=15
+test_end=21
 
 informer.decoder=true
 informer.d_model=512
 vocab_size=1000
 
 n_embd=512
-n_layer=2
+n_layer=4
 n_head=8
 
 fixed_ctx_length=true
@@ -47,6 +47,11 @@ eos_class=7
 loss_w_curr=0.4
 loss_w_next=0.4
 loss_w_feats=0.2
+
+
+
+
+
 
 
 

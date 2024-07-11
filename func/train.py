@@ -1020,14 +1020,6 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     
     # Aggregate metrics across all videos
     agg_metrics, agg_frame_metrics = aggregate_metrics(all_metrics, all_frame_metrics)
-    # Plot aggregated performance over time
-    # plot_performance_over_time(agg_frame_metrics)
-    # plt.figure(figsize=(10, 8))
-    # sns.heatmap(agg_metrics['confusion_matrix'], annot=True, fmt='d', cmap='Blues')
-    # plt.title('Aggregated Confusion Matrix')
-    # plt.xlabel('Predicted')
-    # plt.ylabel('True')
-    # plt.savefig(f'confusion_matrix_ep{epoch}.png')
 
     # keep time dimension over all videos
     all_videos_mean_acc_future_t       = np.round(np.nanmean(all_videos_acc_future, axis=0), decimals=4).tolist()
@@ -1043,17 +1035,11 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     all_videos_results["acc_curr"]          = acc_curr
     all_videos_results["acc_future"]        = acc_future
     all_videos_results["acc_curr_future"]   = acc_curr_and_future_t
-    # all_videos_results["acc_curr_future"]  = np.round(np.nanmean(all_videos_mean_cum_acc_future_t), decimals=4).tolist()
     all_videos_results["rmse_future"]       = np.round(np.nanmean(all_videos_rmse_future), decimals=4).tolist()
-    all_videos_results["acc_future_t"]      = all_videos_mean_acc_future_t
-
-
-    # Define evaluation horizons
     for horizon in horizons:
         for metric in ['inMAE', 'pMAE', 'eMAE']:
-            metric_name = f"{metric}_{horizon}"
-            all_videos_results[metric_name] = np.round(np.mean(locals()[f'all_videos_{metric}_{horizon}']), decimals=4).tolist()
-            logger.info(f"Average {metric_name} h={horizon}: {all_videos_results[metric_name]:.4f}")
+            all_videos_results[f"{metric}_{horizon}"] = np.round(np.mean(locals()[f'all_videos_{metric}_{horizon}']), decimals=4).tolist()
+    all_videos_results["acc_future_t"]      = all_videos_mean_acc_future_t
     
     # Precision, Recall, F1
     all_videos_results.update(agg_metrics)
@@ -1693,7 +1679,7 @@ def main(cfg):
             tb_writer, 
             logger, 
             1,
-            best_acc_curr_future=0.4,
+            best_acc_curr_future=cfg.best_acc_curr_future,
             probs_to_regression_method=cfg.probs_to_regression_method,
             confidence_threshold= 0.5
         )
@@ -1706,7 +1692,7 @@ def main(cfg):
 
     # Get training metric logger
     stat_loggers = get_default_loggers(tb_writer, start_epoch, logger)
-    best_acc_curr_future = 0.4
+    best_acc_curr_future = cfg.best_acc_curr_future
     partial_epoch = start_epoch - int(start_epoch)
     start_epoch = int(start_epoch)
     last_saved_time = datetime.datetime(1, 1, 1, 0, 0)
