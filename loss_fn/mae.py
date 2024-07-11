@@ -8,10 +8,11 @@ class anticipation_mae(nn.Module):
     - target_rsd: (B, T, C) tensor of ground truth remaining time
     """
 
-    def __init__(self, h=7500):
+    def __init__(self, h=18):
         super(anticipation_mae, self).__init__()
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.h  = torch.tensor(h).float().to(self.device)
+        # self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # self.device = torch.device("cpu")
+        self.h  = torch.tensor(h).float()#.to(self.device)
         self.lossfunc = nn.L1Loss()
 
     def forward(self, output_rsd, target_rsd):

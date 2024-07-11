@@ -6,11 +6,26 @@ from matplotlib.patheffects import withStroke
 
 from loss_fn.mae import anticipation_mae
 
-def plot_remaining_time_video(gt_remaining_time, pred_remaining_time, h, num_obs_classes, video_idx=0, dataset="Cholec80", save_video=True):
+def plot_remaining_time_video(gt_remaining_time, pred_remaining_time, h, num_obs_classes, video_idx=0, epoch=0, dataset="cholec80", save_video=False):
+    
     fig, axs = plt.subplots(num_obs_classes + 1, 1, figsize=(12, 1.5*(num_obs_classes + 1)), sharex=True)
     plt.subplots_adjust(bottom=0.1, hspace=0.05)
     time_steps = np.arange(gt_remaining_time.shape[0])
     colors = plt.cm.tab10(np.linspace(0, 1, num_obs_classes + 1))
+
+    if not os.path.exists(f"./plots/rtd/"):
+        os.makedirs(f"./plots/rtd/")
+
+    # if tensor then convert to numpy
+    if torch.is_tensor(gt_remaining_time):
+        gt_remaining_time = gt_remaining_time.cpu().numpy()
+    if torch.is_tensor(pred_remaining_time):
+        pred_remaining_time = pred_remaining_time.cpu().numpy()
+    # if has 3 dimensions then remove the second one
+    if len(gt_remaining_time.shape) == 3:
+        gt_remaining_time = gt_remaining_time[:, 0, :]
+    if len(pred_remaining_time.shape) == 3:
+        pred_remaining_time = pred_remaining_time[:, 0, :]
 
     y_min, y_max = -0.1, h + 0.5
     gt_lines = []
@@ -54,7 +69,7 @@ def plot_remaining_time_video(gt_remaining_time, pred_remaining_time, h, num_obs
     
     if not save_video:
         plt.tight_layout()
-        output_file = f"./plots/{dataset}/rtd/remaining_time_gt_pred_static_{video_idx}.png"
+        output_file = f"./plots/{dataset}/rtd/video{video_idx}_ep{epoch}_phase_rtd.png"
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
         plt.show()
         plt.close()
@@ -65,20 +80,19 @@ def plot_remaining_time_video(gt_remaining_time, pred_remaining_time, h, num_obs
 
         def animate(t):
             for vline in vlines:
-                vline.set_xdata([t, t])  # Set as a list to avoid deprecation warning
+                vline.set_xdata([t, t])
             
             for i, (gt_line, pred_line, text_ann) in enumerate(zip(gt_lines, pred_lines, text_annotations)):
                 gt_y = gt_line.get_ydata()[t]
                 pred_y = pred_remaining_time[t, i]
                 text_ann.set_text(f'GT: {gt_y:.2f}, Pred: {pred_y:.2f}')
                 
-                # Update prediction line to show only up to current time step
                 pred_data = pred_line.get_ydata()
                 pred_data[:t+1] = pred_remaining_time[:t+1, i]
                 pred_data[t+1:] = np.nan
                 pred_line.set_ydata(pred_data)
             
-            if t % 10 == 0:  # Print progress every 10 frames
+            if t % 10 == 0:
                 print(f"Rendering frame {t}/{len(time_steps)}")
             
             return vlines + pred_lines + text_annotations
@@ -86,11 +100,10 @@ def plot_remaining_time_video(gt_remaining_time, pred_remaining_time, h, num_obs
         print("Starting animation rendering...")
         ani = FuncAnimation(fig, animate, frames=np.arange(len(time_steps)), interval=50, blit=True)
 
-        # Save the animation as a video file
         print("Saving animation to video file...")
         Writer = writers['ffmpeg']
         writer = Writer(fps=20, metadata=dict(artist='Me'), bitrate=1800)
-        output_file = f"./plots/{dataset}/rtd/remaining_time_gt_pred_video_{video_idx}.mp4"
+        output_file = f"./plots/{dataset}/rtd/video{video_idx}_ep{epoch}_phase_rtd.mp4"
         ani.save(output_file, writer=writer)
 
         plt.close()

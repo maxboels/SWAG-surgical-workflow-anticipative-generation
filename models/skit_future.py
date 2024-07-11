@@ -219,9 +219,10 @@ class SKITFuture(nn.Module):
         # TODO: add a sigmoid activation function to the regression head
         # TODO: use 1 - sigmoid to get the remaining time
 
+        self.future_time_compression = "linear_transofrmation"
+        self.linear_cls_to_regression = nn.Linear(self.num_ant_queries, 1)
+        self.sigmoid = nn.Sigmoid()
 
-
-        
         # Initialize input queries
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.input_queries = nn.Parameter(torch.randn(self.num_ant_queries, d_model).to(device))
@@ -290,15 +291,19 @@ class SKITFuture(nn.Module):
         print(f"[SKIT-F] next_action: {next_action.shape}")
 
         # Regression of future transitions (remaining time until occurrence of future states)
-        # maxpooling over the temporal dimension
-        max_next_action = torch.max(next_action, dim=1)[0] # (B, d_model)
-        print(f"[SKIT-F] max_next_action: {max_next_action.shape}")
-        next_phase_regression = self.regression_head(max_next_action)
-        print(f"[SKIT-F] next_phase_regression: {next_phase_regression.shape}")
-        # 1 - sigmoid to get the remaining time
-        next_phase_regression = (1 - torch.sigmoid(next_phase_regression)) * self.max_anticip_time
-        outputs["remaining_time"] = next_phase_regression
-        print(f"[SKIT-F] next_phase_regression: {next_phase_regression.shape}")
+        if self.future_time_compression=='max_time':
+            remaining_time_feats = torch.max(next_action, dim=1)[0] # (B, d_model)
+        elif self.future_time_compression=='linear_transofrmation':
+            remaining_time_feats = self.linear_cls_to_regression(next_action.transpose(1, 2)).transpose(1, 2)
+        else:
+            raise ValueError(f"Future compression method {self.future_time_compression} not implemented.")        
+        print(f"[SKIT-F] remaining_time_feats: {remaining_time_feats.shape}")
+        next_phase_occurrence = self.regression_head(remaining_time_feats)
+        print(f"[SKIT-F] next_phase_occurrence: {next_phase_occurrence.shape}")
+        # convert probability to remaining time
+        remaining_time = (1 - self.sigmoid(next_phase_occurrence)) * self.max_anticip_time
+        outputs["remaining_time"] = remaining_time
+        print(f"[SKIT-F] remaining_time (h={self.max_anticip_time}): {remaining_time.shape}")
 
         # Classification of future segments
         next_frames_cls = self.future_action_classifier(next_action)

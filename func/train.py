@@ -803,8 +803,8 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
 
 
         # save remaining time gt and predictions
-        video_remaining_time_tgts = np.full((video_length, num_ant_classes), -1)
-        video_remaining_time_preds = np.full((video_length, num_ant_classes), -1)
+        video_remaining_time_tgts = torch.full((video_length, 1, num_ant_classes), -1)
+        video_remaining_time_preds = torch.full((video_length, 1, num_ant_classes), -1)
 
         video_mean_cum_iter_time = []
 
@@ -850,10 +850,10 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                     time_steps = torch.arange(probs.shape[1]) * anticip_time / 60  # Convert to minutes
                     for h in horizons:
                         # Get the target remaining time for the current horizon
-                        target_remaining_time = data[f'remaining_time_tgt'].detach()#.cpu()#.numpy()
+                        target_remaining_time = data[f'remaining_time_tgt'].detach().cpu()
                         print(f"[TESTING] target_remaining_time {h}: {target_remaining_time.shape}")
 
-                        pred_remaining_time = outputs[f'remaining_time'].detach()#.cpu()#.numpy()
+                        pred_remaining_time = outputs[f'remaining_time'].detach().cpu()
                         print(f"[TESTING] pred_remaining_time {h}: {pred_remaining_time.shape}")
 
                         # loss
@@ -862,8 +862,8 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                         print(f"[TESTING] reg_loss {h}: {reg_loss}")
                         
                         # store remaining time gt and predictions
-                        video_remaining_time_tgts[start_idx:end_idx] = target_remaining_time.cpu().numpy()
-                        video_remaining_time_preds[start_idx:end_idx] = pred_remaining_time.cpu().numpy()
+                        video_remaining_time_tgts[start_idx:end_idx] = target_remaining_time
+                        video_remaining_time_preds[start_idx:end_idx] = pred_remaining_time
                                  
                 # SEGMENT LEVEL PREDICTION
                 # (possible auto-regressive predictions)
@@ -952,11 +952,12 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         all_vids_f1.append(np.mean(video_f1))
 
         # Compute remaining time for each phase per video
+        # EXPECTS TENSORS
         for video_id in video_ids:
             for horizon in horizons:
                 mae_metric = locals()[f'mae_metric_{horizon}']                
-                wMAE, inMAE, pMAE, eMAE = mae_metric(all_video_remaining_time_preds[video_id].unsqueeze(1),
-                                                     all_video_remaining_time_tgts[video_id].unsqueeze(1))
+                wMAE, inMAE, pMAE, eMAE = mae_metric(all_video_remaining_time_preds[video_id],
+                                                     all_video_remaining_time_tgts[video_id])
                 # Store metrics for all videos
                 for metric, value in zip(['wMAE', 'inMAE', 'pMAE', 'eMAE'], [wMAE, inMAE, pMAE, eMAE]):
                     locals()[f'all_videos_{metric}_{horizon}'].append(value.item())
@@ -1093,6 +1094,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                                         num_obs_classes=7, 
                                         video_idx=video_id, 
                                         epoch=epoch, 
+                                        dataset='cholec80',
                                         save_video=False)
     
     # update best_cum_acc
