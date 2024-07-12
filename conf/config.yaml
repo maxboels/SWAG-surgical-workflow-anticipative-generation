@@ -171,6 +171,8 @@ eval:
     only_run_featext: false
     probs_to_regression_method: ${probs_to_regression_method}
     confidence_threshold: 0.5
+    do_classification: ${do_classification_task}
+    do_regression: ${do_regression_task}
 
 
 model:

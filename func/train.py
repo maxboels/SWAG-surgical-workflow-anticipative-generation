@@ -64,9 +64,17 @@ from R2A2.eval.plot_metrics import plot_figure, plot_box_plot_figure, plot_cumul
 from R2A2.eval.plot_video_3D import plot_video_contour_3D, plot_video_scatter_3D
 
 from R2A2.eval.plot_remaining_time import plot_remaining_time_video
+from R2A2.eval.plot_video_reg_and_classif_tasks_anim import plot_combined_video
 
+from R2A2.eval.convert_tasks import regression2classification, classification2regression
 
 from loss_fn.mae import anticipation_mae
+
+from R2A2.eval.evaluation_metrics import compute_f1_score, compute_rmse_transition_times, \
+                                        compute_transition_times, compute_accuracy, \
+                                        calculate_metrics, plot_performance_over_time, \
+                                        segment_continuity_score, temporal_consistency_score, \
+                                        class_distribution_divergence, aggregate_metrics
 
 
 #--maxence boels- debugging cuda error
@@ -75,6 +83,17 @@ os.environ['TORCH_USE_CUDA_DSA'] = '1'
 # import os
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 #--maxence boels-
+
+def check_numpy_to_list(dictionay):
+    for key in dictionay.keys():
+        if isinstance(dictionay[key], np.ndarray):
+            dictionay[key] = dictionay[key].tolist()
+            print(f"converted {key} np.ndarray to list")
+    return dictionay
+
+
+def np_round(value, n=4):
+    return np.round(value, n).tolist()
 
 def store_checkpoint(fpaths: Union[str, Sequence[str]], model, optimizer,
                      lr_scheduler, epoch):
@@ -184,7 +203,6 @@ def train_one_epoch(
             logger.info(f"[TRAINING] Step {i}/{len(dataloader_train)} | "
                 f"Loss: {losses['total_loss'].item():.2f} | "
                 f"Acc (curr_frames): {accuracies['curr_frames_acc']:.2f} | "
-                # f"Acc (next_frames): {accuracies['next_frames_acc']:.2f} | "
                 f"time-left: {remaining_time:.2f} min")
 
         loss = losses["total_loss"]
@@ -216,464 +234,6 @@ def train_one_epoch(
             lr_scheduler.step()
     return last_saved_time, step_now
 
-import numpy as np
-from sklearn.metrics import f1_score
-
-def compute_accuracy(inputs, targets, return_list=True, ignore_index=-1, return_mean=True):
-    # Ensure inputs and targets are numpy arrays
-    inputs = np.array(inputs)
-    targets = np.array(targets)
-
-    # Check if inputs and targets are empty
-    if inputs.size == 0 or targets.size == 0:
-        raise ValueError("Inputs and targets cannot be empty")
-
-    # Check if inputs and targets have the same length
-    assert inputs.shape[0] == targets.shape[0], "Inputs and targets must have the same length"
-
-    # Reshape inputs and targets if necessary
-    if len(inputs.shape) == 1:
-        inputs = inputs.reshape(-1, 1)
-    if len(targets.shape) == 1:
-        targets = targets.reshape(-1, 1)
-
-    # Check if reshaped inputs and targets have the same shape
-    assert inputs.shape == targets.shape, "Reshaped inputs and targets must have the same shape"
-
-    # Convert inputs and targets to integer type
-    inputs = inputs.astype(int)
-    targets = targets.astype(int)
-
-    # Create a mask to ignore padded values
-    mask = targets != ignore_index
-
-    # Compute the accuracy for each frame, excluding ignored indices
-    accuracy = np.zeros_like(targets, dtype=float)
-    valid_frames = mask.sum(axis=0)
-    accuracy[mask] = (inputs[mask] == targets[mask]).astype(float)
-
-    # Compute the mean accuracy along the last dimension, excluding frames with all padded targets
-    accuracy = np.divide(accuracy.sum(axis=0), valid_frames, out=np.zeros_like(valid_frames, dtype=float), where=valid_frames!=0)
-
-    # Set accuracy to NaN for frames with all padded targets
-    accuracy[valid_frames == 0] = np.nan
-
-    # Compute mean over frames indices but ignore NaNs
-    if return_mean:
-        accuracy = np.nanmean(accuracy)
-
-    # Round the accuracy to 4 decimal places
-    accuracy = np.round(accuracy, decimals=4)
-
-    if return_list:
-        return accuracy.tolist()
-    return accuracy
-
-def compute_transition_times(sequence):
-    transition_times = {}
-    prev_class = sequence[0] # current frame recognition class
-    for i in range(1, len(sequence)):
-        if sequence[i] != prev_class:
-            transition_times[sequence[i]] = i
-            prev_class = sequence[i]
-    return transition_times
-
-def compute_rmse_transition_times(targets, predictions, max_duration=18, min_duration=0):
-    total_mse = 0
-    count = 0
-
-    for i in range(len(targets)):
-        target_seq = targets[i]
-        pred_seq = predictions[i]
-        # print(f"target_seq: {target_seq}")
-        # print(f"pred_seq:   {pred_seq}")
-
-        
-        target_transitions = compute_transition_times(target_seq)
-        pred_transitions = compute_transition_times(pred_seq)
-        # print(f"")
-        # print
-
-        # Filter transitions within max_duration
-        target_transitions = {c: t for c, t in target_transitions.items() if t <= max_duration}
-        pred_transitions = {c: t for c, t in pred_transitions.items() if t <= max_duration}
-        
-        all_classes = set(target_transitions.keys()).union(pred_transitions.keys())
-        
-        for c in all_classes:
-            target_time = target_transitions.get(c, max_duration)
-            pred_time = pred_transitions.get(c, max_duration)
-
-            if pred_time != max_duration and target_time != max_duration:
-                error = (target_time - pred_time) ** 2
-            else:
-                error = min((target_time - min_duration) ** 2, (max_duration - target_time) ** 2)
-
-            # error = (target_time - pred_time) ** 2
-            total_mse += error
-            count += 1
-        # print(f"error: {np.sqrt(error)} minutes")
-        
-        # break
-
-    rmse = (total_mse / count) ** 0.5 if count != 0 else 0
-    return rmse
-
-def compute_f1_score(inputs, targets, return_list=True, ignore_index=-1, return_mean=True):
-    # Ensure inputs and targets are numpy arrays
-    inputs = np.array(inputs)
-    targets = np.array(targets)
-
-    # Check if inputs and targets are empty
-    if inputs.size == 0 or targets.size == 0:
-        raise ValueError("Inputs and targets cannot be empty")
-
-    # Check if inputs and targets have the same length
-    assert inputs.shape[0] == targets.shape[0], "Inputs and targets must have the same length"
-
-    # Reshape inputs and targets if necessary
-    if len(inputs.shape) == 1:
-        inputs = inputs.reshape(-1, 1)
-    if len(targets.shape) == 1:
-        targets = targets.reshape(-1, 1)
-
-    # Check if reshaped inputs and targets have the same shape
-    assert inputs.shape == targets.shape, "Reshaped inputs and targets must have the same shape"
-
-    # Convert inputs and targets to integer type
-    inputs = inputs.astype(int)
-    targets = targets.astype(int)
-
-    # Create a mask to ignore padded values
-    mask = targets != ignore_index
-
-    # Compute true positives, false positives, and false negatives for each frame, excluding ignored indices
-    tp = ((inputs == targets) & mask).astype(float)
-    fp = ((inputs != targets) & mask).astype(float)
-    fn = ((inputs != targets) & mask).astype(float)
-
-    # Compute precision, recall, and F1 score for each frame
-    precision = np.zeros(targets.shape[1], dtype=float)
-    recall = np.zeros(targets.shape[1], dtype=float)
-    f1_score = np.zeros(targets.shape[1], dtype=float)
-
-    for i in range(targets.shape[1]):
-        frame_mask = mask[:, i]
-        frame_inputs = inputs[:, i]
-        frame_targets = targets[:, i]
-
-        tp = ((frame_inputs == frame_targets) & frame_mask).astype(float)
-        fp = ((frame_inputs != frame_targets) & frame_mask).astype(float)
-        fn = ((frame_inputs != frame_targets) & frame_mask).astype(float)
-
-        valid_frames = frame_mask.sum()
-
-        precision[i] = np.divide(tp.sum(), tp.sum() + fp.sum(), out=np.zeros_like(tp.sum()), where=(tp.sum() + fp.sum()) != 0)
-        recall[i] = np.divide(tp.sum(), tp.sum() + fn.sum(), out=np.zeros_like(tp.sum()), where=(tp.sum() + fn.sum()) != 0)
-        f1_score[i] = np.divide(2 * precision[i] * recall[i], precision[i] + recall[i], out=np.zeros_like(precision[i]), where=(precision[i] + recall[i]) != 0)
-
-        if valid_frames == 0:
-            f1_score[i] = np.nan
-    
-    # Compute mean over frames indices but ignore NaNs
-    if return_mean:
-        f1_score = np.nanmean(f1_score)
-
-    # Round the F1 score to 4 decimal places
-    f1_score = np.round(f1_score, decimals=4)
-
-    if return_list:
-        return f1_score.tolist()
-    return f1_score
-
-def check_numpy_to_list(dictionay):
-    for key in dictionay.keys():
-        if isinstance(dictionay[key], np.ndarray):
-            dictionay[key] = dictionay[key].tolist()
-            print(f"converted {key} np.ndarray to list")
-    return dictionay
-
-
-def np_round(value, n=4):
-    return np.round(value, n).tolist()
-
-import numpy as np
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, confusion_matrix
-from scipy.stats import entropy
-import matplotlib.pyplot as plt
-
-def calculate_metrics(y_true, y_pred):
-    """
-    Calculate various metrics for the video classification task using both
-    flattened and frame-by-frame approaches.
-    
-    Args:
-    y_true (np.array): Ground truth labels, shape (video_length, 18)
-    y_pred (np.array): Predicted labels, shape (video_length, 18)
-    
-    Returns:
-    dict: A dictionary containing calculated metrics and frame-by-frame metrics
-    """
-    metrics = {}
-    
-    # Flattened metrics
-    y_true_flat = y_true.flatten()
-    y_pred_flat = y_pred.flatten()
-    
-    metrics['flat_accuracy']            = np_round(accuracy_score(y_true_flat, y_pred_flat))
-    metrics['flat_macro_f1']            = np_round(f1_score(y_true_flat, y_pred_flat, average='macro', zero_division=0))
-    metrics['flat_weighted_f1']         = np_round(f1_score(y_true_flat, y_pred_flat, average='weighted', zero_division=0))
-    metrics['flat_macro_precision']     = np_round(precision_score(y_true_flat, y_pred_flat, average='macro', zero_division=0))
-    metrics['flat_weighted_precision']  = np_round(precision_score(y_true_flat, y_pred_flat, average='weighted', zero_division=0))
-    metrics['flat_macro_recall']        = np_round(recall_score(y_true_flat, y_pred_flat, average='macro', zero_division=0))
-    metrics['flat_weighted_recall']     = np_round(recall_score(y_true_flat, y_pred_flat, average='weighted', zero_division=0))
-    
-    # Frame-by-frame metrics
-    frame_metrics = {
-        'accuracy': [],
-        'macro_f1': [],
-        'weighted_f1': [],
-        'macro_precision': [],
-        'weighted_precision': [],
-        'macro_recall': [],
-        'weighted_recall': []
-    }
-    
-    for i in range(y_true.shape[1]):  # Iterate over each anticipation time index
-        y_true_frame = y_true[:, i]
-        y_pred_frame = y_pred[:, i]
-        
-        frame_metrics['accuracy'].append(np_round(accuracy_score(y_true_frame, y_pred_frame)))
-        frame_metrics['macro_f1'].append(np_round(f1_score(y_true_frame, y_pred_frame, average='macro', zero_division=0)))
-        frame_metrics['weighted_f1'].append(np_round(f1_score(y_true_frame, y_pred_frame, average='weighted', zero_division=0)))
-        frame_metrics['macro_precision'].append(np_round(precision_score(y_true_frame, y_pred_frame, average='macro', zero_division=0)))
-        frame_metrics['weighted_precision'].append(np_round(precision_score(y_true_frame, y_pred_frame, average='weighted', zero_division=0)))
-        frame_metrics['macro_recall'].append(np_round(recall_score(y_true_frame, y_pred_frame, average='macro', zero_division=0)))
-        frame_metrics['weighted_recall'].append(np_round(recall_score(y_true_frame, y_pred_frame, average='weighted', zero_division=0)))
-    
-    # Average the 
-    for metric, values in frame_metrics.items():
-        metrics[f'{metric}_avg'] = np_round(np.mean(values))
-        metrics[f'{metric}_std'] = np_round(np.std(values))
-    
-    # Other metrics (unchanged)
-    metrics['confusion_matrix']                 = confusion_matrix(y_true_flat, y_pred_flat)
-    metrics['segment_continuity']               = np_round(segment_continuity_score(y_true, y_pred))
-    metrics['temporal_consistency']             = np_round(temporal_consistency_score(y_pred))
-    metrics['class_distribution_divergence']    = np_round(class_distribution_divergence(y_true, y_pred))
-    
-    return metrics, frame_metrics
-
-
-import seaborn as sns
-
-def plot_performance_over_time(frame_metrics):
-    """
-    Plot the performance of various metrics over the anticipated time window.
-    
-    Args:
-    frame_metrics (dict): Dictionary containing frame-by-frame metrics
-    """
-    length = len(frame_metrics['accuracy'])
-    time_steps = range(0, length)
-    
-    plt.figure(figsize=(15, 10))
-    
-    # Use a color palette for other metrics
-    colors = sns.color_palette("husl", len(frame_metrics) - 1)
-    color_iter = iter(colors)
-
-    min_y = 1
-    max_y = 0
-    y_space = 0.05
-    
-    # Plot accuracy separately with a distinct style
-    plt.plot(time_steps, frame_metrics['accuracy'], label='accuracy', 
-             linewidth=3, color='black', linestyle='--', marker='o')
-    min_y = min(min_y, min(frame_metrics['accuracy']))
-    max_y = max(max_y, max(frame_metrics['accuracy']))
-    
-    # Plot other metrics
-    for metric, values in frame_metrics.items():
-        if metric != 'accuracy':
-            plt.plot(time_steps, values, label=metric, color=next(color_iter))
-            min_y = min(min_y, min(values)) - y_space
-            max_y = max(max_y, max(values)) + y_space
-    
-    plt.xlabel('Minutes into the future')
-    plt.ylabel('Metric Value')
-    plt.title('Performance Metrics over Anticipated Time Window')
-    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-    plt.grid(True, alpha=0.3)
-    plt.ylim(min_y, max_y)  # Assuming all metrics are between 0 and 1
-    
-    # Add horizontal lines for better readability
-    plt.axhline(y=0.5, color='gray', linestyle=':', alpha=0.5)
-    plt.axhline(y=0.25, color='gray', linestyle=':', alpha=0.5)
-    plt.axhline(y=0.75, color='gray', linestyle=':', alpha=0.5)
-    
-    plt.tight_layout()
-    # plt.show()
-    plt.savefig('performance_over_time.png')
-
-def segment_continuity_score(y_true, y_pred):
-    """
-    Calculate a score based on the continuity of predicted segments.
-    
-    This function compares the lengths of continuous segments in the
-    ground truth and predictions, rewarding longer matching segments.
-    """
-    score = 0
-    for t in range(y_true.shape[0]):
-        true_segment = y_true[t]
-        pred_segment = y_pred[t]
-        
-        # Find the longest matching subsequence
-        longest_match = 0
-        current_match = 0
-        for i in range(len(true_segment)):
-            if true_segment[i] == pred_segment[i]:
-                current_match += 1
-                longest_match = max(longest_match, current_match)
-            else:
-                current_match = 0
-        
-        # Score is the square of the longest match, normalized
-        score += (longest_match ** 2) / 324  # 324 is 18^2
-    
-    return score / y_true.shape[0]
-
-def temporal_consistency_score(y_pred):
-    """
-    Calculate a score based on the temporal consistency of predictions.
-    
-    This function rewards predictions that are consistent over time,
-    penalizing frequent changes in predicted classes.
-    """
-    changes = np.sum(np.diff(y_pred, axis=0) != 0)
-    max_possible_changes = y_pred.shape[0] * y_pred.shape[1]
-    return 1 - (changes / max_possible_changes)
-
-def class_distribution_divergence(y_true, y_pred):
-    """
-    Calculate the divergence between true and predicted class distributions.
-    
-    This function uses KL divergence to measure how different the
-    predicted class distribution is from the true distribution.
-    """
-    true_dist = np.bincount(y_true.flatten(), minlength=9) / len(y_true.flatten())
-    pred_dist = np.bincount(y_pred.flatten(), minlength=9) / len(y_pred.flatten())
-    
-    # Add small epsilon to avoid division by zero in KL divergence
-    epsilon = 1e-10
-    true_dist += epsilon
-    pred_dist += epsilon
-    
-    return entropy(true_dist, pred_dist)
-
-def aggregate_metrics(all_metrics, all_frame_metrics):
-    """
-    Aggregate metrics across all videos, handling different-sized confusion matrices.
-    
-    Args:
-    all_metrics (list): List of metric dictionaries for each video
-    all_frame_metrics (list): List of frame metric dictionaries for each video
-    
-    Returns:
-    dict, dict: Aggregated metrics and aggregated frame metrics
-    """
-    agg_metrics = {}
-    agg_frame_metrics = {metric: [] for metric in all_frame_metrics[0].keys()}
-    
-    # Aggregate flattened metrics
-    for metric in all_metrics[0].keys():
-        if metric != 'confusion_matrix':
-            agg_metrics[metric] = np.round(np.mean([m[metric] for m in all_metrics]), 4).tolist()
-    
-    # Aggregate confusion matrices
-    max_classes = max(cm.shape[0] for cm in [m['confusion_matrix'] for m in all_metrics])
-    agg_confusion_matrix = np.zeros((max_classes, max_classes), dtype=int)
-    
-    for m in all_metrics:
-        cm = m['confusion_matrix']
-        n_classes = cm.shape[0]
-        agg_confusion_matrix[:n_classes, :n_classes] += cm
-    
-    agg_metrics['confusion_matrix'] = agg_confusion_matrix.tolist()
-    
-    # Aggregate frame metrics
-    for metric in agg_frame_metrics.keys():
-        # mean over all videos but keep the temporal dimension
-        agg_frame_metrics[metric] = np.round(np.mean([fm[metric] for fm in all_frame_metrics], axis=0), 4).tolist()
-    
-    return agg_metrics, agg_frame_metrics
-
-def classification_to_remaining_time(class_probs, time_steps, h, num_classes=7, method='first_occurrence', confidence_threshold=0.5):
-    """
-    Compute the remaining time for each phase based on classification probabilities.
-    Args:
-    class_probs (torch.Tensor): Classification probabilities, shape (batch_size, num_steps, num_classes)
-    time_steps (torch.Tensor): Time steps in minutes, shape (num_steps)
-    h (int): Maximum anticipation time in minutes
-    num_classes (int): Total number of anticipation classes in the dataset (default: 7)
-    method (str): Method to compute remaining time ('first_occurrence', 'mean', 'median')
-    confidence_threshold (float): Confidence threshold for the 'first_occurrence' method
-    """
-    # Excluding the 
-    
-    batch_size, num_steps, num_ant_classes = class_probs.size()
-    remaining_time = torch.full((batch_size, num_classes), h, device=class_probs.device)
-    
-    for phase in range(num_classes):        
-        # TODO: add option with last EOS class regression
-        if method == 'class_occurence':
-            future_classes = torch.argmax(class_probs, dim=2)
-            first_occurrence = torch.argmax(future_classes == phase, dim=1)
-            remaining_time[:, phase] = torch.min(time_steps[first_occurrence], torch.tensor(h, device=class_probs.device))
-
-
-
-        elif method == 'first_occurrence_and_threshold': # and > confidence_threshold
-            first_occurrence = torch.argmax((phase_probs > confidence_threshold).float(), dim=1)
-            mask = (first_occurrence == 0) & (phase_probs[:, 0] <= confidence_threshold)
-            first_occurrence[mask] = torch.argmax(phase_probs[mask], dim=1)
-            remaining_time[:, phase] = torch.min(time_steps[first_occurrence], torch.tensor(h, device=class_probs.device))
-        
-        elif method == 'mean':
-            expected_time = torch.sum(phase_probs * time_steps, dim=1) / torch.sum(phase_probs, dim=1)
-            remaining_time[:, phase] = torch.min(expected_time, torch.tensor(h, device=class_probs.device))
-        
-        elif method == 'median':
-            cumulative_probs = torch.cumsum(phase_probs, dim=1)
-            median_index = torch.argmin(torch.abs(cumulative_probs - 0.5), dim=1)
-            remaining_time[:, phase] = torch.min(time_steps[median_index], torch.tensor(h, device=class_probs.device))
-        
-        else:
-            raise ValueError(f"Unknown method: {method}")
-    
-    return remaining_time
-
-def ground_truth_remaining_time(phase_labels, current_step, h, num_classes=7):
-    """
-    Compute the remaining time for each phase based on ground truth labels.
-
-    Args:
-    phase_labels (torch.Tensor): Ground truth phase labels, shape (batch_size, seq_len)
-    h (int): Maximum anticipation time in minutes
-    num_classes (int): Total number of anticipation classes in the dataset (default: 7)
-    """
-    batch_size, seq_len = phase_labels.size()
-    remaining_time = torch.full((batch_size, num_classes), h, device=phase_labels.device)
-    for b in range(batch_size):
-        for phase in range(num_classes):
-            # select the future first occurrences of the phase
-            future_occurrences = torch.where(phase_labels[b, current_step:] == phase)[0]
-            if len(future_occurrences) > 0:
-                remaining_time[b, phase] = min(future_occurrences[0].item(), h) # indices are minutes
-            else:
-                remaining_time[b, phase] = h
-
-    return remaining_time
 
 def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_writer, logger, epoch: float,
             anticip_time: int,
@@ -683,7 +243,9 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
             only_run_featext=False,
             best_acc_curr_future=0.4,
             probs_to_regression_method: str = 'first_occurrence',
-            confidence_threshold: float = 0.5
+            confidence_threshold: float = 0.5,
+            do_classification: bool = True,
+            do_regression: bool = True,
             ):
     
     step_size = int(anticip_time/60)
@@ -741,32 +303,8 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     all_metrics = []
     all_frame_metrics = []
 
-    # Add new metrics for regression evaluation
-    # all_videos_wMAE_18 = []
-    # all_videos_inMAE_18 = []
-    # all_videos_pMAE_18 = []
-    # all_videos_eMAE_18 = []
-
-    # all_videos_wMAE_5 = []
-    # all_videos_inMAE_5 = []
-    # all_videos_pMAE_5 = []
-    # all_videos_eMAE_5 = []
-
-    # all_videos_wMAE_3 = []
-    # all_videos_inMAE_3 = []
-    # all_videos_pMAE_3 = []
-    # all_videos_eMAE_3 = []
-
-    # all_videos_wMAE_2 = []
-    # all_videos_inMAE_2 = []
-    # all_videos_pMAE_2 = []
-    # all_videos_eMAE_2 = []
-
-
-    mae_metric_18 = anticipation_mae(h=18*60)  # 18 minutes in seconds
-    mae_metric_5 = anticipation_mae(h=5*60)   # 5 minutes in seconds
-    mae_metric_3 = anticipation_mae(h=3*60)   # 3 minutes in seconds
-    mae_metric_2 = anticipation_mae(h=2*60)   # 2 minutes in seconds
+    for horizon in [18, 5, 3, 2]:
+        locals()[f"mae_metric_{horizon}"] = anticipation_mae(h=horizon*60)  # convert minutes to seconds
 
     # Initialize lists for each time horizon
     for horizon in [18, 5, 3, 2]:
@@ -776,6 +314,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
 
     # FOR EACH VIDEO LOADER
     for video_idx, data_loader in enumerate(dataloaders):
+        dataset = data_loader.dataset
         vid_start_time = time.time()
         video_results = OrderedDict()
         video_length = len(data_loader.dataset)
@@ -798,8 +337,9 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         video_tgts_preds    = np.full((video_length, max_num_steps), -1)
         video_seg_preds     = np.full((video_length, 1), -1)
         video_tgts_preds_seg = np.full((video_length, 1), -1)
-
-        video_frame_probs_preds   = np.full((video_length, max_num_steps, num_ant_classes), -1)
+        
+        # Anticipation Classification Probabilities
+        video_frame_probs_preds   = np.full((video_length, max_num_steps+1, num_ant_classes), -1)
 
 
         # save remaining time gt and predictions
@@ -828,12 +368,14 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                 outputs = model(data['video'], data['curr_frames_tgt'], train_mode=False)
 
                 # RECOGNITION
-                preds = np.argmax(outputs['curr_frames'].detach().cpu().numpy()[:,-1:,:], axis=-1)
+                probs = torch.softmax(outputs['curr_frames'][:,-1:,:], dim=2).detach().cpu().numpy()
+                preds = np.argmax(probs, axis=2)
                 targets = data['curr_frames_tgt'].detach().cpu().numpy()[:,-1:]
                 video_frame_rec[start_idx:end_idx] = preds
                 video_tgts_rec[start_idx:end_idx] = targets
+                video_frame_probs_preds[start_idx:end_idx, 0] = probs
 
-                # PREDICTION / ANTICIPATION                
+                # FUTURE FRAMES CLASSIFICATION
                 if "future_frames" in outputs.keys():
                     probs = torch.softmax(outputs['future_frames'], dim=2).detach().cpu().numpy()
                     preds = np.argmax(probs, axis=2)
@@ -845,8 +387,9 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                     video_frame_preds[start_idx:end_idx] = preds
                     video_tgts_preds[start_idx:end_idx] = targets # NOTE: those targets are for inference only
 
-                    # REMAINING TIME PREDICTION
-                    video_frame_probs_preds[start_idx:end_idx] = probs
+                # REMAINING TIME REGRESSION
+                if "remaining_time" in outputs.keys():
+                    video_frame_probs_preds[start_idx:end_idx, 1:] = probs
                     time_steps = torch.arange(probs.shape[1]) * anticip_time / 60  # Convert to minutes
                     for h in horizons:
                         # Get the target remaining time for the current horizon
@@ -864,159 +407,157 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                         # store remaining time gt and predictions
                         video_remaining_time_tgts[start_idx:end_idx] = target_remaining_time
                         video_remaining_time_preds[start_idx:end_idx] = pred_remaining_time
-                                 
-                # SEGMENT LEVEL PREDICTION
-                # (possible auto-regressive predictions)
-                if "future_segmts_cls" in outputs.keys():
-                    preds = np.argmax(outputs['future_segmts_cls'].detach().cpu().numpy(), axis=2)
-                    targets = data["future_segmts_tgt"].detach().cpu().numpy()
-                    video_seg_preds[start_idx:end_idx] = preds
-                    video_tgts_preds_seg[start_idx:end_idx] = targets
+
                 
                 if "iters_time" in outputs.keys():
                     iters_time = outputs["iters_time"]  # list with n AR steps
                     iters_times.append(iters_time)      # list of lists
-                
-                logger.info(f"[TESTING] video: {video_id} | "
-                            f"frame: {curr_frame} / {video_length}")
-                
-                # iter_times
                 if "iter_times" in outputs.keys():
                     iter_times = outputs["iter_times"]
                     video_mean_cum_iter_time.append(iter_times)
-
-            # update start index
-            start_idx += batch_size
-            end_idx += batch_size
+                
+                logger.info(f"[TESTING] video: {video_id} | frame: {curr_frame} / {video_length}")
+                
+                start_idx += batch_size
+                end_idx += batch_size
         
-        # save video probs to numpy
-        # if store:
-        #     np.save(f'video_probs_ep{epoch}_vid{video_id}.npy', video_frame_probs_preds)
-        #     print(f"Saved video probs to: video_probs_ep{epoch}_vid{video_id}.npy")
-        
-        # Video-level results
+        # END OF CURRENT VIDEO LOOP
         vid_test_time = time.time() - vid_start_time
         test_time = time.time() - eval_start_time
         logger.info(f"[TESTING] video: {video_id} | "
                     f"video test time: {vid_test_time/60:.2f} min | "
                     f"total test time: {test_time/60:.2f} min")
+        
+        # save video probs to numpy instead of keeping in memory
+        if store:
+            np.save(f'video_probs_ep{epoch}_vid{video_id}.npy', video_frame_probs_preds)
+            print(f"Saved video probs to: video_probs_ep{epoch}_vid{video_id}.npy")
 
-        # Store the results
-        video_results["video_id"] = video_id
-            
-        # recognition
-        all_video_frame_rec[video_id] = video_frame_rec
-        all_video_tgts_rec[video_id] = video_tgts_rec
-        # predictions
-        all_video_tgts_preds[video_id] = video_tgts_preds
-        all_video_frame_preds[video_id] = video_frame_preds
-        # regression remaining time
-        all_video_remaining_time_tgts[video_id] = video_remaining_time_tgts
-        all_video_remaining_time_preds[video_id] = video_remaining_time_preds
+        # STORE VIDEO RESULTS
+        video_results["video_id"] = video_id        
 
-        # concatenate the recognition and predictions y_true and y_pred
-        y_true = np.concatenate((video_tgts_rec, video_tgts_preds), axis=1)
-        y_pred = np.concatenate((video_frame_rec, video_frame_preds), axis=1)
+        # ---------------------------------------------------------------------
+        # CREATE THE CLASSIFICATION AND REGRESSION TASKS
+        # EVEN IF THE MODEL WAS TRAINED FOR ONE TASK, WE CAN EVALUATE BOTH TASKS
+        # BY CONVERTING THE PROBABILITIES TO REGRESSION VALUES AND VICE VERSA
+        # ---------------------------------------------------------------------
+        # THE OBJECTIVE IS TO EVALUATE THE MODEL PERFORMANCE ON BOTH TASKS
+        # SEPARATELY AND TOGETHER
+        # ---------------------------------------------------------------------
 
-        # all metrics for predictions
-        metrics, frame_metrics = calculate_metrics(y_true=y_true, y_pred=y_pred)
-        all_metrics.append(metrics)
-        all_frame_metrics.append(frame_metrics)
+        # convert regression task to classification task
+        if not do_classification:
+            video_frame_preds = regression2classification(video_remaining_time_preds, horizon_minutes=max_num_steps)
 
-        # Frame-level metrics
-        # Weighted Averages:
-        # Iterative Method: This method calculates the metrics for each sequence and then averages these values, 
-        # effectively giving more influence to sequences with more accurate predictions for less frequent classes. 
-        # This often results in higher precision because the model might perform better on sequences 
-        # where it correctly predicts less frequent classes.
-        from sklearn.metrics import accuracy_score, precision_recall_fscore_support
-        video_accuracy = []
-        video_prec = []
-        video_recall = []
-        video_f1 = []
+        # convert the class probabilities to class remaining time regression values
+        if not do_regression:
+            video_remaining_time_preds = classification2regression(video_frame_probs_preds, horizon_minutes=max_num_steps)
 
-        # compute the accuracy for the video (frame-level flattened)
-        video_accuracy = accuracy_score(y_true.flatten(), y_pred.flatten())
-        all_vids_acc.append(video_accuracy)
+        if do_regression:
+            # regression remaining time
+            all_video_remaining_time_tgts[video_id] = video_remaining_time_tgts
+            all_video_remaining_time_preds[video_id] = video_remaining_time_preds
 
-        # compute the weighted precision, recall, f1 per anticipated segment
-        for i in range(video_frame_preds.shape[0]):
-            y_true_i = y_true[i]
-            y_pred_i = y_pred[i]
-            precision, recall, f1, _ = precision_recall_fscore_support(y_true_i, y_pred_i, average='weighted', zero_division=0)
-            video_prec.append(precision)
-            video_recall.append(recall)
-            video_f1.append(f1)
-        all_vids_prec.append(np.mean(video_prec))
-        all_vids_recall.append(np.mean(video_recall))
-        all_vids_f1.append(np.mean(video_f1))
-
-        # Compute remaining time for each phase per video
-        # EXPECTS TENSORS
-        for video_id in video_ids:
+            # remaining time metrics
             for horizon in horizons:
-                mae_metric = locals()[f'mae_metric_{horizon}']                
-                wMAE, inMAE, pMAE, eMAE = mae_metric(all_video_remaining_time_preds[video_id],
-                                                     all_video_remaining_time_tgts[video_id])
-                # Store metrics for all videos
+                mae_metric_h = locals()[f'mae_metric_{horizon}']
+                wMAE, inMAE, pMAE, eMAE = mae_metric_h(video_remaining_time_preds, video_remaining_time_tgts)
                 for metric, value in zip(['wMAE', 'inMAE', 'pMAE', 'eMAE'], [wMAE, inMAE, pMAE, eMAE]):
                     locals()[f'all_videos_{metric}_{horizon}'].append(value.item())
+
+        if do_classification:        
+            # recognition
+            all_video_frame_rec[video_id] = video_frame_rec
+            all_video_tgts_rec[video_id] = video_tgts_rec
+            # predictions
+            all_video_tgts_preds[video_id] = video_tgts_preds
+            all_video_frame_preds[video_id] = video_frame_preds
+
+            # concatenate the recognition and predictions y_true and y_pred
+            y_true = np.concatenate((video_tgts_rec, video_tgts_preds), axis=1)
+            y_pred = np.concatenate((video_frame_rec, video_frame_preds), axis=1)
+
+            # all metrics for predictions
+            metrics, frame_metrics = calculate_metrics(y_true=y_true, y_pred=y_pred)
+            all_metrics.append(metrics)
+            all_frame_metrics.append(frame_metrics)
+
+            # Frame-level metrics
+            # Weighted Averages:
+            # Iterative Method: This method calculates the metrics for each sequence and then averages these values, 
+            # effectively giving more influence to sequences with more accurate predictions for less frequent classes. 
+            # This often results in higher precision because the model might perform better on sequences 
+            # where it correctly predicts less frequent classes.
+            from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+            video_accuracy = []
+            video_prec = []
+            video_recall = []
+            video_f1 = []
+
+            # compute the accuracy for the video (frame-level flattened)
+            video_accuracy = accuracy_score(y_true.flatten(), y_pred.flatten())
+            all_vids_acc.append(video_accuracy)
+
+            # compute the weighted precision, recall, f1 per anticipated segment
+            for i in range(video_frame_preds.shape[0]):
+                y_true_i = y_true[i]
+                y_pred_i = y_pred[i]
+                precision, recall, f1, _ = precision_recall_fscore_support(y_true_i, y_pred_i, average='weighted', zero_division=0)
+                video_prec.append(precision)
+                video_recall.append(recall)
+                video_f1.append(f1)
+            all_vids_prec.append(np.mean(video_prec))
+            all_vids_recall.append(np.mean(video_recall))
+            all_vids_f1.append(np.mean(video_f1))
         
-        # Accuracy for recognition and predictions (Keep Time Dimension)
-        acc_curr_frames         = compute_accuracy(video_frame_rec, video_tgts_rec, return_mean=False)      # potential nans
-        acc_future_frames       = compute_accuracy(video_frame_preds, video_tgts_preds, return_mean=False)  # potential nans
+            # Accuracy for recognition and predictions (Keep Time Dimension)
+            acc_curr_frames         = compute_accuracy(video_frame_rec, video_tgts_rec, return_mean=False)      # potential nans
+            acc_future_frames       = compute_accuracy(video_frame_preds, video_tgts_preds, return_mean=False)  # potential nans
 
-        # Compute Root Mean Squared Error
-        # Concatenate recognition and predictions
-        tgts = np.concatenate((video_tgts_rec, video_tgts_preds), axis=1)
-        preds = np.concatenate((video_frame_rec, video_frame_preds), axis=1)
-        rmse_future_transitions = compute_rmse_transition_times(tgts, preds, max_duration=18)
-        
+            # Compute Root Mean Squared Error
+            # Concatenate recognition and predictions
+            tgts = np.concatenate((video_tgts_rec, video_tgts_preds), axis=1)
+            preds = np.concatenate((video_frame_rec, video_frame_preds), axis=1)
+            rmse_future_transitions = compute_rmse_transition_times(tgts, preds, max_duration=18)
+            
+            # global video mean accuracy
+            video_mean_curr_acc        = np.round(np.nanmean(acc_curr_frames), decimals=4).tolist()
+            mean_acc_future_frames      = np.round(np.nanmean(acc_future_frames), decimals=4).tolist()
+            cum_acc_future_frames       = np.round(np.nancumsum(acc_future_frames) / np.arange(1,len(acc_future_frames)+1), decimals=4).tolist()
+            video_mean_cum_acc_future  = np.round(np.nanmean(cum_acc_future_frames), decimals=4).tolist()
 
-        # global video mean accuracy
-        video_mean_curr_acc        = np.round(np.nanmean(acc_curr_frames), decimals=4).tolist()
-        mean_acc_future_frames      = np.round(np.nanmean(acc_future_frames), decimals=4).tolist()
-        cum_acc_future_frames       = np.round(np.nancumsum(acc_future_frames) / np.arange(1,len(acc_future_frames)+1), decimals=4).tolist()
-        video_mean_cum_acc_future  = np.round(np.nanmean(cum_acc_future_frames), decimals=4).tolist()
+            # store the mean accuracy for the video
+            all_video_mean_curr_acc[video_id] = video_mean_curr_acc
+            all_video_mean_cum_acc_future[video_id] = video_mean_cum_acc_future
 
-        # store the mean accuracy for the video
-        all_video_mean_curr_acc[video_id] = video_mean_curr_acc
-        all_video_mean_cum_acc_future[video_id] = video_mean_cum_acc_future
+            # iter times per index in list of lists
+            mean_iter_times = np.round(np.mean(video_mean_cum_iter_time, axis=0), decimals=4).tolist()
+            all_videos_mean_cum_iter_time.append(mean_iter_times)
 
-        # iter times per index in list of lists
-        mean_iter_times = np.round(np.mean(video_mean_cum_iter_time, axis=0), decimals=4).tolist()
-        all_videos_mean_cum_iter_time.append(mean_iter_times)
+            # Video-level results
+            video_results['video_mean_curr_acc']       = video_mean_curr_acc
+            video_results['mean_acc_future_frames']     = mean_acc_future_frames
+            video_results['video_mean_cum_acc_future'] = video_mean_cum_acc_future
 
+            all_videos_mean_acc_curr.append(video_mean_curr_acc)
+            all_videos_rmse_future.append(rmse_future_transitions)
 
-        # Video-level results
-        video_results['video_mean_curr_acc']       = video_mean_curr_acc
-        video_results['mean_acc_future_frames']     = mean_acc_future_frames
-        video_results['video_mean_cum_acc_future'] = video_mean_cum_acc_future
+            # keep temporal dimension
+            all_videos_acc_future.append(acc_future_frames)
+            all_videos_cum_acc_future.append(cum_acc_future_frames)
 
-        for key in video_results.keys():
-            print(f"{key} is data type: {type(video_results[key])}")
-            print(f"{key}: {video_results[key]}")
-        
-        # video-level metrics
-        all_videos_mean_acc_curr.append(video_mean_curr_acc)
-        all_videos_rmse_future.append(rmse_future_transitions)
-        # all_videos_mean_acc_future.append(mean_acc_future_frames)
-        # all_videos_mean_cum_acc_future.append(video_mean_cum_acc_future)
+            with open(f'per_video_ep{epoch}.json', 'a+') as f:
+                video_results = check_numpy_to_list(video_results)
+                json.dump([video_results], f)
+                f.write(',\n')
 
-        # keep temporal dimension
-        all_videos_acc_future.append(acc_future_frames)
-        all_videos_cum_acc_future.append(cum_acc_future_frames)
+            logger.info(f"[TESTING] video: {video_id} | "
+                        f"video_mean_curr_acc: {video_mean_curr_acc} | "
+                        f"mean_acc_future_frames: {mean_acc_future_frames} | "
+                        f"video_mean_cum_acc_future: {video_mean_cum_acc_future}")
 
-        with open(f'per_video_ep{epoch}.json', 'a+') as f:
-            video_results = check_numpy_to_list(video_results)
-            json.dump([video_results], f)
-            f.write(',\n')
-
-        logger.info(f"[TESTING] video: {video_id} | "
-                    f"video_mean_curr_acc: {video_mean_curr_acc} | "
-                    f"mean_acc_future_frames: {mean_acc_future_frames} | "
-                    f"video_mean_cum_acc_future: {video_mean_cum_acc_future}")
-        print(f"video_mean_curr_acc: {video_mean_curr_acc}, mean_acc_future_frames: {mean_acc_future_frames}")
+    
+    # END OF ALL VIDEOS LOOP
     
     # Aggregate metrics across all videos
     agg_metrics, agg_frame_metrics = aggregate_metrics(all_metrics, all_frame_metrics)
@@ -1036,9 +577,13 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     all_videos_results["acc_future"]        = acc_future
     all_videos_results["acc_curr_future"]   = acc_curr_and_future_t
     all_videos_results["rmse_future"]       = np.round(np.nanmean(all_videos_rmse_future), decimals=4).tolist()
-    for horizon in horizons:
+
+    # Regression remaining time
+    if do_regression:
         for metric in ['inMAE', 'pMAE', 'eMAE']:
             all_videos_results[f"{metric}_{horizon}"] = np.round(np.mean(locals()[f'all_videos_{metric}_{horizon}']), decimals=4).tolist()
+    
+    # Classification (keep temporal dimension)
     all_videos_results["acc_future_t"]      = all_videos_mean_acc_future_t
     
     # Precision, Recall, F1
@@ -1062,8 +607,13 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
             video_tgts_rec              = all_video_tgts_rec[video_id]
             video_mean_curr_acc         = all_video_mean_curr_acc[video_id]
             video_mean_cum_acc_future   = all_video_mean_cum_acc_future[video_id]
+
+            # regression remaining time data
+            gt_remaining_time = all_video_remaining_time_tgts[video_id]
+            pred_remaining_time = all_video_remaining_time_preds[video_id]
             
-            plot_video_scatter_3D(video_frame_preds, video_frame_rec, video_tgts_preds, video_tgts_rec, anticip_time, 
+            plot_video_scatter_3D(video_frame_preds, video_frame_rec, video_tgts_preds, video_tgts_rec, 
+                                anticip_time, 
                                 video_idx=video_id, 
                                 epoch=epoch,
                                 sampling_rate=60, # current frames axis (seconds to minutes)
@@ -1075,13 +625,32 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                                 )    # don't include the eos class which is assigned to -1
             
             # plot regression remaining time
-            plot_remaining_time_video(all_video_remaining_time_tgts[video_id], all_video_remaining_time_preds[video_id],
+            plot_remaining_time_video(gt_remaining_time, pred_remaining_time,
                                         h=anticip_time, 
                                         num_obs_classes=7, 
                                         video_idx=video_id, 
                                         epoch=epoch, 
-                                        dataset='cholec80',
+                                        dataset=dataset,
                                         save_video=False)
+            
+            # merge recognition and anticipation tasks
+            gt_classification = np.concatenate((video_tgts_rec, video_tgts_preds), axis=1)
+            pred_classification = np.concatenate((video_frame_rec, video_frame_preds), axis=1)
+            print(f"[TESTING] gt_classification: {gt_classification.shape}")
+            print(f"[TESTING] pred_classification: {pred_classification.shape}")
+
+            # plot both classification and regression tasks
+            plot_combined_video(gt_remaining_time, pred_remaining_time, gt_classification, pred_classification,
+                    h=horizon[0],
+                    num_obs_classes=num_classes,
+                    video_idx=video_idx, 
+                    epoch=epoch,
+                    dataset=dataset, 
+                    save_video=False,
+                    x_sampling_rate=5,
+                    y_sampling_rate=1,
+                    gif_fps=40,
+                    use_scatter=True)
     
     # update best_cum_acc
     if all_videos_results["acc_curr_future"] > best_acc_curr_future:
@@ -1142,185 +711,12 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                             x_axis_title='Future Predictions (in minutes)', 
                             y_axis_title='Mean Accuracy')
         
-        # Inference time for deployment at 1fps
-        # plot_cumulative_time(all_videos_results["mean_cum_iter_time"])
-
     accuracies = {
         "acc_cur": all_videos_results["acc_curr"],
         "acc_curr_future": all_videos_results["acc_curr_future"]
     }
 
     return accuracies, step_now+1
-
-
-def evaluate_and_save_metrics(
-        eval_type,
-        label_phase_vid,
-        pred_phase_vid,
-        accuracy_vid,
-        edit_score_vid,
-        f_score_vid,
-        count,
-        label_phase,
-        pred_phase,
-        acc_vid,
-        epoch,
-    ):
-
-    # TODO: check if same as above
-    # flatten the sequences into list of lists
-    if isinstance(pred_phase_vid, dict):
-        pred_phase_vid = [pred_phase_vid[k] for k in pred_phase_vid]
-        ground_truth = [label_phase_vid[k] for k in label_phase_vid]
-
-    # video level: MetricsSegments (MB)
-    metrics_seg = MetricsSegments()
-    acc, edit, f1s = metrics_seg.get_metrics(pred_phase_vid, ground_truth)
-    print(f"Video-level Acc: {acc}")
-    print(f"Video-level Edit: {edit}")
-    print(f"Video-level F1s: {f1s}")
-    for overlap, f1 in zip([0.1, 0.25, 0.5], f1s):
-        print(f"F1 @ {overlap}: {f1}")
-
-    # video level: MetricsSegments (MB)
-    test_video_results = {}
-    print(f"Number of test videos: {count}")
-    test_video_results['epoch'] = int(epoch)
-    # test_video_results['video_acc'] = float("{:.2f}".format(acc*100))
-    test_video_results['accuracy'] = float("{:.2f}".format(accuracy_vid/count*100))
-    test_video_results['edit_score'] = float("{:.2f}".format(edit_score_vid/count)) # already in percentage
-    test_video_results['f_score'] = [float("{:.2f}".format(f/count*100)) for f in f_score_vid]
-    # test_video_results['recall_phase'] = float("{:.2f}".format(metrics.recall_score(label_phase, pred_phase, average='macro')*100))
-    # test_video_results['precision_phase'] = float("{:.2f}".format(metrics.precision_score(label_phase, pred_phase, average='macro')*100))
-    # test_video_results['jaccard_phase'] = float("{:.2f}".format(metrics.jaccard_score(label_phase, pred_phase, average='macro')*100))
-
-    # log video level accuracy
-    cum_acc = 0.0
-    count = 0
-    for key, value in acc_vid.items():
-        # MB: skip the training videos
-        if len(value)<1:
-            continue
-        # log the accuracy for each video
-        test_video_results[key] = float("{:.2f}".format(np.mean(value)*100))
-        count += 1
-        cum_acc += test_video_results[key]
-    test_video_results['accuracy_mean'] = float("{:.2f}".format(cum_acc/count))
-    print(f"Number of test videos: {count}")
-    print(f"test_video_results: {test_video_results}")
-
-    # create json file if not exist and save dict to json and start a new line / row and comma
-    with open(f'r2a2_eval_metrics_{eval_type}.json', 'a+') as f:
-        json.dump([test_video_results], f)
-        f.write(',\n')
-    
-    return test_video_results
-
-def plot_and_evaluate_phase(eval_type, label_phase_vid, pred_phase_vid, num_classes=7):
-    """
-    Args:
-        eval_type (str): 'curr_state_rec' or 'prediction'
-        label_phase_vid (dict): {vid_id: [phase1, phase2, ...]}
-        pred_phase_vid (dict): {vid_id: [phase1, phase2, ...]}
-    """
-    edit_score_vid = 0.0
-    precision_vid = 0.0
-    recall_vid = 0.0
-    f_score_vid = [0.0, 0.0, 0.0]
-    accuracy_vid = 0.0
-    count = 0
-
-    for vid_id, value in label_phase_vid.items():
-        print(f"[Video {vid_id}]: ")
-        if len(value)<1:
-            continue
-
-        pred = np.array(pred_phase_vid[vid_id]).tolist()
-        gt = np.array(label_phase_vid[vid_id]).tolist()
-        save_path = os.getcwd()+'/pred/'+eval_type+'/'
-        if not os.path.exists(save_path):
-            os.makedirs(save_path)
-
-        if not os.path.exists(save_path+f"{eval_type}_{vid_id}.json"):
-            e = 0
-            video_preds = {str(e): pred}
-            json.dump(video_preds, open(save_path+f"{eval_type}_{vid_id}.json", 'w')) 
-        else:
-            video_preds = json.load(open(save_path+f"{eval_type}_{vid_id}.json", 'r'))
-            # jump gt key and take the last epoch and add 1
-            e = int(list(video_preds.keys())[-2]) + 1
-            video_preds[str(e)] = pred
-
-        # update gt key
-        if 'gt' in video_preds:
-            del video_preds['gt']
-        video_preds['gt'] = gt
-
-        # write new json file with appended predictions
-        json.dump(video_preds, open(save_path+f"{eval_type}_{vid_id}.json", 'w'))
-        # read new json file
-        input_dict = json.load(open(save_path+f"{eval_type}_{vid_id}.json", 'r'))
-        colors = plt.get_cmap('tab20')(list(range(num_classes))) # also: 'tab20', 'tab20b', 'tab20c'
-
-        plot_video_segments(input_dict, colors, vid_id, save_path, eval_type)
-
-        # MB: metrics
-        metrics_seg = MetricsSegments()
-
-        # f1
-        for i, overlap in enumerate([0.1, 0.25, 0.5]):
-            tp, fp, fn = metrics_seg.f_score(pred_phase_vid[vid_id], label_phase_vid[vid_id], overlap=overlap)
-            precision = tp / (tp + fp) if tp + fp > 0 else 0
-            recall = tp / (tp + fn) if tp + fn > 0 else 0
-            f_score = 2 * precision * recall / (precision + recall) if precision + recall > 0 else 0
-            print(f"F1 @ {overlap}: {f_score:.3f}")
-            f_score_vid[i] += f_score
-        # edit
-        edit_score = metrics_seg.edit_score(pred_phase_vid[vid_id], label_phase_vid[vid_id])
-        print(f"Edit score: {edit_score:.3f}")
-        edit_score_vid += edit_score
-        # accuracy
-        accuracy = metrics_seg.accuracy(pred_phase_vid[vid_id], label_phase_vid[vid_id])
-        print(f"Accuracy: {accuracy:.3f}")
-        accuracy_vid += accuracy
-        count += 1
-
-    return accuracy_vid, edit_score_vid, f_score_vid, count
-
-def plot_recognition_prediction(rec_out, rec_target, pred_out, pred_target, vid, save_path):
-    """
-    Args:
-        rec_out (list)
-    """
-    rec_out = np.array(rec_out)
-    rec_target = np.array(rec_target)
-    pred_out = np.array(pred_out)
-    pred_target = np.array(pred_target)
-    print(f"rec_out: {rec_out.shape}, rec_target: {rec_target.shape}, pred_out: {pred_out.shape}, pred_target: {pred_target.shape}")
-    video_length = len(rec_out)
-    num_pred = pred_out.shape[0] # fixed error
-    height = 200
-    # add a white border between segments (rows)
-    white_border = - np.ones((video_length, 1))
-    dilation_factor = int(height / (2 + num_pred))
-    print(f"Video: {vid}, video_length: {video_length}, num_pred: {num_pred}")
-    # add the curr_state_rec and prediction to a numpy array
-    video_classes = - np.ones((video_length, 4 + 2 * num_pred))
-    video_classes[:, 0] = rec_out
-    video_classes[:, 1] = white_border[:, 0]
-    video_classes[:, 2] = rec_target
-    video_classes[:, 3] = white_border[:, 0]
-    for i in range(num_pred):
-        video_classes[:, 4+2*i] = pred_target[:, i]
-        video_classes[:, 5+2*i] = white_border[:, 0]
-    # dilate the video_classes array to make it visually appealing
-    video_classes = np.repeat(video_classes, dilation_factor, axis=1)
-    # plot the curr_state_rec and prediction
-    plt.figure(figsize=(20, 10), dpi=300)
-    plt.imshow(video_classes.T, cmap="tab20")
-    plt.yticks([])
-    plt.savefig(save_path+str(vid)+'_rec_pred.jpg', bbox_inches='tight')
-    plt.close()
 
 
 def initial_setup(cfg, logger):
