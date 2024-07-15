@@ -16,7 +16,7 @@ dist_backend: nccl
 # run mode
 test_only: false
 
-# h_values: 3 # 2, 3, 5, 18
+mae_eval_horizon: 18
 
 num_epochs: 20
 best_acc_curr_future: 0.4
@@ -46,8 +46,8 @@ probs_to_regression_method: first_occurrence # first_occurrence / mean / median
 naive1: false
 naive2: false
 
-do_classification_task: true
-do_regression_task: true
+do_classification: true
+do_regression: true
 
 ctx_pooling: global
 num_ctx_tokens: 20
@@ -164,6 +164,7 @@ eval:
   batch_size: 64
   eval_fn:
     _target_: func.train.evaluate
+    mae_eval_horizon: ${mae_eval_horizon}
     anticip_time: ${anticip_time}
     max_anticip_time: ${max_anticip_time}
     store: false
@@ -171,8 +172,8 @@ eval:
     only_run_featext: false
     probs_to_regression_method: ${probs_to_regression_method}
     confidence_threshold: 0.5
-    do_classification: ${do_classification_task}
-    do_regression: ${do_regression_task}
+    do_classification: ${do_classification}
+    do_regression: ${do_regression}
 
 
 model:
@@ -306,8 +307,8 @@ model:
     pooling_dim: 64
     ctx_pooling: ${ctx_pooling}
     num_ctx_tokens: ${num_ctx_tokens}
-    do_classification_task: ${do_classification_task}
-    do_regression_task: ${do_regression_task}
+    do_classification: ${do_classification}
+    do_regression: ${do_regression}
     fusion_head:
       _target_: R2A2.model.r2a2.FusionHead
       dim: ${informer.d_model}

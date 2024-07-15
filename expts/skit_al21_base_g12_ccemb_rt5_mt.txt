@@ -1,15 +1,16 @@
-test_only=false
+test_only=true
 
 model_name=skit
 ctx_pooling=global
 num_ctx_tokens=12
 max_seq_len=24
 
+mae_eval_horizon=5
 max_anticip_time=5
 num_ant_queries=5
 
-do_classification_task=true
-do_regression_task=true
+do_classification=true
+do_regression=true
 
 probs_to_regression_method=first_occurrence
 eos_weight=mean

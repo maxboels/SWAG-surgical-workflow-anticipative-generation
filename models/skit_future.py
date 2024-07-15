@@ -158,8 +158,8 @@ class SKITFuture(nn.Module):
         pooling_dim: int = 64,
         ctx_pooling: str = "global",
         num_ctx_tokens: int = 24,
-        do_classification_task: bool = True,
-        do_regression_task: bool = True,
+        do_classification: bool = True,
+        do_regression: bool = True,
         decoder: TargetConf = None,
         decoder_cc: TargetConf = None,
         fusion_head: TargetConf = None,
@@ -178,8 +178,8 @@ class SKITFuture(nn.Module):
         self.anticip_time = anticip_time                # is in seconds
         self.num_ant_queries = int(self.max_anticip_time * 60 / self.anticip_time)
 
-        self.do_classification_task = do_classification_task
-        self.do_regression_task = do_regression_task
+        self.do_classification = do_classification
+        self.do_regression = do_regression
 
         # other params
         self.relu_norm = True
@@ -298,7 +298,7 @@ class SKITFuture(nn.Module):
 
         # Regression of future transitions 
         # (remaining time until occurrence of future states)
-        if self.do_regression_task:
+        if self.do_regression:
             if self.future_time_compression=='max_time':
                 remaining_time_feats = torch.max(next_action, dim=1)[0] # (B, d_model)
             elif self.future_time_compression=='linear_transofrmation':
@@ -314,7 +314,7 @@ class SKITFuture(nn.Module):
             print(f"[SKIT-F] remaining_time (h={self.max_anticip_time}): {remaining_time.shape}")
 
         # Classification of future segments
-        if self.do_classification_task:
+        if self.do_classification:
             next_frames_cls = self.future_action_classifier(next_action)
             outputs["future_frames"] = next_frames_cls
             print(f"[SKIT-F] next_frames: {next_frames_cls.shape}")

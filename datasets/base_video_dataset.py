@@ -237,7 +237,12 @@ class Medical_Dataset(Dataset):
             # self.project_path = "/nfs/home/mboels/projects/SKiT_video_augmentation"
             self.dataset_local_path = f'/nfs/home/mboels/projects/SuPRA/datasets/{dataset_name}/'
             self.save_video_labels_to_npy = cfg.save_video_labels_to_npy
-            #-----------------select arguments-----------------
+
+            # TASKS
+            self.do_regression      = cfg.do_regression
+            self.do_classification  = cfg.do_classification
+
+
             self.model_name = cfg.model_name
             self.debug = False
             self.dataset_name = dataset_name                                        # autolaparo21, cholec80, cholect50
@@ -298,7 +303,7 @@ class Medical_Dataset(Dataset):
                 self.logger.info(f"[DATASET] params: {params}")
 
 
-            self.horizons = [18] #2, 3, 5, 18]
+            self.horizon = cfg.mae_eval_horizon
             self.num_obs_classes = self.num_classes
             
             #-----------------end select arguments-----------------
@@ -440,11 +445,9 @@ class Medical_Dataset(Dataset):
                     self.videos.append(video)
                 
                 # regression labels (remaining time until occurrence of each phases)
-                gt_remaining_time = {}
-                for h in self.horizons:
-                    gt_remaining_time[h] = ground_truth_remaining_time(phase_labels, h=h, num_classes=self.num_obs_classes)
-                    self.logger.info(f"[DATASET] gt_remaining_time h={h}: {gt_remaining_time[h].size()}")
-                    # plot_remaining_time(phase_labels, gt_remaining_time[h], h, self.num_obs_classes, video_idx)
+                # gt_remaining_time = {}
+                gt_remaining_time = ground_truth_remaining_time(phase_labels, h=self.horizon, num_classes=self.num_obs_classes)
+                self.logger.info(f"[DATASET] gt_remaining_time h={self.horizon}: {gt_remaining_time.size()}")
                 self.gt_remaining_time.append(gt_remaining_time)
 
                 self.logger.info(f"\n")
@@ -580,8 +583,7 @@ class Medical_Dataset(Dataset):
             print(f"[DATASET] video targets: {video_targets.size()}")
             # print(f"[DATASET] full video_next_seg_targets: {video_next_seg_targets.size()}")
 
-            for h in self.horizons:
-                print(f"[DATASET] gt_remaining_time {h}: {gt_remaining_time[h].size()}")
+            print(f"[DATASET] gt_remaining_time {self.horizon}: {gt_remaining_time.size()}")
 
             # VIDEO FEED
             # NOTE: index 0 is included in the frame id so it is not necessary to add 1 !!!
@@ -634,21 +636,10 @@ class Medical_Dataset(Dataset):
             print(f"[DATASET] curr_frames_tgt (new): {curr_frames_tgt.size()}")
 
             # REGRESSION REMAINING TIME TARGETS
-            for h in self.horizons:
-                multiple_horizons = False
-                if multiple_horizons:
-                    start_reg = max(0, frame_idx + 60)
-                    end_reg = min(video_targets.size(0), start_reg + h*60)
-                    remaining_time = gt_remaining_time[h][start_sreg: end_reg: self.anticip_time, :]
-                    # padding
-                    missing = self.num_future_tokens - remaining_time.size(0)
-                    if missing > 0:
-                        remaining_time = torch.cat((remaining_time, torch.ones(missing, self.num_classes + 1).float() * h), 0)
-                        print(f"[DATASET] EOS padding for gt_remaining_time_{h}: {missing}")
-                else:
-                    remaining_time = gt_remaining_time[h][frame_idx, :].unsqueeze(0)
-                print(f"[DATASET] gt_remaining_time_{h}: {remaining_time.size()}")
+            if self.do_regression or self.do_classification:
+                remaining_time = gt_remaining_time[frame_idx, :].unsqueeze(0)
                 data_now[f'remaining_time_tgt'] = remaining_time.to(self.device).float()
+                print(f"[DATASET] gt_remaining_time_{self.horizon}: {remaining_time.size()}")
  
             if self.eos_regression:
                 curr_eos_values = eos_values[starts: ends: self.anticip_time]

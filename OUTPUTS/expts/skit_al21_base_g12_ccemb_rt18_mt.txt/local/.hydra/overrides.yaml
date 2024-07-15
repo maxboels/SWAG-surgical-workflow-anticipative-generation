@@ -3,10 +3,11 @@
 - ctx_pooling=global
 - num_ctx_tokens=12
 - max_seq_len=24
-- do_classification_task=True
-- do_regression_task=True
+- mae_eval_horizon=18
 - max_anticip_time=18
 - num_ant_queries=18
+- do_classification=True
+- do_regression=True
 - probs_to_regression_method=first_occurrence
 - eos_weight=mean
 - class_weight=frequency

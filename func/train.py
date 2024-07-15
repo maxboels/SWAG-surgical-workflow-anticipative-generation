@@ -233,17 +233,18 @@ def train_one_epoch(
 
 
 def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_writer, logger, epoch: float,
-            anticip_time: int,
-            max_anticip_time: int, 
-            store=False, 
-            store_endpoint='logits', 
-            only_run_featext=False,
-            best_acc_curr_future=0.4,
-            probs_to_regression_method: str = 'first_occurrence',
-            confidence_threshold: float = 0.5,
-            do_classification: bool = True,
-            do_regression: bool = True,
-            ):
+    mae_eval_horizon: int = 18,
+    anticip_time: int = 60,
+    max_anticip_time: int = 18,
+    store=False, 
+    store_endpoint='logits', 
+    only_run_featext=False,
+    best_acc_curr_future=0.4,
+    probs_to_regression_method: str = 'first_occurrence',
+    confidence_threshold: float = 0.5,
+    do_classification: bool = True,
+    do_regression: bool = True,
+    ):
     
     step_size = int(anticip_time/60)
     max_num_steps = int((max_anticip_time * 60) / anticip_time)
@@ -300,15 +301,12 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     all_metrics = []
     all_frame_metrics = []
 
-    horizons = [18]#, 5, 3, 2]
+    h = cfg.mae_eval_horizon
 
-    for horizon in horizons:
-        locals()[f"mae_metric_{horizon}"] = anticipation_mae(h=horizon*60)  # convert minutes to seconds
+    locals()[f"mae_metric_{h}"] = anticipation_mae(h=h)
 
-    # Initialize lists for each time horizon
-    for horizon in horizons:
-        for metric in ['wMAE', 'inMAE', 'pMAE', 'eMAE']:
-            locals()[f'all_videos_{metric}_{horizon}'] = []
+    for metric in ['wMAE', 'inMAE', 'eMAE']:
+        locals()[f'all_videos_{metric}_{h}'] = []
 
 
     # FOR EACH VIDEO LOADER
@@ -390,22 +388,21 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                 if "remaining_time" in outputs.keys():
                     video_frame_probs_preds[start_idx:end_idx, 1:] = probs
                     time_steps = torch.arange(probs.shape[1]) * anticip_time / 60  # Convert to minutes
-                    for h in horizons:
-                        # Get the target remaining time for the current horizon
-                        target_remaining_time = data[f'remaining_time_tgt'].detach().cpu()
-                        print(f"[TESTING] target_remaining_time {h}: {target_remaining_time.shape}")
+                    # Get the target remaining time for the current horizon
+                    target_remaining_time = data[f'remaining_time_tgt'].detach().cpu()
+                    print(f"[TESTING] target_remaining_time {h}: {target_remaining_time.shape}")
 
-                        pred_remaining_time = outputs[f'remaining_time'].detach().cpu()
-                        print(f"[TESTING] pred_remaining_time {h}: {pred_remaining_time.shape}")
+                    pred_remaining_time = outputs[f'remaining_time'].detach().cpu()
+                    print(f"[TESTING] pred_remaining_time {h}: {pred_remaining_time.shape}")
 
-                        # loss
-                        reg_loss = regression_loss(pred_remaining_time, target_remaining_time).mean().item()
-                        reg_losses.append(reg_loss)
-                        print(f"[TESTING] reg_loss {h}: {reg_loss}")
-                        
-                        # store remaining time gt and predictions
-                        video_remaining_time_tgts[start_idx:end_idx] = target_remaining_time
-                        video_remaining_time_preds[start_idx:end_idx] = pred_remaining_time
+                    # loss
+                    reg_loss = regression_loss(pred_remaining_time, target_remaining_time).mean().item()
+                    reg_losses.append(reg_loss)
+                    print(f"[TESTING] reg_loss {h}: {reg_loss}")
+                    
+                    # store remaining time gt and predictions
+                    video_remaining_time_tgts[start_idx:end_idx] = target_remaining_time
+                    video_remaining_time_preds[start_idx:end_idx] = pred_remaining_time
 
                 
                 if "iters_time" in outputs.keys():
@@ -458,11 +455,10 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
             all_video_remaining_time_preds[video_id] = video_remaining_time_preds
 
             # remaining time metrics
-            for horizon in horizons:
-                mae_metric_h = locals()[f'mae_metric_{horizon}']
-                wMAE, inMAE, pMAE, eMAE = mae_metric_h(video_remaining_time_preds, video_remaining_time_tgts)
-                for metric, value in zip(['wMAE', 'inMAE', 'pMAE', 'eMAE'], [wMAE, inMAE, pMAE, eMAE]):
-                    locals()[f'all_videos_{metric}_{horizon}'].append(value.item())
+            mae_metric_h = locals()[f'mae_metric_{h}']
+            wMAE, inMAE, eMAE = mae_metric_h(video_remaining_time_preds, video_remaining_time_tgts)
+            for metric, value in zip(['wMAE', 'inMAE', 'eMAE'], [wMAE, inMAE, eMAE]):
+                locals()[f'all_videos_{metric}_{h}'].append(value.item())
 
         if do_classification:        
             # recognition
@@ -579,8 +575,8 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
 
     # Regression remaining time
     if do_regression:
-        for metric in ['inMAE', 'pMAE', 'eMAE']:
-            all_videos_results[f"{metric}_{horizon}"] = np.round(np.mean(locals()[f'all_videos_{metric}_{horizon}']), decimals=4).tolist()
+        for metric in ['inMAE', 'eMAE']:
+            all_videos_results[f"{metric}_{h}"] = np.round(np.mean(locals()[f'all_videos_{metric}_{h}']), decimals=4).tolist()
     
     # Classification (keep temporal dimension)
     all_videos_results["acc_future_t"]      = all_videos_mean_acc_future_t
