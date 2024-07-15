@@ -353,7 +353,7 @@ cwd: ${hydra:runtime.cwd}
 sync_bn: false
 data_parallel: true
 dist_backend: nccl
-test_only: false
+test_only: true
 num_epochs: 20
 best_acc_curr_future: 0.4
 finetune_ckpt: best
@@ -439,6 +439,8 @@ eval:
     only_run_featext: false
     probs_to_regression_method: ${probs_to_regression_method}
     confidence_threshold: 0.5
+    do_classification: ${do_classification_task}
+    do_regression: ${do_regression_task}
 moco:
   _target_: moco.moco.builder.MoCo
   dim: 128

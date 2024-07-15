@@ -62,9 +62,10 @@ from R2A2.eval.seg_eval import MetricsSegments
 from R2A2.eval.plot_segments.plot_video import plot_video_segments
 from R2A2.eval.plot_metrics import plot_figure, plot_box_plot_figure, plot_cumulative_time
 from R2A2.eval.plot_video_3D import plot_video_contour_3D, plot_video_scatter_3D
+from  R2A2.eval.plot_2d_video_classification import plot_classification_video
 
 from R2A2.eval.plot_remaining_time import plot_remaining_time_video
-from R2A2.eval.plot_video_reg_and_classif_tasks_anim import plot_combined_video
+from R2A2.eval.plot_video_combined import plot_video_combined
 
 from R2A2.eval.convert_tasks import regression2classification, classification2regression
 
@@ -90,10 +91,6 @@ def check_numpy_to_list(dictionay):
             dictionay[key] = dictionay[key].tolist()
             print(f"converted {key} np.ndarray to list")
     return dictionay
-
-
-def np_round(value, n=4):
-    return np.round(value, n).tolist()
 
 def store_checkpoint(fpaths: Union[str, Sequence[str]], model, optimizer,
                      lr_scheduler, epoch):
@@ -303,18 +300,20 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     all_metrics = []
     all_frame_metrics = []
 
-    for horizon in [18, 5, 3, 2]:
+    horizons = [18]#, 5, 3, 2]
+
+    for horizon in horizons:
         locals()[f"mae_metric_{horizon}"] = anticipation_mae(h=horizon*60)  # convert minutes to seconds
 
     # Initialize lists for each time horizon
-    for horizon in [18, 5, 3, 2]:
+    for horizon in horizons:
         for metric in ['wMAE', 'inMAE', 'pMAE', 'eMAE']:
             locals()[f'all_videos_{metric}_{horizon}'] = []
 
 
     # FOR EACH VIDEO LOADER
     for video_idx, data_loader in enumerate(dataloaders):
-        dataset = data_loader.dataset
+        dataset = data_loader.dataset.dataset_name
         vid_start_time = time.time()
         video_results = OrderedDict()
         video_length = len(data_loader.dataset)
@@ -373,7 +372,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                 targets = data['curr_frames_tgt'].detach().cpu().numpy()[:,-1:]
                 video_frame_rec[start_idx:end_idx] = preds
                 video_tgts_rec[start_idx:end_idx] = targets
-                video_frame_probs_preds[start_idx:end_idx, 0] = probs
+                video_frame_probs_preds[start_idx:end_idx, :1, :-1] = probs
 
                 # FUTURE FRAMES CLASSIFICATION
                 if "future_frames" in outputs.keys():
@@ -615,6 +614,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
             plot_video_scatter_3D(video_frame_preds, video_frame_rec, video_tgts_preds, video_tgts_rec, 
                                 anticip_time, 
                                 video_idx=video_id, 
+                                dataset=dataset,
                                 epoch=epoch,
                                 sampling_rate=60, # current frames axis (seconds to minutes)
                                 padding_class=-1, # padding class
@@ -624,30 +624,42 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                                 video_mean_cum_acc_future=video_mean_cum_acc_future,
                                 )    # don't include the eos class which is assigned to -1
             
-            # plot regression remaining time
-            plot_remaining_time_video(gt_remaining_time, pred_remaining_time,
-                                        h=anticip_time, 
-                                        num_obs_classes=7, 
-                                        video_idx=video_id, 
-                                        epoch=epoch, 
-                                        dataset=dataset,
-                                        save_video=False)
-            
             # merge recognition and anticipation tasks
             gt_classification = np.concatenate((video_tgts_rec, video_tgts_preds), axis=1)
             pred_classification = np.concatenate((video_frame_rec, video_frame_preds), axis=1)
             print(f"[TESTING] gt_classification: {gt_classification.shape}")
             print(f"[TESTING] pred_classification: {pred_classification.shape}")
 
-            # plot both classification and regression tasks
-            plot_combined_video(gt_remaining_time, pred_remaining_time, gt_classification, pred_classification,
-                    h=horizon[0],
-                    num_obs_classes=num_classes,
-                    video_idx=video_idx, 
+            # plot classification task
+            plot_classification_video(gt_classification, pred_classification,
+                    h=horizons[0],
+                    num_obs_classes=num_classes, 
+                    video_idx=video_id, 
                     epoch=epoch,
                     dataset=dataset, 
                     save_video=False,
-                    x_sampling_rate=5,
+                    x_sampling_rate=5, 
+                    gif_fps=40,
+                    use_scatter=True)
+            
+            # plot regression remaining time
+            plot_remaining_time_video(gt_remaining_time, pred_remaining_time,
+                                        h=horizons[0], # TODO: change to horizon 
+                                        num_obs_classes=7, 
+                                        video_idx=video_id, 
+                                        epoch=epoch, 
+                                        dataset=dataset,
+                                        save_video=False)
+
+            # plot both classification and regression tasks
+            plot_video_combined(gt_remaining_time, pred_remaining_time, gt_classification, pred_classification,
+                    h=horizons[0],
+                    num_obs_classes=num_classes,
+                    video_idx=video_id, 
+                    epoch=epoch,
+                    dataset=dataset, 
+                    save_video=False,
+                    x_sampling_rate=1,
                     y_sampling_rate=1,
                     gif_fps=40,
                     use_scatter=True)

@@ -1,12 +1,9 @@
-test_only=true
+test_only=false
 
 model_name=skit
 ctx_pooling=global
 num_ctx_tokens=12
 max_seq_len=24
-
-do_classification_task=true
-do_regression_task=true
 
 max_anticip_time=18
 num_ant_queries=18

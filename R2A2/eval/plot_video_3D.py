@@ -2,9 +2,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.colors import ListedColormap, Normalize
+import os
 
 def plot_video_scatter_3D(preds, recs, tgt_preds, tgt_recs, anticip_time,
-                          video_idx=1, 
+                          video_idx=1,
+                          dataset='cholec80', 
                           epoch=1,
                           sampling_rate=60, # seconds to minutes
                           padding_class=-1,
@@ -23,6 +25,10 @@ def plot_video_scatter_3D(preds, recs, tgt_preds, tgt_recs, anticip_time,
     
     xticks_step = 3  # set x ticks as every 3 minutes from 0 to 18
     
+    # Ensure output directory exists
+    if not os.path.exists(f"./plots/{dataset}/3D/"):
+        os.makedirs(f"./plots/{dataset}/3D/")
+
     # Concatenate recordings and predictions
     preds = np.concatenate([recs, preds], axis=1)
     targets = np.concatenate([tgt_recs, tgt_preds], axis=1)
@@ -111,7 +117,9 @@ def plot_video_scatter_3D(preds, recs, tgt_preds, tgt_recs, anticip_time,
     cbar = fig.colorbar(sm, cax=cbar_ax, orientation='horizontal', ticks=np.arange(0, num_classes+1))
     cbar.set_label('Classes (phases)')
 
-    plt.savefig(f'video_{video_idx}_ep{epoch}_scatter3d_preds.png', dpi=300)
+    # plt.tight_layout()
+    output_file = f"./plots/{dataset}/3D/video_{video_idx}_ep{epoch}_scatter3d_preds.png"
+    plt.savefig(output_file, dpi=300, bbox_inches='tight')
     plt.close()
     # plt.show()
 

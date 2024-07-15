@@ -27,7 +27,7 @@ def plot_remaining_time_video(gt_remaining_time, pred_remaining_time, h, num_obs
     if len(pred_remaining_time.shape) == 3:
         pred_remaining_time = pred_remaining_time[:, 0, :]
 
-    y_min, y_max = -0.1, h + 0.5
+    y_min, y_max = -0.5, h + 0.5
     gt_lines = []
     pred_lines = []
     vlines = []

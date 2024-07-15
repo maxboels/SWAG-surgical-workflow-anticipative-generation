@@ -343,6 +343,10 @@ def class_distribution_divergence(y_true, y_pred):
     return entropy(true_dist, pred_dist)
 
 
+def np_round(value, n=4):
+    return np.round(value, n).tolist()
+
+
 def calculate_metrics(y_true, y_pred):
     """
     Calculate various metrics for the video classification task using both

@@ -5,18 +5,17 @@ from matplotlib.patheffects import withStroke
 import seaborn as sns
 import os
 import torch
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation, writers
-from matplotlib.patheffects import withStroke
-import seaborn as sns
-import os
-import torch
 import matplotlib.colors as mcolors
 
-def plot_combined_video(gt_remaining_time, pred_remaining_time, gt_classification, pred_classification,
+
+def plot_video_combined(gt_remaining_time, pred_remaining_time, gt_classification, pred_classification,
                         h, num_obs_classes, video_idx, epoch, dataset, save_video=True,
                         x_sampling_rate=5, y_sampling_rate=1, gif_fps=40, use_scatter=True):
+    
+    # congifuration
+    n_yticks = 3
+    scatter_size = 120
+    color_scheme = 'plasma' # 'plasma', 'rainbow', 'spectral', 'jewel'
     
     # classification task
     gt_classification = gt_classification[::x_sampling_rate, :h]
@@ -32,12 +31,10 @@ def plot_combined_video(gt_remaining_time, pred_remaining_time, gt_classificatio
     time_steps = np.arange(gt_remaining_time.shape[0])
     
     # Create color scheme with increased contrast
-    color_positions = np.linspace(0, 1, num_obs_classes) ** 0.7  # Adjust power for more/less spread
-    colors = plt.cm.plasma(color_positions)
-    eos_color = [0.8, 0.8, 0.8, 1]  # Light gray for EOS class
-    colors = np.vstack((colors, eos_color))
-    cmap = mcolors.ListedColormap(colors)
-    
+    if color_scheme == 'plasma':
+        cmap = get_color_scheme(color_scheme, num_obs_classes, brightness_factor=1.0)
+        colors = cmap(np.linspace(0, 1, num_obs_classes + 1))
+
     # Ensure output directory exists
     if not os.path.exists(f"./plots/{dataset}/combined/"):
         os.makedirs(f"./plots/{dataset}/combined/")
@@ -52,7 +49,7 @@ def plot_combined_video(gt_remaining_time, pred_remaining_time, gt_classificatio
     if len(pred_remaining_time.shape) == 3:
         pred_remaining_time = pred_remaining_time[:, 0, :]
 
-    y_min, y_max = -0.1, h + 0.5
+    y_min, y_max = -0.5, h + 0.5
     gt_lines, pred_lines, vlines = [], [], []
     
     # Regression task plots
@@ -60,8 +57,14 @@ def plot_combined_video(gt_remaining_time, pred_remaining_time, gt_classificatio
         gt_time = gt_remaining_time[:, i]
         pred_time = pred_remaining_time[:, i]
         
-        gt_line, = axs[i].plot(time_steps, gt_time, label=f'GT Class {i if i < num_obs_classes else "EOS"}', linewidth=2.5, color=colors[i])
-        pred_line, = axs[i].plot(time_steps, pred_time, label=f'Pred Class {i if i < num_obs_classes else "EOS"}', linewidth=2.5, color=colors[i], linestyle='--', alpha=0.7)
+        gt_line, = axs[i].plot(time_steps, gt_time, label=f'GT Class {i if i < num_obs_classes else "EOS"}', 
+                                linewidth=2.5, 
+                                color=colors[i])
+        pred_line, = axs[i].plot(time_steps, pred_time, label=f'Pred Class {i if i < num_obs_classes else "EOS"}', 
+                                linewidth=2.5, 
+                                color=colors[i], 
+                                linestyle='--', 
+                                alpha=0.75)
         gt_lines.append(gt_line)
         pred_lines.append(pred_line)
 
@@ -76,6 +79,10 @@ def plot_combined_video(gt_remaining_time, pred_remaining_time, gt_classificatio
         axs[i].legend(loc='upper right')
         axs[i].grid(True, linestyle='--', alpha=0.7)
 
+        axs[i].set_yticks(np.linspace(0, h, n_yticks))
+        axs[i].set_yticklabels([f'{y:.0f}' for y in np.linspace(0, h, n_yticks)])
+
+
         vline = axs[i].axvline(x=0, color='r', linestyle='--')
         vlines.append(vline)
 
@@ -84,7 +91,7 @@ def plot_combined_video(gt_remaining_time, pred_remaining_time, gt_classificatio
         if use_scatter:
             x_values = np.repeat(np.arange(data.shape[0]), data.shape[1])
             y_values = np.tile(np.arange(data.shape[1]), data.shape[0]) * h / data.shape[1]
-            scatter = ax.scatter(x_values, y_values, c=data.flatten(), cmap=cmap, marker='o', s=10, vmin=0, vmax=num_obs_classes)
+            scatter = ax.scatter(x_values, y_values, c=data.flatten(), cmap=cmap, marker='o', s=scatter_size, vmin=0, vmax=num_obs_classes)
             return scatter
         else:
             # Transpose the data to correct the axis inversion
@@ -97,12 +104,13 @@ def plot_combined_video(gt_remaining_time, pred_remaining_time, gt_classificatio
 
     for ax in axs[-3:]:
         ax.set_ylim(0, h)
+        ax.set_yticks(np.linspace(0, h, n_yticks))
+        ax.set_yticklabels([f'{y:.0f}' for y in np.linspace(0, h, n_yticks)])
         ax.set_ylabel("Future (m)")
         ax.grid(True, linestyle='--', alpha=0.7)
 
     axs[-2].set_title('Single-Pass Decoding')
     axs[-1].set_title('Ground Truth Classes')
-
     axs[-1].set_xlabel("Video Time Steps (seconds)")
     
     # Add colorbar TODO: put at a better location
@@ -114,7 +122,7 @@ def plot_combined_video(gt_remaining_time, pred_remaining_time, gt_classificatio
         plt.tight_layout()
         output_file = f"./plots/{dataset}/combined/video{video_idx}_ep{epoch}_h{h}_sr{x_sampling_rate}_combined.png"
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
-        plt.show()
+        # plt.show()
         plt.close()
         print(f"Static figure saved to {output_file}")
     else:
@@ -170,8 +178,51 @@ def plot_combined_video(gt_remaining_time, pred_remaining_time, gt_classificatio
         plt.close()
         print(f"Video saved to {output_file}")
 
-# Main execution remains the same as in the previous version
+def get_color_scheme(scheme_name, num_classes, brightness_factor=1.0):
+    def create_colormap(colors, name='custom_cmap'):
+        return mcolors.LinearSegmentedColormap.from_list(name, colors)
 
+    def adjust_brightness(color, factor):
+        rgb = np.array(mcolors.to_rgb(color))
+        hsv = mcolors.rgb_to_hsv(rgb)
+        hsv[2] = np.clip(hsv[2] * factor, 0, 1)
+        rgb = mcolors.hsv_to_rgb(hsv)
+        return np.clip(rgb, 0, 1)  # Ensure RGB values are within 0-1 range
+
+    schemes = {
+        'plasma': plt.cm.plasma,
+        'viridis': plt.cm.viridis,
+        'inferno': plt.cm.inferno,
+        'magma': plt.cm.magma,
+        'cividis': plt.cm.cividis,
+        'cool': plt.cm.cool,
+        'warm': plt.cm.autumn,
+        'rainbow': plt.cm.rainbow,
+        'terrain': plt.cm.terrain,
+        'ocean': plt.cm.ocean,
+        'spectral': plt.cm.Spectral,
+        'pastel': create_colormap(['#FFB3BA', '#BAFFC9', '#BAE1FF', '#FFFFBA', '#FFDFBA']),
+        'neon': create_colormap(['#FF00FF', '#00FFFF', '#00FF00', '#FFFF00', '#FF0000']),
+        'earth': create_colormap(['#8B4513', '#228B22', '#4682B4', '#D2691E', '#556B2F']),
+        'jewel': create_colormap(['#50C878', '#4B0082', '#E0115F', '#00FFFF', '#FFD700']),
+        'retro': create_colormap(['#FF6B6B', '#4ECDC4', '#45B7D1', '#FDCB6E', '#6C5CE7'])
+    }
+
+    if scheme_name not in schemes:
+        raise ValueError(f"Unknown color scheme: {scheme_name}")
+
+    cmap = schemes[scheme_name]
+    color_positions = np.linspace(0, 1, num_classes)
+    colors = cmap(color_positions)
+
+    # Adjust brightness of all colors
+    adjusted_colors = [adjust_brightness(color, brightness_factor) for color in colors]
+
+    # Add light gray for EOS class
+    eos_color = adjust_brightness([0.85, 0.85, 0.85], brightness_factor)
+    adjusted_colors.append(np.append(eos_color, 1))  # Add alpha channel
+
+    return mcolors.ListedColormap(adjusted_colors)
 
 
 import torch
@@ -294,7 +345,7 @@ if __name__ == "__main__":
     gt_classification = gt_data
 
     # Plot combined video
-    plot_combined_video(gt_remaining_time, pred_remaining_time, gt_classification, pred_classification,
+    plot_video_combined(gt_remaining_time, pred_remaining_time, gt_classification, pred_classification,
                         h=h, num_obs_classes=num_obs_classes, video_idx=video_idx, epoch=epoch,
                         dataset=dataset, save_video=save_video,
                         x_sampling_rate=sampling_rate, y_sampling_rate=y_sampling_rate, gif_fps=gif_fps,

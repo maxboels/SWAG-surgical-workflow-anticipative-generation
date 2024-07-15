@@ -30,3 +30,4 @@ external/rulstm
 datasets/*/labels/video_*_labels.npy
 
 
+OUTPUTS/expts/*.txt/local/plots/*/*/*.png

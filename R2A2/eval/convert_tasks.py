@@ -16,7 +16,7 @@ def find_intersections(x, y1, y2):
     
     return intersections
 
-def classification2regression_intersections(video_anticipation_probs, horizon_minutes=18):
+def classification2regression(video_anticipation_probs, horizon_minutes=18):
     """
     Convert classification probabilities to regression values for a video sequence
     using probability intersections to determine phase transitions.
