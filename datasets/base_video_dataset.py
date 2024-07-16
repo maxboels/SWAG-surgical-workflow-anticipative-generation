@@ -303,7 +303,7 @@ class Medical_Dataset(Dataset):
                 self.logger.info(f"[DATASET] params: {params}")
 
 
-            self.horizon = cfg.mae_eval_horizon
+            self.eval_horizons = cfg.eval_horizons
             self.num_obs_classes = self.num_classes
             
             #-----------------end select arguments-----------------
@@ -445,9 +445,10 @@ class Medical_Dataset(Dataset):
                     self.videos.append(video)
                 
                 # regression labels (remaining time until occurrence of each phases)
-                # gt_remaining_time = {}
-                gt_remaining_time = ground_truth_remaining_time(phase_labels, h=self.horizon, num_classes=self.num_obs_classes)
-                self.logger.info(f"[DATASET] gt_remaining_time h={self.horizon}: {gt_remaining_time.size()}")
+                gt_remaining_time = {}
+                for h in self.eval_horizons:
+                    gt_remaining_time[h] = ground_truth_remaining_time(phase_labels, h=h, num_classes=self.num_obs_classes)
+                    self.logger.info(f"[DATASET] gt_remaining_time h={h}: {gt_remaining_time[h].size()}")
                 self.gt_remaining_time.append(gt_remaining_time)
 
                 self.logger.info(f"\n")
@@ -582,8 +583,9 @@ class Medical_Dataset(Dataset):
             print(f"[DATASET] video_idx: {video_idx} (t={frame_idx}) original: {video.size()}")
             print(f"[DATASET] video targets: {video_targets.size()}")
             # print(f"[DATASET] full video_next_seg_targets: {video_next_seg_targets.size()}")
-
-            print(f"[DATASET] gt_remaining_time {self.horizon}: {gt_remaining_time.size()}")
+            
+            for h in self.eval_horizons:
+                print(f"[DATASET] gt_remaining_time {h}: {gt_remaining_time[h].size()}")
 
             # VIDEO FEED
             # NOTE: index 0 is included in the frame id so it is not necessary to add 1 !!!
@@ -637,9 +639,10 @@ class Medical_Dataset(Dataset):
 
             # REGRESSION REMAINING TIME TARGETS
             if self.do_regression or self.do_classification:
-                remaining_time = gt_remaining_time[frame_idx, :].unsqueeze(0)
-                data_now[f'remaining_time_tgt'] = remaining_time.to(self.device).float()
-                print(f"[DATASET] gt_remaining_time_{self.horizon}: {remaining_time.size()}")
+                for h in self.eval_horizons:
+                    remaining_time = gt_remaining_time[h][frame_idx, :].unsqueeze(0)
+                    data_now[f'remaining_time_{h}_tgt'] = remaining_time.to(self.device).float()
+                    print(f"[DATASET] remaining_time_{h}_tgt: {remaining_time.size()}")
  
             if self.eos_regression:
                 curr_eos_values = eos_values[starts: ends: self.anticip_time]

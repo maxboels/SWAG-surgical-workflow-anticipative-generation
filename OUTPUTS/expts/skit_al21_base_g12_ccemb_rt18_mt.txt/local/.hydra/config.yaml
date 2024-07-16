@@ -354,7 +354,8 @@ sync_bn: false
 data_parallel: true
 dist_backend: nccl
 test_only: true
-mae_eval_horizon: 18
+eval_horizons:
+- 18
 num_epochs: 20
 best_acc_curr_future: 0.4
 finetune_ckpt: best
@@ -433,7 +434,7 @@ eval:
   batch_size: 64
   eval_fn:
     _target_: func.train.evaluate
-    mae_eval_horizon: ${mae_eval_horizon}
+    eval_horizons: ${eval_horizons}
     anticip_time: ${anticip_time}
     max_anticip_time: ${max_anticip_time}
     store: false

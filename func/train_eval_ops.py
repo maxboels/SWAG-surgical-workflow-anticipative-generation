@@ -34,13 +34,14 @@ class NoLossAccuracy(nn.Module):
 
 class BasicLossAccuracy(nn.Module):
     def __init__(self, dataset, device,
-                 loss_w_curr=0.5, loss_w_next=0.5, loss_w_feats=0.0,
+                 loss_w_curr=0.5, loss_w_next=0.5, loss_w_feats=0.0, loss_w_remaining_time=0.5,
     ):
 
         super().__init__()
         self.device = device
         self.loss_w_curr = loss_w_curr
         self.loss_w_next = loss_w_next
+        self.loss_w_remaining_time = loss_w_remaining_time
         self.loss_w_feats = loss_w_feats
         #-----------------select params parameters for loss and accuracy-----------------
         self.model = "skit_v_ant" # options: "skit-x-ant", "skit-v-ant", "r2d2-x-ant", "r2d2-v-ant
@@ -126,7 +127,7 @@ class BasicLossAccuracy(nn.Module):
                 print(f"[LOSS] {key}_acc: {accuracies[key + '_acc']}")
             
             elif key == "remaining_time":
-                losses[key + '_loss'] = self.l1_smooth_loss_fn(outputs[key], targets[key]).mean() * 0.1
+                losses[key + '_loss'] = self.l1_smooth_loss_fn(outputs[key], targets[key]).mean() * self.loss_w_remaining_time
                 print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
 
             else:
@@ -144,6 +145,7 @@ class BasicLossAccuracy(nn.Module):
 class Basic:
     def __init__(self,
         model,
+        horizon,
         device,
         dataset,
         cls_loss_acc_fn: TargetConf,
@@ -151,6 +153,7 @@ class Basic:
         super().__init__()
         
         self.model = model
+        self.h = horizon
         self.device = device
         self.cls_loss_acc_fn = hydra.utils.instantiate(cls_loss_acc_fn,
                                                        dataset, device)
@@ -173,8 +176,14 @@ class Basic:
             for key in outputs.keys():
                 if key == "feature_loss":
                     continue
+                elif key == "remaining_time":
+                    targets[key] = data[key+f"_{self.h}_tgt"]
+                else:
+                    targets[key] = data[key+"_tgt"]
+                
                 print(f"[TRAIN] {key} output: {outputs[key].shape}")
-                targets[key] = data[key+'_tgt']
+                
+            # Compute loss and accuracy
             losses, accs = self.cls_loss_acc_fn(outputs, targets)
         else:
             losses = {}

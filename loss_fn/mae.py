@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 
+
 class anticipation_mae(nn.Module):
     """ Anticipation Mean Absolute Error
     Inputs:
@@ -10,16 +11,12 @@ class anticipation_mae(nn.Module):
 
     def __init__(self, h=18):
         super(anticipation_mae, self).__init__()
-        # self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        # self.device = torch.device("cpu")
-        self.h  = torch.tensor(h).float()#.to(self.device)
+        self.h = torch.tensor(h).float()
         self.lossfunc = nn.L1Loss()
 
     def forward(self, output_rsd, target_rsd):
-
         wMAE = []
         inMAE = []
-        pMAE = []
         eMAE = []
 
         for n in range(output_rsd.size(0)):
@@ -29,36 +26,79 @@ class anticipation_mae(nn.Module):
 
                 tmp_target = torch.where((tmp_target > self.h)|(tmp_target <0), self.h, tmp_target)
 
-
                 cond_oMAE = torch.where((tmp_target == self.h))
                 cond_inMAE = torch.where((tmp_target<self.h) & (tmp_target>0))
-                # cond_pMAE = torch.where((tmp_output<0.9*self.h) & (tmp_output>0.1*self.h))
                 cond_eMAE = torch.where((tmp_target < 0.1 * self.h) & (tmp_target > 0))
-
 
                 output_oMAE = torch.abs(tmp_output[cond_oMAE] - tmp_target[cond_oMAE])
                 output_inMAE = torch.abs(tmp_output[cond_inMAE] - tmp_target[cond_inMAE])
-
-                output_wMAE = torch.nanmean(torch.stack((torch.nanmean(output_oMAE),torch.nanmean(output_inMAE))))
-                # output_pMAE  = torch.abs(tmp_output[cond_pMAE] - tmp_target[cond_pMAE])
                 output_eMAE = torch.abs(tmp_output[cond_eMAE] - tmp_target[cond_eMAE])
 
+                wMAE.append(torch.nanmean(torch.stack((torch.nanmean(output_oMAE),torch.nanmean(output_inMAE)))))
+                inMAE.append(torch.nanmean(output_inMAE))
+                eMAE.append(torch.nanmean(output_eMAE))
 
-
-                wMAE.append(output_wMAE)
-                inMAE.append(torch.mean(output_inMAE))
-                # pMAE.append(torch.mean(output_pMAE))
-                eMAE.append(torch.mean(output_eMAE))
-
-        # use the mean over instrument types in minutes per metric
-        # use the nan mean in case there is no corresponding instrument in the current sequence
+        # use the nanmean over instrument types in minutes per metric
         wMAE = torch.nanmean(torch.stack(wMAE))
         inMAE = torch.nanmean(torch.stack(inMAE))
-        # pMAE = torch.nanmean(torch.stack(pMAE))
         eMAE = torch.nanmean(torch.stack(eMAE))
 
-
         return wMAE, inMAE, eMAE
+
+# class anticipation_mae(nn.Module):
+#     """ Anticipation Mean Absolute Error
+#     Inputs:
+#     - output_rsd: (B, T, C) tensor of predicted remaining time
+#     - target_rsd: (B, T, C) tensor of ground truth remaining time
+#     """
+
+#     def __init__(self, h=18):
+#         super(anticipation_mae, self).__init__()
+#         # self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+#         # self.device = torch.device("cpu")
+#         self.h  = torch.tensor(h).float()#.to(self.device)
+#         self.lossfunc = nn.L1Loss()
+
+#     def forward(self, output_rsd, target_rsd):
+
+#         wMAE = []
+#         inMAE = []
+#         pMAE = []
+#         eMAE = []
+
+#         for n in range(output_rsd.size(0)):
+#             for c in range(output_rsd.size(-1)):
+#                 tmp_output = output_rsd[n,:,c]
+#                 tmp_target = target_rsd[n,:,c]
+
+#                 tmp_target = torch.where((tmp_target > self.h)|(tmp_target <0), self.h, tmp_target)
+
+#                 cond_oMAE = torch.where((tmp_target == self.h))
+#                 cond_inMAE = torch.where((tmp_target<self.h) & (tmp_target>0))
+#                 # cond_pMAE = torch.where((tmp_output<0.9*self.h) & (tmp_output>0.1*self.h))
+#                 cond_eMAE = torch.where((tmp_target < 0.1 * self.h) & (tmp_target > 0))
+
+#                 output_oMAE = torch.abs(tmp_output[cond_oMAE] - tmp_target[cond_oMAE])
+#                 output_inMAE = torch.abs(tmp_output[cond_inMAE] - tmp_target[cond_inMAE])
+
+#                 output_wMAE = torch.nanmean(torch.stack((torch.nanmean(output_oMAE),torch.nanmean(output_inMAE))))
+#                 # output_pMAE  = torch.abs(tmp_output[cond_pMAE] - tmp_target[cond_pMAE])
+#                 output_eMAE = torch.abs(tmp_output[cond_eMAE] - tmp_target[cond_eMAE])
+
+#                 wMAE.append(output_wMAE)
+#                 inMAE.append(torch.mean(output_inMAE))
+#                 # pMAE.append(torch.mean(output_pMAE))
+#                 eMAE.append(torch.mean(output_eMAE))
+
+#         # use the mean over instrument types in minutes per metric
+#         # use the nan mean in case there is no corresponding instrument in the current sequence
+#         wMAE = torch.nanmean(torch.stack(wMAE))
+#         inMAE = torch.nanmean(torch.stack(inMAE))
+#         # pMAE = torch.nanmean(torch.stack(pMAE))
+#         eMAE = torch.nanmean(torch.stack(eMAE))
+
+
+#         return wMAE, inMAE, eMAE
 
 class attention_loss(nn.Module):
     def __init__(self, sigma = 0.05):

@@ -82,7 +82,7 @@ class ClassConditionedTransformerDecoder(nn.Module):
         super(ClassConditionedTransformerDecoder, self).__init__()
 
         dataset = cfg.dataset
-        h = cfg.horizon
+        h = num_queries
 
         self.num_classes = num_classes
         self.normalize_priors = normalize_priors
@@ -161,7 +161,7 @@ class ClassConditionedTransformerDecoderRegression(nn.Module):
         super(ClassConditionedTransformerDecoderRegression, self).__init__()
 
         dataset = cfg.dataset
-        h = cfg.horizon
+        h = num_queries
 
         self.num_classes = num_classes # should be 8 with EOS class
         self.normalize_priors = normalize_priors

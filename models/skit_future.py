@@ -180,6 +180,7 @@ class SKITFuture(nn.Module):
 
         self.do_classification = do_classification
         self.do_regression = do_regression
+        self.h = max_anticip_time
 
         # other params
         self.relu_norm = True
@@ -207,7 +208,7 @@ class SKITFuture(nn.Module):
         elif self.input_tokens == "class_conditioned":
             num_classes = 7 + 1
             root = "/nfs/home/mboels/projects/SuPRA/datasets"
-            path_class_probs = root + f"/{self.dataset}/naive2_{self.dataset}_class_probs_at{max_anticip_time}.json"
+            path_class_probs = root + f"/{self.dataset}/naive2_{self.dataset}_class_probs_at{self.h}.json"
             with open(path_class_probs, 'r') as f:
                 class_freq_pos = json.load(f)
             class_freq_pos = {int(k): [{int(inner_k): inner_v for inner_k, inner_v in freq_dict.items()} for freq_dict in v] for k, v in class_freq_pos.items()}
@@ -225,7 +226,7 @@ class SKITFuture(nn.Module):
         # TODO: add a sigmoid activation function to the regression head
         # TODO: use 1 - sigmoid to get the remaining time
 
-        self.future_time_compression = "linear_transofrmation"
+        self.future_time_compression = "linear_transformation"
         self.linear_cls_to_regression = nn.Linear(self.num_ant_queries, 1)
         self.sigmoid = nn.Sigmoid()
 
@@ -301,7 +302,7 @@ class SKITFuture(nn.Module):
         if self.do_regression:
             if self.future_time_compression=='max_time':
                 remaining_time_feats = torch.max(next_action, dim=1)[0] # (B, d_model)
-            elif self.future_time_compression=='linear_transofrmation':
+            elif self.future_time_compression=='linear_transformation':
                 remaining_time_feats = self.linear_cls_to_regression(next_action.transpose(1, 2)).transpose(1, 2)
             else:
                 raise ValueError(f"Future compression method {self.future_time_compression} not implemented.")        

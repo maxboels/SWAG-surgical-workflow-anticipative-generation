@@ -5,7 +5,7 @@ ctx_pooling=global
 num_ctx_tokens=12
 max_seq_len=24
 
-mae_eval_horizon=18
+eval_horizons=[18]
 max_anticip_time=18
 num_ant_queries=18
 
@@ -47,6 +47,7 @@ eos_class=7
 loss_w_curr=0.4
 loss_w_next=0.4
 loss_w_feats=0.2
+loss_w_remaining_time=0.1
 
 
 

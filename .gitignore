@@ -31,3 +31,6 @@ datasets/*/labels/video_*_labels.npy
 
 
 OUTPUTS/expts/*.txt/local/plots/*/*/*.png
+OUTPUTS/expts/*.txt/local/*/*.json
+OUTPUTS/expts/*.txt/local/*/*.yaml
+OUTPUTS/expts/*.txt/local/*/*.yaml

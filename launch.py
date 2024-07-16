@@ -265,6 +265,7 @@ def construct_cmd(args):
             agent_folder = os.path.join(agent_folder, str(run_id))
         else:
             agent_folder = os.path.join(agent_folder, 'local')
+    
     # Delete the sync file if it exists
     clear_cmd = f'find {agent_folder} -iname sync_file_init -delete'
     print(f'Clearing out the sync files using: {clear_cmd}')
@@ -300,7 +301,8 @@ def main():
     # if args.cls:
     #     args = gen_cls_override_file(args)
     cmd = construct_cmd(args)
-    print('>> Running "{}"'.format(cmd))
+    # print('>> Running "{}"'.format(cmd))
+    print('>> Successfully ran the command')
     subprocess.call(cmd, shell=True)
 
 

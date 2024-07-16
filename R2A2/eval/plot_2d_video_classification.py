@@ -11,8 +11,10 @@ def plot_classification_video(gt_classification, pred_classification,
     
     # Configuration
     n_yticks = 3
-    scatter_size = 180
+    # scale plot
+    scatter_size = 180 * (18 / h)**2
     color_scheme = 'plasma'
+    shift_colors = False
 
     # Classification task
     gt_classification = gt_classification[::x_sampling_rate, :h]
@@ -27,14 +29,14 @@ def plot_classification_video(gt_classification, pred_classification,
 
     # Create color scheme with increased contrast
     if color_scheme == 'plasma':
-        cmap = get_color_scheme(color_scheme, num_obs_classes, brightness_factor=1.0)
+        cmap = get_color_scheme(color_scheme, num_obs_classes, brightness_factor=1.0, shift_colors=shift_colors)
     else:
         colors = plt.cm.tab10(np.linspace(0, 1, num_obs_classes + 1))
         cmap = mcolors.ListedColormap(colors)
 
     # Ensure output directory exists
-    if not os.path.exists(f"./plots/{dataset}/classification/"):
-        os.makedirs(f"./plots/{dataset}/classification/")
+    if not os.path.exists(f"./plots/{dataset}/combined/"):
+        os.makedirs(f"./plots/{dataset}/combined/")
 
     y_min, y_max = -0.5, h + 0.5
     
@@ -72,7 +74,7 @@ def plot_classification_video(gt_classification, pred_classification,
     
     if not save_video:
         plt.tight_layout()
-        output_file = f"./plots/{dataset}/classification/video{video_idx}_ep{epoch}_h{h}_sr{x_sampling_rate}_classification.png"
+        output_file = f"./plots/{dataset}/combined/video{video_idx}_ep{epoch}_h{h}_sr{x_sampling_rate}_combined.png"
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
         plt.show()
         plt.close()
@@ -106,13 +108,13 @@ def plot_classification_video(gt_classification, pred_classification,
         print("Saving animation to video file...")
         Writer = writers['ffmpeg']
         writer = Writer(fps=gif_fps, metadata=dict(artist='Me'), bitrate=1800)
-        output_file = f"./plots/{dataset}/classification/video{video_idx}_ep{epoch}_h{h}_sr{x_sampling_rate}_classification.mp4"
+        output_file = f"./plots/{dataset}/combined/video{video_idx}_ep{epoch}_h{h}_sr{x_sampling_rate}_combined.mp4"
         ani.save(output_file, writer=writer)
 
         plt.close()
         print(f"Video saved to {output_file}")
 
-def get_color_scheme(scheme_name, num_classes, brightness_factor=1.0):
+def get_color_scheme(scheme_name, num_classes, brightness_factor=1.0, shift_colors=True):
     def create_colormap(colors, name='custom_cmap'):
         return mcolors.LinearSegmentedColormap.from_list(name, colors)
 
@@ -146,15 +148,25 @@ def get_color_scheme(scheme_name, num_classes, brightness_factor=1.0):
         raise ValueError(f"Unknown color scheme: {scheme_name}")
 
     cmap = schemes[scheme_name]
-    color_positions = np.linspace(0, 1, num_classes)
+    if shift_colors:
+        color_positions = np.linspace(0, 1, num_classes + 1)  # +1 to include EOS class
+    else:
+        color_positions = np.linspace(0, 1, num_classes)
     colors = cmap(color_positions)
 
     # Adjust brightness of all colors
     adjusted_colors = [adjust_brightness(color, brightness_factor) for color in colors]
 
-    # Add light gray for EOS class
-    eos_color = adjust_brightness([0.85, 0.85, 0.85], brightness_factor)
-    adjusted_colors.append(np.append(eos_color, 1))  # Add alpha channel
+    # Shift colors and assign the first color to EOS class
+    if shift_colors:
+        eos_color = adjusted_colors[0]
+        adjusted_colors = adjusted_colors[1:] + [eos_color]
+    else:
+        # Add greengray for EOS class
+        greengray = [0.65, 0.70, 0.70]
+        eos_color = adjust_brightness(greengray, brightness_factor)
+        adjusted_colors.append(np.append(eos_color, 1))  # Add alpha channel
+
 
     return mcolors.ListedColormap(adjusted_colors)
 
@@ -244,7 +256,7 @@ if __name__ == "__main__":
     dataset_short = "al21"
     model_name = "sup"
     num_obs_classes = 7
-    h = 18  # Horizon in minutes
+    h = 5  # Horizon in minutes
     sampling_rate = 5
     epoch = 0
     video_idx = 21

@@ -120,7 +120,7 @@ def plot_video_combined(gt_remaining_time, pred_remaining_time, gt_classificatio
     
     if not save_video:
         plt.tight_layout()
-        output_file = f"./plots/{dataset}/combined/video{video_idx}_ep{epoch}_h{h}_sr{x_sampling_rate}_combined.png"
+        output_file = f"./plots/{dataset}/combined/video{video_idx}_ep{epoch}_sr{x_sampling_rate}_h{h}_combined.png"
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
         # plt.show()
         plt.close()

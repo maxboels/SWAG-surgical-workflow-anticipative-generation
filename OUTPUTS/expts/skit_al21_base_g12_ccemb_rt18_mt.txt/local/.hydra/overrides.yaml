@@ -3,7 +3,7 @@
 - ctx_pooling=global
 - num_ctx_tokens=12
 - max_seq_len=24
-- mae_eval_horizon=18
+- eval_horizons=[18]
 - max_anticip_time=18
 - num_ant_queries=18
 - do_classification=True
