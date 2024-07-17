@@ -1,4 +1,6 @@
-skit-c80-base-glob12-ccemb-fo
-skit-c80-base-glob12-ccemb-rt
-skit-c80-base-glob12-ccemb-rt18
-skit-c80-base-glob12-ccemb-rt18-1
+skit-al21-base-g12-ccemb-rt18-mt
+skit-al21-base-g12-ccemb-rt18-reg
+skit-al21-base-g12-ccemb-rt5-mt
+skit-al21-base-g12-ccemb-rt5-reg
+skit-c80-base-g12-ccemb-rt18-mt
+skit-c80-base-g12-ccemb-rt2-mt-6020

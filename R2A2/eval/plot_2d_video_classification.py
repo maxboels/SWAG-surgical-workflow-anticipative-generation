@@ -17,8 +17,8 @@ def plot_classification_video(gt_classification, pred_classification,
     shift_colors = False
 
     # Classification task
-    gt_classification = gt_classification[::x_sampling_rate, :h]
-    pred_classification = pred_classification[::x_sampling_rate, :h]
+    gt_classification = gt_classification[::x_sampling_rate, :h+1]     # +1 since recognition class is at index 0
+    pred_classification = pred_classification[::x_sampling_rate, :h+1] # +1 since recognition class is at index 0
 
     # Set figure size and layout
     fig = plt.figure(figsize=(18, 8))
@@ -35,8 +35,8 @@ def plot_classification_video(gt_classification, pred_classification,
         cmap = mcolors.ListedColormap(colors)
 
     # Ensure output directory exists
-    if not os.path.exists(f"./plots/{dataset}/combined/"):
-        os.makedirs(f"./plots/{dataset}/combined/")
+    if not os.path.exists(f"./plots/{dataset}/classification/"):
+        os.makedirs(f"./plots/{dataset}/classification/")
 
     y_min, y_max = -0.5, h + 0.5
     
@@ -74,7 +74,7 @@ def plot_classification_video(gt_classification, pred_classification,
     
     if not save_video:
         plt.tight_layout()
-        output_file = f"./plots/{dataset}/combined/video{video_idx}_ep{epoch}_h{h}_sr{x_sampling_rate}_combined.png"
+        output_file = f"./plots/{dataset}/classification/video{video_idx}_ep{epoch}_h{h}_sr{x_sampling_rate}_classification.png"
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
         plt.show()
         plt.close()
@@ -108,7 +108,7 @@ def plot_classification_video(gt_classification, pred_classification,
         print("Saving animation to video file...")
         Writer = writers['ffmpeg']
         writer = Writer(fps=gif_fps, metadata=dict(artist='Me'), bitrate=1800)
-        output_file = f"./plots/{dataset}/combined/video{video_idx}_ep{epoch}_h{h}_sr{x_sampling_rate}_combined.mp4"
+        output_file = f"./plots/{dataset}/classification/video{video_idx}_ep{epoch}_h{h}_sr{x_sampling_rate}_classification.mp4"
         ani.save(output_file, writer=writer)
 
         plt.close()
@@ -279,7 +279,7 @@ if __name__ == "__main__":
     print(f"GT Classification: {gt_classification.shape}")
     print(f"Pred Classification: {pred_classification.shape}")
 
-    # Plot combined video
+    # Plot classification video
     plot_classification_video(gt_classification, pred_classification,
                         h=h, num_obs_classes=num_obs_classes, video_idx=video_idx, epoch=epoch,
                         dataset=dataset, save_video=save_video,

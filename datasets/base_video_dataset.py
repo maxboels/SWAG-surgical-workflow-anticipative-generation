@@ -80,14 +80,22 @@ def ground_truth_remaining_time(phase_labels, h=5, num_classes=7):
         phase_indices = torch.where(phase_labels == phase)[0]
         if len(phase_indices) == 0:
             continue
-        phase_start = phase_indices[0]
-        phase_end = phase_indices[-1]
-
-        pre_phase_start = max(0, phase_start - int(h*60))
-
-        for i in range(pre_phase_start, phase_start):
-            remaining_time[i, phase] = (phase_start - i) / 60.0
-        remaining_time[phase_start:phase_end+1, phase] = 0.0
+        
+        # Find contiguous segments
+        segments = []
+        segment_start = phase_indices[0]
+        for i in range(1, len(phase_indices)):
+            if phase_indices[i] != phase_indices[i-1] + 1:
+                segments.append((segment_start, phase_indices[i-1]))
+                segment_start = phase_indices[i]
+        segments.append((segment_start, phase_indices[-1]))
+        
+        for segment_start, segment_end in segments:
+            pre_segment_start = max(0, segment_start - int(h*60))
+            
+            for i in range(pre_segment_start, segment_start):
+                remaining_time[i, phase] = min(remaining_time[i, phase], (segment_start - i) / 60.0)
+            remaining_time[segment_start:segment_end+1, phase] = 0.0
     
     # Handle EOS class
     eos_start = seq_len - int(h*60)
@@ -643,6 +651,7 @@ class Medical_Dataset(Dataset):
                     remaining_time = gt_remaining_time[h][frame_idx, :].unsqueeze(0)
                     data_now[f'remaining_time_{h}_tgt'] = remaining_time.to(self.device).float()
                     print(f"[DATASET] remaining_time_{h}_tgt: {remaining_time.size()}")
+                    print(f"[DATASET] remaining_time_{h}_tgt: {remaining_time}")
  
             if self.eos_regression:
                 curr_eos_values = eos_values[starts: ends: self.anticip_time]

@@ -326,28 +326,29 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
 
         # eval_horizons = data_loader.dataset.eval_horizons
 
-        print(f"[EVAL] video (i={video_idx}) id={video_id} | video_length={video_length}")
+        logger.info(f"[EVAL] video (i={video_idx}) id={video_id} | video_length={video_length}")
 
         num_ant_classes = num_classes + 1  # Add end-of-surgery class
 
         iters_times = []
 
-        # init new video buffers
+        # recognition
         video_frame_rec     = np.full((video_length, 1), -1)
         video_tgts_rec      = np.full((video_length, 1), -1)
+        # anticipations
         video_frame_preds   = np.full((video_length, max_num_steps), -1)
         video_tgts_preds    = np.full((video_length, max_num_steps), -1)
-        video_seg_preds     = np.full((video_length, 1), -1)
-        video_tgts_preds_seg = np.full((video_length, 1), -1)
-        
-        # Anticipation Classification Probabilities
-        video_frame_probs_preds   = np.full((video_length, max_num_steps+1, num_ant_classes), -1)
+        # recognition and antcipations probs
+        video_frame_probs_preds   = np.full((video_length, max_num_steps+1, num_ant_classes), 0) # before was -1 filled
 
 
         # save remaining time gt and predictions
+        # NOTE: make sure the targets are floating point values and not integers
+        # as they represent the remaining time in minutes (continuous values)
         for h in eval_horizons:
-            locals()[f"video_remaining_time_tgts_{h}"] = torch.full((video_length, 1, num_ant_classes), -1)
-        video_remaining_time_preds = torch.full((video_length, 1, num_ant_classes), -1)
+            video_remaining_time_tgts_h = torch.full((video_length, 1, num_ant_classes), -1, dtype=torch.float32)
+            locals()[f"video_remaining_time_tgts_{h}"] = video_remaining_time_tgts_h
+        video_remaining_time_preds = torch.full((video_length, 1, num_ant_classes), -1, dtype=torch.float32)
 
         video_mean_cum_iter_time = []
 
@@ -382,24 +383,18 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                 if "future_frames" in outputs.keys():
                     probs = torch.softmax(outputs['future_frames'], dim=2).detach().cpu().numpy()
                     preds = np.argmax(probs, axis=2)
-                    # print(f"[TESTING] Classification probs: {probs.shape}")
-                    # print(f"[TESTING] Classification preds: {preds.shape}")
                     targets = data["future_frames_tgt"].detach().cpu().numpy()
-
-                    # Store batches
                     video_frame_preds[start_idx:end_idx] = preds
                     video_tgts_preds[start_idx:end_idx] = targets # NOTE: those targets are for inference only
+                    video_frame_probs_preds[start_idx:end_idx, 1:] = probs
 
                 # REMAINING TIME REGRESSION
                 if "remaining_time" in outputs.keys():
-                    video_frame_probs_preds[start_idx:end_idx, 1:] = probs
                     for h in eval_horizons:
                         target_remaining_time = data[f'remaining_time_{h}_tgt'].detach().cpu()
-                        # logger.info(f"[TESTING] target_remaining_time h={h}: {target_remaining_time.shape}")
                         locals()[f"video_remaining_time_tgts_{h}"][start_idx:end_idx] = target_remaining_time
                     pred_remaining_time = outputs[f'remaining_time'].detach().cpu()
                     video_remaining_time_preds[start_idx:end_idx] = pred_remaining_time
-                    # logger.info(f"[TESTING] pred_remaining_time: {pred_remaining_time.shape}")
                 else:
                     print(f"[TESTING] No remaining time predictions")
                 
@@ -425,7 +420,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         # save video probs to numpy instead of keeping in memory
         if store:
             np.save(f'./npy/video_probs_ep{epoch}_vid{video_id}.npy', video_frame_probs_preds)
-            print(f"Saved video probs to: video_probs_ep{epoch}_vid{video_id}.npy")
+            logger.info(f"[TESTING] Saved video probs to: video_probs_ep{epoch}_vid{video_id}.npy")
 
         # STORE VIDEO RESULTS
         video_results["video_id"] = video_id        
@@ -580,7 +575,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     # Regression remaining time
     for h in eval_horizons:
         for metric in ['wMAE', 'inMAE', 'eMAE']:
-            all_videos_results[f"{metric}_{h}"] = np.round(np.mean(locals()[f'all_videos_{metric}_{h}']), decimals=4).tolist()
+            all_videos_results[f"{metric}_{h}"] = np.round(np.nanmean(locals()[f'all_videos_{metric}_{h}']), decimals=4).tolist()
     
     # all_videos_results["rmse_future"]       = np.round(np.nanmean(all_videos_rmse_future), decimals=4).tolist()
 
@@ -648,7 +643,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                 # plot regression remaining time
                 plot_remaining_time_video(gt_remaining_time, pred_remaining_time,
                                             h=h,
-                                            num_obs_classes=7, 
+                                            num_obs_classes=num_classes, 
                                             video_idx=video_id, 
                                             epoch=epoch, 
                                             dataset=dataset,

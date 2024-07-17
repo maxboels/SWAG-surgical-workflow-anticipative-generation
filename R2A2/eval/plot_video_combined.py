@@ -17,9 +17,9 @@ def plot_video_combined(gt_remaining_time, pred_remaining_time, gt_classificatio
     scatter_size = 120
     color_scheme = 'plasma' # 'plasma', 'rainbow', 'spectral', 'jewel'
     
-    # classification task
-    gt_classification = gt_classification[::x_sampling_rate, :h]
-    pred_classification = pred_classification[::x_sampling_rate, :h]
+    # Classification task
+    gt_classification = gt_classification[::x_sampling_rate, :h+1]     # +1 since recognition class is at index 0
+    pred_classification = pred_classification[::x_sampling_rate, :h+1] # +1 since recognition class is at index 0
 
     # regression task
     gt_remaining_time = gt_remaining_time[::x_sampling_rate]

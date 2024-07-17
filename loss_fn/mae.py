@@ -2,6 +2,9 @@ import torch
 import torch.nn as nn
 
 
+import torch
+import torch.nn as nn
+
 class anticipation_mae(nn.Module):
     """ Anticipation Mean Absolute Error
     Inputs:
@@ -12,38 +15,91 @@ class anticipation_mae(nn.Module):
     def __init__(self, h=18):
         super(anticipation_mae, self).__init__()
         self.h = torch.tensor(h).float()
-        self.lossfunc = nn.L1Loss()
 
     def forward(self, output_rsd, target_rsd):
-        wMAE = []
-        inMAE = []
-        eMAE = []
+        # Squeeze the second dimension if it's 1
+        output_rsd = output_rsd.squeeze(1)
+        target_rsd = target_rsd.squeeze(1)
 
-        for n in range(output_rsd.size(0)):
-            for c in range(output_rsd.size(-1)):
-                tmp_output = output_rsd[n,:,c]
-                tmp_target = target_rsd[n,:,c]
+        # Clip target values to be within [0, h]
+        target_rsd = torch.clamp(target_rsd, 0, self.h)
 
-                tmp_target = torch.where((tmp_target > self.h)|(tmp_target <0), self.h, tmp_target)
+        # Compute pairwise MAE
+        mae = torch.abs(output_rsd - target_rsd)
 
-                cond_oMAE = torch.where((tmp_target == self.h))
-                cond_inMAE = torch.where((tmp_target<self.h) & (tmp_target>0))
-                cond_eMAE = torch.where((tmp_target < 0.1 * self.h) & (tmp_target > 0))
+        # Compute masks for different conditions
+        mask_out = (target_rsd == self.h)
+        mask_in = (target_rsd < self.h) & (target_rsd > 0)
+        mask_exp = (target_rsd < 0.1 * self.h) & (target_rsd > 0)
 
-                output_oMAE = torch.abs(tmp_output[cond_oMAE] - tmp_target[cond_oMAE])
-                output_inMAE = torch.abs(tmp_output[cond_inMAE] - tmp_target[cond_inMAE])
-                output_eMAE = torch.abs(tmp_output[cond_eMAE] - tmp_target[cond_eMAE])
+        # Compute MAEs for different conditions
+        in_mae = mae[mask_in].mean() if mask_in.any() else torch.tensor(float('nan'))
+        out_mae = mae[mask_out].mean() if mask_out.any() else torch.tensor(float('nan'))
+        exp_mae = mae[mask_exp].mean() if mask_exp.any() else torch.tensor(float('nan'))
 
-                wMAE.append(torch.nanmean(torch.stack((torch.nanmean(output_oMAE),torch.nanmean(output_inMAE)))))
-                inMAE.append(torch.nanmean(output_inMAE))
-                eMAE.append(torch.nanmean(output_eMAE))
+        # Compute weighted MAE
+        w_mae = torch.stack([out_mae, in_mae]).nanmean()
 
-        # use the nanmean over instrument types in minutes per metric
-        wMAE = torch.nanmean(torch.stack(wMAE))
-        inMAE = torch.nanmean(torch.stack(inMAE))
-        eMAE = torch.nanmean(torch.stack(eMAE))
+        return w_mae, in_mae, exp_mae
 
-        return wMAE, inMAE, eMAE
+
+# class anticipation_mae(nn.Module):
+#     """ Anticipation Mean Absolute Error
+#     Inputs:
+#     - output_rsd: (B, T, C) tensor of predicted remaining time
+#     - target_rsd: (B, T, C) tensor of ground truth remaining time
+#     """
+
+#     def __init__(self, h=18):
+#         super(anticipation_mae, self).__init__()
+#         self.h = torch.tensor(h).float()
+#         self.lossfunc = nn.L1Loss()
+
+#     def forward(self, output_rsd, target_rsd):
+#         wMAE = []
+#         inMAE = []
+#         eMAE = []
+
+#         print(f"output_rsd: {output_rsd.shape}")
+#         print(f"target_rsd: {target_rsd.shape}")
+
+#         # NOTE: there is no second dimension needed in our data
+#         # is equal to one.
+
+#         for n in range(output_rsd.size(0)):
+#             for c in range(output_rsd.size(-1)):
+#                 tmp_output = output_rsd[n,:,c]
+#                 tmp_target = target_rsd[n,:,c]
+#                 print(f"tmp_output (input): {tmp_output}")
+#                 print(f"tmp_target (input): {tmp_target}")
+
+#                 tmp_target = torch.where((tmp_target > self.h)|(tmp_target < 0), self.h, tmp_target)
+#                 print(f"tmp_target (replace values outside): {tmp_target}")
+
+#                 cond_oMAE = torch.where((tmp_target == self.h))                         # outside the range
+#                 cond_inMAE = torch.where((tmp_target < self.h) & (tmp_target > 0))      # inside the range
+#                 cond_eMAE = torch.where((tmp_target < 0.1 * self.h) & (tmp_target > 0)) # expected observation
+#                 print(f"cond_oMAE: {cond_oMAE}")
+#                 print(f"cond_inMAE: {cond_inMAE}")
+#                 print(f"cond_eMAE: {cond_eMAE}") # can give an empty tensor if no element satisfies the condition
+
+#                 output_inMAE = torch.abs(tmp_output[cond_inMAE] - tmp_target[cond_inMAE])
+#                 inMAE.append(torch.nanmean(output_inMAE))
+
+#                 if cond_oMAE[0].numel() != 0:
+#                     output_oMAE = torch.abs(tmp_output[cond_oMAE] - tmp_target[cond_oMAE])
+#                     wMAE.append(torch.nanmean(torch.stack((torch.nanmean(output_oMAE), torch.nanmean(output_inMAE)))))
+                
+#                 if cond_eMAE[0].numel() != 0:
+#                     output_eMAE = torch.abs(tmp_output[cond_eMAE] - tmp_target[cond_eMAE])
+#                     eMAE.append(torch.nanmean(output_eMAE))
+
+
+#         wMAE = torch.nanmean(torch.stack(wMAE))
+#         inMAE = torch.nanmean(torch.stack(inMAE))
+#         eMAE = torch.nanmean(torch.stack(eMAE))
+
+#         return wMAE, inMAE, eMAE
 
 # class anticipation_mae(nn.Module):
 #     """ Anticipation Mean Absolute Error
@@ -79,9 +135,9 @@ class anticipation_mae(nn.Module):
 #                 cond_eMAE = torch.where((tmp_target < 0.1 * self.h) & (tmp_target > 0))
 
 #                 output_oMAE = torch.abs(tmp_output[cond_oMAE] - tmp_target[cond_oMAE])
-#                 output_inMAE = torch.abs(tmp_output[cond_inMAE] - tmp_target[cond_inMAE])
+                # output_inMAE = torch.abs(tmp_output[cond_inMAE] - tmp_target[cond_inMAE])
 
-#                 output_wMAE = torch.nanmean(torch.stack((torch.nanmean(output_oMAE),torch.nanmean(output_inMAE))))
+                # output_wMAE = torch.nanmean(torch.stack((torch.nanmean(output_oMAE),torch.nanmean(output_inMAE))))
 #                 # output_pMAE  = torch.abs(tmp_output[cond_pMAE] - tmp_target[cond_pMAE])
 #                 output_eMAE = torch.abs(tmp_output[cond_eMAE] - tmp_target[cond_eMAE])
 
