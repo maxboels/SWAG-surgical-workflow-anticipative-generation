@@ -1,6 +1,7 @@
-skit-al21-base-g12-ccemb-rt18-mt
-skit-al21-base-g12-ccemb-rt18-reg
-skit-al21-base-g12-ccemb-rt5-mt
-skit-al21-base-g12-ccemb-rt5-reg
-skit-c80-base-g12-ccemb-rt18-mt
+skit-c80-base-g12-ccemb-rt5-mt
+skit-c80-base-g12-ccemb-rt5-mt-6020
+skit-c80-base-g12-ccemb-rt5-r-6020
 skit-c80-base-g12-ccemb-rt2-mt-6020
+skit-c80-base-g12-ccemb-rt2-r-6020
+skit-c80-base-g12-ccemb-rt3-mt-6020
+skit-c80-base-g12-ccemb-rt3-r-6020

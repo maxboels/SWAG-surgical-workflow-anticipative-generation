@@ -153,6 +153,7 @@ class SKITFuture(nn.Module):
         dec_dim: int = 512,
         num_curr_classes: int = 7,
         num_future_classes: int = 8,
+        num_ant_queries: int = 18,
         max_anticip_time: int = 18,
         anticip_time: int = 60,
         pooling_dim: int = 64,
@@ -176,8 +177,10 @@ class SKITFuture(nn.Module):
         self.past_sampling_rate = past_sampling_rate
         self.max_anticip_time = max_anticip_time        # is in minutes
         self.anticip_time = anticip_time                # is in seconds
-        self.num_ant_queries = int(self.max_anticip_time * 60 / self.anticip_time)
 
+        # before: int(self.max_anticip_time * 60 / self.anticip_time) # in minutes
+        self.num_ant_queries = num_ant_queries
+        
         self.do_classification = do_classification
         self.do_regression = do_regression
         self.h = max_anticip_time
@@ -206,15 +209,9 @@ class SKITFuture(nn.Module):
         if self.input_tokens == "normal":
             self.frame_decoder = hydra.utils.instantiate(decoder, _recursive_=False)
         elif self.input_tokens == "class_conditioned":
-            num_classes = 7 + 1
-            root = "/nfs/home/mboels/projects/SuPRA/datasets"
-            path_class_probs = root + f"/{self.dataset}/naive2_{self.dataset}_class_probs_at{self.h}.json"
-            with open(path_class_probs, 'r') as f:
-                class_freq_pos = json.load(f)
-            class_freq_pos = {int(k): [{int(inner_k): inner_v for inner_k, inner_v in freq_dict.items()} for freq_dict in v] for k, v in class_freq_pos.items()}
             self.frame_decoder = hydra.utils.instantiate(decoder_cc,
                                                         num_classes=num_classes, 
-                                                        class_freq_positions=class_freq_pos, 
+                                                        # class_freq_positions=class_freq_pos, 
                                                         _recursive_=False)
 
         self.curr_frames_classifier = nn.Linear(d_model, num_curr_classes)
@@ -300,15 +297,18 @@ class SKITFuture(nn.Module):
         # Regression of future transitions 
         # (remaining time until occurrence of future states)
         if self.do_regression:
-            if self.future_time_compression=='max_time':
+            if self.num_ant_queries == 1:
+                # no need for compression
+                remaining_time_feats = next_action
+            elif self.future_time_compression=='max_time':
                 remaining_time_feats = torch.max(next_action, dim=1)[0] # (B, d_model)
             elif self.future_time_compression=='linear_transformation':
                 remaining_time_feats = self.linear_cls_to_regression(next_action.transpose(1, 2)).transpose(1, 2)
             else:
                 raise ValueError(f"Future compression method {self.future_time_compression} not implemented.")        
-            print(f"[SKIT-F] remaining_time_feats: {remaining_time_feats.shape}")
+            print(f"[SKIT-F] remaining_time_feats (regression): {remaining_time_feats.shape}")
             next_phase_occurrence = self.regression_head(remaining_time_feats)
-            print(f"[SKIT-F] next_phase_occurrence: {next_phase_occurrence.shape}")
+            print(f"[SKIT-F] remaining_time  (regression): {next_phase_occurrence.shape}")
             # convert probability to remaining time
             remaining_time = (1 - self.sigmoid(next_phase_occurrence)) * self.max_anticip_time
             outputs["remaining_time"] = remaining_time
@@ -318,7 +318,7 @@ class SKITFuture(nn.Module):
         if self.do_classification:
             next_frames_cls = self.future_action_classifier(next_action)
             outputs["future_frames"] = next_frames_cls
-            print(f"[SKIT-F] next_frames: {next_frames_cls.shape}")
+            print(f"[SKIT-F] next_frames (classification): {next_frames_cls.shape}")
 
         # end time tracking if inference mode
         if not train_mode:

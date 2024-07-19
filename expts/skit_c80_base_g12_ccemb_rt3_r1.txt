@@ -1,14 +1,25 @@
 test_only=false
 
+main_metric=wMAE
+
 model_name=skit
 ctx_pooling=global
 num_ctx_tokens=12
 max_seq_len=24
 
-best_acc_curr_future=0.25
+eval_horizons=[3]
+max_anticip_time=3
+num_ant_queries=1
+
+loss_w_curr=0.2
+loss_w_next=0.0
+loss_w_feats=0.0
+loss_w_remaining_time=0.8
+
+do_classification=false
+do_regression=true
 
 probs_to_regression_method=first_occurrence
-
 eos_weight=mean
 
 class_weight=frequency
@@ -17,8 +28,8 @@ input_tokens=class_conditioned
 dataset_name=cholec80
 pooling_dim=64
 train_start=1
-train_end=40
-test_start=41
+train_end=60
+test_start=61
 test_end=80
 
 informer.decoder=true
@@ -32,22 +43,12 @@ n_head=8
 fixed_ctx_length=true
 ctx_length=1440
 anticip_time=60
-max_anticip_time=18
 feature_loss=true
 
 eos_classification=true
 num_curr_classes=7
 num_next_classes=8
 eos_class=7
-
-loss_w_curr=0.4
-loss_w_next=0.4
-loss_w_feats=0.2
-
-
-
-
-
 
 
 
