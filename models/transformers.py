@@ -85,7 +85,7 @@ class ClassConditionedTransformerDecoder(nn.Module):
         super(ClassConditionedTransformerDecoder, self).__init__()
 
         dataset = cfg.dataset
-        h = num_queries
+        h = cfg.horizon
 
         self.do_classification = cfg.do_classification
         self.do_regression = cfg.do_regression
@@ -106,7 +106,7 @@ class ClassConditionedTransformerDecoder(nn.Module):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         if self.do_classification:
-            num_classes = num_classes + 1  # Add EOS class
+            # num_classes = num_classes + 1  # Add EOS class
             root = "/nfs/home/mboels/projects/SuPRA/datasets"
             path_class_probs = root + f"/{dataset}/naive2_{dataset}_class_probs_at{h}.json"
             with open(path_class_probs, 'r') as f:

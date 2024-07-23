@@ -1,7 +1,9 @@
-skit-c80-base-g12-ccemb-rt5-mt
-skit-c80-base-g12-ccemb-rt5-mt-6020
-skit-c80-base-g12-ccemb-rt5-r-6020
-skit-c80-base-g12-ccemb-rt2-mt-6020
-skit-c80-base-g12-ccemb-rt2-r-6020
-skit-c80-base-g12-ccemb-rt3-mt-6020
-skit-c80-base-g12-ccemb-rt3-r-6020
+skit-c80-base-g12-cc-rt5-c5-6020
+skit-c80-base-g12-ccemb-rt18-r1
+skit-c80-base-g12-ccemb-rt18-r1-6020
+skit-c80-base-g12-ccemb-rt2-r1
+skit-c80-base-g12-ccemb-rt2-r1-6020
+skit-c80-base-g12-ccemb-rt3-r1
+skit-c80-base-g12-ccemb-rt3-r1-6020
+skit-c80-base-g12-ccemb-rt5-r1
+skit-c80-base-g12-ccemb-rt5-r1-6020

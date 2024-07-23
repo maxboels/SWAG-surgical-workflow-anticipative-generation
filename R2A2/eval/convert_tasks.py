@@ -37,7 +37,7 @@ def classification2regression(video_anticipation_probs, horizon_minutes=18):
     time_array = np.linspace(0, horizon_minutes, horizon_steps)
     
     for t in range(video_length):
-        probs = video_anticipation_probs[t].numpy()
+        probs = video_anticipation_probs[t]
         
         # Find the current most probable class
         current_class = np.argmax(probs[0])

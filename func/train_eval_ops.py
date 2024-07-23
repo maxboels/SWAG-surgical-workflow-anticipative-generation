@@ -22,7 +22,7 @@ import numpy as np
 from R2A2.eval.eval_metrics import accuracy_n_pred
 from R2A2.eval.plot_segments.plot_values import store_append_h5, store_training_videos_max
 from R2A2.train.losses.ce_mse_consistency import CEConsistencyMSE
-
+from R2A2.train.losses.remaining_time_loss import RemainingTimeLoss
 
 class NoLossAccuracy(nn.Module):
     def __init__(self, *args, **kwargs):
@@ -34,7 +34,8 @@ class NoLossAccuracy(nn.Module):
 
 class BasicLossAccuracy(nn.Module):
     def __init__(self, dataset, device,
-                 loss_w_curr=0.5, loss_w_next=0.5, loss_w_feats=0.0, loss_w_remaining_time=0.5,
+                rtd_loss_fn="smooth_l1", # remaining_time_weighted
+                loss_w_curr=0.5, loss_w_next=0.5, loss_w_feats=0.0, loss_w_remaining_time=0.5,
     ):
 
         super().__init__()
@@ -75,7 +76,13 @@ class BasicLossAccuracy(nn.Module):
         # Loss functions
         self.ce_loss_fn_curr    = nn.CrossEntropyLoss(weight=curr_class_weights, reduction='none', ignore_index=-1)
 
-        self.l1_smooth_loss_fn = nn.SmoothL1Loss(reduction='none')
+        if rtd_loss_fn == "smooth_l1":
+            self.rtd_loss_fn = nn.SmoothL1Loss(reduction='none')
+        elif rtd_loss_fn == "remaining_time_weighted":
+            # add class weights to the loss function since there are more Out of horizon values than in horizon
+            self.rtd_loss_fn = RemainingTimeLoss()
+        else:
+            raise ValueError(f"Unknown remaining time loss function: {rtd_loss_fn}")
 
 
         if hasattr(dataset, "sampler_with_position"):
@@ -127,7 +134,7 @@ class BasicLossAccuracy(nn.Module):
                 print(f"[LOSS] {key}_acc: {accuracies[key + '_acc']}")
             
             elif key == "remaining_time":
-                losses[key + '_loss'] = self.l1_smooth_loss_fn(outputs[key], targets[key]).mean() * self.loss_w_remaining_time
+                losses[key + '_loss'] = self.rtd_loss_fn(outputs[key], targets[key]).mean() * self.loss_w_remaining_time
                 print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
 
             else:

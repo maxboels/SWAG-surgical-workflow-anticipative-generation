@@ -50,6 +50,8 @@ naive2: false
 do_classification: true
 do_regression: true
 
+rtd_loss_fn: remaining_time_weighted # cross_entropy / mse
+
 ctx_pooling: global
 num_ctx_tokens: 20
 max_seq_len: 24
@@ -112,6 +114,7 @@ train_eval_op:
     _target_: func.train_eval_ops.Basic
     cls_loss_acc_fn:
       _target_: func.train_eval_ops.BasicLossAccuracy
+      rtd_loss_fn: ${rtd_loss_fn}
       loss_w_curr: ${loss_w_curr}
       loss_w_next: ${loss_w_next}
       loss_w_feats: ${loss_w_feats}
@@ -327,6 +330,9 @@ model:
       cfg:
         dataset: ${dataset_name}
         horizon: ${max_anticip_time}
+        num_classes: ${num_future_classes}
+        do_classification: ${do_classification}
+        do_regression: ${do_regression}
       num_queries: ${num_ant_queries}
       input_dim: ${informer.d_model}
       hidden_dim: ${n_embd}

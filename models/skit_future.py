@@ -210,8 +210,7 @@ class SKITFuture(nn.Module):
             self.frame_decoder = hydra.utils.instantiate(decoder, _recursive_=False)
         elif self.input_tokens == "class_conditioned":
             self.frame_decoder = hydra.utils.instantiate(decoder_cc,
-                                                        num_classes=num_classes, 
-                                                        # class_freq_positions=class_freq_pos, 
+                                                        num_classes=num_future_classes, 
                                                         _recursive_=False)
 
         self.curr_frames_classifier = nn.Linear(d_model, num_curr_classes)

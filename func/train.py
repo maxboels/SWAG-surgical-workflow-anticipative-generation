@@ -591,7 +591,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
     all_videos_results["f1_weighted"]           = np.round(np.nanmean(all_vids_f1), decimals=4).tolist()
 
 
-    if epoch % plot_video_freq == 0 or all_videos_results[main_metric] > best_score:
+    if epoch % plot_video_freq == 0 or all_videos_results[main_metric] < best_score:
         # PLOT AND SAVE VIDEO DATA if best
         for video_id in video_ids:
 
@@ -661,7 +661,8 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                         gif_fps=40,
                         use_scatter=True)
     
-    if all_videos_results[main_metric] > best_score:
+    # if wMAE then we should update if lower not higher like for accuracy
+    if all_videos_results[main_metric] < best_score:
         best_epoch = epoch
         logger.info(f"[TESTING] Best epoch: {best_epoch} | "
                     f"Best best_score: {best_score}")
@@ -1129,8 +1130,8 @@ def main(cfg):
             json.dump([acc_vs_params], f)
             f.write(',\n')
         
-        # Store the best model
-        if all_videos_results[main_metric] >= best_score:
+        # Store the best model MINIMIZING the main_metric
+        if all_videos_results[main_metric] <= best_score:
             store_checkpoint(f'checkpoint_best.pth', model, optimizer, lr_scheduler, epoch + 1)
             best_score = all_videos_results[main_metric]
         if isinstance(lr_scheduler.base_scheduler, scheduler.ReduceLROnPlateau):
