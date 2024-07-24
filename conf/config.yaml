@@ -50,7 +50,7 @@ naive2: false
 do_classification: true
 do_regression: true
 
-rtd_loss_fn: remaining_time_weighted # cross_entropy / mse
+base_rtd_loss: l1 # l1 / l2 / smooth_l1
 rtd_weight_type: exponential # linear / exponential / inverse
 
 ctx_pooling: global
@@ -115,7 +115,7 @@ train_eval_op:
     _target_: func.train_eval_ops.Basic
     cls_loss_acc_fn:
       _target_: func.train_eval_ops.BasicLossAccuracy
-      rtd_loss_fn: ${rtd_loss_fn}
+      base_rtd_loss: ${base_rtd_loss}
       weight_type: ${rtd_weight_type}
       loss_w_curr: ${loss_w_curr}
       loss_w_next: ${loss_w_next}

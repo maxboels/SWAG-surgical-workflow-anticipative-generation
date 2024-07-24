@@ -34,7 +34,7 @@ class NoLossAccuracy(nn.Module):
 
 class BasicLossAccuracy(nn.Module):
     def __init__(self, dataset, device,
-                rtd_loss_fn="smooth_l1", # remaining_time_weighted
+                base_rtd_loss="smooth_l1", # l1, l2, remaining_time_weighted
                 weight_type='exponential',
                 time_horizon=5,
                 loss_w_curr=0.5, loss_w_next=0.5, loss_w_feats=0.0, loss_w_remaining_time=0.5,
@@ -78,14 +78,10 @@ class BasicLossAccuracy(nn.Module):
         # Loss functions
         self.ce_loss_fn_curr    = nn.CrossEntropyLoss(weight=curr_class_weights, reduction='none', ignore_index=-1)
 
-        if rtd_loss_fn == "smooth_l1":
-            self.rtd_loss_fn = nn.SmoothL1Loss(reduction='none')
-        elif rtd_loss_fn == "remaining_time_weighted":
-            self.rtd_loss_fn = RemainingTimeLoss(h=time_horizon, 
-                                                 use_smooth_l1=False, 
-                                                 weight_type=weight_type)
-        else:
-            raise ValueError(f"Unknown remaining time loss function: {rtd_loss_fn}")
+        self.rtd_loss_fn = RemainingTimeLoss(h=time_horizon, 
+                                            base_rtd_loss=base_rtd_loss, 
+                                            weight_type=weight_type,
+                                            normalize_weights=False)
 
 
         if hasattr(dataset, "sampler_with_position"):
