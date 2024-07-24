@@ -1,0 +1,2187 @@
+[2024-07-24 15:20:34,233][func.train][INFO] - Dist info:
+[2024-07-24 15:20:34,234][func.train][INFO] - torch version: 2.2.2+cu121
+[2024-07-24 15:20:34,235][func.train][INFO] - torchvision version: 0.17.2+cu121
+[2024-07-24 15:20:34,235][func.train][INFO] - hydra version: 1.3.2
+[2024-07-24 15:20:34,240][func.train][INFO] - [MAIN] eval horizons for regression: [3]
+[2024-07-24 15:20:34,240][func.train][INFO] - Loading data
+[2024-07-24 15:20:34,240][func.train][INFO] - Loading datasets
+[2024-07-24 15:20:37,318][func.train][INFO] - [SELECT DATASET] ALL loaded dataframe in 0m 3s
+[2024-07-24 15:20:37,318][func.train][INFO] - [SELECT DATASET] ALL loaded dataframe: (4612530, 11)
+[2024-07-24 15:20:37,565][func.train][INFO] - [SELECT DATASET] labels are already starting from 0
+[2024-07-24 15:20:37,989][func.train][INFO] - [SELECT DATASET] ALL unique classes: [0 1 2 3 4 5 6]
+[2024-07-24 15:20:38,011][func.train][INFO] - [SELECT DATASET] aLL dataframe (head):                    image_path class  ... tool_Irrigator tool_SpecimenBag
+0  video01/video01_000001.png     0  ...              0                0
+1  video01/video01_000002.png     0  ...              0                0
+2  video01/video01_000003.png     0  ...              0                0
+3  video01/video01_000004.png     0  ...              0                0
+4  video01/video01_000005.png     0  ...              0                0
+
+[5 rows x 11 columns]
+[2024-07-24 15:20:38,024][func.train][INFO] - [SELECT DATASET] ALL dataframe (tail):                          image_path class  ... tool_Irrigator tool_SpecimenBag
+4612525  video80/video80_043097.png     6  ...              0                0
+4612526  video80/video80_043098.png     6  ...              0                0
+4612527  video80/video80_043099.png     6  ...              0                0
+4612528  video80/video80_043100.png     6  ...              0                0
+4612529  video80/video80_043101.png     6  ...              0                0
+
+[5 rows x 11 columns]
+[2024-07-24 15:20:38,025][func.train][INFO] - [DATASET] params: {'debug': False, 'dataset_name': 'cholec80', 'reduc_feats_folder': 'train_targets_x_mp/', 'num_classes': 7, 'num_next_labels': 6, 'last_seg_class': 7, 'predict_next_phase': True, 'get_target_feats': False, 'replace_current_with_next_class': False}
+[2024-07-24 15:20:39,958][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:20:39,959][func.train][INFO] - [DATASET] split: train video_indices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
+[2024-07-24 15:20:42,645][func.train][INFO] - [DATASET] train size: 3421885
+[2024-07-24 15:20:42,646][func.train][INFO] - [DATASET] train video_indices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
+[2024-07-24 15:20:42,646][func.train][INFO] - [DATASET] video_idx: 1
+[2024-07-24 15:20:42,790][func.train][INFO] - [DATASET] Sampled video_idx: 1 at 25 fps to 1733 frames
+[2024-07-24 15:20:42,814][func.train][INFO] - [DATASET] video 1 phase_labels: torch.Size([1733])
+[2024-07-24 15:20:43,287][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1733, 8])
+[2024-07-24 15:20:43,288][func.train][INFO] - 
+
+[2024-07-24 15:20:43,288][func.train][INFO] - [DATASET] video_idx: 2
+[2024-07-24 15:20:43,446][func.train][INFO] - [DATASET] Sampled video_idx: 2 at 25 fps to 2839 frames
+[2024-07-24 15:20:43,447][func.train][INFO] - [DATASET] video 2 phase_labels: torch.Size([2839])
+[2024-07-24 15:20:43,529][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2839, 8])
+[2024-07-24 15:20:43,530][func.train][INFO] - 
+
+[2024-07-24 15:20:43,530][func.train][INFO] - [DATASET] video_idx: 3
+[2024-07-24 15:20:43,692][func.train][INFO] - [DATASET] Sampled video_idx: 3 at 25 fps to 5828 frames
+[2024-07-24 15:20:43,694][func.train][INFO] - [DATASET] video 3 phase_labels: torch.Size([5828])
+[2024-07-24 15:20:43,818][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([5828, 8])
+[2024-07-24 15:20:43,818][func.train][INFO] - 
+
+[2024-07-24 15:20:43,819][func.train][INFO] - [DATASET] video_idx: 4
+[2024-07-24 15:20:43,960][func.train][INFO] - [DATASET] Sampled video_idx: 4 at 25 fps to 1522 frames
+[2024-07-24 15:20:43,961][func.train][INFO] - [DATASET] video 4 phase_labels: torch.Size([1522])
+[2024-07-24 15:20:44,023][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1522, 8])
+[2024-07-24 15:20:44,024][func.train][INFO] - 
+
+[2024-07-24 15:20:44,024][func.train][INFO] - [DATASET] video_idx: 5
+[2024-07-24 15:20:44,174][func.train][INFO] - [DATASET] Sampled video_idx: 5 at 25 fps to 2344 frames
+[2024-07-24 15:20:44,175][func.train][INFO] - [DATASET] video 5 phase_labels: torch.Size([2344])
+[2024-07-24 15:20:44,240][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2344, 8])
+[2024-07-24 15:20:44,241][func.train][INFO] - 
+
+[2024-07-24 15:20:44,241][func.train][INFO] - [DATASET] video_idx: 6
+[2024-07-24 15:20:44,384][func.train][INFO] - [DATASET] Sampled video_idx: 6 at 25 fps to 2153 frames
+[2024-07-24 15:20:44,385][func.train][INFO] - [DATASET] video 6 phase_labels: torch.Size([2153])
+[2024-07-24 15:20:44,452][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2153, 8])
+[2024-07-24 15:20:44,453][func.train][INFO] - 
+
+[2024-07-24 15:20:44,453][func.train][INFO] - [DATASET] video_idx: 7
+[2024-07-24 15:20:44,601][func.train][INFO] - [DATASET] Sampled video_idx: 7 at 25 fps to 4557 frames
+[2024-07-24 15:20:44,602][func.train][INFO] - [DATASET] video 7 phase_labels: torch.Size([4557])
+[2024-07-24 15:20:44,710][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([4557, 8])
+[2024-07-24 15:20:44,710][func.train][INFO] - 
+
+[2024-07-24 15:20:44,711][func.train][INFO] - [DATASET] video_idx: 8
+[2024-07-24 15:20:44,854][func.train][INFO] - [DATASET] Sampled video_idx: 8 at 25 fps to 1519 frames
+[2024-07-24 15:20:44,855][func.train][INFO] - [DATASET] video 8 phase_labels: torch.Size([1519])
+[2024-07-24 15:20:44,908][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1519, 8])
+[2024-07-24 15:20:44,909][func.train][INFO] - 
+
+[2024-07-24 15:20:44,909][func.train][INFO] - [DATASET] video_idx: 9
+[2024-07-24 15:20:45,053][func.train][INFO] - [DATASET] Sampled video_idx: 9 at 25 fps to 2702 frames
+[2024-07-24 15:20:45,054][func.train][INFO] - [DATASET] video 9 phase_labels: torch.Size([2702])
+[2024-07-24 15:20:45,124][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2702, 8])
+[2024-07-24 15:20:45,124][func.train][INFO] - 
+
+[2024-07-24 15:20:45,124][func.train][INFO] - [DATASET] video_idx: 10
+[2024-07-24 15:20:45,264][func.train][INFO] - [DATASET] Sampled video_idx: 10 at 25 fps to 1749 frames
+[2024-07-24 15:20:45,264][func.train][INFO] - [DATASET] video 10 phase_labels: torch.Size([1749])
+[2024-07-24 15:20:45,322][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1749, 8])
+[2024-07-24 15:20:45,322][func.train][INFO] - 
+
+[2024-07-24 15:20:45,322][func.train][INFO] - [DATASET] video_idx: 11
+[2024-07-24 15:20:45,474][func.train][INFO] - [DATASET] Sampled video_idx: 11 at 25 fps to 3220 frames
+[2024-07-24 15:20:45,475][func.train][INFO] - [DATASET] video 11 phase_labels: torch.Size([3220])
+[2024-07-24 15:20:45,555][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3220, 8])
+[2024-07-24 15:20:45,556][func.train][INFO] - 
+
+[2024-07-24 15:20:45,556][func.train][INFO] - [DATASET] video_idx: 12
+[2024-07-24 15:20:45,698][func.train][INFO] - [DATASET] Sampled video_idx: 12 at 25 fps to 1090 frames
+[2024-07-24 15:20:45,698][func.train][INFO] - [DATASET] video 12 phase_labels: torch.Size([1090])
+[2024-07-24 15:20:45,749][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1090, 8])
+[2024-07-24 15:20:45,749][func.train][INFO] - 
+
+[2024-07-24 15:20:45,749][func.train][INFO] - [DATASET] video_idx: 13
+[2024-07-24 15:20:45,889][func.train][INFO] - [DATASET] Sampled video_idx: 13 at 25 fps to 981 frames
+[2024-07-24 15:20:45,890][func.train][INFO] - [DATASET] video 13 phase_labels: torch.Size([981])
+[2024-07-24 15:20:45,932][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([981, 8])
+[2024-07-24 15:20:45,932][func.train][INFO] - 
+
+[2024-07-24 15:20:45,932][func.train][INFO] - [DATASET] video_idx: 14
+[2024-07-24 15:20:46,071][func.train][INFO] - [DATASET] Sampled video_idx: 14 at 25 fps to 1708 frames
+[2024-07-24 15:20:46,072][func.train][INFO] - [DATASET] video 14 phase_labels: torch.Size([1708])
+[2024-07-24 15:20:46,125][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1708, 8])
+[2024-07-24 15:20:46,126][func.train][INFO] - 
+
+[2024-07-24 15:20:46,126][func.train][INFO] - [DATASET] video_idx: 15
+[2024-07-24 15:20:46,274][func.train][INFO] - [DATASET] Sampled video_idx: 15 at 25 fps to 2058 frames
+[2024-07-24 15:20:46,275][func.train][INFO] - [DATASET] video 15 phase_labels: torch.Size([2058])
+[2024-07-24 15:20:46,339][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2058, 8])
+[2024-07-24 15:20:46,340][func.train][INFO] - 
+
+[2024-07-24 15:20:46,340][func.train][INFO] - [DATASET] video_idx: 16
+[2024-07-24 15:20:46,491][func.train][INFO] - [DATASET] Sampled video_idx: 16 at 25 fps to 2957 frames
+[2024-07-24 15:20:46,492][func.train][INFO] - [DATASET] video 16 phase_labels: torch.Size([2957])
+[2024-07-24 15:20:46,566][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2957, 8])
+[2024-07-24 15:20:46,566][func.train][INFO] - 
+
+[2024-07-24 15:20:46,567][func.train][INFO] - [DATASET] video_idx: 17
+[2024-07-24 15:20:46,708][func.train][INFO] - [DATASET] Sampled video_idx: 17 at 25 fps to 1304 frames
+[2024-07-24 15:20:46,708][func.train][INFO] - [DATASET] video 17 phase_labels: torch.Size([1304])
+[2024-07-24 15:20:46,760][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1304, 8])
+[2024-07-24 15:20:46,761][func.train][INFO] - 
+
+[2024-07-24 15:20:46,761][func.train][INFO] - [DATASET] video_idx: 18
+[2024-07-24 15:20:46,901][func.train][INFO] - [DATASET] Sampled video_idx: 18 at 25 fps to 1942 frames
+[2024-07-24 15:20:46,902][func.train][INFO] - [DATASET] video 18 phase_labels: torch.Size([1942])
+[2024-07-24 15:20:47,011][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1942, 8])
+[2024-07-24 15:20:47,011][func.train][INFO] - 
+
+[2024-07-24 15:20:47,011][func.train][INFO] - [DATASET] video_idx: 19
+[2024-07-24 15:20:47,304][func.train][INFO] - [DATASET] Sampled video_idx: 19 at 25 fps to 2424 frames
+[2024-07-24 15:20:47,306][func.train][INFO] - [DATASET] video 19 phase_labels: torch.Size([2424])
+[2024-07-24 15:20:47,454][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2424, 8])
+[2024-07-24 15:20:47,456][func.train][INFO] - 
+
+[2024-07-24 15:20:47,456][func.train][INFO] - [DATASET] video_idx: 20
+[2024-07-24 15:20:47,771][func.train][INFO] - [DATASET] Sampled video_idx: 20 at 25 fps to 1449 frames
+[2024-07-24 15:20:47,773][func.train][INFO] - [DATASET] video 20 phase_labels: torch.Size([1449])
+[2024-07-24 15:20:47,881][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1449, 8])
+[2024-07-24 15:20:47,881][func.train][INFO] - 
+
+[2024-07-24 15:20:47,882][func.train][INFO] - [DATASET] video_idx: 21
+[2024-07-24 15:20:48,190][func.train][INFO] - [DATASET] Sampled video_idx: 21 at 25 fps to 1258 frames
+[2024-07-24 15:20:48,191][func.train][INFO] - [DATASET] video 21 phase_labels: torch.Size([1258])
+[2024-07-24 15:20:48,282][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1258, 8])
+[2024-07-24 15:20:48,284][func.train][INFO] - 
+
+[2024-07-24 15:20:48,284][func.train][INFO] - [DATASET] video_idx: 22
+[2024-07-24 15:20:48,595][func.train][INFO] - [DATASET] Sampled video_idx: 22 at 25 fps to 1532 frames
+[2024-07-24 15:20:48,596][func.train][INFO] - [DATASET] video 22 phase_labels: torch.Size([1532])
+[2024-07-24 15:20:48,697][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1532, 8])
+[2024-07-24 15:20:48,698][func.train][INFO] - 
+
+[2024-07-24 15:20:48,698][func.train][INFO] - [DATASET] video_idx: 23
+[2024-07-24 15:20:49,012][func.train][INFO] - [DATASET] Sampled video_idx: 23 at 25 fps to 1635 frames
+[2024-07-24 15:20:49,014][func.train][INFO] - [DATASET] video 23 phase_labels: torch.Size([1635])
+[2024-07-24 15:20:49,120][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1635, 8])
+[2024-07-24 15:20:49,121][func.train][INFO] - 
+
+[2024-07-24 15:20:49,122][func.train][INFO] - [DATASET] video_idx: 24
+[2024-07-24 15:20:49,434][func.train][INFO] - [DATASET] Sampled video_idx: 24 at 25 fps to 1975 frames
+[2024-07-24 15:20:49,436][func.train][INFO] - [DATASET] video 24 phase_labels: torch.Size([1975])
+[2024-07-24 15:20:49,553][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1975, 8])
+[2024-07-24 15:20:49,553][func.train][INFO] - 
+
+[2024-07-24 15:20:49,553][func.train][INFO] - [DATASET] video_idx: 25
+[2024-07-24 15:20:49,881][func.train][INFO] - [DATASET] Sampled video_idx: 25 at 25 fps to 2129 frames
+[2024-07-24 15:20:49,883][func.train][INFO] - [DATASET] video 25 phase_labels: torch.Size([2129])
+[2024-07-24 15:20:50,006][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2129, 8])
+[2024-07-24 15:20:50,007][func.train][INFO] - 
+
+[2024-07-24 15:20:50,007][func.train][INFO] - [DATASET] video_idx: 26
+[2024-07-24 15:20:50,315][func.train][INFO] - [DATASET] Sampled video_idx: 26 at 25 fps to 1773 frames
+[2024-07-24 15:20:50,318][func.train][INFO] - [DATASET] video 26 phase_labels: torch.Size([1773])
+[2024-07-24 15:20:50,433][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1773, 8])
+[2024-07-24 15:20:50,434][func.train][INFO] - 
+
+[2024-07-24 15:20:50,434][func.train][INFO] - [DATASET] video_idx: 27
+[2024-07-24 15:20:50,754][func.train][INFO] - [DATASET] Sampled video_idx: 27 at 25 fps to 2084 frames
+[2024-07-24 15:20:50,756][func.train][INFO] - [DATASET] video 27 phase_labels: torch.Size([2084])
+[2024-07-24 15:20:50,908][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2084, 8])
+[2024-07-24 15:20:50,909][func.train][INFO] - 
+
+[2024-07-24 15:20:50,910][func.train][INFO] - [DATASET] video_idx: 28
+[2024-07-24 15:20:51,215][func.train][INFO] - [DATASET] Sampled video_idx: 28 at 25 fps to 1199 frames
+[2024-07-24 15:20:51,218][func.train][INFO] - [DATASET] video 28 phase_labels: torch.Size([1199])
+[2024-07-24 15:20:51,345][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1199, 8])
+[2024-07-24 15:20:51,347][func.train][INFO] - 
+
+[2024-07-24 15:20:51,347][func.train][INFO] - [DATASET] video_idx: 29
+[2024-07-24 15:20:51,659][func.train][INFO] - [DATASET] Sampled video_idx: 29 at 25 fps to 2350 frames
+[2024-07-24 15:20:51,662][func.train][INFO] - [DATASET] video 29 phase_labels: torch.Size([2350])
+[2024-07-24 15:20:51,806][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2350, 8])
+[2024-07-24 15:20:51,807][func.train][INFO] - 
+
+[2024-07-24 15:20:51,807][func.train][INFO] - [DATASET] video_idx: 30
+[2024-07-24 15:20:52,174][func.train][INFO] - [DATASET] Sampled video_idx: 30 at 25 fps to 2925 frames
+[2024-07-24 15:20:52,179][func.train][INFO] - [DATASET] video 30 phase_labels: torch.Size([2925])
+[2024-07-24 15:20:52,334][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2925, 8])
+[2024-07-24 15:20:52,335][func.train][INFO] - 
+
+[2024-07-24 15:20:52,335][func.train][INFO] - [DATASET] video_idx: 31
+[2024-07-24 15:20:52,673][func.train][INFO] - [DATASET] Sampled video_idx: 31 at 25 fps to 3945 frames
+[2024-07-24 15:20:52,677][func.train][INFO] - [DATASET] video 31 phase_labels: torch.Size([3945])
+[2024-07-24 15:20:52,875][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3945, 8])
+[2024-07-24 15:20:52,876][func.train][INFO] - 
+
+[2024-07-24 15:20:52,876][func.train][INFO] - [DATASET] video_idx: 32
+[2024-07-24 15:20:53,202][func.train][INFO] - [DATASET] Sampled video_idx: 32 at 25 fps to 2116 frames
+[2024-07-24 15:20:53,205][func.train][INFO] - [DATASET] video 32 phase_labels: torch.Size([2116])
+[2024-07-24 15:20:53,357][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2116, 8])
+[2024-07-24 15:20:53,358][func.train][INFO] - 
+
+[2024-07-24 15:20:53,359][func.train][INFO] - [DATASET] video_idx: 33
+[2024-07-24 15:20:53,680][func.train][INFO] - [DATASET] Sampled video_idx: 33 at 25 fps to 1307 frames
+[2024-07-24 15:20:53,682][func.train][INFO] - [DATASET] video 33 phase_labels: torch.Size([1307])
+[2024-07-24 15:20:53,789][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1307, 8])
+[2024-07-24 15:20:53,791][func.train][INFO] - 
+
+[2024-07-24 15:20:53,791][func.train][INFO] - [DATASET] video_idx: 34
+[2024-07-24 15:20:54,118][func.train][INFO] - [DATASET] Sampled video_idx: 34 at 25 fps to 1323 frames
+[2024-07-24 15:20:54,121][func.train][INFO] - [DATASET] video 34 phase_labels: torch.Size([1323])
+[2024-07-24 15:20:54,232][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1323, 8])
+[2024-07-24 15:20:54,233][func.train][INFO] - 
+
+[2024-07-24 15:20:54,234][func.train][INFO] - [DATASET] video_idx: 35
+[2024-07-24 15:20:54,566][func.train][INFO] - [DATASET] Sampled video_idx: 35 at 25 fps to 2106 frames
+[2024-07-24 15:20:54,569][func.train][INFO] - [DATASET] video 35 phase_labels: torch.Size([2106])
+[2024-07-24 15:20:54,711][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2106, 8])
+[2024-07-24 15:20:54,712][func.train][INFO] - 
+
+[2024-07-24 15:20:54,712][func.train][INFO] - [DATASET] video_idx: 36
+[2024-07-24 15:20:55,066][func.train][INFO] - [DATASET] Sampled video_idx: 36 at 25 fps to 2387 frames
+[2024-07-24 15:20:55,070][func.train][INFO] - [DATASET] video 36 phase_labels: torch.Size([2387])
+[2024-07-24 15:20:55,288][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2387, 8])
+[2024-07-24 15:20:55,289][func.train][INFO] - 
+
+[2024-07-24 15:20:55,289][func.train][INFO] - [DATASET] video_idx: 37
+[2024-07-24 15:20:55,616][func.train][INFO] - [DATASET] Sampled video_idx: 37 at 25 fps to 1232 frames
+[2024-07-24 15:20:55,620][func.train][INFO] - [DATASET] video 37 phase_labels: torch.Size([1232])
+[2024-07-24 15:20:55,763][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1232, 8])
+[2024-07-24 15:20:55,764][func.train][INFO] - 
+
+[2024-07-24 15:20:55,764][func.train][INFO] - [DATASET] video_idx: 38
+[2024-07-24 15:20:56,100][func.train][INFO] - [DATASET] Sampled video_idx: 38 at 25 fps to 3080 frames
+[2024-07-24 15:20:56,103][func.train][INFO] - [DATASET] video 38 phase_labels: torch.Size([3080])
+[2024-07-24 15:20:56,266][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3080, 8])
+[2024-07-24 15:20:56,267][func.train][INFO] - 
+
+[2024-07-24 15:20:56,267][func.train][INFO] - [DATASET] video_idx: 39
+[2024-07-24 15:20:56,480][func.train][INFO] - [DATASET] Sampled video_idx: 39 at 25 fps to 1647 frames
+[2024-07-24 15:20:56,481][func.train][INFO] - [DATASET] video 39 phase_labels: torch.Size([1647])
+[2024-07-24 15:20:56,548][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1647, 8])
+[2024-07-24 15:20:56,548][func.train][INFO] - 
+
+[2024-07-24 15:20:56,548][func.train][INFO] - [DATASET] video_idx: 40
+[2024-07-24 15:20:56,716][func.train][INFO] - [DATASET] Sampled video_idx: 40 at 25 fps to 2222 frames
+[2024-07-24 15:20:56,717][func.train][INFO] - [DATASET] video 40 phase_labels: torch.Size([2222])
+[2024-07-24 15:20:56,794][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2222, 8])
+[2024-07-24 15:20:56,794][func.train][INFO] - 
+
+[2024-07-24 15:20:56,794][func.train][INFO] - [DATASET] video_idx: 41
+[2024-07-24 15:20:56,962][func.train][INFO] - [DATASET] Sampled video_idx: 41 at 25 fps to 3103 frames
+[2024-07-24 15:20:56,963][func.train][INFO] - [DATASET] video 41 phase_labels: torch.Size([3103])
+[2024-07-24 15:20:57,051][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3103, 8])
+[2024-07-24 15:20:57,051][func.train][INFO] - 
+
+[2024-07-24 15:20:57,051][func.train][INFO] - [DATASET] video_idx: 42
+[2024-07-24 15:20:57,233][func.train][INFO] - [DATASET] Sampled video_idx: 42 at 25 fps to 3712 frames
+[2024-07-24 15:20:57,235][func.train][INFO] - [DATASET] video 42 phase_labels: torch.Size([3712])
+[2024-07-24 15:20:57,333][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3712, 8])
+[2024-07-24 15:20:57,334][func.train][INFO] - 
+
+[2024-07-24 15:20:57,334][func.train][INFO] - [DATASET] video_idx: 43
+[2024-07-24 15:20:57,505][func.train][INFO] - [DATASET] Sampled video_idx: 43 at 25 fps to 2362 frames
+[2024-07-24 15:20:57,506][func.train][INFO] - [DATASET] video 43 phase_labels: torch.Size([2362])
+[2024-07-24 15:20:57,578][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2362, 8])
+[2024-07-24 15:20:57,579][func.train][INFO] - 
+
+[2024-07-24 15:20:57,579][func.train][INFO] - [DATASET] video_idx: 44
+[2024-07-24 15:20:57,749][func.train][INFO] - [DATASET] Sampled video_idx: 44 at 25 fps to 3127 frames
+[2024-07-24 15:20:57,751][func.train][INFO] - [DATASET] video 44 phase_labels: torch.Size([3127])
+[2024-07-24 15:20:57,839][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3127, 8])
+[2024-07-24 15:20:57,840][func.train][INFO] - 
+
+[2024-07-24 15:20:57,840][func.train][INFO] - [DATASET] video_idx: 45
+[2024-07-24 15:20:58,011][func.train][INFO] - [DATASET] Sampled video_idx: 45 at 25 fps to 3387 frames
+[2024-07-24 15:20:58,012][func.train][INFO] - [DATASET] video 45 phase_labels: torch.Size([3387])
+[2024-07-24 15:20:58,102][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3387, 8])
+[2024-07-24 15:20:58,102][func.train][INFO] - 
+
+[2024-07-24 15:20:58,102][func.train][INFO] - [DATASET] video_idx: 46
+[2024-07-24 15:20:58,263][func.train][INFO] - [DATASET] Sampled video_idx: 46 at 25 fps to 1653 frames
+[2024-07-24 15:20:58,264][func.train][INFO] - [DATASET] video 46 phase_labels: torch.Size([1653])
+[2024-07-24 15:20:58,328][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1653, 8])
+[2024-07-24 15:20:58,328][func.train][INFO] - 
+
+[2024-07-24 15:20:58,328][func.train][INFO] - [DATASET] video_idx: 47
+[2024-07-24 15:20:58,493][func.train][INFO] - [DATASET] Sampled video_idx: 47 at 25 fps to 2259 frames
+[2024-07-24 15:20:58,494][func.train][INFO] - [DATASET] video 47 phase_labels: torch.Size([2259])
+[2024-07-24 15:20:58,564][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2259, 8])
+[2024-07-24 15:20:58,564][func.train][INFO] - 
+
+[2024-07-24 15:20:58,564][func.train][INFO] - [DATASET] video_idx: 48
+[2024-07-24 15:20:58,717][func.train][INFO] - [DATASET] Sampled video_idx: 48 at 25 fps to 1834 frames
+[2024-07-24 15:20:58,718][func.train][INFO] - [DATASET] video 48 phase_labels: torch.Size([1834])
+[2024-07-24 15:20:58,781][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1834, 8])
+[2024-07-24 15:20:58,782][func.train][INFO] - 
+
+[2024-07-24 15:20:58,782][func.train][INFO] - [DATASET] video_idx: 49
+[2024-07-24 15:20:58,924][func.train][INFO] - [DATASET] Sampled video_idx: 49 at 25 fps to 1671 frames
+[2024-07-24 15:20:58,924][func.train][INFO] - [DATASET] video 49 phase_labels: torch.Size([1671])
+[2024-07-24 15:20:58,981][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1671, 8])
+[2024-07-24 15:20:58,982][func.train][INFO] - 
+
+[2024-07-24 15:20:58,982][func.train][INFO] - [DATASET] video_idx: 50
+[2024-07-24 15:20:59,131][func.train][INFO] - [DATASET] Sampled video_idx: 50 at 25 fps to 1094 frames
+[2024-07-24 15:20:59,132][func.train][INFO] - [DATASET] video 50 phase_labels: torch.Size([1094])
+[2024-07-24 15:20:59,174][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1094, 8])
+[2024-07-24 15:20:59,174][func.train][INFO] - 
+
+[2024-07-24 15:20:59,175][func.train][INFO] - [DATASET] video_idx: 51
+[2024-07-24 15:20:59,330][func.train][INFO] - [DATASET] Sampled video_idx: 51 at 25 fps to 2944 frames
+[2024-07-24 15:20:59,330][func.train][INFO] - [DATASET] video 51 phase_labels: torch.Size([2944])
+[2024-07-24 15:20:59,410][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2944, 8])
+[2024-07-24 15:20:59,411][func.train][INFO] - 
+
+[2024-07-24 15:20:59,411][func.train][INFO] - [DATASET] video_idx: 52
+[2024-07-24 15:20:59,566][func.train][INFO] - [DATASET] Sampled video_idx: 52 at 25 fps to 1966 frames
+[2024-07-24 15:20:59,567][func.train][INFO] - [DATASET] video 52 phase_labels: torch.Size([1966])
+[2024-07-24 15:20:59,635][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1966, 8])
+[2024-07-24 15:20:59,636][func.train][INFO] - 
+
+[2024-07-24 15:20:59,636][func.train][INFO] - [DATASET] video_idx: 53
+[2024-07-24 15:20:59,806][func.train][INFO] - [DATASET] Sampled video_idx: 53 at 25 fps to 3283 frames
+[2024-07-24 15:20:59,807][func.train][INFO] - [DATASET] video 53 phase_labels: torch.Size([3283])
+[2024-07-24 15:20:59,900][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3283, 8])
+[2024-07-24 15:20:59,900][func.train][INFO] - 
+
+[2024-07-24 15:20:59,900][func.train][INFO] - [DATASET] video_idx: 54
+[2024-07-24 15:21:00,057][func.train][INFO] - [DATASET] Sampled video_idx: 54 at 25 fps to 3100 frames
+[2024-07-24 15:21:00,057][func.train][INFO] - [DATASET] video 54 phase_labels: torch.Size([3100])
+[2024-07-24 15:21:00,137][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3100, 8])
+[2024-07-24 15:21:00,137][func.train][INFO] - 
+
+[2024-07-24 15:21:00,137][func.train][INFO] - [DATASET] video_idx: 55
+[2024-07-24 15:21:00,281][func.train][INFO] - [DATASET] Sampled video_idx: 55 at 25 fps to 1037 frames
+[2024-07-24 15:21:00,282][func.train][INFO] - [DATASET] video 55 phase_labels: torch.Size([1037])
+[2024-07-24 15:21:00,328][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1037, 8])
+[2024-07-24 15:21:00,328][func.train][INFO] - 
+
+[2024-07-24 15:21:00,328][func.train][INFO] - [DATASET] video_idx: 56
+[2024-07-24 15:21:00,485][func.train][INFO] - [DATASET] Sampled video_idx: 56 at 25 fps to 1834 frames
+[2024-07-24 15:21:00,486][func.train][INFO] - [DATASET] video 56 phase_labels: torch.Size([1834])
+[2024-07-24 15:21:00,551][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1834, 8])
+[2024-07-24 15:21:00,551][func.train][INFO] - 
+
+[2024-07-24 15:21:00,551][func.train][INFO] - [DATASET] video_idx: 57
+[2024-07-24 15:21:00,713][func.train][INFO] - [DATASET] Sampled video_idx: 57 at 25 fps to 2632 frames
+[2024-07-24 15:21:00,714][func.train][INFO] - [DATASET] video 57 phase_labels: torch.Size([2632])
+[2024-07-24 15:21:00,793][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2632, 8])
+[2024-07-24 15:21:00,793][func.train][INFO] - 
+
+[2024-07-24 15:21:00,794][func.train][INFO] - [DATASET] video_idx: 58
+[2024-07-24 15:21:00,982][func.train][INFO] - [DATASET] Sampled video_idx: 58 at 25 fps to 5993 frames
+[2024-07-24 15:21:00,983][func.train][INFO] - [DATASET] video 58 phase_labels: torch.Size([5993])
+[2024-07-24 15:21:01,108][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([5993, 8])
+[2024-07-24 15:21:01,109][func.train][INFO] - 
+
+[2024-07-24 15:21:01,109][func.train][INFO] - [DATASET] video_idx: 59
+[2024-07-24 15:21:01,250][func.train][INFO] - [DATASET] Sampled video_idx: 59 at 25 fps to 1046 frames
+[2024-07-24 15:21:01,250][func.train][INFO] - [DATASET] video 59 phase_labels: torch.Size([1046])
+[2024-07-24 15:21:01,301][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1046, 8])
+[2024-07-24 15:21:01,301][func.train][INFO] - 
+
+[2024-07-24 15:21:01,301][func.train][INFO] - [DATASET] video_idx: 60
+[2024-07-24 15:21:01,458][func.train][INFO] - [DATASET] Sampled video_idx: 60 at 25 fps to 2532 frames
+[2024-07-24 15:21:01,459][func.train][INFO] - [DATASET] video 60 phase_labels: torch.Size([2532])
+[2024-07-24 15:21:01,540][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2532, 8])
+[2024-07-24 15:21:01,541][func.train][INFO] - 
+
+[2024-07-24 15:21:01,541][func.train][INFO] - [DATASET] number of train videos: 60
+[2024-07-24 15:21:01,542][func.train][INFO] - [DATASET] avg video length: 38.02 minutes
+[2024-07-24 15:21:01,560][func.train][INFO] - [DATASET] num classes at 1fps in train: (136873,)
+[2024-07-24 15:21:01,562][func.train][INFO] - [DATASET] classes_counts_dict: {0: 6410, 1: 57370, 2: 11129, 3: 39289, 4: 5529, 5: 12039, 6: 5107}
+[2024-07-24 15:21:01,564][func.train][INFO] - [DATASET] curr_class_weights: tensor([3.0504, 0.3408, 1.7570, 0.4977, 3.5365, 1.6242, 3.8287])
+[2024-07-24 15:21:01,565][func.train][INFO] - [DATASET] num_eos_vals: 19553.285714285714
+[2024-07-24 15:21:01,565][func.train][INFO] - [DATASET] classes_counts_dict: {0: 6410, 1: 57370, 2: 11129, 3: 39289, 4: 5529, 5: 12039, 6: 5107, 7: 19553}
+[2024-07-24 15:21:01,566][func.train][INFO] - [DATASET] next_class_weights: tensor([3.0504, 0.3408, 1.7570, 0.4977, 3.5365, 1.6242, 3.8287, 1.0000])
+[2024-07-24 15:21:03,502][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:21:03,502][func.train][INFO] - [DATASET] split: test video_indices: [61]
+[2024-07-24 15:21:03,616][func.train][INFO] - [DATASET] test size: 110226
+[2024-07-24 15:21:03,617][func.train][INFO] - [DATASET] test video_indices: [61]
+[2024-07-24 15:21:03,617][func.train][INFO] - [DATASET] video_idx: 61
+[2024-07-24 15:21:03,647][func.train][INFO] - [DATASET] Sampled video_idx: 61 at 25 fps to 4409 frames
+[2024-07-24 15:21:03,648][func.train][INFO] - [DATASET] video 61 phase_labels: torch.Size([4409])
+[2024-07-24 15:21:03,756][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([4409, 8])
+[2024-07-24 15:21:03,757][func.train][INFO] - 
+
+[2024-07-24 15:21:03,757][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:21:03,757][func.train][INFO] - [DATASET] avg video length: 73.48 minutes
+[2024-07-24 15:21:05,507][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:21:05,507][func.train][INFO] - [DATASET] split: test video_indices: [62]
+[2024-07-24 15:21:05,595][func.train][INFO] - [DATASET] test size: 50801
+[2024-07-24 15:21:05,596][func.train][INFO] - [DATASET] test video_indices: [62]
+[2024-07-24 15:21:05,596][func.train][INFO] - [DATASET] video_idx: 62
+[2024-07-24 15:21:05,609][func.train][INFO] - [DATASET] Sampled video_idx: 62 at 25 fps to 2032 frames
+[2024-07-24 15:21:05,610][func.train][INFO] - [DATASET] video 62 phase_labels: torch.Size([2032])
+[2024-07-24 15:21:05,672][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2032, 8])
+[2024-07-24 15:21:05,673][func.train][INFO] - 
+
+[2024-07-24 15:21:05,673][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:21:05,673][func.train][INFO] - [DATASET] avg video length: 33.87 minutes
+[2024-07-24 15:21:07,426][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:21:07,427][func.train][INFO] - [DATASET] split: test video_indices: [63]
+[2024-07-24 15:21:07,531][func.train][INFO] - [DATASET] test size: 85826
+[2024-07-24 15:21:07,531][func.train][INFO] - [DATASET] test video_indices: [63]
+[2024-07-24 15:21:07,532][func.train][INFO] - [DATASET] video_idx: 63
+[2024-07-24 15:21:07,551][func.train][INFO] - [DATASET] Sampled video_idx: 63 at 25 fps to 3433 frames
+[2024-07-24 15:21:07,552][func.train][INFO] - [DATASET] video 63 phase_labels: torch.Size([3433])
+[2024-07-24 15:21:07,640][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3433, 8])
+[2024-07-24 15:21:07,640][func.train][INFO] - 
+
+[2024-07-24 15:21:07,640][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:21:07,641][func.train][INFO] - [DATASET] avg video length: 57.22 minutes
+[2024-07-24 15:21:09,358][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:21:09,359][func.train][INFO] - [DATASET] split: test video_indices: [64]
+[2024-07-24 15:21:09,451][func.train][INFO] - [DATASET] test size: 59951
+[2024-07-24 15:21:09,452][func.train][INFO] - [DATASET] test video_indices: [64]
+[2024-07-24 15:21:09,452][func.train][INFO] - [DATASET] video_idx: 64
+[2024-07-24 15:21:09,468][func.train][INFO] - [DATASET] Sampled video_idx: 64 at 25 fps to 2398 frames
+[2024-07-24 15:21:09,469][func.train][INFO] - [DATASET] video 64 phase_labels: torch.Size([2398])
+[2024-07-24 15:21:09,543][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2398, 8])
+[2024-07-24 15:21:09,543][func.train][INFO] - 
+
+[2024-07-24 15:21:09,543][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:21:09,544][func.train][INFO] - [DATASET] avg video length: 39.97 minutes
+[2024-07-24 15:21:11,260][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:21:11,260][func.train][INFO] - [DATASET] split: test video_indices: [65]
+[2024-07-24 15:21:11,344][func.train][INFO] - [DATASET] test size: 46826
+[2024-07-24 15:21:11,344][func.train][INFO] - [DATASET] test video_indices: [65]
+[2024-07-24 15:21:11,344][func.train][INFO] - [DATASET] video_idx: 65
+[2024-07-24 15:21:11,355][func.train][INFO] - [DATASET] Sampled video_idx: 65 at 25 fps to 1873 frames
+[2024-07-24 15:21:11,356][func.train][INFO] - [DATASET] video 65 phase_labels: torch.Size([1873])
+[2024-07-24 15:21:11,416][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1873, 8])
+[2024-07-24 15:21:11,417][func.train][INFO] - 
+
+[2024-07-24 15:21:11,417][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:21:11,417][func.train][INFO] - [DATASET] avg video length: 31.22 minutes
+[2024-07-24 15:21:13,113][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:21:13,113][func.train][INFO] - [DATASET] split: test video_indices: [66]
+[2024-07-24 15:21:13,201][func.train][INFO] - [DATASET] test size: 45601
+[2024-07-24 15:21:13,201][func.train][INFO] - [DATASET] test video_indices: [66]
+[2024-07-24 15:21:13,201][func.train][INFO] - [DATASET] video_idx: 66
+[2024-07-24 15:21:13,213][func.train][INFO] - [DATASET] Sampled video_idx: 66 at 25 fps to 1824 frames
+[2024-07-24 15:21:13,214][func.train][INFO] - [DATASET] video 66 phase_labels: torch.Size([1824])
+[2024-07-24 15:21:13,275][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1824, 8])
+[2024-07-24 15:21:13,276][func.train][INFO] - 
+
+[2024-07-24 15:21:13,276][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:21:13,276][func.train][INFO] - [DATASET] avg video length: 30.40 minutes
+[2024-07-24 15:21:15,082][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:21:15,083][func.train][INFO] - [DATASET] split: test video_indices: [67]
+[2024-07-24 15:21:15,182][func.train][INFO] - [DATASET] test size: 58826
+[2024-07-24 15:21:15,183][func.train][INFO] - [DATASET] test video_indices: [67]
+[2024-07-24 15:21:15,183][func.train][INFO] - [DATASET] video_idx: 67
+[2024-07-24 15:21:15,199][func.train][INFO] - [DATASET] Sampled video_idx: 67 at 25 fps to 2353 frames
+[2024-07-24 15:21:15,200][func.train][INFO] - [DATASET] video 67 phase_labels: torch.Size([2353])
+[2024-07-24 15:21:15,284][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2353, 8])
+[2024-07-24 15:21:15,285][func.train][INFO] - 
+
+[2024-07-24 15:21:15,285][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:21:15,285][func.train][INFO] - [DATASET] avg video length: 39.22 minutes
+[2024-07-24 15:21:17,147][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:21:17,149][func.train][INFO] - [DATASET] split: test video_indices: [68]
+[2024-07-24 15:21:17,238][func.train][INFO] - [DATASET] test size: 49301
+[2024-07-24 15:21:17,239][func.train][INFO] - [DATASET] test video_indices: [68]
+[2024-07-24 15:21:17,239][func.train][INFO] - [DATASET] video_idx: 68
+[2024-07-24 15:21:17,251][func.train][INFO] - [DATASET] Sampled video_idx: 68 at 25 fps to 1972 frames
+[2024-07-24 15:21:17,252][func.train][INFO] - [DATASET] video 68 phase_labels: torch.Size([1972])
+[2024-07-24 15:21:17,361][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1972, 8])
+[2024-07-24 15:21:17,361][func.train][INFO] - 
+
+[2024-07-24 15:21:17,361][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:21:17,362][func.train][INFO] - [DATASET] avg video length: 32.87 minutes
+[2024-07-24 15:21:19,121][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:21:19,122][func.train][INFO] - [DATASET] split: test video_indices: [69]
+[2024-07-24 15:21:19,239][func.train][INFO] - [DATASET] test size: 114376
+[2024-07-24 15:21:19,240][func.train][INFO] - [DATASET] test video_indices: [69]
+[2024-07-24 15:21:19,240][func.train][INFO] - [DATASET] video_idx: 69
+[2024-07-24 15:21:19,264][func.train][INFO] - [DATASET] Sampled video_idx: 69 at 25 fps to 4575 frames
+[2024-07-24 15:21:19,265][func.train][INFO] - [DATASET] video 69 phase_labels: torch.Size([4575])
+[2024-07-24 15:21:19,416][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([4575, 8])
+[2024-07-24 15:21:19,416][func.train][INFO] - 
+
+[2024-07-24 15:21:19,416][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:21:19,416][func.train][INFO] - [DATASET] avg video length: 76.25 minutes
+[2024-07-24 15:21:21,245][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:21:21,245][func.train][INFO] - [DATASET] split: test video_indices: [70]
+[2024-07-24 15:21:21,324][func.train][INFO] - [DATASET] test size: 29851
+[2024-07-24 15:21:21,324][func.train][INFO] - [DATASET] test video_indices: [70]
+[2024-07-24 15:21:21,324][func.train][INFO] - [DATASET] video_idx: 70
+[2024-07-24 15:21:21,331][func.train][INFO] - [DATASET] Sampled video_idx: 70 at 25 fps to 1194 frames
+[2024-07-24 15:21:21,332][func.train][INFO] - [DATASET] video 70 phase_labels: torch.Size([1194])
+[2024-07-24 15:21:21,439][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1194, 8])
+[2024-07-24 15:21:21,439][func.train][INFO] - 
+
+[2024-07-24 15:21:21,440][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:21:21,440][func.train][INFO] - [DATASET] avg video length: 19.90 minutes
+[2024-07-24 15:21:23,144][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:21:23,144][func.train][INFO] - [DATASET] split: test video_indices: [71]
+[2024-07-24 15:21:23,238][func.train][INFO] - [DATASET] test size: 62876
+[2024-07-24 15:21:23,239][func.train][INFO] - [DATASET] test video_indices: [71]
+[2024-07-24 15:21:23,239][func.train][INFO] - [DATASET] video_idx: 71
+[2024-07-24 15:21:23,252][func.train][INFO] - [DATASET] Sampled video_idx: 71 at 25 fps to 2515 frames
+[2024-07-24 15:21:23,253][func.train][INFO] - [DATASET] video 71 phase_labels: torch.Size([2515])
+[2024-07-24 15:21:23,365][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2515, 8])
+[2024-07-24 15:21:23,365][func.train][INFO] - 
+
+[2024-07-24 15:21:23,366][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:21:23,366][func.train][INFO] - [DATASET] avg video length: 41.92 minutes
+[2024-07-24 15:21:25,067][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:21:25,068][func.train][INFO] - [DATASET] split: test video_indices: [72]
+[2024-07-24 15:21:25,156][func.train][INFO] - [DATASET] test size: 77651
+[2024-07-24 15:21:25,156][func.train][INFO] - [DATASET] test video_indices: [72]
+[2024-07-24 15:21:25,157][func.train][INFO] - [DATASET] video_idx: 72
+[2024-07-24 15:21:25,173][func.train][INFO] - [DATASET] Sampled video_idx: 72 at 25 fps to 3106 frames
+[2024-07-24 15:21:25,174][func.train][INFO] - [DATASET] video 72 phase_labels: torch.Size([3106])
+[2024-07-24 15:21:25,285][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3106, 8])
+[2024-07-24 15:21:25,285][func.train][INFO] - 
+
+[2024-07-24 15:21:25,285][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:21:25,285][func.train][INFO] - [DATASET] avg video length: 51.77 minutes
+[2024-07-24 15:21:27,031][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:21:27,032][func.train][INFO] - [DATASET] split: test video_indices: [73]
+[2024-07-24 15:21:27,105][func.train][INFO] - [DATASET] test size: 33901
+[2024-07-24 15:21:27,105][func.train][INFO] - [DATASET] test video_indices: [73]
+[2024-07-24 15:21:27,105][func.train][INFO] - [DATASET] video_idx: 73
+[2024-07-24 15:21:27,112][func.train][INFO] - [DATASET] Sampled video_idx: 73 at 25 fps to 1356 frames
+[2024-07-24 15:21:27,113][func.train][INFO] - [DATASET] video 73 phase_labels: torch.Size([1356])
+[2024-07-24 15:21:27,184][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1356, 8])
+[2024-07-24 15:21:27,185][func.train][INFO] - 
+
+[2024-07-24 15:21:27,185][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:21:27,185][func.train][INFO] - [DATASET] avg video length: 22.60 minutes
+[2024-07-24 15:21:28,900][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:21:28,900][func.train][INFO] - [DATASET] split: test video_indices: [74]
+[2024-07-24 15:21:28,981][func.train][INFO] - [DATASET] test size: 40851
+[2024-07-24 15:21:28,981][func.train][INFO] - [DATASET] test video_indices: [74]
+[2024-07-24 15:21:28,981][func.train][INFO] - [DATASET] video_idx: 74
+[2024-07-24 15:21:28,992][func.train][INFO] - [DATASET] Sampled video_idx: 74 at 25 fps to 1634 frames
+[2024-07-24 15:21:28,993][func.train][INFO] - [DATASET] video 74 phase_labels: torch.Size([1634])
+[2024-07-24 15:21:29,067][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1634, 8])
+[2024-07-24 15:21:29,067][func.train][INFO] - 
+
+[2024-07-24 15:21:29,067][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:21:29,067][func.train][INFO] - [DATASET] avg video length: 27.23 minutes
+[2024-07-24 15:21:30,771][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:21:30,772][func.train][INFO] - [DATASET] split: test video_indices: [75]
+[2024-07-24 15:21:30,868][func.train][INFO] - [DATASET] test size: 48076
+[2024-07-24 15:21:30,868][func.train][INFO] - [DATASET] test video_indices: [75]
+[2024-07-24 15:21:30,869][func.train][INFO] - [DATASET] video_idx: 75
+[2024-07-24 15:21:30,880][func.train][INFO] - [DATASET] Sampled video_idx: 75 at 25 fps to 1923 frames
+[2024-07-24 15:21:30,880][func.train][INFO] - [DATASET] video 75 phase_labels: torch.Size([1923])
+[2024-07-24 15:21:30,955][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1923, 8])
+[2024-07-24 15:21:30,956][func.train][INFO] - 
+
+[2024-07-24 15:21:30,956][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:21:30,956][func.train][INFO] - [DATASET] avg video length: 32.05 minutes
+[2024-07-24 15:21:32,646][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:21:32,646][func.train][INFO] - [DATASET] split: test video_indices: [76]
+[2024-07-24 15:21:32,735][func.train][INFO] - [DATASET] test size: 66226
+[2024-07-24 15:21:32,735][func.train][INFO] - [DATASET] test video_indices: [76]
+[2024-07-24 15:21:32,735][func.train][INFO] - [DATASET] video_idx: 76
+[2024-07-24 15:21:32,767][func.train][INFO] - [DATASET] Sampled video_idx: 76 at 25 fps to 2649 frames
+[2024-07-24 15:21:32,768][func.train][INFO] - [DATASET] video 76 phase_labels: torch.Size([2649])
+[2024-07-24 15:21:32,925][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2649, 8])
+[2024-07-24 15:21:32,925][func.train][INFO] - 
+
+[2024-07-24 15:21:32,926][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:21:32,926][func.train][INFO] - [DATASET] avg video length: 44.15 minutes
+[2024-07-24 15:21:34,697][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:21:34,697][func.train][INFO] - [DATASET] split: test video_indices: [77]
+[2024-07-24 15:21:34,792][func.train][INFO] - [DATASET] test size: 62551
+[2024-07-24 15:21:34,792][func.train][INFO] - [DATASET] test video_indices: [77]
+[2024-07-24 15:21:34,792][func.train][INFO] - [DATASET] video_idx: 77
+[2024-07-24 15:21:34,807][func.train][INFO] - [DATASET] Sampled video_idx: 77 at 25 fps to 2502 frames
+[2024-07-24 15:21:34,808][func.train][INFO] - [DATASET] video 77 phase_labels: torch.Size([2502])
+[2024-07-24 15:21:34,928][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2502, 8])
+[2024-07-24 15:21:34,928][func.train][INFO] - 
+
+[2024-07-24 15:21:34,928][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:21:34,928][func.train][INFO] - [DATASET] avg video length: 41.70 minutes
+[2024-07-24 15:21:36,662][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:21:36,662][func.train][INFO] - [DATASET] split: test video_indices: [78]
+[2024-07-24 15:21:36,739][func.train][INFO] - [DATASET] test size: 18476
+[2024-07-24 15:21:36,739][func.train][INFO] - [DATASET] test video_indices: [78]
+[2024-07-24 15:21:36,740][func.train][INFO] - [DATASET] video_idx: 78
+[2024-07-24 15:21:36,745][func.train][INFO] - [DATASET] Sampled video_idx: 78 at 25 fps to 739 frames
+[2024-07-24 15:21:36,745][func.train][INFO] - [DATASET] video 78 phase_labels: torch.Size([739])
+[2024-07-24 15:21:36,800][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([739, 8])
+[2024-07-24 15:21:36,801][func.train][INFO] - 
+
+[2024-07-24 15:21:36,801][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:21:36,801][func.train][INFO] - [DATASET] avg video length: 12.32 minutes
+[2024-07-24 15:21:38,575][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:21:38,576][func.train][INFO] - [DATASET] split: test video_indices: [79]
+[2024-07-24 15:21:38,677][func.train][INFO] - [DATASET] test size: 85351
+[2024-07-24 15:21:38,677][func.train][INFO] - [DATASET] test video_indices: [79]
+[2024-07-24 15:21:38,678][func.train][INFO] - [DATASET] video_idx: 79
+[2024-07-24 15:21:38,697][func.train][INFO] - [DATASET] Sampled video_idx: 79 at 25 fps to 3414 frames
+[2024-07-24 15:21:38,698][func.train][INFO] - [DATASET] video 79 phase_labels: torch.Size([3414])
+[2024-07-24 15:21:38,811][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3414, 8])
+[2024-07-24 15:21:38,811][func.train][INFO] - 
+
+[2024-07-24 15:21:38,812][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:21:38,812][func.train][INFO] - [DATASET] avg video length: 56.90 minutes
+[2024-07-24 15:21:40,631][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:21:40,632][func.train][INFO] - [DATASET] split: test video_indices: [80]
+[2024-07-24 15:21:40,714][func.train][INFO] - [DATASET] test size: 43101
+[2024-07-24 15:21:40,715][func.train][INFO] - [DATASET] test video_indices: [80]
+[2024-07-24 15:21:40,715][func.train][INFO] - [DATASET] video_idx: 80
+[2024-07-24 15:21:40,725][func.train][INFO] - [DATASET] Sampled video_idx: 80 at 25 fps to 1724 frames
+[2024-07-24 15:21:40,726][func.train][INFO] - [DATASET] video 80 phase_labels: torch.Size([1724])
+[2024-07-24 15:21:40,803][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1724, 8])
+[2024-07-24 15:21:40,803][func.train][INFO] - 
+
+[2024-07-24 15:21:40,804][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:21:40,804][func.train][INFO] - [DATASET] avg video length: 28.73 minutes
+[2024-07-24 15:21:40,806][func.train][INFO] - Time to load datasets: 1.11 min
+[2024-07-24 15:21:40,806][func.train][INFO] - Creating data loaders
+[2024-07-24 15:21:40,808][func.train][INFO] - Creating model with {'one': 7} classes
+[2024-07-24 15:21:41,544][func.train][INFO] - [MAIN] Number of tokens: 136873
+[2024-07-24 15:21:41,545][func.train][INFO] - [MAIN] Number of parameters: 22766816
+[2024-07-24 15:21:41,545][func.train][INFO] - [MAIN] Token-to-Parameter Ratio is ideally between [1:1 to 10:1]: 0.006012
+[2024-07-24 15:21:41,545][func.train][WARNING] - [MAIN] Data-to-Parameter-Ratio is outside the interval [1:1 to 10:1]
+[2024-07-24 15:21:41,547][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-07-24 15:21:41,547][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-07-24 15:21:41,558][func.train][INFO] - Wrapping model into DP
+[2024-07-24 15:21:41,721][func.train][INFO] - Start training
+[2024-07-24 15:21:41,726][func.train][INFO] - Storing checkpoints every 60.00 mins
+[2024-07-24 15:21:43,855][func.train][INFO] - [TRAINING] Step 0/2139 | Loss: 0.71 | Acc (curr_frames): 0.05 | time-left: 75.86 min
+[2024-07-24 15:23:11,694][func.train][INFO] - [TRAINING] Step 100/2139 | Loss: 0.93 | Acc (curr_frames): 0.10 | time-left: 30.26 min
+[2024-07-24 15:24:35,676][func.train][INFO] - [TRAINING] Step 200/2139 | Loss: 0.89 | Acc (curr_frames): 0.07 | time-left: 27.95 min
+[2024-07-24 15:25:59,286][func.train][INFO] - [TRAINING] Step 300/2139 | Loss: 1.21 | Acc (curr_frames): 0.08 | time-left: 26.21 min
+[2024-07-24 15:27:22,994][func.train][INFO] - [TRAINING] Step 400/2139 | Loss: 0.69 | Acc (curr_frames): 0.13 | time-left: 24.65 min
+[2024-07-24 15:28:45,974][func.train][INFO] - [TRAINING] Step 500/2139 | Loss: 0.80 | Acc (curr_frames): 0.15 | time-left: 23.12 min
+[2024-07-24 15:30:09,351][func.train][INFO] - [TRAINING] Step 600/2139 | Loss: 0.81 | Acc (curr_frames): 0.17 | time-left: 21.65 min
+[2024-07-24 15:31:36,339][func.train][INFO] - [TRAINING] Step 700/2139 | Loss: 0.86 | Acc (curr_frames): 0.19 | time-left: 20.33 min
+[2024-07-24 15:33:06,889][func.train][INFO] - [TRAINING] Step 800/2139 | Loss: 0.89 | Acc (curr_frames): 0.16 | time-left: 19.08 min
+[2024-07-24 15:34:34,128][func.train][INFO] - [TRAINING] Step 900/2139 | Loss: 0.78 | Acc (curr_frames): 0.12 | time-left: 17.69 min
+[2024-07-24 15:36:04,800][func.train][INFO] - [TRAINING] Step 1000/2139 | Loss: 0.72 | Acc (curr_frames): 0.17 | time-left: 16.35 min
+[2024-07-24 15:37:33,255][func.train][INFO] - [TRAINING] Step 1100/2139 | Loss: 0.80 | Acc (curr_frames): 0.21 | time-left: 14.95 min
+[2024-07-24 15:39:04,559][func.train][INFO] - [TRAINING] Step 1200/2139 | Loss: 0.83 | Acc (curr_frames): 0.18 | time-left: 13.57 min
+[2024-07-24 15:40:35,708][func.train][INFO] - [TRAINING] Step 1300/2139 | Loss: 0.85 | Acc (curr_frames): 0.25 | time-left: 12.17 min
+[2024-07-24 15:42:06,724][func.train][INFO] - [TRAINING] Step 1400/2139 | Loss: 0.74 | Acc (curr_frames): 0.12 | time-left: 10.75 min
+[2024-07-24 15:43:39,390][func.train][INFO] - [TRAINING] Step 1500/2139 | Loss: 0.77 | Acc (curr_frames): 0.23 | time-left: 9.33 min
+[2024-07-24 15:45:11,635][func.train][INFO] - [TRAINING] Step 1600/2139 | Loss: 0.88 | Acc (curr_frames): 0.23 | time-left: 7.90 min
+[2024-07-24 15:46:41,213][func.train][INFO] - [TRAINING] Step 1700/2139 | Loss: 0.98 | Acc (curr_frames): 0.30 | time-left: 6.44 min
+[2024-07-24 15:48:11,802][func.train][INFO] - [TRAINING] Step 1800/2139 | Loss: 0.96 | Acc (curr_frames): 0.28 | time-left: 4.97 min
+[2024-07-24 15:49:38,183][func.train][INFO] - [TRAINING] Step 1900/2139 | Loss: 0.84 | Acc (curr_frames): 0.32 | time-left: 3.50 min
+[2024-07-24 15:51:10,155][func.train][INFO] - [TRAINING] Step 2000/2139 | Loss: 0.95 | Acc (curr_frames): 0.26 | time-left: 2.03 min
+[2024-07-24 15:54:35,699][func.train][INFO] - Dist info:
+[2024-07-24 15:54:35,699][func.train][INFO] - torch version: 2.2.2+cu121
+[2024-07-24 15:54:35,699][func.train][INFO] - torchvision version: 0.17.2+cu121
+[2024-07-24 15:54:35,700][func.train][INFO] - hydra version: 1.3.2
+[2024-07-24 15:54:35,705][func.train][INFO] - [MAIN] eval horizons for regression: [3]
+[2024-07-24 15:54:35,705][func.train][INFO] - Loading data
+[2024-07-24 15:54:35,705][func.train][INFO] - Loading datasets
+[2024-07-24 15:54:37,481][func.train][INFO] - [SELECT DATASET] ALL loaded dataframe in 0m 2s
+[2024-07-24 15:54:37,481][func.train][INFO] - [SELECT DATASET] ALL loaded dataframe: (4612530, 11)
+[2024-07-24 15:54:37,686][func.train][INFO] - [SELECT DATASET] labels are already starting from 0
+[2024-07-24 15:54:38,017][func.train][INFO] - [SELECT DATASET] ALL unique classes: [0 1 2 3 4 5 6]
+[2024-07-24 15:54:38,028][func.train][INFO] - [SELECT DATASET] aLL dataframe (head):                    image_path class  ... tool_Irrigator tool_SpecimenBag
+0  video01/video01_000001.png     0  ...              0                0
+1  video01/video01_000002.png     0  ...              0                0
+2  video01/video01_000003.png     0  ...              0                0
+3  video01/video01_000004.png     0  ...              0                0
+4  video01/video01_000005.png     0  ...              0                0
+
+[5 rows x 11 columns]
+[2024-07-24 15:54:38,036][func.train][INFO] - [SELECT DATASET] ALL dataframe (tail):                          image_path class  ... tool_Irrigator tool_SpecimenBag
+4612525  video80/video80_043097.png     6  ...              0                0
+4612526  video80/video80_043098.png     6  ...              0                0
+4612527  video80/video80_043099.png     6  ...              0                0
+4612528  video80/video80_043100.png     6  ...              0                0
+4612529  video80/video80_043101.png     6  ...              0                0
+
+[5 rows x 11 columns]
+[2024-07-24 15:54:38,036][func.train][INFO] - [DATASET] params: {'debug': False, 'dataset_name': 'cholec80', 'reduc_feats_folder': 'train_targets_x_mp/', 'num_classes': 7, 'num_next_labels': 6, 'last_seg_class': 7, 'predict_next_phase': True, 'get_target_feats': False, 'replace_current_with_next_class': False}
+[2024-07-24 15:54:39,425][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:54:39,426][func.train][INFO] - [DATASET] split: train video_indices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
+[2024-07-24 15:54:40,945][func.train][INFO] - [DATASET] train size: 3421885
+[2024-07-24 15:54:40,945][func.train][INFO] - [DATASET] train video_indices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
+[2024-07-24 15:54:40,945][func.train][INFO] - [DATASET] video_idx: 1
+[2024-07-24 15:54:41,148][func.train][INFO] - [DATASET] Sampled video_idx: 1 at 25 fps to 1733 frames
+[2024-07-24 15:54:41,174][func.train][INFO] - [DATASET] video 1 phase_labels: torch.Size([1733])
+[2024-07-24 15:54:41,562][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1733, 8])
+[2024-07-24 15:54:41,562][func.train][INFO] - 
+
+[2024-07-24 15:54:41,562][func.train][INFO] - [DATASET] video_idx: 2
+[2024-07-24 15:54:41,765][func.train][INFO] - [DATASET] Sampled video_idx: 2 at 25 fps to 2839 frames
+[2024-07-24 15:54:41,766][func.train][INFO] - [DATASET] video 2 phase_labels: torch.Size([2839])
+[2024-07-24 15:54:41,833][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2839, 8])
+[2024-07-24 15:54:41,833][func.train][INFO] - 
+
+[2024-07-24 15:54:41,833][func.train][INFO] - [DATASET] video_idx: 3
+[2024-07-24 15:54:42,056][func.train][INFO] - [DATASET] Sampled video_idx: 3 at 25 fps to 5828 frames
+[2024-07-24 15:54:42,057][func.train][INFO] - [DATASET] video 3 phase_labels: torch.Size([5828])
+[2024-07-24 15:54:42,247][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([5828, 8])
+[2024-07-24 15:54:42,248][func.train][INFO] - 
+
+[2024-07-24 15:54:42,248][func.train][INFO] - [DATASET] video_idx: 4
+[2024-07-24 15:54:42,452][func.train][INFO] - [DATASET] Sampled video_idx: 4 at 25 fps to 1522 frames
+[2024-07-24 15:54:42,453][func.train][INFO] - [DATASET] video 4 phase_labels: torch.Size([1522])
+[2024-07-24 15:54:42,502][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1522, 8])
+[2024-07-24 15:54:42,502][func.train][INFO] - 
+
+[2024-07-24 15:54:42,502][func.train][INFO] - [DATASET] video_idx: 5
+[2024-07-24 15:54:42,718][func.train][INFO] - [DATASET] Sampled video_idx: 5 at 25 fps to 2344 frames
+[2024-07-24 15:54:42,719][func.train][INFO] - [DATASET] video 5 phase_labels: torch.Size([2344])
+[2024-07-24 15:54:42,777][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2344, 8])
+[2024-07-24 15:54:42,778][func.train][INFO] - 
+
+[2024-07-24 15:54:42,778][func.train][INFO] - [DATASET] video_idx: 6
+[2024-07-24 15:54:42,990][func.train][INFO] - [DATASET] Sampled video_idx: 6 at 25 fps to 2153 frames
+[2024-07-24 15:54:42,991][func.train][INFO] - [DATASET] video 6 phase_labels: torch.Size([2153])
+[2024-07-24 15:54:43,055][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2153, 8])
+[2024-07-24 15:54:43,055][func.train][INFO] - 
+
+[2024-07-24 15:54:43,055][func.train][INFO] - [DATASET] video_idx: 7
+[2024-07-24 15:54:43,273][func.train][INFO] - [DATASET] Sampled video_idx: 7 at 25 fps to 4557 frames
+[2024-07-24 15:54:43,274][func.train][INFO] - [DATASET] video 7 phase_labels: torch.Size([4557])
+[2024-07-24 15:54:43,408][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([4557, 8])
+[2024-07-24 15:54:43,408][func.train][INFO] - 
+
+[2024-07-24 15:54:43,409][func.train][INFO] - [DATASET] video_idx: 8
+[2024-07-24 15:54:43,612][func.train][INFO] - [DATASET] Sampled video_idx: 8 at 25 fps to 1519 frames
+[2024-07-24 15:54:43,613][func.train][INFO] - [DATASET] video 8 phase_labels: torch.Size([1519])
+[2024-07-24 15:54:43,660][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1519, 8])
+[2024-07-24 15:54:43,661][func.train][INFO] - 
+
+[2024-07-24 15:54:43,661][func.train][INFO] - [DATASET] video_idx: 9
+[2024-07-24 15:54:43,869][func.train][INFO] - [DATASET] Sampled video_idx: 9 at 25 fps to 2702 frames
+[2024-07-24 15:54:43,870][func.train][INFO] - [DATASET] video 9 phase_labels: torch.Size([2702])
+[2024-07-24 15:54:43,938][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2702, 8])
+[2024-07-24 15:54:43,938][func.train][INFO] - 
+
+[2024-07-24 15:54:43,938][func.train][INFO] - [DATASET] video_idx: 10
+[2024-07-24 15:54:44,147][func.train][INFO] - [DATASET] Sampled video_idx: 10 at 25 fps to 1749 frames
+[2024-07-24 15:54:44,147][func.train][INFO] - [DATASET] video 10 phase_labels: torch.Size([1749])
+[2024-07-24 15:54:44,195][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1749, 8])
+[2024-07-24 15:54:44,195][func.train][INFO] - 
+
+[2024-07-24 15:54:44,195][func.train][INFO] - [DATASET] video_idx: 11
+[2024-07-24 15:54:44,407][func.train][INFO] - [DATASET] Sampled video_idx: 11 at 25 fps to 3220 frames
+[2024-07-24 15:54:44,408][func.train][INFO] - [DATASET] video 11 phase_labels: torch.Size([3220])
+[2024-07-24 15:54:44,476][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3220, 8])
+[2024-07-24 15:54:44,477][func.train][INFO] - 
+
+[2024-07-24 15:54:44,477][func.train][INFO] - [DATASET] video_idx: 12
+[2024-07-24 15:54:44,682][func.train][INFO] - [DATASET] Sampled video_idx: 12 at 25 fps to 1090 frames
+[2024-07-24 15:54:44,683][func.train][INFO] - [DATASET] video 12 phase_labels: torch.Size([1090])
+[2024-07-24 15:54:44,729][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1090, 8])
+[2024-07-24 15:54:44,729][func.train][INFO] - 
+
+[2024-07-24 15:54:44,729][func.train][INFO] - [DATASET] video_idx: 13
+[2024-07-24 15:54:44,933][func.train][INFO] - [DATASET] Sampled video_idx: 13 at 25 fps to 981 frames
+[2024-07-24 15:54:44,933][func.train][INFO] - [DATASET] video 13 phase_labels: torch.Size([981])
+[2024-07-24 15:54:44,973][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([981, 8])
+[2024-07-24 15:54:44,973][func.train][INFO] - 
+
+[2024-07-24 15:54:44,974][func.train][INFO] - [DATASET] video_idx: 14
+[2024-07-24 15:54:45,178][func.train][INFO] - [DATASET] Sampled video_idx: 14 at 25 fps to 1708 frames
+[2024-07-24 15:54:45,178][func.train][INFO] - [DATASET] video 14 phase_labels: torch.Size([1708])
+[2024-07-24 15:54:45,227][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1708, 8])
+[2024-07-24 15:54:45,227][func.train][INFO] - 
+
+[2024-07-24 15:54:45,227][func.train][INFO] - [DATASET] video_idx: 15
+[2024-07-24 15:54:45,438][func.train][INFO] - [DATASET] Sampled video_idx: 15 at 25 fps to 2058 frames
+[2024-07-24 15:54:45,439][func.train][INFO] - [DATASET] video 15 phase_labels: torch.Size([2058])
+[2024-07-24 15:54:45,497][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2058, 8])
+[2024-07-24 15:54:45,497][func.train][INFO] - 
+
+[2024-07-24 15:54:45,497][func.train][INFO] - [DATASET] video_idx: 16
+[2024-07-24 15:54:45,707][func.train][INFO] - [DATASET] Sampled video_idx: 16 at 25 fps to 2957 frames
+[2024-07-24 15:54:45,708][func.train][INFO] - [DATASET] video 16 phase_labels: torch.Size([2957])
+[2024-07-24 15:54:45,772][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2957, 8])
+[2024-07-24 15:54:45,772][func.train][INFO] - 
+
+[2024-07-24 15:54:45,773][func.train][INFO] - [DATASET] video_idx: 17
+[2024-07-24 15:54:45,968][func.train][INFO] - [DATASET] Sampled video_idx: 17 at 25 fps to 1304 frames
+[2024-07-24 15:54:45,968][func.train][INFO] - [DATASET] video 17 phase_labels: torch.Size([1304])
+[2024-07-24 15:54:46,019][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1304, 8])
+[2024-07-24 15:54:46,019][func.train][INFO] - 
+
+[2024-07-24 15:54:46,019][func.train][INFO] - [DATASET] video_idx: 18
+[2024-07-24 15:54:46,226][func.train][INFO] - [DATASET] Sampled video_idx: 18 at 25 fps to 1942 frames
+[2024-07-24 15:54:46,227][func.train][INFO] - [DATASET] video 18 phase_labels: torch.Size([1942])
+[2024-07-24 15:54:46,281][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1942, 8])
+[2024-07-24 15:54:46,281][func.train][INFO] - 
+
+[2024-07-24 15:54:46,282][func.train][INFO] - [DATASET] video_idx: 19
+[2024-07-24 15:54:46,502][func.train][INFO] - [DATASET] Sampled video_idx: 19 at 25 fps to 2424 frames
+[2024-07-24 15:54:46,502][func.train][INFO] - [DATASET] video 19 phase_labels: torch.Size([2424])
+[2024-07-24 15:54:46,561][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2424, 8])
+[2024-07-24 15:54:46,561][func.train][INFO] - 
+
+[2024-07-24 15:54:46,561][func.train][INFO] - [DATASET] video_idx: 20
+[2024-07-24 15:54:46,764][func.train][INFO] - [DATASET] Sampled video_idx: 20 at 25 fps to 1449 frames
+[2024-07-24 15:54:46,764][func.train][INFO] - [DATASET] video 20 phase_labels: torch.Size([1449])
+[2024-07-24 15:54:46,812][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1449, 8])
+[2024-07-24 15:54:46,812][func.train][INFO] - 
+
+[2024-07-24 15:54:46,812][func.train][INFO] - [DATASET] video_idx: 21
+[2024-07-24 15:54:47,019][func.train][INFO] - [DATASET] Sampled video_idx: 21 at 25 fps to 1258 frames
+[2024-07-24 15:54:47,020][func.train][INFO] - [DATASET] video 21 phase_labels: torch.Size([1258])
+[2024-07-24 15:54:47,066][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1258, 8])
+[2024-07-24 15:54:47,066][func.train][INFO] - 
+
+[2024-07-24 15:54:47,066][func.train][INFO] - [DATASET] video_idx: 22
+[2024-07-24 15:54:47,272][func.train][INFO] - [DATASET] Sampled video_idx: 22 at 25 fps to 1532 frames
+[2024-07-24 15:54:47,272][func.train][INFO] - [DATASET] video 22 phase_labels: torch.Size([1532])
+[2024-07-24 15:54:47,320][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1532, 8])
+[2024-07-24 15:54:47,320][func.train][INFO] - 
+
+[2024-07-24 15:54:47,320][func.train][INFO] - [DATASET] video_idx: 23
+[2024-07-24 15:54:47,529][func.train][INFO] - [DATASET] Sampled video_idx: 23 at 25 fps to 1635 frames
+[2024-07-24 15:54:47,529][func.train][INFO] - [DATASET] video 23 phase_labels: torch.Size([1635])
+[2024-07-24 15:54:47,576][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1635, 8])
+[2024-07-24 15:54:47,576][func.train][INFO] - 
+
+[2024-07-24 15:54:47,576][func.train][INFO] - [DATASET] video_idx: 24
+[2024-07-24 15:54:47,779][func.train][INFO] - [DATASET] Sampled video_idx: 24 at 25 fps to 1975 frames
+[2024-07-24 15:54:47,779][func.train][INFO] - [DATASET] video 24 phase_labels: torch.Size([1975])
+[2024-07-24 15:54:47,835][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1975, 8])
+[2024-07-24 15:54:47,835][func.train][INFO] - 
+
+[2024-07-24 15:54:47,835][func.train][INFO] - [DATASET] video_idx: 25
+[2024-07-24 15:54:48,043][func.train][INFO] - [DATASET] Sampled video_idx: 25 at 25 fps to 2129 frames
+[2024-07-24 15:54:48,044][func.train][INFO] - [DATASET] video 25 phase_labels: torch.Size([2129])
+[2024-07-24 15:54:48,098][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2129, 8])
+[2024-07-24 15:54:48,098][func.train][INFO] - 
+
+[2024-07-24 15:54:48,099][func.train][INFO] - [DATASET] video_idx: 26
+[2024-07-24 15:54:48,314][func.train][INFO] - [DATASET] Sampled video_idx: 26 at 25 fps to 1773 frames
+[2024-07-24 15:54:48,315][func.train][INFO] - [DATASET] video 26 phase_labels: torch.Size([1773])
+[2024-07-24 15:54:48,367][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1773, 8])
+[2024-07-24 15:54:48,367][func.train][INFO] - 
+
+[2024-07-24 15:54:48,367][func.train][INFO] - [DATASET] video_idx: 27
+[2024-07-24 15:54:48,575][func.train][INFO] - [DATASET] Sampled video_idx: 27 at 25 fps to 2084 frames
+[2024-07-24 15:54:48,576][func.train][INFO] - [DATASET] video 27 phase_labels: torch.Size([2084])
+[2024-07-24 15:54:48,631][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2084, 8])
+[2024-07-24 15:54:48,631][func.train][INFO] - 
+
+[2024-07-24 15:54:48,631][func.train][INFO] - [DATASET] video_idx: 28
+[2024-07-24 15:54:48,837][func.train][INFO] - [DATASET] Sampled video_idx: 28 at 25 fps to 1199 frames
+[2024-07-24 15:54:48,838][func.train][INFO] - [DATASET] video 28 phase_labels: torch.Size([1199])
+[2024-07-24 15:54:48,880][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1199, 8])
+[2024-07-24 15:54:48,880][func.train][INFO] - 
+
+[2024-07-24 15:54:48,880][func.train][INFO] - [DATASET] video_idx: 29
+[2024-07-24 15:54:49,089][func.train][INFO] - [DATASET] Sampled video_idx: 29 at 25 fps to 2350 frames
+[2024-07-24 15:54:49,089][func.train][INFO] - [DATASET] video 29 phase_labels: torch.Size([2350])
+[2024-07-24 15:54:49,145][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2350, 8])
+[2024-07-24 15:54:49,145][func.train][INFO] - 
+
+[2024-07-24 15:54:49,145][func.train][INFO] - [DATASET] video_idx: 30
+[2024-07-24 15:54:49,357][func.train][INFO] - [DATASET] Sampled video_idx: 30 at 25 fps to 2925 frames
+[2024-07-24 15:54:49,358][func.train][INFO] - [DATASET] video 30 phase_labels: torch.Size([2925])
+[2024-07-24 15:54:49,424][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2925, 8])
+[2024-07-24 15:54:49,424][func.train][INFO] - 
+
+[2024-07-24 15:54:49,424][func.train][INFO] - [DATASET] video_idx: 31
+[2024-07-24 15:54:49,638][func.train][INFO] - [DATASET] Sampled video_idx: 31 at 25 fps to 3945 frames
+[2024-07-24 15:54:49,639][func.train][INFO] - [DATASET] video 31 phase_labels: torch.Size([3945])
+[2024-07-24 15:54:49,723][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3945, 8])
+[2024-07-24 15:54:49,724][func.train][INFO] - 
+
+[2024-07-24 15:54:49,724][func.train][INFO] - [DATASET] video_idx: 32
+[2024-07-24 15:54:49,936][func.train][INFO] - [DATASET] Sampled video_idx: 32 at 25 fps to 2116 frames
+[2024-07-24 15:54:49,937][func.train][INFO] - [DATASET] video 32 phase_labels: torch.Size([2116])
+[2024-07-24 15:54:49,991][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2116, 8])
+[2024-07-24 15:54:49,991][func.train][INFO] - 
+
+[2024-07-24 15:54:49,991][func.train][INFO] - [DATASET] video_idx: 33
+[2024-07-24 15:54:50,199][func.train][INFO] - [DATASET] Sampled video_idx: 33 at 25 fps to 1307 frames
+[2024-07-24 15:54:50,200][func.train][INFO] - [DATASET] video 33 phase_labels: torch.Size([1307])
+[2024-07-24 15:54:50,242][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1307, 8])
+[2024-07-24 15:54:50,242][func.train][INFO] - 
+
+[2024-07-24 15:54:50,242][func.train][INFO] - [DATASET] video_idx: 34
+[2024-07-24 15:54:50,450][func.train][INFO] - [DATASET] Sampled video_idx: 34 at 25 fps to 1323 frames
+[2024-07-24 15:54:50,451][func.train][INFO] - [DATASET] video 34 phase_labels: torch.Size([1323])
+[2024-07-24 15:54:50,494][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1323, 8])
+[2024-07-24 15:54:50,495][func.train][INFO] - 
+
+[2024-07-24 15:54:50,495][func.train][INFO] - [DATASET] video_idx: 35
+[2024-07-24 15:54:50,706][func.train][INFO] - [DATASET] Sampled video_idx: 35 at 25 fps to 2106 frames
+[2024-07-24 15:54:50,707][func.train][INFO] - [DATASET] video 35 phase_labels: torch.Size([2106])
+[2024-07-24 15:54:50,762][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2106, 8])
+[2024-07-24 15:54:50,762][func.train][INFO] - 
+
+[2024-07-24 15:54:50,762][func.train][INFO] - [DATASET] video_idx: 36
+[2024-07-24 15:54:50,972][func.train][INFO] - [DATASET] Sampled video_idx: 36 at 25 fps to 2387 frames
+[2024-07-24 15:54:50,973][func.train][INFO] - [DATASET] video 36 phase_labels: torch.Size([2387])
+[2024-07-24 15:54:51,034][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2387, 8])
+[2024-07-24 15:54:51,034][func.train][INFO] - 
+
+[2024-07-24 15:54:51,034][func.train][INFO] - [DATASET] video_idx: 37
+[2024-07-24 15:54:51,241][func.train][INFO] - [DATASET] Sampled video_idx: 37 at 25 fps to 1232 frames
+[2024-07-24 15:54:51,241][func.train][INFO] - [DATASET] video 37 phase_labels: torch.Size([1232])
+[2024-07-24 15:54:51,289][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1232, 8])
+[2024-07-24 15:54:51,289][func.train][INFO] - 
+
+[2024-07-24 15:54:51,289][func.train][INFO] - [DATASET] video_idx: 38
+[2024-07-24 15:54:51,503][func.train][INFO] - [DATASET] Sampled video_idx: 38 at 25 fps to 3080 frames
+[2024-07-24 15:54:51,504][func.train][INFO] - [DATASET] video 38 phase_labels: torch.Size([3080])
+[2024-07-24 15:54:51,571][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3080, 8])
+[2024-07-24 15:54:51,571][func.train][INFO] - 
+
+[2024-07-24 15:54:51,571][func.train][INFO] - [DATASET] video_idx: 39
+[2024-07-24 15:54:51,779][func.train][INFO] - [DATASET] Sampled video_idx: 39 at 25 fps to 1647 frames
+[2024-07-24 15:54:51,780][func.train][INFO] - [DATASET] video 39 phase_labels: torch.Size([1647])
+[2024-07-24 15:54:51,827][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1647, 8])
+[2024-07-24 15:54:51,828][func.train][INFO] - 
+
+[2024-07-24 15:54:51,828][func.train][INFO] - [DATASET] video_idx: 40
+[2024-07-24 15:54:52,035][func.train][INFO] - [DATASET] Sampled video_idx: 40 at 25 fps to 2222 frames
+[2024-07-24 15:54:52,036][func.train][INFO] - [DATASET] video 40 phase_labels: torch.Size([2222])
+[2024-07-24 15:54:52,095][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2222, 8])
+[2024-07-24 15:54:52,095][func.train][INFO] - 
+
+[2024-07-24 15:54:52,095][func.train][INFO] - [DATASET] video_idx: 41
+[2024-07-24 15:54:52,299][func.train][INFO] - [DATASET] Sampled video_idx: 41 at 25 fps to 3103 frames
+[2024-07-24 15:54:52,300][func.train][INFO] - [DATASET] video 41 phase_labels: torch.Size([3103])
+[2024-07-24 15:54:52,370][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3103, 8])
+[2024-07-24 15:54:52,370][func.train][INFO] - 
+
+[2024-07-24 15:54:52,370][func.train][INFO] - [DATASET] video_idx: 42
+[2024-07-24 15:54:52,580][func.train][INFO] - [DATASET] Sampled video_idx: 42 at 25 fps to 3712 frames
+[2024-07-24 15:54:52,581][func.train][INFO] - [DATASET] video 42 phase_labels: torch.Size([3712])
+[2024-07-24 15:54:52,660][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3712, 8])
+[2024-07-24 15:54:52,660][func.train][INFO] - 
+
+[2024-07-24 15:54:52,660][func.train][INFO] - [DATASET] video_idx: 43
+[2024-07-24 15:54:52,873][func.train][INFO] - [DATASET] Sampled video_idx: 43 at 25 fps to 2362 frames
+[2024-07-24 15:54:52,874][func.train][INFO] - [DATASET] video 43 phase_labels: torch.Size([2362])
+[2024-07-24 15:54:52,935][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2362, 8])
+[2024-07-24 15:54:52,935][func.train][INFO] - 
+
+[2024-07-24 15:54:52,935][func.train][INFO] - [DATASET] video_idx: 44
+[2024-07-24 15:54:53,144][func.train][INFO] - [DATASET] Sampled video_idx: 44 at 25 fps to 3127 frames
+[2024-07-24 15:54:53,145][func.train][INFO] - [DATASET] video 44 phase_labels: torch.Size([3127])
+[2024-07-24 15:54:53,215][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3127, 8])
+[2024-07-24 15:54:53,215][func.train][INFO] - 
+
+[2024-07-24 15:54:53,215][func.train][INFO] - [DATASET] video_idx: 45
+[2024-07-24 15:54:53,433][func.train][INFO] - [DATASET] Sampled video_idx: 45 at 25 fps to 3387 frames
+[2024-07-24 15:54:53,434][func.train][INFO] - [DATASET] video 45 phase_labels: torch.Size([3387])
+[2024-07-24 15:54:53,505][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3387, 8])
+[2024-07-24 15:54:53,506][func.train][INFO] - 
+
+[2024-07-24 15:54:53,506][func.train][INFO] - [DATASET] video_idx: 46
+[2024-07-24 15:54:53,714][func.train][INFO] - [DATASET] Sampled video_idx: 46 at 25 fps to 1653 frames
+[2024-07-24 15:54:53,715][func.train][INFO] - [DATASET] video 46 phase_labels: torch.Size([1653])
+[2024-07-24 15:54:53,765][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1653, 8])
+[2024-07-24 15:54:53,765][func.train][INFO] - 
+
+[2024-07-24 15:54:53,765][func.train][INFO] - [DATASET] video_idx: 47
+[2024-07-24 15:54:53,973][func.train][INFO] - [DATASET] Sampled video_idx: 47 at 25 fps to 2259 frames
+[2024-07-24 15:54:53,974][func.train][INFO] - [DATASET] video 47 phase_labels: torch.Size([2259])
+[2024-07-24 15:54:54,034][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2259, 8])
+[2024-07-24 15:54:54,034][func.train][INFO] - 
+
+[2024-07-24 15:54:54,034][func.train][INFO] - [DATASET] video_idx: 48
+[2024-07-24 15:54:54,241][func.train][INFO] - [DATASET] Sampled video_idx: 48 at 25 fps to 1834 frames
+[2024-07-24 15:54:54,242][func.train][INFO] - [DATASET] video 48 phase_labels: torch.Size([1834])
+[2024-07-24 15:54:54,294][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1834, 8])
+[2024-07-24 15:54:54,295][func.train][INFO] - 
+
+[2024-07-24 15:54:54,295][func.train][INFO] - [DATASET] video_idx: 49
+[2024-07-24 15:54:54,499][func.train][INFO] - [DATASET] Sampled video_idx: 49 at 25 fps to 1671 frames
+[2024-07-24 15:54:54,500][func.train][INFO] - [DATASET] video 49 phase_labels: torch.Size([1671])
+[2024-07-24 15:54:54,552][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1671, 8])
+[2024-07-24 15:54:54,553][func.train][INFO] - 
+
+[2024-07-24 15:54:54,553][func.train][INFO] - [DATASET] video_idx: 50
+[2024-07-24 15:54:54,756][func.train][INFO] - [DATASET] Sampled video_idx: 50 at 25 fps to 1094 frames
+[2024-07-24 15:54:54,756][func.train][INFO] - [DATASET] video 50 phase_labels: torch.Size([1094])
+[2024-07-24 15:54:54,793][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1094, 8])
+[2024-07-24 15:54:54,793][func.train][INFO] - 
+
+[2024-07-24 15:54:54,793][func.train][INFO] - [DATASET] video_idx: 51
+[2024-07-24 15:54:55,006][func.train][INFO] - [DATASET] Sampled video_idx: 51 at 25 fps to 2944 frames
+[2024-07-24 15:54:55,007][func.train][INFO] - [DATASET] video 51 phase_labels: torch.Size([2944])
+[2024-07-24 15:54:55,075][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2944, 8])
+[2024-07-24 15:54:55,075][func.train][INFO] - 
+
+[2024-07-24 15:54:55,075][func.train][INFO] - [DATASET] video_idx: 52
+[2024-07-24 15:54:55,285][func.train][INFO] - [DATASET] Sampled video_idx: 52 at 25 fps to 1966 frames
+[2024-07-24 15:54:55,285][func.train][INFO] - [DATASET] video 52 phase_labels: torch.Size([1966])
+[2024-07-24 15:54:55,339][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1966, 8])
+[2024-07-24 15:54:55,339][func.train][INFO] - 
+
+[2024-07-24 15:54:55,339][func.train][INFO] - [DATASET] video_idx: 53
+[2024-07-24 15:54:55,551][func.train][INFO] - [DATASET] Sampled video_idx: 53 at 25 fps to 3283 frames
+[2024-07-24 15:54:55,552][func.train][INFO] - [DATASET] video 53 phase_labels: torch.Size([3283])
+[2024-07-24 15:54:55,622][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3283, 8])
+[2024-07-24 15:54:55,623][func.train][INFO] - 
+
+[2024-07-24 15:54:55,623][func.train][INFO] - [DATASET] video_idx: 54
+[2024-07-24 15:54:55,836][func.train][INFO] - [DATASET] Sampled video_idx: 54 at 25 fps to 3100 frames
+[2024-07-24 15:54:55,837][func.train][INFO] - [DATASET] video 54 phase_labels: torch.Size([3100])
+[2024-07-24 15:54:55,906][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3100, 8])
+[2024-07-24 15:54:55,906][func.train][INFO] - 
+
+[2024-07-24 15:54:55,906][func.train][INFO] - [DATASET] video_idx: 55
+[2024-07-24 15:54:56,108][func.train][INFO] - [DATASET] Sampled video_idx: 55 at 25 fps to 1037 frames
+[2024-07-24 15:54:56,109][func.train][INFO] - [DATASET] video 55 phase_labels: torch.Size([1037])
+[2024-07-24 15:54:56,149][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1037, 8])
+[2024-07-24 15:54:56,149][func.train][INFO] - 
+
+[2024-07-24 15:54:56,149][func.train][INFO] - [DATASET] video_idx: 56
+[2024-07-24 15:54:56,346][func.train][INFO] - [DATASET] Sampled video_idx: 56 at 25 fps to 1834 frames
+[2024-07-24 15:54:56,347][func.train][INFO] - [DATASET] video 56 phase_labels: torch.Size([1834])
+[2024-07-24 15:54:56,399][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1834, 8])
+[2024-07-24 15:54:56,399][func.train][INFO] - 
+
+[2024-07-24 15:54:56,399][func.train][INFO] - [DATASET] video_idx: 57
+[2024-07-24 15:54:56,617][func.train][INFO] - [DATASET] Sampled video_idx: 57 at 25 fps to 2632 frames
+[2024-07-24 15:54:56,618][func.train][INFO] - [DATASET] video 57 phase_labels: torch.Size([2632])
+[2024-07-24 15:54:56,682][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2632, 8])
+[2024-07-24 15:54:56,682][func.train][INFO] - 
+
+[2024-07-24 15:54:56,682][func.train][INFO] - [DATASET] video_idx: 58
+[2024-07-24 15:54:56,902][func.train][INFO] - [DATASET] Sampled video_idx: 58 at 25 fps to 5993 frames
+[2024-07-24 15:54:56,904][func.train][INFO] - [DATASET] video 58 phase_labels: torch.Size([5993])
+[2024-07-24 15:54:57,056][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([5993, 8])
+[2024-07-24 15:54:57,056][func.train][INFO] - 
+
+[2024-07-24 15:54:57,056][func.train][INFO] - [DATASET] video_idx: 59
+[2024-07-24 15:54:57,252][func.train][INFO] - [DATASET] Sampled video_idx: 59 at 25 fps to 1046 frames
+[2024-07-24 15:54:57,253][func.train][INFO] - [DATASET] video 59 phase_labels: torch.Size([1046])
+[2024-07-24 15:54:57,293][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1046, 8])
+[2024-07-24 15:54:57,293][func.train][INFO] - 
+
+[2024-07-24 15:54:57,294][func.train][INFO] - [DATASET] video_idx: 60
+[2024-07-24 15:54:57,504][func.train][INFO] - [DATASET] Sampled video_idx: 60 at 25 fps to 2532 frames
+[2024-07-24 15:54:57,505][func.train][INFO] - [DATASET] video 60 phase_labels: torch.Size([2532])
+[2024-07-24 15:54:57,568][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2532, 8])
+[2024-07-24 15:54:57,569][func.train][INFO] - 
+
+[2024-07-24 15:54:57,569][func.train][INFO] - [DATASET] number of train videos: 60
+[2024-07-24 15:54:57,569][func.train][INFO] - [DATASET] avg video length: 38.02 minutes
+[2024-07-24 15:54:57,624][func.train][INFO] - [DATASET] num classes at 1fps in train: (136873,)
+[2024-07-24 15:54:57,626][func.train][INFO] - [DATASET] classes_counts_dict: {0: 6410, 1: 57370, 2: 11129, 3: 39289, 4: 5529, 5: 12039, 6: 5107}
+[2024-07-24 15:54:57,627][func.train][INFO] - [DATASET] curr_class_weights: tensor([3.0504, 0.3408, 1.7570, 0.4977, 3.5365, 1.6242, 3.8287])
+[2024-07-24 15:54:57,627][func.train][INFO] - [DATASET] num_eos_vals: 19553.285714285714
+[2024-07-24 15:54:57,627][func.train][INFO] - [DATASET] classes_counts_dict: {0: 6410, 1: 57370, 2: 11129, 3: 39289, 4: 5529, 5: 12039, 6: 5107, 7: 19553}
+[2024-07-24 15:54:57,628][func.train][INFO] - [DATASET] next_class_weights: tensor([3.0504, 0.3408, 1.7570, 0.4977, 3.5365, 1.6242, 3.8287, 1.0000])
+[2024-07-24 15:54:59,084][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:54:59,085][func.train][INFO] - [DATASET] split: test video_indices: [61]
+[2024-07-24 15:54:59,163][func.train][INFO] - [DATASET] test size: 110226
+[2024-07-24 15:54:59,164][func.train][INFO] - [DATASET] test video_indices: [61]
+[2024-07-24 15:54:59,164][func.train][INFO] - [DATASET] video_idx: 61
+[2024-07-24 15:54:59,184][func.train][INFO] - [DATASET] Sampled video_idx: 61 at 25 fps to 4409 frames
+[2024-07-24 15:54:59,185][func.train][INFO] - [DATASET] video 61 phase_labels: torch.Size([4409])
+[2024-07-24 15:54:59,319][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([4409, 8])
+[2024-07-24 15:54:59,320][func.train][INFO] - 
+
+[2024-07-24 15:54:59,320][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:54:59,320][func.train][INFO] - [DATASET] avg video length: 73.48 minutes
+[2024-07-24 15:55:00,739][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:55:00,739][func.train][INFO] - [DATASET] split: test video_indices: [62]
+[2024-07-24 15:55:00,801][func.train][INFO] - [DATASET] test size: 50801
+[2024-07-24 15:55:00,802][func.train][INFO] - [DATASET] test video_indices: [62]
+[2024-07-24 15:55:00,802][func.train][INFO] - [DATASET] video_idx: 62
+[2024-07-24 15:55:00,812][func.train][INFO] - [DATASET] Sampled video_idx: 62 at 25 fps to 2032 frames
+[2024-07-24 15:55:00,812][func.train][INFO] - [DATASET] video 62 phase_labels: torch.Size([2032])
+[2024-07-24 15:55:00,865][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2032, 8])
+[2024-07-24 15:55:00,865][func.train][INFO] - 
+
+[2024-07-24 15:55:00,865][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:55:00,866][func.train][INFO] - [DATASET] avg video length: 33.87 minutes
+[2024-07-24 15:55:02,308][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:55:02,308][func.train][INFO] - [DATASET] split: test video_indices: [63]
+[2024-07-24 15:55:02,383][func.train][INFO] - [DATASET] test size: 85826
+[2024-07-24 15:55:02,383][func.train][INFO] - [DATASET] test video_indices: [63]
+[2024-07-24 15:55:02,383][func.train][INFO] - [DATASET] video_idx: 63
+[2024-07-24 15:55:02,405][func.train][INFO] - [DATASET] Sampled video_idx: 63 at 25 fps to 3433 frames
+[2024-07-24 15:55:02,406][func.train][INFO] - [DATASET] video 63 phase_labels: torch.Size([3433])
+[2024-07-24 15:55:02,480][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3433, 8])
+[2024-07-24 15:55:02,480][func.train][INFO] - 
+
+[2024-07-24 15:55:02,480][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:55:02,480][func.train][INFO] - [DATASET] avg video length: 57.22 minutes
+[2024-07-24 15:55:03,953][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:55:03,953][func.train][INFO] - [DATASET] split: test video_indices: [64]
+[2024-07-24 15:55:04,017][func.train][INFO] - [DATASET] test size: 59951
+[2024-07-24 15:55:04,017][func.train][INFO] - [DATASET] test video_indices: [64]
+[2024-07-24 15:55:04,017][func.train][INFO] - [DATASET] video_idx: 64
+[2024-07-24 15:55:04,028][func.train][INFO] - [DATASET] Sampled video_idx: 64 at 25 fps to 2398 frames
+[2024-07-24 15:55:04,029][func.train][INFO] - [DATASET] video 64 phase_labels: torch.Size([2398])
+[2024-07-24 15:55:04,086][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2398, 8])
+[2024-07-24 15:55:04,087][func.train][INFO] - 
+
+[2024-07-24 15:55:04,087][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:55:04,087][func.train][INFO] - [DATASET] avg video length: 39.97 minutes
+[2024-07-24 15:55:05,558][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:55:05,558][func.train][INFO] - [DATASET] split: test video_indices: [65]
+[2024-07-24 15:55:05,620][func.train][INFO] - [DATASET] test size: 46826
+[2024-07-24 15:55:05,621][func.train][INFO] - [DATASET] test video_indices: [65]
+[2024-07-24 15:55:05,621][func.train][INFO] - [DATASET] video_idx: 65
+[2024-07-24 15:55:05,629][func.train][INFO] - [DATASET] Sampled video_idx: 65 at 25 fps to 1873 frames
+[2024-07-24 15:55:05,629][func.train][INFO] - [DATASET] video 65 phase_labels: torch.Size([1873])
+[2024-07-24 15:55:05,681][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1873, 8])
+[2024-07-24 15:55:05,681][func.train][INFO] - 
+
+[2024-07-24 15:55:05,681][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:55:05,681][func.train][INFO] - [DATASET] avg video length: 31.22 minutes
+[2024-07-24 15:55:07,098][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:55:07,098][func.train][INFO] - [DATASET] split: test video_indices: [66]
+[2024-07-24 15:55:07,167][func.train][INFO] - [DATASET] test size: 45601
+[2024-07-24 15:55:07,167][func.train][INFO] - [DATASET] test video_indices: [66]
+[2024-07-24 15:55:07,167][func.train][INFO] - [DATASET] video_idx: 66
+[2024-07-24 15:55:07,175][func.train][INFO] - [DATASET] Sampled video_idx: 66 at 25 fps to 1824 frames
+[2024-07-24 15:55:07,176][func.train][INFO] - [DATASET] video 66 phase_labels: torch.Size([1824])
+[2024-07-24 15:55:07,226][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1824, 8])
+[2024-07-24 15:55:07,226][func.train][INFO] - 
+
+[2024-07-24 15:55:07,226][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:55:07,226][func.train][INFO] - [DATASET] avg video length: 30.40 minutes
+[2024-07-24 15:55:08,628][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:55:08,628][func.train][INFO] - [DATASET] split: test video_indices: [67]
+[2024-07-24 15:55:08,693][func.train][INFO] - [DATASET] test size: 58826
+[2024-07-24 15:55:08,694][func.train][INFO] - [DATASET] test video_indices: [67]
+[2024-07-24 15:55:08,694][func.train][INFO] - [DATASET] video_idx: 67
+[2024-07-24 15:55:08,704][func.train][INFO] - [DATASET] Sampled video_idx: 67 at 25 fps to 2353 frames
+[2024-07-24 15:55:08,705][func.train][INFO] - [DATASET] video 67 phase_labels: torch.Size([2353])
+[2024-07-24 15:55:08,767][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2353, 8])
+[2024-07-24 15:55:08,767][func.train][INFO] - 
+
+[2024-07-24 15:55:08,767][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:55:08,768][func.train][INFO] - [DATASET] avg video length: 39.22 minutes
+[2024-07-24 15:55:10,361][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:55:10,362][func.train][INFO] - [DATASET] split: test video_indices: [68]
+[2024-07-24 15:55:10,425][func.train][INFO] - [DATASET] test size: 49301
+[2024-07-24 15:55:10,426][func.train][INFO] - [DATASET] test video_indices: [68]
+[2024-07-24 15:55:10,426][func.train][INFO] - [DATASET] video_idx: 68
+[2024-07-24 15:55:10,434][func.train][INFO] - [DATASET] Sampled video_idx: 68 at 25 fps to 1972 frames
+[2024-07-24 15:55:10,435][func.train][INFO] - [DATASET] video 68 phase_labels: torch.Size([1972])
+[2024-07-24 15:55:10,491][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1972, 8])
+[2024-07-24 15:55:10,491][func.train][INFO] - 
+
+[2024-07-24 15:55:10,491][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:55:10,491][func.train][INFO] - [DATASET] avg video length: 32.87 minutes
+[2024-07-24 15:55:11,937][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:55:11,937][func.train][INFO] - [DATASET] split: test video_indices: [69]
+[2024-07-24 15:55:12,019][func.train][INFO] - [DATASET] test size: 114376
+[2024-07-24 15:55:12,019][func.train][INFO] - [DATASET] test video_indices: [69]
+[2024-07-24 15:55:12,019][func.train][INFO] - [DATASET] video_idx: 69
+[2024-07-24 15:55:12,038][func.train][INFO] - [DATASET] Sampled video_idx: 69 at 25 fps to 4575 frames
+[2024-07-24 15:55:12,039][func.train][INFO] - [DATASET] video 69 phase_labels: torch.Size([4575])
+[2024-07-24 15:55:12,148][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([4575, 8])
+[2024-07-24 15:55:12,149][func.train][INFO] - 
+
+[2024-07-24 15:55:12,149][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:55:12,149][func.train][INFO] - [DATASET] avg video length: 76.25 minutes
+[2024-07-24 15:55:13,544][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:55:13,544][func.train][INFO] - [DATASET] split: test video_indices: [70]
+[2024-07-24 15:55:13,600][func.train][INFO] - [DATASET] test size: 29851
+[2024-07-24 15:55:13,601][func.train][INFO] - [DATASET] test video_indices: [70]
+[2024-07-24 15:55:13,601][func.train][INFO] - [DATASET] video_idx: 70
+[2024-07-24 15:55:13,606][func.train][INFO] - [DATASET] Sampled video_idx: 70 at 25 fps to 1194 frames
+[2024-07-24 15:55:13,606][func.train][INFO] - [DATASET] video 70 phase_labels: torch.Size([1194])
+[2024-07-24 15:55:13,648][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1194, 8])
+[2024-07-24 15:55:13,648][func.train][INFO] - 
+
+[2024-07-24 15:55:13,648][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:55:13,648][func.train][INFO] - [DATASET] avg video length: 19.90 minutes
+[2024-07-24 15:55:15,042][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:55:15,042][func.train][INFO] - [DATASET] split: test video_indices: [71]
+[2024-07-24 15:55:15,109][func.train][INFO] - [DATASET] test size: 62876
+[2024-07-24 15:55:15,110][func.train][INFO] - [DATASET] test video_indices: [71]
+[2024-07-24 15:55:15,110][func.train][INFO] - [DATASET] video_idx: 71
+[2024-07-24 15:55:15,121][func.train][INFO] - [DATASET] Sampled video_idx: 71 at 25 fps to 2515 frames
+[2024-07-24 15:55:15,122][func.train][INFO] - [DATASET] video 71 phase_labels: torch.Size([2515])
+[2024-07-24 15:55:15,177][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2515, 8])
+[2024-07-24 15:55:15,177][func.train][INFO] - 
+
+[2024-07-24 15:55:15,177][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:55:15,177][func.train][INFO] - [DATASET] avg video length: 41.92 minutes
+[2024-07-24 15:55:16,590][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:55:16,590][func.train][INFO] - [DATASET] split: test video_indices: [72]
+[2024-07-24 15:55:16,660][func.train][INFO] - [DATASET] test size: 77651
+[2024-07-24 15:55:16,660][func.train][INFO] - [DATASET] test video_indices: [72]
+[2024-07-24 15:55:16,660][func.train][INFO] - [DATASET] video_idx: 72
+[2024-07-24 15:55:16,673][func.train][INFO] - [DATASET] Sampled video_idx: 72 at 25 fps to 3106 frames
+[2024-07-24 15:55:16,674][func.train][INFO] - [DATASET] video 72 phase_labels: torch.Size([3106])
+[2024-07-24 15:55:16,746][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3106, 8])
+[2024-07-24 15:55:16,746][func.train][INFO] - 
+
+[2024-07-24 15:55:16,746][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:55:16,746][func.train][INFO] - [DATASET] avg video length: 51.77 minutes
+[2024-07-24 15:55:18,225][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:55:18,226][func.train][INFO] - [DATASET] split: test video_indices: [73]
+[2024-07-24 15:55:18,284][func.train][INFO] - [DATASET] test size: 33901
+[2024-07-24 15:55:18,284][func.train][INFO] - [DATASET] test video_indices: [73]
+[2024-07-24 15:55:18,284][func.train][INFO] - [DATASET] video_idx: 73
+[2024-07-24 15:55:18,291][func.train][INFO] - [DATASET] Sampled video_idx: 73 at 25 fps to 1356 frames
+[2024-07-24 15:55:18,291][func.train][INFO] - [DATASET] video 73 phase_labels: torch.Size([1356])
+[2024-07-24 15:55:18,341][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1356, 8])
+[2024-07-24 15:55:18,341][func.train][INFO] - 
+
+[2024-07-24 15:55:18,341][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:55:18,341][func.train][INFO] - [DATASET] avg video length: 22.60 minutes
+[2024-07-24 15:55:19,854][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:55:19,854][func.train][INFO] - [DATASET] split: test video_indices: [74]
+[2024-07-24 15:55:19,914][func.train][INFO] - [DATASET] test size: 40851
+[2024-07-24 15:55:19,914][func.train][INFO] - [DATASET] test video_indices: [74]
+[2024-07-24 15:55:19,914][func.train][INFO] - [DATASET] video_idx: 74
+[2024-07-24 15:55:19,922][func.train][INFO] - [DATASET] Sampled video_idx: 74 at 25 fps to 1634 frames
+[2024-07-24 15:55:19,922][func.train][INFO] - [DATASET] video 74 phase_labels: torch.Size([1634])
+[2024-07-24 15:55:19,975][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1634, 8])
+[2024-07-24 15:55:19,976][func.train][INFO] - 
+
+[2024-07-24 15:55:19,976][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:55:19,976][func.train][INFO] - [DATASET] avg video length: 27.23 minutes
+[2024-07-24 15:55:21,500][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:55:21,500][func.train][INFO] - [DATASET] split: test video_indices: [75]
+[2024-07-24 15:55:21,566][func.train][INFO] - [DATASET] test size: 48076
+[2024-07-24 15:55:21,566][func.train][INFO] - [DATASET] test video_indices: [75]
+[2024-07-24 15:55:21,566][func.train][INFO] - [DATASET] video_idx: 75
+[2024-07-24 15:55:21,576][func.train][INFO] - [DATASET] Sampled video_idx: 75 at 25 fps to 1923 frames
+[2024-07-24 15:55:21,577][func.train][INFO] - [DATASET] video 75 phase_labels: torch.Size([1923])
+[2024-07-24 15:55:21,629][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1923, 8])
+[2024-07-24 15:55:21,630][func.train][INFO] - 
+
+[2024-07-24 15:55:21,630][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:55:21,630][func.train][INFO] - [DATASET] avg video length: 32.05 minutes
+[2024-07-24 15:55:23,091][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:55:23,092][func.train][INFO] - [DATASET] split: test video_indices: [76]
+[2024-07-24 15:55:23,158][func.train][INFO] - [DATASET] test size: 66226
+[2024-07-24 15:55:23,158][func.train][INFO] - [DATASET] test video_indices: [76]
+[2024-07-24 15:55:23,158][func.train][INFO] - [DATASET] video_idx: 76
+[2024-07-24 15:55:23,171][func.train][INFO] - [DATASET] Sampled video_idx: 76 at 25 fps to 2649 frames
+[2024-07-24 15:55:23,172][func.train][INFO] - [DATASET] video 76 phase_labels: torch.Size([2649])
+[2024-07-24 15:55:23,232][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2649, 8])
+[2024-07-24 15:55:23,232][func.train][INFO] - 
+
+[2024-07-24 15:55:23,233][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:55:23,233][func.train][INFO] - [DATASET] avg video length: 44.15 minutes
+[2024-07-24 15:55:24,673][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:55:24,673][func.train][INFO] - [DATASET] split: test video_indices: [77]
+[2024-07-24 15:55:24,740][func.train][INFO] - [DATASET] test size: 62551
+[2024-07-24 15:55:24,740][func.train][INFO] - [DATASET] test video_indices: [77]
+[2024-07-24 15:55:24,740][func.train][INFO] - [DATASET] video_idx: 77
+[2024-07-24 15:55:24,751][func.train][INFO] - [DATASET] Sampled video_idx: 77 at 25 fps to 2502 frames
+[2024-07-24 15:55:24,752][func.train][INFO] - [DATASET] video 77 phase_labels: torch.Size([2502])
+[2024-07-24 15:55:24,815][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2502, 8])
+[2024-07-24 15:55:24,815][func.train][INFO] - 
+
+[2024-07-24 15:55:24,815][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:55:24,816][func.train][INFO] - [DATASET] avg video length: 41.70 minutes
+[2024-07-24 15:55:26,239][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:55:26,240][func.train][INFO] - [DATASET] split: test video_indices: [78]
+[2024-07-24 15:55:26,294][func.train][INFO] - [DATASET] test size: 18476
+[2024-07-24 15:55:26,294][func.train][INFO] - [DATASET] test video_indices: [78]
+[2024-07-24 15:55:26,294][func.train][INFO] - [DATASET] video_idx: 78
+[2024-07-24 15:55:26,298][func.train][INFO] - [DATASET] Sampled video_idx: 78 at 25 fps to 739 frames
+[2024-07-24 15:55:26,299][func.train][INFO] - [DATASET] video 78 phase_labels: torch.Size([739])
+[2024-07-24 15:55:26,336][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([739, 8])
+[2024-07-24 15:55:26,336][func.train][INFO] - 
+
+[2024-07-24 15:55:26,336][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:55:26,337][func.train][INFO] - [DATASET] avg video length: 12.32 minutes
+[2024-07-24 15:55:27,750][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:55:27,751][func.train][INFO] - [DATASET] split: test video_indices: [79]
+[2024-07-24 15:55:27,826][func.train][INFO] - [DATASET] test size: 85351
+[2024-07-24 15:55:27,826][func.train][INFO] - [DATASET] test video_indices: [79]
+[2024-07-24 15:55:27,827][func.train][INFO] - [DATASET] video_idx: 79
+[2024-07-24 15:55:27,841][func.train][INFO] - [DATASET] Sampled video_idx: 79 at 25 fps to 3414 frames
+[2024-07-24 15:55:27,842][func.train][INFO] - [DATASET] video 79 phase_labels: torch.Size([3414])
+[2024-07-24 15:55:27,915][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3414, 8])
+[2024-07-24 15:55:27,916][func.train][INFO] - 
+
+[2024-07-24 15:55:27,916][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:55:27,916][func.train][INFO] - [DATASET] avg video length: 56.90 minutes
+[2024-07-24 15:55:29,319][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 15:55:29,319][func.train][INFO] - [DATASET] split: test video_indices: [80]
+[2024-07-24 15:55:29,378][func.train][INFO] - [DATASET] test size: 43101
+[2024-07-24 15:55:29,378][func.train][INFO] - [DATASET] test video_indices: [80]
+[2024-07-24 15:55:29,378][func.train][INFO] - [DATASET] video_idx: 80
+[2024-07-24 15:55:29,385][func.train][INFO] - [DATASET] Sampled video_idx: 80 at 25 fps to 1724 frames
+[2024-07-24 15:55:29,386][func.train][INFO] - [DATASET] video 80 phase_labels: torch.Size([1724])
+[2024-07-24 15:55:29,439][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1724, 8])
+[2024-07-24 15:55:29,439][func.train][INFO] - 
+
+[2024-07-24 15:55:29,439][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 15:55:29,440][func.train][INFO] - [DATASET] avg video length: 28.73 minutes
+[2024-07-24 15:55:29,463][func.train][INFO] - Time to load datasets: 0.90 min
+[2024-07-24 15:55:29,463][func.train][INFO] - Creating data loaders
+[2024-07-24 15:55:29,464][func.train][INFO] - Creating model with {'one': 7} classes
+[2024-07-24 15:55:30,546][func.train][INFO] - [MAIN] Number of tokens: 136873
+[2024-07-24 15:55:30,546][func.train][INFO] - [MAIN] Number of parameters: 22766816
+[2024-07-24 15:55:30,546][func.train][INFO] - [MAIN] Token-to-Parameter Ratio is ideally between [1:1 to 10:1]: 0.006012
+[2024-07-24 15:55:30,547][func.train][WARNING] - [MAIN] Data-to-Parameter-Ratio is outside the interval [1:1 to 10:1]
+[2024-07-24 15:55:30,548][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-07-24 15:55:30,548][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-07-24 15:55:30,553][func.train][INFO] - Wrapping model into DP
+[2024-07-24 15:55:30,645][func.train][INFO] - Start training
+[2024-07-24 15:55:30,649][func.train][INFO] - Storing checkpoints every 60.00 mins
+[2024-07-24 15:55:31,958][func.train][INFO] - [TRAINING] Step 0/2139 | Loss: 0.71 | Acc (curr_frames): 0.05 | time-left: 46.63 min
+[2024-07-24 15:56:09,153][func.train][INFO] - [TRAINING] Step 100/2139 | Loss: 0.93 | Acc (curr_frames): 0.09 | time-left: 12.95 min
+[2024-07-24 15:56:44,666][func.train][INFO] - [TRAINING] Step 200/2139 | Loss: 0.90 | Acc (curr_frames): 0.06 | time-left: 11.89 min
+[2024-07-24 15:57:20,189][func.train][INFO] - [TRAINING] Step 300/2139 | Loss: 1.21 | Acc (curr_frames): 0.11 | time-left: 11.15 min
+[2024-07-24 15:57:55,543][func.train][INFO] - [TRAINING] Step 400/2139 | Loss: 0.69 | Acc (curr_frames): 0.13 | time-left: 10.47 min
+[2024-07-24 15:58:30,524][func.train][INFO] - [TRAINING] Step 500/2139 | Loss: 0.80 | Acc (curr_frames): 0.17 | time-left: 9.80 min
+[2024-07-24 15:59:06,122][func.train][INFO] - [TRAINING] Step 600/2139 | Loss: 0.81 | Acc (curr_frames): 0.17 | time-left: 9.19 min
+[2024-07-24 15:59:42,088][func.train][INFO] - [TRAINING] Step 700/2139 | Loss: 0.86 | Acc (curr_frames): 0.18 | time-left: 8.60 min
+[2024-07-24 16:00:17,457][func.train][INFO] - [TRAINING] Step 800/2139 | Loss: 0.89 | Acc (curr_frames): 0.17 | time-left: 7.98 min
+[2024-07-24 16:00:54,684][func.train][INFO] - [TRAINING] Step 900/2139 | Loss: 0.78 | Acc (curr_frames): 0.12 | time-left: 7.42 min
+[2024-07-24 16:01:34,790][func.train][INFO] - [TRAINING] Step 1000/2139 | Loss: 0.72 | Acc (curr_frames): 0.18 | time-left: 6.90 min
+[2024-07-24 16:02:10,549][func.train][INFO] - [TRAINING] Step 1100/2139 | Loss: 0.81 | Acc (curr_frames): 0.24 | time-left: 6.28 min
+[2024-07-24 16:02:47,648][func.train][INFO] - [TRAINING] Step 1200/2139 | Loss: 0.83 | Acc (curr_frames): 0.19 | time-left: 5.69 min
+[2024-07-24 16:03:33,770][func.train][INFO] - [TRAINING] Step 1300/2139 | Loss: 0.85 | Acc (curr_frames): 0.21 | time-left: 5.19 min
+[2024-07-24 16:04:09,466][func.train][INFO] - [TRAINING] Step 1400/2139 | Loss: 0.74 | Acc (curr_frames): 0.13 | time-left: 4.55 min
+[2024-07-24 16:04:46,303][func.train][INFO] - [TRAINING] Step 1500/2139 | Loss: 0.78 | Acc (curr_frames): 0.25 | time-left: 3.94 min
+[2024-07-24 16:06:17,470][func.train][INFO] - Dist info:
+[2024-07-24 16:06:17,471][func.train][INFO] - torch version: 2.2.2+cu121
+[2024-07-24 16:06:17,471][func.train][INFO] - torchvision version: 0.17.2+cu121
+[2024-07-24 16:06:17,471][func.train][INFO] - hydra version: 1.3.2
+[2024-07-24 16:06:17,475][func.train][INFO] - [MAIN] eval horizons for regression: [3]
+[2024-07-24 16:06:17,475][func.train][INFO] - Loading data
+[2024-07-24 16:06:17,475][func.train][INFO] - Loading datasets
+[2024-07-24 16:06:19,227][func.train][INFO] - [SELECT DATASET] ALL loaded dataframe in 0m 2s
+[2024-07-24 16:06:19,228][func.train][INFO] - [SELECT DATASET] ALL loaded dataframe: (4612530, 11)
+[2024-07-24 16:06:19,440][func.train][INFO] - [SELECT DATASET] labels are already starting from 0
+[2024-07-24 16:06:19,786][func.train][INFO] - [SELECT DATASET] ALL unique classes: [0 1 2 3 4 5 6]
+[2024-07-24 16:06:19,798][func.train][INFO] - [SELECT DATASET] aLL dataframe (head):                    image_path class  ... tool_Irrigator tool_SpecimenBag
+0  video01/video01_000001.png     0  ...              0                0
+1  video01/video01_000002.png     0  ...              0                0
+2  video01/video01_000003.png     0  ...              0                0
+3  video01/video01_000004.png     0  ...              0                0
+4  video01/video01_000005.png     0  ...              0                0
+
+[5 rows x 11 columns]
+[2024-07-24 16:06:19,806][func.train][INFO] - [SELECT DATASET] ALL dataframe (tail):                          image_path class  ... tool_Irrigator tool_SpecimenBag
+4612525  video80/video80_043097.png     6  ...              0                0
+4612526  video80/video80_043098.png     6  ...              0                0
+4612527  video80/video80_043099.png     6  ...              0                0
+4612528  video80/video80_043100.png     6  ...              0                0
+4612529  video80/video80_043101.png     6  ...              0                0
+
+[5 rows x 11 columns]
+[2024-07-24 16:06:19,806][func.train][INFO] - [DATASET] params: {'debug': False, 'dataset_name': 'cholec80', 'reduc_feats_folder': 'train_targets_x_mp/', 'num_classes': 7, 'num_next_labels': 6, 'last_seg_class': 7, 'predict_next_phase': True, 'get_target_feats': False, 'replace_current_with_next_class': False}
+[2024-07-24 16:06:21,184][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 16:06:21,185][func.train][INFO] - [DATASET] split: train video_indices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
+[2024-07-24 16:06:22,890][func.train][INFO] - [DATASET] train size: 3421885
+[2024-07-24 16:06:22,891][func.train][INFO] - [DATASET] train video_indices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
+[2024-07-24 16:06:22,891][func.train][INFO] - [DATASET] video_idx: 1
+[2024-07-24 16:06:23,090][func.train][INFO] - [DATASET] Sampled video_idx: 1 at 25 fps to 1733 frames
+[2024-07-24 16:06:23,097][func.train][INFO] - [DATASET] video 1 phase_labels: torch.Size([1733])
+[2024-07-24 16:06:23,428][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1733, 8])
+[2024-07-24 16:06:23,428][func.train][INFO] - 
+
+[2024-07-24 16:06:23,428][func.train][INFO] - [DATASET] video_idx: 2
+[2024-07-24 16:06:23,640][func.train][INFO] - [DATASET] Sampled video_idx: 2 at 25 fps to 2839 frames
+[2024-07-24 16:06:23,641][func.train][INFO] - [DATASET] video 2 phase_labels: torch.Size([2839])
+[2024-07-24 16:06:23,707][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2839, 8])
+[2024-07-24 16:06:23,707][func.train][INFO] - 
+
+[2024-07-24 16:06:23,707][func.train][INFO] - [DATASET] video_idx: 3
+[2024-07-24 16:06:23,930][func.train][INFO] - [DATASET] Sampled video_idx: 3 at 25 fps to 5828 frames
+[2024-07-24 16:06:23,932][func.train][INFO] - [DATASET] video 3 phase_labels: torch.Size([5828])
+[2024-07-24 16:06:24,121][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([5828, 8])
+[2024-07-24 16:06:24,121][func.train][INFO] - 
+
+[2024-07-24 16:06:24,121][func.train][INFO] - [DATASET] video_idx: 4
+[2024-07-24 16:06:24,320][func.train][INFO] - [DATASET] Sampled video_idx: 4 at 25 fps to 1522 frames
+[2024-07-24 16:06:24,320][func.train][INFO] - [DATASET] video 4 phase_labels: torch.Size([1522])
+[2024-07-24 16:06:24,370][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1522, 8])
+[2024-07-24 16:06:24,370][func.train][INFO] - 
+
+[2024-07-24 16:06:24,370][func.train][INFO] - [DATASET] video_idx: 5
+[2024-07-24 16:06:24,576][func.train][INFO] - [DATASET] Sampled video_idx: 5 at 25 fps to 2344 frames
+[2024-07-24 16:06:24,577][func.train][INFO] - [DATASET] video 5 phase_labels: torch.Size([2344])
+[2024-07-24 16:06:24,633][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2344, 8])
+[2024-07-24 16:06:24,633][func.train][INFO] - 
+
+[2024-07-24 16:06:24,633][func.train][INFO] - [DATASET] video_idx: 6
+[2024-07-24 16:06:24,853][func.train][INFO] - [DATASET] Sampled video_idx: 6 at 25 fps to 2153 frames
+[2024-07-24 16:06:24,854][func.train][INFO] - [DATASET] video 6 phase_labels: torch.Size([2153])
+[2024-07-24 16:06:24,907][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2153, 8])
+[2024-07-24 16:06:24,907][func.train][INFO] - 
+
+[2024-07-24 16:06:24,907][func.train][INFO] - [DATASET] video_idx: 7
+[2024-07-24 16:06:25,127][func.train][INFO] - [DATASET] Sampled video_idx: 7 at 25 fps to 4557 frames
+[2024-07-24 16:06:25,128][func.train][INFO] - [DATASET] video 7 phase_labels: torch.Size([4557])
+[2024-07-24 16:06:25,238][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([4557, 8])
+[2024-07-24 16:06:25,238][func.train][INFO] - 
+
+[2024-07-24 16:06:25,238][func.train][INFO] - [DATASET] video_idx: 8
+[2024-07-24 16:06:25,447][func.train][INFO] - [DATASET] Sampled video_idx: 8 at 25 fps to 1519 frames
+[2024-07-24 16:06:25,448][func.train][INFO] - [DATASET] video 8 phase_labels: torch.Size([1519])
+[2024-07-24 16:06:25,497][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1519, 8])
+[2024-07-24 16:06:25,498][func.train][INFO] - 
+
+[2024-07-24 16:06:25,498][func.train][INFO] - [DATASET] video_idx: 9
+[2024-07-24 16:06:25,710][func.train][INFO] - [DATASET] Sampled video_idx: 9 at 25 fps to 2702 frames
+[2024-07-24 16:06:25,711][func.train][INFO] - [DATASET] video 9 phase_labels: torch.Size([2702])
+[2024-07-24 16:06:25,796][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2702, 8])
+[2024-07-24 16:06:25,797][func.train][INFO] - 
+
+[2024-07-24 16:06:25,797][func.train][INFO] - [DATASET] video_idx: 10
+[2024-07-24 16:06:26,006][func.train][INFO] - [DATASET] Sampled video_idx: 10 at 25 fps to 1749 frames
+[2024-07-24 16:06:26,007][func.train][INFO] - [DATASET] video 10 phase_labels: torch.Size([1749])
+[2024-07-24 16:06:26,055][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1749, 8])
+[2024-07-24 16:06:26,055][func.train][INFO] - 
+
+[2024-07-24 16:06:26,055][func.train][INFO] - [DATASET] video_idx: 11
+[2024-07-24 16:06:26,276][func.train][INFO] - [DATASET] Sampled video_idx: 11 at 25 fps to 3220 frames
+[2024-07-24 16:06:26,277][func.train][INFO] - [DATASET] video 11 phase_labels: torch.Size([3220])
+[2024-07-24 16:06:26,346][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3220, 8])
+[2024-07-24 16:06:26,346][func.train][INFO] - 
+
+[2024-07-24 16:06:26,346][func.train][INFO] - [DATASET] video_idx: 12
+[2024-07-24 16:06:26,553][func.train][INFO] - [DATASET] Sampled video_idx: 12 at 25 fps to 1090 frames
+[2024-07-24 16:06:26,553][func.train][INFO] - [DATASET] video 12 phase_labels: torch.Size([1090])
+[2024-07-24 16:06:26,596][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1090, 8])
+[2024-07-24 16:06:26,597][func.train][INFO] - 
+
+[2024-07-24 16:06:26,597][func.train][INFO] - [DATASET] video_idx: 13
+[2024-07-24 16:06:26,808][func.train][INFO] - [DATASET] Sampled video_idx: 13 at 25 fps to 981 frames
+[2024-07-24 16:06:26,809][func.train][INFO] - [DATASET] video 13 phase_labels: torch.Size([981])
+[2024-07-24 16:06:26,849][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([981, 8])
+[2024-07-24 16:06:26,849][func.train][INFO] - 
+
+[2024-07-24 16:06:26,850][func.train][INFO] - [DATASET] video_idx: 14
+[2024-07-24 16:06:27,060][func.train][INFO] - [DATASET] Sampled video_idx: 14 at 25 fps to 1708 frames
+[2024-07-24 16:06:27,061][func.train][INFO] - [DATASET] video 14 phase_labels: torch.Size([1708])
+[2024-07-24 16:06:27,108][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1708, 8])
+[2024-07-24 16:06:27,108][func.train][INFO] - 
+
+[2024-07-24 16:06:27,108][func.train][INFO] - [DATASET] video_idx: 15
+[2024-07-24 16:06:27,318][func.train][INFO] - [DATASET] Sampled video_idx: 15 at 25 fps to 2058 frames
+[2024-07-24 16:06:27,319][func.train][INFO] - [DATASET] video 15 phase_labels: torch.Size([2058])
+[2024-07-24 16:06:27,374][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2058, 8])
+[2024-07-24 16:06:27,374][func.train][INFO] - 
+
+[2024-07-24 16:06:27,374][func.train][INFO] - [DATASET] video_idx: 16
+[2024-07-24 16:06:27,594][func.train][INFO] - [DATASET] Sampled video_idx: 16 at 25 fps to 2957 frames
+[2024-07-24 16:06:27,595][func.train][INFO] - [DATASET] video 16 phase_labels: torch.Size([2957])
+[2024-07-24 16:06:27,659][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2957, 8])
+[2024-07-24 16:06:27,659][func.train][INFO] - 
+
+[2024-07-24 16:06:27,659][func.train][INFO] - [DATASET] video_idx: 17
+[2024-07-24 16:06:27,866][func.train][INFO] - [DATASET] Sampled video_idx: 17 at 25 fps to 1304 frames
+[2024-07-24 16:06:27,866][func.train][INFO] - [DATASET] video 17 phase_labels: torch.Size([1304])
+[2024-07-24 16:06:27,911][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1304, 8])
+[2024-07-24 16:06:27,911][func.train][INFO] - 
+
+[2024-07-24 16:06:27,911][func.train][INFO] - [DATASET] video_idx: 18
+[2024-07-24 16:06:28,126][func.train][INFO] - [DATASET] Sampled video_idx: 18 at 25 fps to 1942 frames
+[2024-07-24 16:06:28,127][func.train][INFO] - [DATASET] video 18 phase_labels: torch.Size([1942])
+[2024-07-24 16:06:28,180][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1942, 8])
+[2024-07-24 16:06:28,180][func.train][INFO] - 
+
+[2024-07-24 16:06:28,180][func.train][INFO] - [DATASET] video_idx: 19
+[2024-07-24 16:06:28,393][func.train][INFO] - [DATASET] Sampled video_idx: 19 at 25 fps to 2424 frames
+[2024-07-24 16:06:28,394][func.train][INFO] - [DATASET] video 19 phase_labels: torch.Size([2424])
+[2024-07-24 16:06:28,450][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2424, 8])
+[2024-07-24 16:06:28,450][func.train][INFO] - 
+
+[2024-07-24 16:06:28,450][func.train][INFO] - [DATASET] video_idx: 20
+[2024-07-24 16:06:28,655][func.train][INFO] - [DATASET] Sampled video_idx: 20 at 25 fps to 1449 frames
+[2024-07-24 16:06:28,656][func.train][INFO] - [DATASET] video 20 phase_labels: torch.Size([1449])
+[2024-07-24 16:06:28,702][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1449, 8])
+[2024-07-24 16:06:28,702][func.train][INFO] - 
+
+[2024-07-24 16:06:28,702][func.train][INFO] - [DATASET] video_idx: 21
+[2024-07-24 16:06:28,903][func.train][INFO] - [DATASET] Sampled video_idx: 21 at 25 fps to 1258 frames
+[2024-07-24 16:06:28,904][func.train][INFO] - [DATASET] video 21 phase_labels: torch.Size([1258])
+[2024-07-24 16:06:28,944][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1258, 8])
+[2024-07-24 16:06:28,945][func.train][INFO] - 
+
+[2024-07-24 16:06:28,945][func.train][INFO] - [DATASET] video_idx: 22
+[2024-07-24 16:06:29,158][func.train][INFO] - [DATASET] Sampled video_idx: 22 at 25 fps to 1532 frames
+[2024-07-24 16:06:29,159][func.train][INFO] - [DATASET] video 22 phase_labels: torch.Size([1532])
+[2024-07-24 16:06:29,203][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1532, 8])
+[2024-07-24 16:06:29,203][func.train][INFO] - 
+
+[2024-07-24 16:06:29,203][func.train][INFO] - [DATASET] video_idx: 23
+[2024-07-24 16:06:29,406][func.train][INFO] - [DATASET] Sampled video_idx: 23 at 25 fps to 1635 frames
+[2024-07-24 16:06:29,407][func.train][INFO] - [DATASET] video 23 phase_labels: torch.Size([1635])
+[2024-07-24 16:06:29,452][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1635, 8])
+[2024-07-24 16:06:29,453][func.train][INFO] - 
+
+[2024-07-24 16:06:29,453][func.train][INFO] - [DATASET] video_idx: 24
+[2024-07-24 16:06:29,660][func.train][INFO] - [DATASET] Sampled video_idx: 24 at 25 fps to 1975 frames
+[2024-07-24 16:06:29,661][func.train][INFO] - [DATASET] video 24 phase_labels: torch.Size([1975])
+[2024-07-24 16:06:29,715][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1975, 8])
+[2024-07-24 16:06:29,715][func.train][INFO] - 
+
+[2024-07-24 16:06:29,715][func.train][INFO] - [DATASET] video_idx: 25
+[2024-07-24 16:06:29,919][func.train][INFO] - [DATASET] Sampled video_idx: 25 at 25 fps to 2129 frames
+[2024-07-24 16:06:29,920][func.train][INFO] - [DATASET] video 25 phase_labels: torch.Size([2129])
+[2024-07-24 16:06:29,973][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2129, 8])
+[2024-07-24 16:06:29,973][func.train][INFO] - 
+
+[2024-07-24 16:06:29,973][func.train][INFO] - [DATASET] video_idx: 26
+[2024-07-24 16:06:30,177][func.train][INFO] - [DATASET] Sampled video_idx: 26 at 25 fps to 1773 frames
+[2024-07-24 16:06:30,177][func.train][INFO] - [DATASET] video 26 phase_labels: torch.Size([1773])
+[2024-07-24 16:06:30,227][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1773, 8])
+[2024-07-24 16:06:30,227][func.train][INFO] - 
+
+[2024-07-24 16:06:30,227][func.train][INFO] - [DATASET] video_idx: 27
+[2024-07-24 16:06:30,441][func.train][INFO] - [DATASET] Sampled video_idx: 27 at 25 fps to 2084 frames
+[2024-07-24 16:06:30,441][func.train][INFO] - [DATASET] video 27 phase_labels: torch.Size([2084])
+[2024-07-24 16:06:30,499][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2084, 8])
+[2024-07-24 16:06:30,500][func.train][INFO] - 
+
+[2024-07-24 16:06:30,500][func.train][INFO] - [DATASET] video_idx: 28
+[2024-07-24 16:06:30,704][func.train][INFO] - [DATASET] Sampled video_idx: 28 at 25 fps to 1199 frames
+[2024-07-24 16:06:30,705][func.train][INFO] - [DATASET] video 28 phase_labels: torch.Size([1199])
+[2024-07-24 16:06:30,746][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1199, 8])
+[2024-07-24 16:06:30,746][func.train][INFO] - 
+
+[2024-07-24 16:06:30,746][func.train][INFO] - [DATASET] video_idx: 29
+[2024-07-24 16:06:30,955][func.train][INFO] - [DATASET] Sampled video_idx: 29 at 25 fps to 2350 frames
+[2024-07-24 16:06:30,956][func.train][INFO] - [DATASET] video 29 phase_labels: torch.Size([2350])
+[2024-07-24 16:06:31,013][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2350, 8])
+[2024-07-24 16:06:31,013][func.train][INFO] - 
+
+[2024-07-24 16:06:31,013][func.train][INFO] - [DATASET] video_idx: 30
+[2024-07-24 16:06:31,212][func.train][INFO] - [DATASET] Sampled video_idx: 30 at 25 fps to 2925 frames
+[2024-07-24 16:06:31,213][func.train][INFO] - [DATASET] video 30 phase_labels: torch.Size([2925])
+[2024-07-24 16:06:31,276][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2925, 8])
+[2024-07-24 16:06:31,277][func.train][INFO] - 
+
+[2024-07-24 16:06:31,277][func.train][INFO] - [DATASET] video_idx: 31
+[2024-07-24 16:06:31,495][func.train][INFO] - [DATASET] Sampled video_idx: 31 at 25 fps to 3945 frames
+[2024-07-24 16:06:31,496][func.train][INFO] - [DATASET] video 31 phase_labels: torch.Size([3945])
+[2024-07-24 16:06:31,578][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3945, 8])
+[2024-07-24 16:06:31,578][func.train][INFO] - 
+
+[2024-07-24 16:06:31,578][func.train][INFO] - [DATASET] video_idx: 32
+[2024-07-24 16:06:31,791][func.train][INFO] - [DATASET] Sampled video_idx: 32 at 25 fps to 2116 frames
+[2024-07-24 16:06:31,792][func.train][INFO] - [DATASET] video 32 phase_labels: torch.Size([2116])
+[2024-07-24 16:06:31,843][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2116, 8])
+[2024-07-24 16:06:31,844][func.train][INFO] - 
+
+[2024-07-24 16:06:31,844][func.train][INFO] - [DATASET] video_idx: 33
+[2024-07-24 16:06:32,046][func.train][INFO] - [DATASET] Sampled video_idx: 33 at 25 fps to 1307 frames
+[2024-07-24 16:06:32,047][func.train][INFO] - [DATASET] video 33 phase_labels: torch.Size([1307])
+[2024-07-24 16:06:32,088][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1307, 8])
+[2024-07-24 16:06:32,088][func.train][INFO] - 
+
+[2024-07-24 16:06:32,088][func.train][INFO] - [DATASET] video_idx: 34
+[2024-07-24 16:06:32,298][func.train][INFO] - [DATASET] Sampled video_idx: 34 at 25 fps to 1323 frames
+[2024-07-24 16:06:32,298][func.train][INFO] - [DATASET] video 34 phase_labels: torch.Size([1323])
+[2024-07-24 16:06:32,341][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1323, 8])
+[2024-07-24 16:06:32,341][func.train][INFO] - 
+
+[2024-07-24 16:06:32,341][func.train][INFO] - [DATASET] video_idx: 35
+[2024-07-24 16:06:32,545][func.train][INFO] - [DATASET] Sampled video_idx: 35 at 25 fps to 2106 frames
+[2024-07-24 16:06:32,545][func.train][INFO] - [DATASET] video 35 phase_labels: torch.Size([2106])
+[2024-07-24 16:06:32,598][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2106, 8])
+[2024-07-24 16:06:32,598][func.train][INFO] - 
+
+[2024-07-24 16:06:32,598][func.train][INFO] - [DATASET] video_idx: 36
+[2024-07-24 16:06:32,807][func.train][INFO] - [DATASET] Sampled video_idx: 36 at 25 fps to 2387 frames
+[2024-07-24 16:06:32,808][func.train][INFO] - [DATASET] video 36 phase_labels: torch.Size([2387])
+[2024-07-24 16:06:32,867][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2387, 8])
+[2024-07-24 16:06:32,868][func.train][INFO] - 
+
+[2024-07-24 16:06:32,868][func.train][INFO] - [DATASET] video_idx: 37
+[2024-07-24 16:06:33,076][func.train][INFO] - [DATASET] Sampled video_idx: 37 at 25 fps to 1232 frames
+[2024-07-24 16:06:33,077][func.train][INFO] - [DATASET] video 37 phase_labels: torch.Size([1232])
+[2024-07-24 16:06:33,118][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1232, 8])
+[2024-07-24 16:06:33,119][func.train][INFO] - 
+
+[2024-07-24 16:06:33,119][func.train][INFO] - [DATASET] video_idx: 38
+[2024-07-24 16:06:33,336][func.train][INFO] - [DATASET] Sampled video_idx: 38 at 25 fps to 3080 frames
+[2024-07-24 16:06:33,337][func.train][INFO] - [DATASET] video 38 phase_labels: torch.Size([3080])
+[2024-07-24 16:06:33,401][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3080, 8])
+[2024-07-24 16:06:33,402][func.train][INFO] - 
+
+[2024-07-24 16:06:33,402][func.train][INFO] - [DATASET] video_idx: 39
+[2024-07-24 16:06:33,603][func.train][INFO] - [DATASET] Sampled video_idx: 39 at 25 fps to 1647 frames
+[2024-07-24 16:06:33,604][func.train][INFO] - [DATASET] video 39 phase_labels: torch.Size([1647])
+[2024-07-24 16:06:33,650][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1647, 8])
+[2024-07-24 16:06:33,650][func.train][INFO] - 
+
+[2024-07-24 16:06:33,650][func.train][INFO] - [DATASET] video_idx: 40
+[2024-07-24 16:06:33,859][func.train][INFO] - [DATASET] Sampled video_idx: 40 at 25 fps to 2222 frames
+[2024-07-24 16:06:33,859][func.train][INFO] - [DATASET] video 40 phase_labels: torch.Size([2222])
+[2024-07-24 16:06:33,919][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2222, 8])
+[2024-07-24 16:06:33,919][func.train][INFO] - 
+
+[2024-07-24 16:06:33,919][func.train][INFO] - [DATASET] video_idx: 41
+[2024-07-24 16:06:34,133][func.train][INFO] - [DATASET] Sampled video_idx: 41 at 25 fps to 3103 frames
+[2024-07-24 16:06:34,134][func.train][INFO] - [DATASET] video 41 phase_labels: torch.Size([3103])
+[2024-07-24 16:06:34,202][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3103, 8])
+[2024-07-24 16:06:34,203][func.train][INFO] - 
+
+[2024-07-24 16:06:34,203][func.train][INFO] - [DATASET] video_idx: 42
+[2024-07-24 16:06:34,412][func.train][INFO] - [DATASET] Sampled video_idx: 42 at 25 fps to 3712 frames
+[2024-07-24 16:06:34,413][func.train][INFO] - [DATASET] video 42 phase_labels: torch.Size([3712])
+[2024-07-24 16:06:34,490][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3712, 8])
+[2024-07-24 16:06:34,490][func.train][INFO] - 
+
+[2024-07-24 16:06:34,490][func.train][INFO] - [DATASET] video_idx: 43
+[2024-07-24 16:06:34,697][func.train][INFO] - [DATASET] Sampled video_idx: 43 at 25 fps to 2362 frames
+[2024-07-24 16:06:34,698][func.train][INFO] - [DATASET] video 43 phase_labels: torch.Size([2362])
+[2024-07-24 16:06:34,755][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2362, 8])
+[2024-07-24 16:06:34,755][func.train][INFO] - 
+
+[2024-07-24 16:06:34,755][func.train][INFO] - [DATASET] video_idx: 44
+[2024-07-24 16:06:34,964][func.train][INFO] - [DATASET] Sampled video_idx: 44 at 25 fps to 3127 frames
+[2024-07-24 16:06:34,965][func.train][INFO] - [DATASET] video 44 phase_labels: torch.Size([3127])
+[2024-07-24 16:06:35,035][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3127, 8])
+[2024-07-24 16:06:35,035][func.train][INFO] - 
+
+[2024-07-24 16:06:35,035][func.train][INFO] - [DATASET] video_idx: 45
+[2024-07-24 16:06:35,252][func.train][INFO] - [DATASET] Sampled video_idx: 45 at 25 fps to 3387 frames
+[2024-07-24 16:06:35,254][func.train][INFO] - [DATASET] video 45 phase_labels: torch.Size([3387])
+[2024-07-24 16:06:35,324][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3387, 8])
+[2024-07-24 16:06:35,324][func.train][INFO] - 
+
+[2024-07-24 16:06:35,324][func.train][INFO] - [DATASET] video_idx: 46
+[2024-07-24 16:06:35,530][func.train][INFO] - [DATASET] Sampled video_idx: 46 at 25 fps to 1653 frames
+[2024-07-24 16:06:35,531][func.train][INFO] - [DATASET] video 46 phase_labels: torch.Size([1653])
+[2024-07-24 16:06:35,581][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1653, 8])
+[2024-07-24 16:06:35,581][func.train][INFO] - 
+
+[2024-07-24 16:06:35,581][func.train][INFO] - [DATASET] video_idx: 47
+[2024-07-24 16:06:35,794][func.train][INFO] - [DATASET] Sampled video_idx: 47 at 25 fps to 2259 frames
+[2024-07-24 16:06:35,795][func.train][INFO] - [DATASET] video 47 phase_labels: torch.Size([2259])
+[2024-07-24 16:06:35,860][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2259, 8])
+[2024-07-24 16:06:35,860][func.train][INFO] - 
+
+[2024-07-24 16:06:35,860][func.train][INFO] - [DATASET] video_idx: 48
+[2024-07-24 16:06:36,059][func.train][INFO] - [DATASET] Sampled video_idx: 48 at 25 fps to 1834 frames
+[2024-07-24 16:06:36,060][func.train][INFO] - [DATASET] video 48 phase_labels: torch.Size([1834])
+[2024-07-24 16:06:36,133][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1834, 8])
+[2024-07-24 16:06:36,134][func.train][INFO] - 
+
+[2024-07-24 16:06:36,134][func.train][INFO] - [DATASET] video_idx: 49
+[2024-07-24 16:06:36,331][func.train][INFO] - [DATASET] Sampled video_idx: 49 at 25 fps to 1671 frames
+[2024-07-24 16:06:36,331][func.train][INFO] - [DATASET] video 49 phase_labels: torch.Size([1671])
+[2024-07-24 16:06:36,379][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1671, 8])
+[2024-07-24 16:06:36,379][func.train][INFO] - 
+
+[2024-07-24 16:06:36,379][func.train][INFO] - [DATASET] video_idx: 50
+[2024-07-24 16:06:36,581][func.train][INFO] - [DATASET] Sampled video_idx: 50 at 25 fps to 1094 frames
+[2024-07-24 16:06:36,581][func.train][INFO] - [DATASET] video 50 phase_labels: torch.Size([1094])
+[2024-07-24 16:06:36,617][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1094, 8])
+[2024-07-24 16:06:36,618][func.train][INFO] - 
+
+[2024-07-24 16:06:36,618][func.train][INFO] - [DATASET] video_idx: 51
+[2024-07-24 16:06:36,832][func.train][INFO] - [DATASET] Sampled video_idx: 51 at 25 fps to 2944 frames
+[2024-07-24 16:06:36,833][func.train][INFO] - [DATASET] video 51 phase_labels: torch.Size([2944])
+[2024-07-24 16:06:36,924][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2944, 8])
+[2024-07-24 16:06:36,924][func.train][INFO] - 
+
+[2024-07-24 16:06:36,924][func.train][INFO] - [DATASET] video_idx: 52
+[2024-07-24 16:06:37,145][func.train][INFO] - [DATASET] Sampled video_idx: 52 at 25 fps to 1966 frames
+[2024-07-24 16:06:37,146][func.train][INFO] - [DATASET] video 52 phase_labels: torch.Size([1966])
+[2024-07-24 16:06:37,216][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1966, 8])
+[2024-07-24 16:06:37,216][func.train][INFO] - 
+
+[2024-07-24 16:06:37,217][func.train][INFO] - [DATASET] video_idx: 53
+[2024-07-24 16:06:37,422][func.train][INFO] - [DATASET] Sampled video_idx: 53 at 25 fps to 3283 frames
+[2024-07-24 16:06:37,423][func.train][INFO] - [DATASET] video 53 phase_labels: torch.Size([3283])
+[2024-07-24 16:06:37,496][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3283, 8])
+[2024-07-24 16:06:37,496][func.train][INFO] - 
+
+[2024-07-24 16:06:37,496][func.train][INFO] - [DATASET] video_idx: 54
+[2024-07-24 16:06:37,711][func.train][INFO] - [DATASET] Sampled video_idx: 54 at 25 fps to 3100 frames
+[2024-07-24 16:06:37,712][func.train][INFO] - [DATASET] video 54 phase_labels: torch.Size([3100])
+[2024-07-24 16:06:37,780][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3100, 8])
+[2024-07-24 16:06:37,780][func.train][INFO] - 
+
+[2024-07-24 16:06:37,780][func.train][INFO] - [DATASET] video_idx: 55
+[2024-07-24 16:06:37,980][func.train][INFO] - [DATASET] Sampled video_idx: 55 at 25 fps to 1037 frames
+[2024-07-24 16:06:37,981][func.train][INFO] - [DATASET] video 55 phase_labels: torch.Size([1037])
+[2024-07-24 16:06:38,019][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1037, 8])
+[2024-07-24 16:06:38,019][func.train][INFO] - 
+
+[2024-07-24 16:06:38,019][func.train][INFO] - [DATASET] video_idx: 56
+[2024-07-24 16:06:38,219][func.train][INFO] - [DATASET] Sampled video_idx: 56 at 25 fps to 1834 frames
+[2024-07-24 16:06:38,220][func.train][INFO] - [DATASET] video 56 phase_labels: torch.Size([1834])
+[2024-07-24 16:06:38,270][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1834, 8])
+[2024-07-24 16:06:38,270][func.train][INFO] - 
+
+[2024-07-24 16:06:38,270][func.train][INFO] - [DATASET] video_idx: 57
+[2024-07-24 16:06:38,478][func.train][INFO] - [DATASET] Sampled video_idx: 57 at 25 fps to 2632 frames
+[2024-07-24 16:06:38,479][func.train][INFO] - [DATASET] video 57 phase_labels: torch.Size([2632])
+[2024-07-24 16:06:38,541][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2632, 8])
+[2024-07-24 16:06:38,542][func.train][INFO] - 
+
+[2024-07-24 16:06:38,542][func.train][INFO] - [DATASET] video_idx: 58
+[2024-07-24 16:06:38,777][func.train][INFO] - [DATASET] Sampled video_idx: 58 at 25 fps to 5993 frames
+[2024-07-24 16:06:38,778][func.train][INFO] - [DATASET] video 58 phase_labels: torch.Size([5993])
+[2024-07-24 16:06:38,916][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([5993, 8])
+[2024-07-24 16:06:38,916][func.train][INFO] - 
+
+[2024-07-24 16:06:38,916][func.train][INFO] - [DATASET] video_idx: 59
+[2024-07-24 16:06:39,111][func.train][INFO] - [DATASET] Sampled video_idx: 59 at 25 fps to 1046 frames
+[2024-07-24 16:06:39,112][func.train][INFO] - [DATASET] video 59 phase_labels: torch.Size([1046])
+[2024-07-24 16:06:39,153][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1046, 8])
+[2024-07-24 16:06:39,153][func.train][INFO] - 
+
+[2024-07-24 16:06:39,153][func.train][INFO] - [DATASET] video_idx: 60
+[2024-07-24 16:06:39,360][func.train][INFO] - [DATASET] Sampled video_idx: 60 at 25 fps to 2532 frames
+[2024-07-24 16:06:39,360][func.train][INFO] - [DATASET] video 60 phase_labels: torch.Size([2532])
+[2024-07-24 16:06:39,424][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2532, 8])
+[2024-07-24 16:06:39,424][func.train][INFO] - 
+
+[2024-07-24 16:06:39,425][func.train][INFO] - [DATASET] number of train videos: 60
+[2024-07-24 16:06:39,425][func.train][INFO] - [DATASET] avg video length: 38.02 minutes
+[2024-07-24 16:06:39,455][func.train][INFO] - [DATASET] num classes at 1fps in train: (136873,)
+[2024-07-24 16:06:39,457][func.train][INFO] - [DATASET] classes_counts_dict: {0: 6410, 1: 57370, 2: 11129, 3: 39289, 4: 5529, 5: 12039, 6: 5107}
+[2024-07-24 16:06:39,459][func.train][INFO] - [DATASET] curr_class_weights: tensor([3.0504, 0.3408, 1.7570, 0.4977, 3.5365, 1.6242, 3.8287])
+[2024-07-24 16:06:39,459][func.train][INFO] - [DATASET] num_eos_vals: 19553.285714285714
+[2024-07-24 16:06:39,459][func.train][INFO] - [DATASET] classes_counts_dict: {0: 6410, 1: 57370, 2: 11129, 3: 39289, 4: 5529, 5: 12039, 6: 5107, 7: 19553}
+[2024-07-24 16:06:39,459][func.train][INFO] - [DATASET] next_class_weights: tensor([3.0504, 0.3408, 1.7570, 0.4977, 3.5365, 1.6242, 3.8287, 1.0000])
+[2024-07-24 16:06:41,026][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 16:06:41,027][func.train][INFO] - [DATASET] split: test video_indices: [61]
+[2024-07-24 16:06:41,123][func.train][INFO] - [DATASET] test size: 110226
+[2024-07-24 16:06:41,123][func.train][INFO] - [DATASET] test video_indices: [61]
+[2024-07-24 16:06:41,123][func.train][INFO] - [DATASET] video_idx: 61
+[2024-07-24 16:06:41,146][func.train][INFO] - [DATASET] Sampled video_idx: 61 at 25 fps to 4409 frames
+[2024-07-24 16:06:41,147][func.train][INFO] - [DATASET] video 61 phase_labels: torch.Size([4409])
+[2024-07-24 16:06:41,250][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([4409, 8])
+[2024-07-24 16:06:41,250][func.train][INFO] - 
+
+[2024-07-24 16:06:41,251][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 16:06:41,251][func.train][INFO] - [DATASET] avg video length: 73.48 minutes
+[2024-07-24 16:06:42,735][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 16:06:42,735][func.train][INFO] - [DATASET] split: test video_indices: [62]
+[2024-07-24 16:06:42,809][func.train][INFO] - [DATASET] test size: 50801
+[2024-07-24 16:06:42,809][func.train][INFO] - [DATASET] test video_indices: [62]
+[2024-07-24 16:06:42,809][func.train][INFO] - [DATASET] video_idx: 62
+[2024-07-24 16:06:42,824][func.train][INFO] - [DATASET] Sampled video_idx: 62 at 25 fps to 2032 frames
+[2024-07-24 16:06:42,826][func.train][INFO] - [DATASET] video 62 phase_labels: torch.Size([2032])
+[2024-07-24 16:06:42,892][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2032, 8])
+[2024-07-24 16:06:42,892][func.train][INFO] - 
+
+[2024-07-24 16:06:42,893][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 16:06:42,893][func.train][INFO] - [DATASET] avg video length: 33.87 minutes
+[2024-07-24 16:06:44,304][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 16:06:44,305][func.train][INFO] - [DATASET] split: test video_indices: [63]
+[2024-07-24 16:06:44,380][func.train][INFO] - [DATASET] test size: 85826
+[2024-07-24 16:06:44,381][func.train][INFO] - [DATASET] test video_indices: [63]
+[2024-07-24 16:06:44,381][func.train][INFO] - [DATASET] video_idx: 63
+[2024-07-24 16:06:44,395][func.train][INFO] - [DATASET] Sampled video_idx: 63 at 25 fps to 3433 frames
+[2024-07-24 16:06:44,396][func.train][INFO] - [DATASET] video 63 phase_labels: torch.Size([3433])
+[2024-07-24 16:06:44,467][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3433, 8])
+[2024-07-24 16:06:44,467][func.train][INFO] - 
+
+[2024-07-24 16:06:44,468][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 16:06:44,468][func.train][INFO] - [DATASET] avg video length: 57.22 minutes
+[2024-07-24 16:06:45,883][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 16:06:45,883][func.train][INFO] - [DATASET] split: test video_indices: [64]
+[2024-07-24 16:06:45,947][func.train][INFO] - [DATASET] test size: 59951
+[2024-07-24 16:06:45,947][func.train][INFO] - [DATASET] test video_indices: [64]
+[2024-07-24 16:06:45,947][func.train][INFO] - [DATASET] video_idx: 64
+[2024-07-24 16:06:45,958][func.train][INFO] - [DATASET] Sampled video_idx: 64 at 25 fps to 2398 frames
+[2024-07-24 16:06:45,959][func.train][INFO] - [DATASET] video 64 phase_labels: torch.Size([2398])
+[2024-07-24 16:06:46,015][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2398, 8])
+[2024-07-24 16:06:46,016][func.train][INFO] - 
+
+[2024-07-24 16:06:46,016][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 16:06:46,016][func.train][INFO] - [DATASET] avg video length: 39.97 minutes
+[2024-07-24 16:06:47,636][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 16:06:47,636][func.train][INFO] - [DATASET] split: test video_indices: [65]
+[2024-07-24 16:06:47,701][func.train][INFO] - [DATASET] test size: 46826
+[2024-07-24 16:06:47,701][func.train][INFO] - [DATASET] test video_indices: [65]
+[2024-07-24 16:06:47,702][func.train][INFO] - [DATASET] video_idx: 65
+[2024-07-24 16:06:47,712][func.train][INFO] - [DATASET] Sampled video_idx: 65 at 25 fps to 1873 frames
+[2024-07-24 16:06:47,713][func.train][INFO] - [DATASET] video 65 phase_labels: torch.Size([1873])
+[2024-07-24 16:06:47,762][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1873, 8])
+[2024-07-24 16:06:47,762][func.train][INFO] - 
+
+[2024-07-24 16:06:47,762][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 16:06:47,762][func.train][INFO] - [DATASET] avg video length: 31.22 minutes
+[2024-07-24 16:06:49,199][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 16:06:49,200][func.train][INFO] - [DATASET] split: test video_indices: [66]
+[2024-07-24 16:06:49,266][func.train][INFO] - [DATASET] test size: 45601
+[2024-07-24 16:06:49,266][func.train][INFO] - [DATASET] test video_indices: [66]
+[2024-07-24 16:06:49,266][func.train][INFO] - [DATASET] video_idx: 66
+[2024-07-24 16:06:49,274][func.train][INFO] - [DATASET] Sampled video_idx: 66 at 25 fps to 1824 frames
+[2024-07-24 16:06:49,275][func.train][INFO] - [DATASET] video 66 phase_labels: torch.Size([1824])
+[2024-07-24 16:06:49,324][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1824, 8])
+[2024-07-24 16:06:49,324][func.train][INFO] - 
+
+[2024-07-24 16:06:49,324][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 16:06:49,324][func.train][INFO] - [DATASET] avg video length: 30.40 minutes
+[2024-07-24 16:06:50,762][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 16:06:50,762][func.train][INFO] - [DATASET] split: test video_indices: [67]
+[2024-07-24 16:06:50,828][func.train][INFO] - [DATASET] test size: 58826
+[2024-07-24 16:06:50,828][func.train][INFO] - [DATASET] test video_indices: [67]
+[2024-07-24 16:06:50,828][func.train][INFO] - [DATASET] video_idx: 67
+[2024-07-24 16:06:50,840][func.train][INFO] - [DATASET] Sampled video_idx: 67 at 25 fps to 2353 frames
+[2024-07-24 16:06:50,841][func.train][INFO] - [DATASET] video 67 phase_labels: torch.Size([2353])
+[2024-07-24 16:06:50,902][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2353, 8])
+[2024-07-24 16:06:50,902][func.train][INFO] - 
+
+[2024-07-24 16:06:50,902][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 16:06:50,902][func.train][INFO] - [DATASET] avg video length: 39.22 minutes
+[2024-07-24 16:06:52,266][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 16:06:52,267][func.train][INFO] - [DATASET] split: test video_indices: [68]
+[2024-07-24 16:06:52,327][func.train][INFO] - [DATASET] test size: 49301
+[2024-07-24 16:06:52,328][func.train][INFO] - [DATASET] test video_indices: [68]
+[2024-07-24 16:06:52,328][func.train][INFO] - [DATASET] video_idx: 68
+[2024-07-24 16:06:52,336][func.train][INFO] - [DATASET] Sampled video_idx: 68 at 25 fps to 1972 frames
+[2024-07-24 16:06:52,337][func.train][INFO] - [DATASET] video 68 phase_labels: torch.Size([1972])
+[2024-07-24 16:06:52,406][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1972, 8])
+[2024-07-24 16:06:52,406][func.train][INFO] - 
+
+[2024-07-24 16:06:52,406][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 16:06:52,406][func.train][INFO] - [DATASET] avg video length: 32.87 minutes
+[2024-07-24 16:06:53,880][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 16:06:53,881][func.train][INFO] - [DATASET] split: test video_indices: [69]
+[2024-07-24 16:06:53,975][func.train][INFO] - [DATASET] test size: 114376
+[2024-07-24 16:06:53,975][func.train][INFO] - [DATASET] test video_indices: [69]
+[2024-07-24 16:06:53,975][func.train][INFO] - [DATASET] video_idx: 69
+[2024-07-24 16:06:53,998][func.train][INFO] - [DATASET] Sampled video_idx: 69 at 25 fps to 4575 frames
+[2024-07-24 16:06:53,999][func.train][INFO] - [DATASET] video 69 phase_labels: torch.Size([4575])
+[2024-07-24 16:06:54,104][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([4575, 8])
+[2024-07-24 16:06:54,104][func.train][INFO] - 
+
+[2024-07-24 16:06:54,105][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 16:06:54,105][func.train][INFO] - [DATASET] avg video length: 76.25 minutes
+[2024-07-24 16:06:55,582][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 16:06:55,582][func.train][INFO] - [DATASET] split: test video_indices: [70]
+[2024-07-24 16:06:55,638][func.train][INFO] - [DATASET] test size: 29851
+[2024-07-24 16:06:55,638][func.train][INFO] - [DATASET] test video_indices: [70]
+[2024-07-24 16:06:55,638][func.train][INFO] - [DATASET] video_idx: 70
+[2024-07-24 16:06:55,643][func.train][INFO] - [DATASET] Sampled video_idx: 70 at 25 fps to 1194 frames
+[2024-07-24 16:06:55,644][func.train][INFO] - [DATASET] video 70 phase_labels: torch.Size([1194])
+[2024-07-24 16:06:55,684][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1194, 8])
+[2024-07-24 16:06:55,684][func.train][INFO] - 
+
+[2024-07-24 16:06:55,684][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 16:06:55,684][func.train][INFO] - [DATASET] avg video length: 19.90 minutes
+[2024-07-24 16:06:57,068][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 16:06:57,068][func.train][INFO] - [DATASET] split: test video_indices: [71]
+[2024-07-24 16:06:57,138][func.train][INFO] - [DATASET] test size: 62876
+[2024-07-24 16:06:57,138][func.train][INFO] - [DATASET] test video_indices: [71]
+[2024-07-24 16:06:57,138][func.train][INFO] - [DATASET] video_idx: 71
+[2024-07-24 16:06:57,150][func.train][INFO] - [DATASET] Sampled video_idx: 71 at 25 fps to 2515 frames
+[2024-07-24 16:06:57,151][func.train][INFO] - [DATASET] video 71 phase_labels: torch.Size([2515])
+[2024-07-24 16:06:57,204][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2515, 8])
+[2024-07-24 16:06:57,204][func.train][INFO] - 
+
+[2024-07-24 16:06:57,204][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 16:06:57,204][func.train][INFO] - [DATASET] avg video length: 41.92 minutes
+[2024-07-24 16:06:58,617][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 16:06:58,617][func.train][INFO] - [DATASET] split: test video_indices: [72]
+[2024-07-24 16:06:58,691][func.train][INFO] - [DATASET] test size: 77651
+[2024-07-24 16:06:58,691][func.train][INFO] - [DATASET] test video_indices: [72]
+[2024-07-24 16:06:58,691][func.train][INFO] - [DATASET] video_idx: 72
+[2024-07-24 16:06:58,706][func.train][INFO] - [DATASET] Sampled video_idx: 72 at 25 fps to 3106 frames
+[2024-07-24 16:06:58,707][func.train][INFO] - [DATASET] video 72 phase_labels: torch.Size([3106])
+[2024-07-24 16:06:58,775][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3106, 8])
+[2024-07-24 16:06:58,775][func.train][INFO] - 
+
+[2024-07-24 16:06:58,776][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 16:06:58,776][func.train][INFO] - [DATASET] avg video length: 51.77 minutes
+[2024-07-24 16:07:00,305][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 16:07:00,306][func.train][INFO] - [DATASET] split: test video_indices: [73]
+[2024-07-24 16:07:00,366][func.train][INFO] - [DATASET] test size: 33901
+[2024-07-24 16:07:00,366][func.train][INFO] - [DATASET] test video_indices: [73]
+[2024-07-24 16:07:00,366][func.train][INFO] - [DATASET] video_idx: 73
+[2024-07-24 16:07:00,372][func.train][INFO] - [DATASET] Sampled video_idx: 73 at 25 fps to 1356 frames
+[2024-07-24 16:07:00,373][func.train][INFO] - [DATASET] video 73 phase_labels: torch.Size([1356])
+[2024-07-24 16:07:00,419][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1356, 8])
+[2024-07-24 16:07:00,419][func.train][INFO] - 
+
+[2024-07-24 16:07:00,419][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 16:07:00,419][func.train][INFO] - [DATASET] avg video length: 22.60 minutes
+[2024-07-24 16:07:01,875][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 16:07:01,875][func.train][INFO] - [DATASET] split: test video_indices: [74]
+[2024-07-24 16:07:01,938][func.train][INFO] - [DATASET] test size: 40851
+[2024-07-24 16:07:01,938][func.train][INFO] - [DATASET] test video_indices: [74]
+[2024-07-24 16:07:01,938][func.train][INFO] - [DATASET] video_idx: 74
+[2024-07-24 16:07:01,947][func.train][INFO] - [DATASET] Sampled video_idx: 74 at 25 fps to 1634 frames
+[2024-07-24 16:07:01,948][func.train][INFO] - [DATASET] video 74 phase_labels: torch.Size([1634])
+[2024-07-24 16:07:01,995][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1634, 8])
+[2024-07-24 16:07:01,996][func.train][INFO] - 
+
+[2024-07-24 16:07:01,996][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 16:07:01,996][func.train][INFO] - [DATASET] avg video length: 27.23 minutes
+[2024-07-24 16:07:03,486][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 16:07:03,487][func.train][INFO] - [DATASET] split: test video_indices: [75]
+[2024-07-24 16:07:03,552][func.train][INFO] - [DATASET] test size: 48076
+[2024-07-24 16:07:03,552][func.train][INFO] - [DATASET] test video_indices: [75]
+[2024-07-24 16:07:03,552][func.train][INFO] - [DATASET] video_idx: 75
+[2024-07-24 16:07:03,561][func.train][INFO] - [DATASET] Sampled video_idx: 75 at 25 fps to 1923 frames
+[2024-07-24 16:07:03,562][func.train][INFO] - [DATASET] video 75 phase_labels: torch.Size([1923])
+[2024-07-24 16:07:03,614][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1923, 8])
+[2024-07-24 16:07:03,614][func.train][INFO] - 
+
+[2024-07-24 16:07:03,615][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 16:07:03,615][func.train][INFO] - [DATASET] avg video length: 32.05 minutes
+[2024-07-24 16:07:05,102][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 16:07:05,103][func.train][INFO] - [DATASET] split: test video_indices: [76]
+[2024-07-24 16:07:05,176][func.train][INFO] - [DATASET] test size: 66226
+[2024-07-24 16:07:05,177][func.train][INFO] - [DATASET] test video_indices: [76]
+[2024-07-24 16:07:05,177][func.train][INFO] - [DATASET] video_idx: 76
+[2024-07-24 16:07:05,209][func.train][INFO] - [DATASET] Sampled video_idx: 76 at 25 fps to 2649 frames
+[2024-07-24 16:07:05,210][func.train][INFO] - [DATASET] video 76 phase_labels: torch.Size([2649])
+[2024-07-24 16:07:05,271][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2649, 8])
+[2024-07-24 16:07:05,271][func.train][INFO] - 
+
+[2024-07-24 16:07:05,271][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 16:07:05,271][func.train][INFO] - [DATASET] avg video length: 44.15 minutes
+[2024-07-24 16:07:06,656][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 16:07:06,657][func.train][INFO] - [DATASET] split: test video_indices: [77]
+[2024-07-24 16:07:06,730][func.train][INFO] - [DATASET] test size: 62551
+[2024-07-24 16:07:06,730][func.train][INFO] - [DATASET] test video_indices: [77]
+[2024-07-24 16:07:06,730][func.train][INFO] - [DATASET] video_idx: 77
+[2024-07-24 16:07:06,743][func.train][INFO] - [DATASET] Sampled video_idx: 77 at 25 fps to 2502 frames
+[2024-07-24 16:07:06,744][func.train][INFO] - [DATASET] video 77 phase_labels: torch.Size([2502])
+[2024-07-24 16:07:06,804][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([2502, 8])
+[2024-07-24 16:07:06,804][func.train][INFO] - 
+
+[2024-07-24 16:07:06,804][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 16:07:06,804][func.train][INFO] - [DATASET] avg video length: 41.70 minutes
+[2024-07-24 16:07:08,256][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 16:07:08,257][func.train][INFO] - [DATASET] split: test video_indices: [78]
+[2024-07-24 16:07:08,318][func.train][INFO] - [DATASET] test size: 18476
+[2024-07-24 16:07:08,319][func.train][INFO] - [DATASET] test video_indices: [78]
+[2024-07-24 16:07:08,319][func.train][INFO] - [DATASET] video_idx: 78
+[2024-07-24 16:07:08,322][func.train][INFO] - [DATASET] Sampled video_idx: 78 at 25 fps to 739 frames
+[2024-07-24 16:07:08,322][func.train][INFO] - [DATASET] video 78 phase_labels: torch.Size([739])
+[2024-07-24 16:07:08,358][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([739, 8])
+[2024-07-24 16:07:08,359][func.train][INFO] - 
+
+[2024-07-24 16:07:08,359][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 16:07:08,359][func.train][INFO] - [DATASET] avg video length: 12.32 minutes
+[2024-07-24 16:07:09,810][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 16:07:09,811][func.train][INFO] - [DATASET] split: test video_indices: [79]
+[2024-07-24 16:07:09,893][func.train][INFO] - [DATASET] test size: 85351
+[2024-07-24 16:07:09,893][func.train][INFO] - [DATASET] test video_indices: [79]
+[2024-07-24 16:07:09,893][func.train][INFO] - [DATASET] video_idx: 79
+[2024-07-24 16:07:09,910][func.train][INFO] - [DATASET] Sampled video_idx: 79 at 25 fps to 3414 frames
+[2024-07-24 16:07:09,911][func.train][INFO] - [DATASET] video 79 phase_labels: torch.Size([3414])
+[2024-07-24 16:07:09,985][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([3414, 8])
+[2024-07-24 16:07:09,986][func.train][INFO] - 
+
+[2024-07-24 16:07:09,986][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 16:07:09,986][func.train][INFO] - [DATASET] avg video length: 56.90 minutes
+[2024-07-24 16:07:11,462][func.train][INFO] - [DATASET] df unique videos: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
+ 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51
+ 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75
+ 76 77 78 79 80]
+[2024-07-24 16:07:11,462][func.train][INFO] - [DATASET] split: test video_indices: [80]
+[2024-07-24 16:07:11,530][func.train][INFO] - [DATASET] test size: 43101
+[2024-07-24 16:07:11,530][func.train][INFO] - [DATASET] test video_indices: [80]
+[2024-07-24 16:07:11,530][func.train][INFO] - [DATASET] video_idx: 80
+[2024-07-24 16:07:11,538][func.train][INFO] - [DATASET] Sampled video_idx: 80 at 25 fps to 1724 frames
+[2024-07-24 16:07:11,539][func.train][INFO] - [DATASET] video 80 phase_labels: torch.Size([1724])
+[2024-07-24 16:07:11,591][func.train][INFO] - [DATASET] gt_remaining_time h=3: torch.Size([1724, 8])
+[2024-07-24 16:07:11,591][func.train][INFO] - 
+
+[2024-07-24 16:07:11,591][func.train][INFO] - [DATASET] number of test videos: 1
+[2024-07-24 16:07:11,591][func.train][INFO] - [DATASET] avg video length: 28.73 minutes
+[2024-07-24 16:07:11,611][func.train][INFO] - Time to load datasets: 0.90 min
+[2024-07-24 16:07:11,611][func.train][INFO] - Creating data loaders
+[2024-07-24 16:07:11,613][func.train][INFO] - Creating model with {'one': 7} classes
+[2024-07-24 16:07:12,268][func.train][INFO] - [MAIN] Number of tokens: 136873
+[2024-07-24 16:07:12,268][func.train][INFO] - [MAIN] Number of parameters: 22766816
+[2024-07-24 16:07:12,268][func.train][INFO] - [MAIN] Token-to-Parameter Ratio is ideally between [1:1 to 10:1]: 0.006012
+[2024-07-24 16:07:12,269][func.train][WARNING] - [MAIN] Data-to-Parameter-Ratio is outside the interval [1:1 to 10:1]
+[2024-07-24 16:07:12,269][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-07-24 16:07:12,270][func.train][INFO] - Using LR 0.000300 WD 0.000010 for parameters
+[2024-07-24 16:07:12,275][func.train][INFO] - Wrapping model into DP
+[2024-07-24 16:07:12,350][func.train][INFO] - Start training
+[2024-07-24 16:07:12,353][func.train][INFO] - Storing checkpoints every 60.00 mins
+[2024-07-24 16:07:13,411][func.train][INFO] - [TRAINING] Step 0/2139 | Loss: 0.71 | Acc (curr_frames): 0.05 | time-left: 37.68 min
+[2024-07-24 16:07:48,467][func.train][INFO] - [TRAINING] Step 100/2139 | Loss: 0.93 | Acc (curr_frames): 0.09 | time-left: 12.15 min
+[2024-07-24 16:08:21,956][func.train][INFO] - [TRAINING] Step 200/2139 | Loss: 0.90 | Acc (curr_frames): 0.06 | time-left: 11.18 min
+[2024-07-24 16:08:55,534][func.train][INFO] - [TRAINING] Step 300/2139 | Loss: 1.21 | Acc (curr_frames): 0.11 | time-left: 10.50 min
+[2024-07-24 16:09:28,715][func.train][INFO] - [TRAINING] Step 400/2139 | Loss: 0.69 | Acc (curr_frames): 0.13 | time-left: 9.85 min

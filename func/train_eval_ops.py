@@ -35,6 +35,8 @@ class NoLossAccuracy(nn.Module):
 class BasicLossAccuracy(nn.Module):
     def __init__(self, dataset, device,
                 rtd_loss_fn="smooth_l1", # remaining_time_weighted
+                weight_type='exponential',
+                time_horizon=5,
                 loss_w_curr=0.5, loss_w_next=0.5, loss_w_feats=0.0, loss_w_remaining_time=0.5,
     ):
 
@@ -79,8 +81,9 @@ class BasicLossAccuracy(nn.Module):
         if rtd_loss_fn == "smooth_l1":
             self.rtd_loss_fn = nn.SmoothL1Loss(reduction='none')
         elif rtd_loss_fn == "remaining_time_weighted":
-            # add class weights to the loss function since there are more Out of horizon values than in horizon
-            self.rtd_loss_fn = RemainingTimeLoss()
+            self.rtd_loss_fn = RemainingTimeLoss(h=time_horizon, 
+                                                 use_smooth_l1=False, 
+                                                 weight_type=weight_type)
         else:
             raise ValueError(f"Unknown remaining time loss function: {rtd_loss_fn}")
 
@@ -163,8 +166,10 @@ class Basic:
         self.h = horizon
         self.device = device
         self.cls_loss_acc_fn = hydra.utils.instantiate(cls_loss_acc_fn,
-                                                       dataset, device)
+                                                        dataset, device,
+                                                        time_horizon=horizon)
 
+                                                       
     def __call__(
             self,
             data: dict,

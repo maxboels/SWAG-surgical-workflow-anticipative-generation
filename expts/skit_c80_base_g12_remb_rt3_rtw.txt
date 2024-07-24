@@ -7,8 +7,8 @@ ctx_pooling=global
 num_ctx_tokens=12
 max_seq_len=24
 
-eval_horizons=[5]
-max_anticip_time=5
+eval_horizons=[3]
+max_anticip_time=3
 num_ant_queries=1
 
 rtd_loss_fn=remaining_time_weighted
