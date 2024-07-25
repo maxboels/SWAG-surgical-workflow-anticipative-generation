@@ -19,7 +19,7 @@ test_only: false
 eval_horizons: [18, 5, 3, 2] # in minutes
 
 num_epochs: 20
-best_score: 0.4
+best_score: 1.0
 main_metric: "acc_curr_future" # wMAE
 finetune_ckpt: best # or best
 

@@ -1,9 +1,5 @@
-skit-c80-base-g12-ccemb-rt5-r1-6020
-skit-c80-base-g12-cemb-c5
-skit-c80-base-g12-remb-rt18-r1
-skit-c80-base-g12-remb-rt2-r1
-skit-c80-base-g12-remb-rt2-r1-rtw
-skit-c80-base-g12-remb-rt3-r1
-skit-c80-base-g12-remb-rt3-r1-rtw
-skit-c80-base-g12-remb-rt5-r1
-skit-c80-base-g12-remb-rt5-rtd-loss
+skit-c80-b-g12-remb-rt3-l1-exp
+skit-c80-b-g12-remb-rt3-l1-lin
+skit-c80-b-g12-remb-rt5-l1-exp
+skit-c80-base-g12-remb-rt3-exp
+skit-c80-base-g12-remb-rt3-exp1

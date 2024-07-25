@@ -6,12 +6,11 @@ class RemainingTimeLoss(nn.Module):
     Normalizes inputs and targets to [0, 1] range and applies weighting
     to be more sensitive to lower remaining times.
     """
-    def __init__(self, h, beta=1.0, epsilon=1e-6, base_rtd_loss='l1', weight_type='exponential', alpha=0.1, normalize_weights=False):
+    def __init__(self, h, beta=1.0, epsilon=1e-6, base_rtd_loss='mse', weight_type='exponential', alpha=0.1, normalize_weights=False):
         super().__init__()
         self.h = h
         self.beta = beta
         self.epsilon = epsilon
-        # self.use_smooth_l1 = use_smooth_l1
         self.weight_type = weight_type
         self.alpha = alpha  # Controls the minimum weight for linear weighting        
         self.normalize_weights = normalize_weights
@@ -22,6 +21,7 @@ class RemainingTimeLoss(nn.Module):
         return x / self.h
 
     def forward(self, predictions, targets):
+
         # Normalize predictions and targets to [0, 1] range
         norm_predictions = self.normalize(predictions)
         norm_targets = self.normalize(targets)
@@ -32,11 +32,11 @@ class RemainingTimeLoss(nn.Module):
             base_rtd_loss = torch.where(diff < self.beta, 
                                     0.5 * diff ** 2 / self.beta, 
                                     diff - 0.5 * self.beta)
-        elif self.base_rtd_loss == 'l1':
-            # Calculate base loss (L1) or Mean Absolute Error (MAE)
+        elif self.base_rtd_loss == 'mae':
+            # Calculate base loss Mean Absolute Error (MAE) or L1 loss
             base_rtd_loss = torch.abs(norm_predictions - norm_targets)
-        elif self.base_rtd_loss == 'l2':
-            # Calculate base loss (L2) or Mean Squared Error (MSE)
+        elif self.base_rtd_loss == 'mse':
+            # Calculate base loss Mean Squared Error (MSE) or L2 loss
             base_rtd_loss = (norm_predictions - norm_targets) ** 2
         else:
             raise ValueError("Invalid base_rtd_loss. Choose 'l1', 'l2', or 'smooth_l1'.")
