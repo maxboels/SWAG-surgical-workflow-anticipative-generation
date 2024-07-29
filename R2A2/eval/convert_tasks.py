@@ -1,22 +1,22 @@
 import torch
-
-import torch
 import numpy as np
 from scipy.interpolate import interp1d
 
-def find_intersections(x, y1, y2):
-    """Find intersections between two curves."""
+def find_intersections(x, y1, y2, epsilon=1e-8):
+    """Find intersections between two curves with improved numerical stability."""
     diff = y1 - y2
     indices = np.where((diff[:-1] * diff[1:]) <= 0)[0]
     
     intersections = []
     for i in indices:
-        x_intersect = x[i] + (x[i+1] - x[i]) * (0 - diff[i]) / (diff[i+1] - diff[i])
-        intersections.append(x_intersect)
+        denominator = diff[i+1] - diff[i]
+        if abs(denominator) > epsilon:
+            x_intersect = x[i] + (x[i+1] - x[i]) * (0 - diff[i]) / denominator
+            intersections.append(x_intersect)
     
     return intersections
 
-def classification2regression(video_anticipation_probs, horizon_minutes=18):
+def classification2regression(video_anticipation_probs, horizon_minutes=18, prob_threshold=0.05):
     """
     Convert classification probabilities to regression values for a video sequence
     using probability intersections to determine phase transitions.
@@ -24,43 +24,123 @@ def classification2regression(video_anticipation_probs, horizon_minutes=18):
     Args:
         video_anticipation_probs (torch.Tensor): Tensor of shape (video_length, horizon_minutes+1, num_classes)
         horizon_minutes (int): The time horizon in minutes
+        prob_threshold (float): Minimum probability difference to consider a valid transition
     
     Returns:
         torch.Tensor: Tensor of shape (video_length, num_classes) with regression values
     """
     video_length, horizon_steps, num_classes = video_anticipation_probs.shape
     
-    # Initialize output tensor
     output = torch.full((video_length, num_classes), horizon_minutes, dtype=torch.float32)
-    
-    # Create a time array
     time_array = np.linspace(0, horizon_minutes, horizon_steps)
     
     for t in range(video_length):
-        probs = video_anticipation_probs[t]
-        
-        # Find the current most probable class
+        probs = video_anticipation_probs[t].numpy()
         current_class = np.argmax(probs[0])
-        
-        # Interpolate probability curves for smoother intersection finding
         interp_probs = [interp1d(time_array, probs[:, c], kind='cubic') for c in range(num_classes)]
         
-        # Find intersections for each class
         for c in range(num_classes):
             if c == current_class:
-                output[t, c] = 0  # Current class has 0 remaining time
+                output[t, c] = 0
                 continue
             
             intersections = find_intersections(time_array, interp_probs[current_class](time_array), interp_probs[c](time_array))
             
             if intersections:
-                # Find the first intersection where the class probability becomes higher
+                valid_intersections = []
                 for intersect in intersections:
-                    if interp_probs[c](intersect) > interp_probs[current_class](intersect):
-                        output[t, c] = intersect
-                        break
+                    prob_diff = interp_probs[c](intersect) - interp_probs[current_class](intersect)
+                    if prob_diff > prob_threshold:
+                        valid_intersections.append((intersect, prob_diff))
+                
+                if valid_intersections:
+                    best_intersect = min(valid_intersections, key=lambda x: x[0])[0]
+                    output[t, c] = best_intersect
+                else:
+                    # If no valid intersection, find point of maximum probability difference
+                    prob_diffs = interp_probs[c](time_array) - interp_probs[current_class](time_array)
+                    max_diff_index = np.argmax(prob_diffs)
+                    if prob_diffs[max_diff_index] > prob_threshold:
+                        output[t, c] = time_array[max_diff_index]
     
     return output
+
+# def find_intersections(x, y1, y2, epsilon=1e-8):
+#     """Find intersections between two curves with improved numerical stability."""
+#     diff = y1 - y2
+#     indices = np.where((diff[:-1] * diff[1:]) <= 0)[0]
+    
+#     intersections = []
+#     for i in indices:
+#         denominator = diff[i+1] - diff[i]
+#         if abs(denominator) > epsilon:
+#             x_intersect = x[i] + (x[i+1] - x[i]) * (0 - diff[i]) / denominator
+#             intersections.append(x_intersect)
+    
+#     return intersections
+
+# def find_intersections(x, y1, y2):
+#     """Find intersections between two curves."""
+#     diff = y1 - y2
+#     indices = np.where((diff[:-1] * diff[1:]) <= 0)[0]
+    
+#     intersections = []
+#     for i in indices:
+#         x_intersect = x[i] + (x[i+1] - x[i]) * (0 - diff[i]) / (diff[i+1] - diff[i])
+#         intersections.append(x_intersect)
+    
+#     return intersections
+
+# def classification2regression(video_anticipation_probs, horizon_minutes=18):
+#     """
+#     Convert classification probabilities to regression values for a video sequence
+#     using probability intersections to determine phase transitions.
+
+#     Args:
+#         video_anticipation_probs (torch.Tensor): Tensor of shape (video_length, horizon_minutes+1, num_classes)
+#         horizon_minutes (int): The time horizon in minutes
+    
+#     Input tensor should have the following dimensions:
+#     - video_length: Number of time steps in the video sequence
+#     - horizon_minutes+1: Number of time steps in the future to consider for anticipation (including the current time step)
+#     - num_classes: Number of anticipation classes
+    
+#     Returns:
+#         torch.Tensor: Tensor of shape (video_length, num_classes) with regression values
+#     """
+#     video_length, horizon_steps, num_classes = video_anticipation_probs.shape
+    
+#     # Initialize output tensor
+#     output = torch.full((video_length, num_classes), horizon_minutes, dtype=torch.float32)
+    
+#     # Create a time array
+#     time_array = np.linspace(0, horizon_minutes, horizon_steps)
+    
+#     for t in range(video_length):
+#         probs = video_anticipation_probs[t]
+        
+#         # Find the current most probable class
+#         current_class = np.argmax(probs[0])
+        
+#         # Interpolate probability curves for smoother intersection finding
+#         interp_probs = [interp1d(time_array, probs[:, c], kind='cubic') for c in range(num_classes)]
+        
+#         # Find intersections for each class
+#         for c in range(num_classes):
+#             if c == current_class:
+#                 output[t, c] = 0  # Current class has 0 remaining time
+#                 continue
+            
+#             intersections = find_intersections(time_array, interp_probs[current_class](time_array), interp_probs[c](time_array))
+            
+#             if intersections:
+#                 # Find the first intersection where the class probability becomes higher
+#                 for intersect in intersections:
+#                     if interp_probs[c](intersect) > interp_probs[current_class](intersect):
+#                         output[t, c] = intersect
+#                         break
+    
+#     return output
 
 
 

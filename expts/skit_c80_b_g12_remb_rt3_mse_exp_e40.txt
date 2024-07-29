@@ -1,25 +1,27 @@
-test_only=true
+test_only=false
 
 main_metric=wMAE
 
-num_epochs=20
+num_epochs=40
 
 model_name=skit
 ctx_pooling=global
 num_ctx_tokens=12
 max_seq_len=24
 
-eval_horizons=[5]
-max_anticip_time=5
-num_ant_queries=5
+eval_horizons=[3]
+max_anticip_time=3
+num_ant_queries=1
 
+base_rtd_loss=mse
+rtd_weight_type=exponential
 loss_w_curr=0.4
-loss_w_next=0.6
+loss_w_next=0.0
 loss_w_feats=0.0
-loss_w_remaining_time=0.0
+loss_w_remaining_time=1.0
 
-do_classification=true
-do_regression=false
+do_classification=false
+do_regression=true
 
 probs_to_regression_method=first_occurrence
 eos_weight=mean
