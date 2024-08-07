@@ -83,6 +83,8 @@ class BasicLossAccuracy(nn.Module):
                                             base_rtd_loss=base_rtd_loss, 
                                             weight_type=weight_type,
                                             normalize_weights=mean_normalize_weights)
+        
+        # loss_fn = RemainingTimeLoss(h=5, weight_type='logarithmic', log_scale=10)
 
 
         if hasattr(dataset, "sampler_with_position"):

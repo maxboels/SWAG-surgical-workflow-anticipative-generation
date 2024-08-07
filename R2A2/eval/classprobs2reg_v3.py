@@ -8,7 +8,7 @@ def find_time_to_next_occurrence_improved(video_anticipation_probs, horizon_minu
     Find the time to next occurrence for each class at each time step in the video.
 
     Args:
-        video_anticipation_probs (torch.Tensor): Tensor of shape (video_length, horizon_steps, num_classes)
+        video_anticipation_probs (np.ndarray): Tensor of shape (video_length, horizon_steps, num_classes)
         horizon_minutes (int): The time horizon in minutes
     
     Returns:
@@ -23,7 +23,9 @@ def find_time_to_next_occurrence_improved(video_anticipation_probs, horizon_minu
     time_array = np.linspace(0, horizon_minutes, horizon_steps)
     
     for t in range(video_length):
-        probs = video_anticipation_probs[t].numpy()
+        
+        probs = video_anticipation_probs[t]
+
         current_class = np.argmax(probs[0])
         
         # Set time to 0 for the current highest probability class
