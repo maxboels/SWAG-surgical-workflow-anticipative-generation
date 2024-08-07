@@ -38,6 +38,7 @@ save_video_labels_to_npy: false
 
 model_name: supra          # skit / supra / lstm / gru / naive1 / naive2
 input_tokens: normal  # class_conditioned / normal
+conditional_probs_embeddings: true
 normalize_priors: false
 
 decoder_anticipation: models.transformers.ClassConditionedTransformerDecoder
@@ -328,7 +329,7 @@ model:
       n_heads: ${n_head}
       n_layers: ${n_layer}
     decoder_cc:
-      _target_: ${decoder_anticipation}
+      _target_: models.transformers.ClassConditionedTransformerDecoder
       cfg:
         dataset: ${dataset_name}
         horizon: ${max_anticip_time}
@@ -340,6 +341,7 @@ model:
       hidden_dim: ${n_embd}
       n_heads: ${n_head}
       n_layers: ${n_layer}
+      conditional_probs_embeddings: ${conditional_probs_embeddings}
       normalize_priors: ${normalize_priors}
     informer:
       _target_: Informer2020.models.model.Informer

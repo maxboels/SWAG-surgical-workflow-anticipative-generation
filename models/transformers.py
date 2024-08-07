@@ -81,7 +81,8 @@ class PositionalEncoding(nn.Module):
 
 class ClassConditionedTransformerDecoder(nn.Module):
     def __init__(self, cfg, num_queries, input_dim, hidden_dim, n_heads, n_layers, num_classes, 
-                        normalize_priors=False, dim_feedforward=2048, dropout=0.1):
+                    conditional_probs_embeddings=True,
+                    normalize_priors=False, dim_feedforward=2048, dropout=0.1):
         super(ClassConditionedTransformerDecoder, self).__init__()
 
         dataset = cfg.dataset
@@ -91,6 +92,7 @@ class ClassConditionedTransformerDecoder(nn.Module):
         self.do_regression = cfg.do_regression
 
         self.num_classes = num_classes
+        self.conditional_probs_embeddings = conditional_probs_embeddings
         self.normalize_priors = normalize_priors
 
         if self.normalize_priors:
@@ -104,22 +106,24 @@ class ClassConditionedTransformerDecoder(nn.Module):
         self.output_layer = nn.Linear(hidden_dim, hidden_dim)
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-        if self.do_classification:
-            # num_classes = num_classes + 1  # Add EOS class
-            root = "/nfs/home/mboels/projects/SuPRA/datasets"
-            path_class_probs = root + f"/{dataset}/naive2_{dataset}_class_probs_at{h}.json"
-            with open(path_class_probs, 'r') as f:
-                class_freq_pos = json.load(f)
-            class_freq_pos = {int(k): [{int(inner_k): inner_v for inner_k, inner_v in freq_dict.items()} for freq_dict in v] for k, v in class_freq_pos.items()}
-            self.sampler = GaussianMixtureSamplerWithPosition(class_freq_pos, lookahead=num_queries)
-        elif self.do_regression:
-            file_path= f"/nfs/home/mboels/projects/SuPRA/datasets/{dataset}/rem_time_{h}_conditional_probs.npy"
-            self.rt_conditional_probs = np.load(file_path)
-            self.rt_conditional_probs = torch.tensor(self.rt_conditional_probs).to(self.device)
-            print(f"[ClassConditionedTransformerDecoderRegression] rt_conditional_probs: {self.rt_conditional_probs.shape}")
+        if self.conditional_probs_embeddings:
+            if self.do_classification:
+                # num_classes = num_classes + 1  # Add EOS class
+                root = "/nfs/home/mboels/projects/SuPRA/datasets"
+                path_class_probs = root + f"/{dataset}/naive2_{dataset}_class_probs_at{h}.json"
+                with open(path_class_probs, 'r') as f:
+                    class_freq_pos = json.load(f)
+                class_freq_pos = {int(k): [{int(inner_k): inner_v for inner_k, inner_v in freq_dict.items()} for freq_dict in v] for k, v in class_freq_pos.items()}
+                self.sampler = GaussianMixtureSamplerWithPosition(class_freq_pos, lookahead=num_queries)
+            elif self.do_regression and self.conditional_probs_embeddings:
+                file_path= f"/nfs/home/mboels/projects/SuPRA/datasets/{dataset}/rem_time_{h}_conditional_probs.npy"
+                self.rt_conditional_probs = np.load(file_path)
+                self.rt_conditional_probs = torch.tensor(self.rt_conditional_probs).to(self.device)
+                print(f"[ClassConditionedTransformerDecoderRegression] rt_conditional_probs: {self.rt_conditional_probs.shape}")
+            else:
+                raise ValueError("Multi-task learning not supported yet.")
         else:
-            raise ValueError("Multi-task learning not supported yet.")
+            print("[ClassConditionedTransformerDecoder] No conditional probabilities used.")
 
     def forward(self, query_embeddings, memory, current_pred=None, current_gt=None):
         batch_size, seq_len, _ = query_embeddings.size()
@@ -134,60 +138,60 @@ class ClassConditionedTransformerDecoder(nn.Module):
         print(f"[ClassConditionedTransformerDecoder] memory_embedded (with LN+PE): {memory_embedded.shape}")
 
         # Initialize combined embeddings
-        combined_embeddings = query_embeddings.clone().to(self.device)
-        print(f"[ClassConditionedTransformerDecoder] combined_embeddings (cloned query_embeddings): {combined_embeddings.shape}")
+        input_embeddings = query_embeddings.clone().to(self.device)
+        print(f"[ClassConditionedTransformerDecoder] input_embeddings (cloned query_embeddings): {input_embeddings.shape}")
 
-        # Initialize future class probabilities
-        future_class_probs = torch.zeros(batch_size, seq_len, self.num_classes, device=self.device) + 1e-6
-        print(f"[ClassConditionedTransformerDecoder] future_class_probs (init 1e-6): {future_class_probs.shape}")
-
-        if self.do_classification:
-            for i in range(batch_size):
-                for j in range(seq_len):
-                    if current_gt is not None:
-                        current_class = current_gt[i, -1].item()
-                        # Use ground truth class for teacher forcing
-                        class_probs = self.sampler.class_probs(current_class, j)
-                        for k, v in class_probs.items():
-                            future_class_probs[i, j, k] = v
-                    elif current_pred is not None:
-                        # Use predicted class for inference
-                        current_class = torch.argmax(F.softmax(current_pred[i], dim=-1), dim=-1).item()
-                        class_probs = self.sampler.class_probs(current_class, j)
-                        for k, v in class_probs.items():
-                            future_class_probs[i, j, k] = v
-                    else:
-                        raise ValueError("Either current_pred or current_gt must be provided.")
-            print(f"[ClassConditionedTransformerDecoder] future classes position embedding: {future_class_probs.shape}")
-        elif self.do_regression:
-            for i in range(batch_size):
-                for j in range(seq_len):
-                    if current_gt is not None:
-                        # Use ground truth class for teacher forcing
-                        current_class = current_gt[i, -1].item()
-                        future_class_probs[i, j, :] = self.rt_conditional_probs[current_class, :]
-                    elif current_pred is not None:
-                        # Use predicted class for inference
-                        current_class = torch.argmax(F.softmax(current_pred[i], dim=-1), dim=-1).item()
-                        future_class_probs[i, j, :] = self.rt_conditional_probs[current_class, :]
-                    else:
-                        raise ValueError("Either current_pred or current_gt must be provided.")
-            print(f"[ClassConditionedTransformerDecoder] remaining time embedding: {future_class_probs.shape}")
+        if self.conditional_probs_embeddings:
+            # Initialize future class probabilities
+            future_class_probs = torch.zeros(batch_size, seq_len, self.num_classes, device=self.device) + 1e-6
+            print(f"[ClassConditionedTransformerDecoder] future_class_probs (init 1e-6): {future_class_probs.shape}")
+            if self.do_classification:
+                for i in range(batch_size):
+                    for j in range(seq_len):
+                        if current_gt is not None:
+                            current_class = current_gt[i, -1].item()
+                            # Use ground truth class for teacher forcing
+                            class_probs = self.sampler.class_probs(current_class, j)
+                            for k, v in class_probs.items():
+                                future_class_probs[i, j, k] = v
+                        elif current_pred is not None:
+                            # Use predicted class for inference
+                            current_class = torch.argmax(F.softmax(current_pred[i], dim=-1), dim=-1).item()
+                            class_probs = self.sampler.class_probs(current_class, j)
+                            for k, v in class_probs.items():
+                                future_class_probs[i, j, k] = v
+                        else:
+                            raise ValueError("Either current_pred or current_gt must be provided.")
+                print(f"[ClassConditionedTransformerDecoder] future classes position embedding: {future_class_probs.shape}")
+            elif self.do_regression:
+                for i in range(batch_size):
+                    for j in range(seq_len):
+                        if current_gt is not None:
+                            # Use ground truth class for teacher forcing
+                            current_class = current_gt[i, -1].item()
+                            future_class_probs[i, j, :] = self.rt_conditional_probs[current_class, :]
+                        elif current_pred is not None:
+                            # Use predicted class for inference
+                            current_class = torch.argmax(F.softmax(current_pred[i], dim=-1), dim=-1).item()
+                            future_class_probs[i, j, :] = self.rt_conditional_probs[current_class, :]
+                        else:
+                            raise ValueError("Either current_pred or current_gt must be provided.")
+                print(f"[ClassConditionedTransformerDecoder] remaining time embedding: {future_class_probs.shape}")
+            else:
+                raise ValueError("Multi-task learning not supported yet.")        
+            # TODO: try to Normalize future_class_probs before passing to linear layer
+            if self.normalize_priors:
+                future_class_probs = self.norm_layer(future_class_probs)
+            # Compute class-conditioned embeddings
+            class_conditioned_embedding = self.class_projection_layer(future_class_probs)
+            print(f"[ClassConditionedTransformerDecoder] class_conditioned_embedding (linear increase): {class_conditioned_embedding.shape}")
+            input_embeddings += class_conditioned_embedding
+            print(f"[ClassConditionedTransformerDecoder] input_embeddings (addition): {input_embeddings.shape}")
         else:
-            raise ValueError("Multi-task learning not supported yet.")
+            print("[ClassConditionedTransformerDecoder] Skipping class-conditioned embeddings.")
         
-        # TODO: try to Normalize future_class_probs before passing to linear layer
-        if self.normalize_priors:
-            future_class_probs = self.norm_layer(future_class_probs)
-
-        # Compute class-conditioned embeddings
-        class_conditioned_embedding = self.class_projection_layer(future_class_probs)
-        print(f"[ClassConditionedTransformerDecoder] class_conditioned_embedding (linear increase): {class_conditioned_embedding.shape}")
-        combined_embeddings += class_conditioned_embedding
-        print(f"[ClassConditionedTransformerDecoder] combined_embeddings (addition): {combined_embeddings.shape}")
-
         # Transformer decoder
-        output = self.transformer_decoder(combined_embeddings.transpose(0, 1), memory_embedded.transpose(0, 1))
+        output = self.transformer_decoder(input_embeddings.transpose(0, 1), memory_embedded.transpose(0, 1))
         output = self.output_layer(output.transpose(0, 1))
 
         return output
@@ -235,8 +239,8 @@ class ClassConditionedTransformerDecoderRegression(nn.Module):
         print(f"[ClassConditionedTransformerDecoderRegression] memory_embedded (with LN+PE): {memory_embedded.shape}")
 
         # Initialize combined embeddings
-        combined_embeddings = query_embeddings.clone().to(self.device)
-        print(f"[ClassConditionedTransformerDecoderRegression] combined_embeddings (cloned query_embeddings): {combined_embeddings.shape}")
+        input_embeddings = query_embeddings.clone().to(self.device)
+        print(f"[ClassConditionedTransformerDecoderRegression] input_embeddings (cloned query_embeddings): {input_embeddings.shape}")
 
         # Initialize future class probabilities
         future_class_probs = torch.zeros(batch_size, seq_len, self.num_classes, device=self.device) + 1e-6
@@ -265,11 +269,11 @@ class ClassConditionedTransformerDecoderRegression(nn.Module):
         # Compute class-conditioned embeddings
         class_conditioned_embedding = self.class_projection_layer(future_class_probs)
         print(f"[ClassConditionedTransformerDecoderRegression] class_conditioned_embedding (linear): {class_conditioned_embedding.shape}")
-        combined_embeddings += class_conditioned_embedding
-        print(f"[ClassConditionedTransformerDecoderRegression] combined_embeddings (addition): {combined_embeddings.shape}")
+        input_embeddings += class_conditioned_embedding
+        print(f"[ClassConditionedTransformerDecoderRegression] input_embeddings (addition): {input_embeddings.shape}")
 
         # Transformer decoder
-        output = self.transformer_decoder(combined_embeddings.transpose(0, 1), memory_embedded.transpose(0, 1))
+        output = self.transformer_decoder(input_embeddings.transpose(0, 1), memory_embedded.transpose(0, 1))
         output = self.output_layer(output.transpose(0, 1))
 
         return output

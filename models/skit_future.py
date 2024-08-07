@@ -206,12 +206,13 @@ class SKITFuture(nn.Module):
         else:
             raise ValueError(f"Pooling method {self.ctx_pooling} not implemented.")
         
-        if self.input_tokens == "normal":
-            self.frame_decoder = hydra.utils.instantiate(decoder, _recursive_=False)
-        elif self.input_tokens == "class_conditioned":
-            self.frame_decoder = hydra.utils.instantiate(decoder_cc,
-                                                        num_classes=num_future_classes, 
-                                                        _recursive_=False)
+        # if self.input_tokens == "normal":
+        #     self.frame_decoder = hydra.utils.instantiate(decoder, 
+        #                                                  _recursive_=False)
+        # elif self.input_tokens == "class_conditioned":
+        self.frame_decoder = hydra.utils.instantiate(decoder_cc,
+                                                    num_classes=num_future_classes, 
+                                                    _recursive_=False)
 
         self.curr_frames_classifier = nn.Linear(d_model, num_curr_classes)
         self.future_action_classifier = nn.Linear(dec_dim, num_future_classes) # optional +1 for the EOS (end of sequence token)

@@ -1,5 +1,8 @@
-skit-c80-b-g12-remb-rt3-l1-exp
-skit-c80-b-g12-remb-rt3-l1-lin
-skit-c80-b-g12-remb-rt5-l1-exp
-skit-c80-base-g12-remb-rt3-exp
+skit-c80-b-g12-remb-rt18-mse-exp
+skit-c80-b-g12-remb-rt3-mse-exp
+skit-c80-b-g12-remb-rt3-mse-exp-e40
+skit-c80-b-g12-remb-rt5-mse-exp
+skit-c80-base-g12-cemb-c5
+skit-c80-base-g12-cemb-c5-v2
+skit-c80-base-g12-cemb-c5-v3
 skit-c80-base-g12-remb-rt3-exp1
