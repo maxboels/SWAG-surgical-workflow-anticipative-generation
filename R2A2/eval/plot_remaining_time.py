@@ -27,8 +27,8 @@ def plot_remaining_time_video(gt_remaining_time, pred_remaining_time, h, num_obs
         cmap = mcolors.ListedColormap(colors)
 
     # create rtd folder if doesnt exist
-    if not os.path.exists(f"./plots/{dataset}/rtd/"):
-        os.makedirs(f"./plots/{dataset}/rtd/")
+    if not os.path.exists(f"./plots/{dataset}/{h}/rtd/"):
+        os.makedirs(f"./plots/{dataset}/{h}/rtd/")
 
     # if tensor then convert to numpy
     if torch.is_tensor(gt_remaining_time):
@@ -83,7 +83,7 @@ def plot_remaining_time_video(gt_remaining_time, pred_remaining_time, h, num_obs
     
     if not save_video:
         plt.tight_layout()
-        output_file = f"./plots/{dataset}/rtd/video{video_idx}_ep{epoch}_phase_rtd.png"
+        output_file = f"./plots/{dataset}/{h}/rtd/video{video_idx}_ep{epoch}_phase_rtd.png"
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
         plt.show()
         plt.close()
@@ -117,7 +117,7 @@ def plot_remaining_time_video(gt_remaining_time, pred_remaining_time, h, num_obs
         print("Saving animation to video file...")
         Writer = writers['ffmpeg']
         writer = Writer(fps=20, metadata=dict(artist='Me'), bitrate=1800)
-        output_file = f"./plots/{dataset}/rtd/video{video_idx}_ep{epoch}_phase_rtd.mp4"
+        output_file = f"./plots/{dataset}/{h}/rtd/video{video_idx}_ep{epoch}_phase_rtd.mp4"
         ani.save(output_file, writer=writer)
 
         plt.close()

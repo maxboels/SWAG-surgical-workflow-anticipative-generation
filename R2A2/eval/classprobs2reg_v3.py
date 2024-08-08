@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 
-def find_time_to_next_occurrence_improved(video_anticipation_probs, horizon_minutes=18):
+def find_time_to_next_occurrence(video_anticipation_probs, horizon_minutes=18):
     """
     Find the time to next occurrence for each class at each time step in the video.
 
@@ -34,6 +34,7 @@ def find_time_to_next_occurrence_improved(video_anticipation_probs, horizon_minu
         # Interpolate probability curves for smoother intersection finding
         interp_probs = [interp1d(time_array, probs[:, c], kind='cubic') for c in range(num_classes)]
         
+        # Find the next class occurrence time (remove current class from unpredicted classes)
         unpredicted_classes = set(range(num_classes)) - {current_class}
         current_time = 0
         
@@ -62,6 +63,10 @@ def find_time_to_next_occurrence_improved(video_anticipation_probs, horizon_minu
             unpredicted_classes.remove(next_class)
             current_class = next_class
             current_time = next_time
+
+    # Check if all classes are equal to the max horizon
+    if torch.all(output[t] == horizon_minutes):
+        raise UserWarning(f"All classes at time step {t} are equal to the maximum horizon.")
     
     return output
 
@@ -108,7 +113,7 @@ if __name__ == "__main__":
 
     video_anticipation_probs = torch.stack([generate_smooth_probs(horizon_steps, num_classes) for _ in range(video_length)])
 
-    time_to_next = find_time_to_next_occurrence_improved(video_anticipation_probs, horizon_minutes)
+    time_to_next = find_time_to_next_occurrence(video_anticipation_probs, horizon_minutes)
     
     print("Video anticipation probabilities shape:", video_anticipation_probs.shape)
     print("Time to next occurrence shape:", time_to_next.shape)

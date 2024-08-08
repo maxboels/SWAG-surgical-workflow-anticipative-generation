@@ -36,8 +36,8 @@ def plot_video_combined(gt_remaining_time, pred_remaining_time, gt_classificatio
         colors = cmap(np.linspace(0, 1, num_obs_classes + 1))
 
     # Ensure output directory exists
-    if not os.path.exists(f"./plots/{dataset}/combined/"):
-        os.makedirs(f"./plots/{dataset}/combined/")
+    if not os.path.exists(f"./plots/{dataset}/{h}/combined/"):
+        os.makedirs(f"./plots/{dataset}/{h}/combined/")
 
     # Convert tensors to numpy if necessary
     if torch.is_tensor(gt_remaining_time):
@@ -120,7 +120,7 @@ def plot_video_combined(gt_remaining_time, pred_remaining_time, gt_classificatio
     
     if not save_video:
         plt.tight_layout()
-        output_file = f"./plots/{dataset}/combined/video{video_idx}_ep{epoch}_sr{x_sampling_rate}_h{h}_combined.png"
+        output_file = f"./plots/{dataset}/{h}/combined/video{video_idx}_ep{epoch}_sr{x_sampling_rate}_h{h}_combined.png"
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
         # plt.show()
         plt.close()
@@ -172,7 +172,7 @@ def plot_video_combined(gt_remaining_time, pred_remaining_time, gt_classificatio
         print("Saving animation to video file...")
         Writer = writers['ffmpeg']
         writer = Writer(fps=gif_fps, metadata=dict(artist='Me'), bitrate=1800)
-        output_file = f"./plots/{dataset}/combined/video{video_idx}_ep{epoch}_h{h}_sr{x_sampling_rate}_combined.mp4"
+        output_file = f"./plots/{dataset}/{h}/combined/video{video_idx}_ep{epoch}_h{h}_sr{x_sampling_rate}_combined.mp4"
         ani.save(output_file, writer=writer)
 
         plt.close()

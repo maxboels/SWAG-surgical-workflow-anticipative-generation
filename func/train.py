@@ -69,7 +69,7 @@ from R2A2.eval.plot_remaining_time import plot_remaining_time_video
 from R2A2.eval.plot_video_combined import plot_video_combined
 
 from R2A2.eval.convert_tasks import regression2classification, classification2regression
-from R2A2.eval.classprobs2reg_v3 import find_time_to_next_occurrence_improved
+from R2A2.eval.classprobs2reg_v3 import find_time_to_next_occurrence
 
 from loss_fn.mae import anticipation_mae
 
@@ -240,14 +240,14 @@ def is_better(main_metric, score, best_score):
         return score > best_score
 
 
-def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_writer, logger, epoch: float,
+def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_writer, logger, epoch: float,
     eval_horizons: int = [18],
     anticip_time: int = 60,
     max_anticip_time: int = 18,
     store=False, 
     store_endpoint='logits', 
     only_run_featext=False,
-    best_score=0.4,
+    best_score=18.0,
     main_metric='wMAE',
     horizon=18,
     probs_to_regression_method: str = 'first_occurrence',
@@ -356,10 +356,13 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
         # anticipations
         video_frame_preds   = np.full((video_length, max_num_steps), -1)
         video_tgts_preds    = np.full((video_length, max_num_steps), -1)
+
         # recognition and antcipations probs
-        video_frame_probs_preds   = np.full((video_length, max_num_steps+1, num_ant_classes), 0) # before was -1 filled
-
-
+        # WARNING: make sure to init with float32 to avoid issues with interpolation towards zero.
+        # ERROR: np.full((video_length, max_num_steps+1, num_ant_classes), 0) -> int64
+        video_frame_probs_preds = np.full((video_length, max_num_steps+1, num_ant_classes), 0.0, dtype=np.float32)
+        # video_frame_probs_preds = np.zeros((video_length, max_num_steps+1, num_ant_classes), dtype=np.float32)
+        
         # save remaining time gt and predictions
         # NOTE: make sure the targets are floating point values and not integers
         # as they represent the remaining time in minutes (continuous values)
@@ -367,6 +370,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
             video_remaining_time_tgts_h = torch.full((video_length, 1, num_ant_classes), -1, dtype=torch.float32)
             locals()[f"video_remaining_time_tgts_{h}"] = video_remaining_time_tgts_h
         video_remaining_time_preds = torch.full((video_length, 1, num_ant_classes), -1, dtype=torch.float32)
+        video_remaining_time_preds_h = {}
 
         video_mean_cum_iter_time = []
 
@@ -391,20 +395,23 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
 
                 # RECOGNITION
                 if "curr_frames" in outputs.keys():
-                    probs = torch.softmax(outputs['curr_frames'][:,-1:,:], dim=2).detach().cpu().numpy()
+                    probs = torch.softmax(outputs['curr_frames'][:, -1: , :], dim=2).detach().cpu().numpy() # shape (N, 1, C)
+                    # print(f"curr_frames (probs): {probs}")
+                    # logger.info(f"[EVAL] curr_frames (probs): {probs.shape}")
                     video_frame_rec[start_idx:end_idx] = np.argmax(probs, axis=2)
                     video_frame_probs_preds[start_idx:end_idx, :1, :-1] = probs # shape (N, 1, C)
                     curr_frames = True
                                     
                 video_tgts_rec[start_idx:end_idx] = data['curr_frames_tgt'].detach().cpu().numpy()[:,-1:]
-                    
+                
                 # FUTURE FRAMES CLASSIFICATION
                 if "future_frames" in outputs.keys():
-                    logger.info(f"[EVAL] future_frames (logits): {outputs['future_frames'].shape}")
-                    probs = torch.softmax(outputs['future_frames'], dim=2).detach().cpu().numpy()
-                    logger.info(f"[EVAL] future_frames (probs): {probs.shape}")
+                    probs = torch.softmax(outputs['future_frames'], dim=2).detach().cpu().numpy() # shape (N, T, C+1)
+                    # print(f"future_frames (probs): {probs}")
+                    # logger.info(f"[EVAL] future_frames (logits): {outputs['future_frames'].shape}")
+                    # logger.info(f"[EVAL] future_frames (probs): {probs.shape}")
                     video_frame_preds[start_idx:end_idx] = np.argmax(probs, axis=2)
-                    video_frame_probs_preds[start_idx:end_idx, 1:] = probs # shape (N, T, C)
+                    video_frame_probs_preds[start_idx:end_idx, 1:, :] = probs # shape (N, T, C+1)
                     future_frames = True
 
                 video_tgts_preds[start_idx:end_idx] = data["future_frames_tgt"].detach().cpu().numpy()
@@ -429,6 +436,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                 
                 start_idx += batch_size
                 end_idx += batch_size
+                logger.info(f"[TESTING] video: {video_id} | start_idx: {start_idx} | end_idx: {end_idx}")
         
         # END OF CURRENT VIDEO LOOP
         vid_test_time = time.time() - vid_start_time
@@ -438,9 +446,15 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
                     f"total test time: {test_time/60:.2f} min")
         
         # save video probs to numpy instead of keeping in memory
-        if store:
-            np.save(f'./npy/video_probs_ep{epoch}_vid{video_id}.npy', video_frame_probs_preds)
+        store = True
+        if store and cfg.test_only:
+            if not os.path.exists(f'./probs'):
+                os.makedirs(f'./probs')
+            np.save(f'./probs/video_probs_ep{epoch}_vid{video_id}.npy', video_frame_probs_preds)
             logger.info(f"[TESTING] Saved video probs to: video_probs_ep{epoch}_vid{video_id}.npy")
+            # raise error if only zero values in probs
+            if np.all(video_frame_probs_preds == 0):
+                raise ValueError(f"video_frame_probs_preds are all zeros")
 
         # STORE VIDEO RESULTS
         video_results["video_id"] = video_id        
@@ -459,29 +473,33 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
             logger.info(f"[TESTING] video_frame_preds (regression2classification): {video_frame_preds.shape}")
 
         # convert the class probabilities to class remaining time regression values
-        if future_frames and not remaining_time:
-            video_remaining_time_preds = find_time_to_next_occurrence_improved(video_frame_probs_preds, max_num_steps)
-            # video_remaining_time_preds = classification2regression(video_frame_probs_preds, horizon_minutes=max_num_steps)
-            logger.info(f"[TESTING] video_remaining_time_preds (classification2regression): {video_remaining_time_preds.shape}")
+        if future_frames and not remaining_time:            
+            for h in eval_horizons:
+                video_remaining_time_preds = find_time_to_next_occurrence(video_frame_probs_preds, horizon_minutes=h)
+                logger.info(f"[TESTING] video_remaining_time_preds (classification2regression) h={h}: {video_remaining_time_preds.shape}")
+                video_remaining_time_preds_h[h] = video_remaining_time_preds
+        else:
+            for h in eval_horizons:
+                video_remaining_time_preds_h[h] = video_remaining_time_preds
+        
+        # store the remaining time predictions dict
+        all_video_remaining_time_preds[video_id] = video_remaining_time_preds_h
 
-        # store the remaining time predictions
-        all_video_remaining_time_preds[video_id] = video_remaining_time_preds
+        # compute the metrics for the remaining time regression
         for h in eval_horizons:
             video_remaining_time_tgts = locals()[f"video_remaining_time_tgts_{h}"]
             locals()[f"all_video_remaining_time_tgts_{h}"][video_id] = video_remaining_time_tgts
 
             # compute the metrics for the remaining time regression
-            wMAE, inMAE, outMAE, eMAE = locals()[f'mae_metric_{h}'](video_remaining_time_preds, video_remaining_time_tgts)
+            wMAE, inMAE, outMAE, eMAE = locals()[f'mae_metric_{h}'](video_remaining_time_preds_h[h], video_remaining_time_tgts)
             for metric, value in zip(['wMAE', 'inMAE', 'outMAE', 'eMAE'], [wMAE, inMAE, outMAE, eMAE]):
                 locals()[f'all_videos_{metric}_{h}'].append(value.item())
             
-
             logger.info(f"[TESTING] video: {video_id} | "
                         f"horizon: {h} | "
-                        f"wMAE: {wMAE:.4f} | "
-                        f"inMAE: {inMAE:.4f} | "
-                        f"outMAE: {eMAE:.4f} | "
-                        f"eMAE: {eMAE:.4f}")
+                        f"wMAE_{h}: {wMAE:.4f} | "
+                        f"inMAE_{h}: {inMAE:.4f} | "
+                        f"outMAE_{h}: {outMAE:.4f}")
             
         all_video_frame_rec[video_id]   = video_frame_rec
         all_video_frame_preds[video_id] = video_frame_preds
@@ -627,6 +645,7 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
             
             plot_video_scatter_3D(video_frame_preds, video_frame_rec, video_tgts_preds, video_tgts_rec, 
                                 anticip_time, 
+                                horizon=cfg.eval_horizons[-1],
                                 video_idx=video_id, 
                                 dataset=dataset,
                                 epoch=epoch,
@@ -645,9 +664,13 @@ def evaluate(model, train_eval_op, device, step_now, dataloaders: list, tb_write
             # print(f"[TESTING] pred_classification: {pred_classification.shape}")
 
             for h in eval_horizons:
+
+                # Ensure output directory exists
+                if not os.path.exists(f"./plots/{dataset}/{h}"):
+                    os.makedirs(f"./plots/{dataset}/{h}")
                 
                 gt_remaining_time = locals()[f"all_video_remaining_time_tgts_{h}"][video_id]
-                pred_remaining_time = locals()[f"all_video_remaining_time_preds"][video_id]
+                pred_remaining_time = locals()[f"all_video_remaining_time_preds"][video_id][h]
 
                 # plot classification task
                 plot_classification_video(gt_classification, pred_classification,
@@ -1076,7 +1099,8 @@ def main(cfg):
     if cfg.test_only:
         logger.info("Starting test_only")
         all_videos_results, step_val_now, is_best_epoch = hydra.utils.call(
-            cfg.eval.eval_fn, 
+            cfg.eval.eval_fn,
+            cfg,
             model,
             train_eval_op, 
             device, 
@@ -1134,7 +1158,8 @@ def main(cfg):
                             epoch + 1)
                       
         all_videos_results, step_val_now, is_best_epoch = hydra.utils.call(
-            cfg.eval.eval_fn, 
+            cfg.eval.eval_fn,
+            cfg,
             model,
             train_eval_op, 
             device, 

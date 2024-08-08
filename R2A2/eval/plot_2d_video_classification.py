@@ -35,8 +35,8 @@ def plot_classification_video(gt_classification, pred_classification,
         cmap = mcolors.ListedColormap(colors)
 
     # Ensure output directory exists
-    if not os.path.exists(f"./plots/{dataset}/classification/"):
-        os.makedirs(f"./plots/{dataset}/classification/")
+    if not os.path.exists(f"./plots/{dataset}/{h}/classification/"):
+        os.makedirs(f"./plots/{dataset}/{h}/classification/")
 
     y_min, y_max = -0.5, h + 0.5
     
@@ -74,7 +74,7 @@ def plot_classification_video(gt_classification, pred_classification,
     
     if not save_video:
         plt.tight_layout()
-        output_file = f"./plots/{dataset}/classification/video{video_idx}_ep{epoch}_h{h}_sr{x_sampling_rate}_classification.png"
+        output_file = f"./plots/{dataset}/{h}/classification/video{video_idx}_ep{epoch}_h{h}_sr{x_sampling_rate}_classification.png"
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
         plt.show()
         plt.close()
@@ -108,7 +108,7 @@ def plot_classification_video(gt_classification, pred_classification,
         print("Saving animation to video file...")
         Writer = writers['ffmpeg']
         writer = Writer(fps=gif_fps, metadata=dict(artist='Me'), bitrate=1800)
-        output_file = f"./plots/{dataset}/classification/video{video_idx}_ep{epoch}_h{h}_sr{x_sampling_rate}_classification.mp4"
+        output_file = f"./plots/{dataset}/{h}/classification/video{video_idx}_ep{epoch}_h{h}_sr{x_sampling_rate}_classification.mp4"
         ani.save(output_file, writer=writer)
 
         plt.close()

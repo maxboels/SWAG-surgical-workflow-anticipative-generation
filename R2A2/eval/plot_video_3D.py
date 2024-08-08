@@ -5,6 +5,7 @@ from matplotlib.colors import ListedColormap, Normalize
 import os
 
 def plot_video_scatter_3D(preds, recs, tgt_preds, tgt_recs, anticip_time,
+                          horizon=18,
                           video_idx=1,
                           dataset='cholec80', 
                           epoch=1,
@@ -26,8 +27,8 @@ def plot_video_scatter_3D(preds, recs, tgt_preds, tgt_recs, anticip_time,
     xticks_step = 3  # set x ticks as every 3 minutes from 0 to 18
     
     # Ensure output directory exists
-    if not os.path.exists(f"./plots/{dataset}/3D/"):
-        os.makedirs(f"./plots/{dataset}/3D/")
+    if not os.path.exists(f"./plots/{dataset}/{horizon}/3D/"):
+        os.makedirs(f"./plots/{dataset}/{horizon}/3D/")
 
     # Concatenate recordings and predictions
     preds = np.concatenate([recs, preds], axis=1)
@@ -118,7 +119,7 @@ def plot_video_scatter_3D(preds, recs, tgt_preds, tgt_recs, anticip_time,
     cbar.set_label('Classes (phases)')
 
     # plt.tight_layout()
-    output_file = f"./plots/{dataset}/3D/video_{video_idx}_ep{epoch}_scatter3d_preds.png"
+    output_file = f"./plots/{dataset}/{horizon}/3D/video_{video_idx}_ep{epoch}_scatter3d_preds.png"
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
     plt.close()
     # plt.show()
