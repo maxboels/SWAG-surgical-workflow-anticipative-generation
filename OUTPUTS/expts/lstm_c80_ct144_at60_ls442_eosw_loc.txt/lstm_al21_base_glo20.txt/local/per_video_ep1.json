@@ -1,0 +1,7 @@
+[{"video_id": 15, "video_mean_curr_acc": 0.0706, "mean_acc_future_frames": 0.0706, "video_mean_cum_acc_future": 0.0706}],
+[{"video_id": 16, "video_mean_curr_acc": 0.1154, "mean_acc_future_frames": 0.1154, "video_mean_cum_acc_future": 0.1154}],
+[{"video_id": 17, "video_mean_curr_acc": 0.1667, "mean_acc_future_frames": 0.1667, "video_mean_cum_acc_future": 0.1667}],
+[{"video_id": 18, "video_mean_curr_acc": 0.1184, "mean_acc_future_frames": 0.1184, "video_mean_cum_acc_future": 0.1184}],
+[{"video_id": 19, "video_mean_curr_acc": 0.0636, "mean_acc_future_frames": 0.0636, "video_mean_cum_acc_future": 0.0636}],
+[{"video_id": 20, "video_mean_curr_acc": 0.1325, "mean_acc_future_frames": 0.1325, "video_mean_cum_acc_future": 0.1325}],
+[{"video_id": 21, "video_mean_curr_acc": 0.1063, "mean_acc_future_frames": 0.1063, "video_mean_cum_acc_future": 0.1063}],
