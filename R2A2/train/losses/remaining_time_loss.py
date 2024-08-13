@@ -2,69 +2,119 @@ import torch
 import torch.nn as nn
 
 class RemainingTimeLoss(nn.Module):
-    """
-    Normalizes inputs and targets to [0, 1] range and applies weighting
-    to be more sensitive to lower remaining times.
-
-    Inputs:
-    - predictions: remaining_time = (1 - self.sigmoid(next_phase_occurrence)) * self.max_anticip_time
-    - targets: remaining_time [0, self.max_anticip_time]
-    """
-    def __init__(self, h, beta=1.0, epsilon=1e-6, base_rtd_loss='mse', weight_type='exponential', alpha=0.1, normalize_weights=False, log_scale=10):
+    def __init__(self, h, beta=1.0, epsilon=1e-6, base_rtd_loss='mse', weight_type='exponential', gamma=0.5, normalize_weights=False):
         super().__init__()
         self.h = h
         self.beta = beta
         self.epsilon = epsilon
         self.weight_type = weight_type
-        self.alpha = alpha  # Controls the minimum weight for linear weighting        
+        self.gamma = gamma  # Controls the decay rate of the exponential weighting
         self.normalize_weights = normalize_weights
-        self.log_scale = log_scale  # Scaling factor for logarithmic weighting
-
         self.base_rtd_loss = base_rtd_loss
 
     def normalize(self, x):
         return x / self.h
 
     def forward(self, predictions, targets):
-
-        # Normalize predictions and targets to [0, 1] range instead of [0, h]
         norm_predictions = self.normalize(predictions)
         norm_targets = self.normalize(targets)
 
         if self.base_rtd_loss == 'smooth_l1':
-            # Calculate base loss (Smooth L1)
             diff = torch.abs(norm_predictions - norm_targets)
             base_rtd_loss = torch.where(diff < self.beta, 
                                     0.5 * diff ** 2 / self.beta, 
                                     diff - 0.5 * self.beta)
         elif self.base_rtd_loss == 'mae':
-            # Calculate base loss Mean Absolute Error (MAE) or L1 loss
             base_rtd_loss = torch.abs(norm_predictions - norm_targets)
         elif self.base_rtd_loss == 'mse':
-            # Calculate base loss Mean Squared Error (MSE) or L2 loss
             base_rtd_loss = (norm_predictions - norm_targets) ** 2
         else:
             raise ValueError("Invalid base_rtd_loss. Choose 'mse', 'mae', or 'smooth_l1'.")
 
-        # Calculate weights based on normalized targets
-        if self.weight_type == 'inverse':
+        if self.weight_type == 'balanced_exponential':
+            # New balanced exponential weighting
+            weights = torch.exp(-self.gamma * norm_targets)
+            # Add a linear component to increase weight for longer times
+            weights += (1 - self.gamma) * norm_targets
+        elif self.weight_type == 'inverse':
             weights = 1 / (norm_targets + self.epsilon)
         elif self.weight_type == 'exponential':
             weights = torch.exp(-norm_targets)
         elif self.weight_type == 'linear':
-            weights = (1 - ((1 - self.alpha) * norm_targets))
-        elif self.weight_type == 'logarithmic':
-            weights = torch.log(self.log_scale * norm_targets + 1)
+            weights = 1 - 0.5 * norm_targets  # Less aggressive linear weighting
         else:
-            raise ValueError("Invalid weight_type. Choose 'inverse', 'exponential', 'linear', or 'logarithmic'.")
+            raise ValueError("Invalid weight_type. Choose 'balanced_exponential', 'inverse', 'exponential', or 'linear'.")
 
-        # Normalize weights if specified
         if self.normalize_weights:
             weights = weights / weights.mean()
 
-        # Apply weights and calculate mean loss
         weighted_loss = base_rtd_loss * weights
         return weighted_loss.mean()
+
+# class RemainingTimeLoss(nn.Module):
+#     """
+#     Normalizes inputs and targets to [0, 1] range and applies weighting
+#     to be more sensitive to lower remaining times.
+
+#     Inputs:
+#     - predictions: remaining_time = (1 - self.sigmoid(next_phase_occurrence)) * self.max_anticip_time
+#     - targets: remaining_time [0, self.max_anticip_time]
+#     """
+#     def __init__(self, h, beta=1.0, epsilon=1e-6, base_rtd_loss='mse', weight_type='exponential', alpha=0.1, normalize_weights=False, log_scale=10):
+#         super().__init__()
+#         self.h = h
+#         self.beta = beta
+#         self.epsilon = epsilon
+#         self.weight_type = weight_type
+#         self.alpha = alpha  # Controls the minimum weight for linear weighting        
+#         self.normalize_weights = normalize_weights
+#         self.log_scale = log_scale  # Scaling factor for logarithmic weighting
+
+#         self.base_rtd_loss = base_rtd_loss
+
+#     def normalize(self, x):
+#         return x / self.h
+
+#     def forward(self, predictions, targets):
+
+#         # Normalize predictions and targets to [0, 1] range instead of [0, h]
+#         norm_predictions = self.normalize(predictions)
+#         norm_targets = self.normalize(targets)
+
+#         if self.base_rtd_loss == 'smooth_l1':
+#             # Calculate base loss (Smooth L1)
+#             diff = torch.abs(norm_predictions - norm_targets)
+#             base_rtd_loss = torch.where(diff < self.beta, 
+#                                     0.5 * diff ** 2 / self.beta, 
+#                                     diff - 0.5 * self.beta)
+#         elif self.base_rtd_loss == 'mae':
+#             # Calculate base loss Mean Absolute Error (MAE) or L1 loss
+#             base_rtd_loss = torch.abs(norm_predictions - norm_targets)
+#         elif self.base_rtd_loss == 'mse':
+#             # Calculate base loss Mean Squared Error (MSE) or L2 loss
+#             base_rtd_loss = (norm_predictions - norm_targets) ** 2
+#         else:
+#             raise ValueError("Invalid base_rtd_loss. Choose 'mse', 'mae', or 'smooth_l1'.")
+
+#         # Calculate weights based on normalized targets
+#         if self.weight_type == 'inverse':
+#             weights = 1 / (norm_targets + self.epsilon)
+#         elif self.weight_type == 'exponential':
+#             weights = torch.exp(-norm_targets)
+#         elif self.weight_type == 'linear':
+#             weights = (1 - ((1 - self.alpha) * norm_targets))
+#         elif self.weight_type == 'logarithmic':
+#             weights = torch.log(self.log_scale * norm_targets + 1)
+#         else:
+#             raise ValueError("Invalid weight_type. Choose 'inverse', 'exponential', 'linear', or 'logarithmic'.")
+
+#         # Normalize weights if specified
+#         if self.normalize_weights:
+#             weights = weights / weights.mean()
+
+#         # Apply weights and calculate mean loss
+#         weighted_loss = base_rtd_loss * weights
+#         return weighted_loss.mean()
 
 # class RemainingTimeLoss(nn.Module):
 #     """

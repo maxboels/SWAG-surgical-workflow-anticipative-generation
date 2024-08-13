@@ -233,8 +233,8 @@ def train_one_epoch(
             lr_scheduler.step()
     return last_saved_time, step_now
 
-def is_better(main_metric, score, best_score):
-    if main_metric == 'wMAE':
+def is_better(condition, score, best_score):
+    if condition == 'lower':
         return score < best_score
     else:
         return score > best_score
@@ -255,8 +255,6 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
     do_classification: bool = True,
     do_regression: bool = True,
     ):
-
-    # main_metric_h = main_metric + f"_{horizon}"
 
     # create results folder if not exists
     if not os.path.exists(f'./results'):
@@ -351,11 +349,11 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
         iters_times = []
 
         # recognition
-        video_frame_rec     = np.full((video_length, 1), -1)
-        video_tgts_rec      = np.full((video_length, 1), -1)
+        video_frame_rec     = np.full((video_length, 1), -1) # classes are intgers
+        video_tgts_rec      = np.full((video_length, 1), -1) # classes are intgers
         # anticipations
-        video_frame_preds   = np.full((video_length, max_num_steps), -1)
-        video_tgts_preds    = np.full((video_length, max_num_steps), -1)
+        video_frame_preds   = np.full((video_length, max_num_steps), -1) # classes are intgers
+        video_tgts_preds    = np.full((video_length, max_num_steps), -1) # classes are intgers
 
         # recognition and antcipations probs
         # WARNING: make sure to init with float32 to avoid issues with interpolation towards zero.
@@ -446,7 +444,7 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
                     f"total test time: {test_time/60:.2f} min")
         
         # save video probs to numpy instead of keeping in memory
-        store = True
+        store = False
         if store and cfg.test_only:
             if not os.path.exists(f'./probs'):
                 os.makedirs(f'./probs')
@@ -467,7 +465,7 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
         # SEPARATELY AND TOGETHER
         # ---------------------------------------------------------------------
 
-        # convert regression task to classification task
+        # convert regression to classification task
         if not future_frames and remaining_time:
             video_frame_preds = regression2classification(video_remaining_time_preds, horizon_minutes=max_num_steps)
             logger.info(f"[TESTING] video_frame_preds (regression2classification): {video_frame_preds.shape}")
@@ -626,9 +624,13 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
     all_videos_results["f1_weighted"]           = np.round(np.nanmean(all_vids_f1), decimals=4).tolist()
     
     # check if best epoch
-    main_metric_h = main_metric + f"_{horizon}"
-    score = all_videos_results[main_metric_h]
-    is_best_epoch = is_better(main_metric, score, best_score)
+    if main_metric == 'wMAE':
+        main_metric = main_metric + f"_{horizon}"
+        condition = 'lower'
+    else:
+        condition = 'higher'
+    score = all_videos_results[main_metric]
+    is_best_epoch = is_better(condition, score, best_score)
     logger.info(f"[TESTING] Epoch: {epoch} | is best epoch: {is_best_epoch}")
 
     if epoch % plot_video_freq == 0 or is_best_epoch:
@@ -710,7 +712,7 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
     if is_best_epoch:
         best_epoch = epoch
         logger.info(f"[TESTING] Best epoch: {best_epoch} | "
-                    f"Best best_score: {best_score}")
+                    f"New Best score: {score}")
         if save_all_metrics:
             np.save(f"all_videos_mean_acc_future_t_ep{epoch}.npy", all_videos_acc_future)
             np.save(f"all_videos_mean_cum_acc_future_t_ep{epoch}.npy", all_videos_cum_acc_future)
@@ -1070,8 +1072,9 @@ def main(cfg):
         #optimizer.load_state_dict(checkpoint['optimizer'])
         #lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
         #start_epoch = checkpoint['epoch']
-        logger.warning('Loaded model from %s (ep %f)', saved_ckpt,
-                       start_epoch)
+        logger.warning('Loaded model from %s (ep %f)', saved_ckpt, start_epoch)
+    else:
+        logger.warning('No checkpoint found at %s', saved_ckpt)
 
     if dist_info['distributed'] and not cfg.eval.eval_fn.only_run_featext:
         # If only feat ext, then each gpu is going to test separately anyway,
@@ -1096,6 +1099,16 @@ def main(cfg):
                                             dataset_train,
                                             _recursive_=False)
 
+    # define the score to optimize
+    main_metric = cfg.main_metric
+    
+    if main_metric == 'wMAE':
+        best_score = 18.0 # minimization
+        main_metric = f"{cfg.main_metric}_{cfg.eval_horizons[0]}"
+    else:
+        best_score = 0.0 # maximization
+    
+    # Testing only
     if cfg.test_only:
         logger.info("Starting test_only")
         all_videos_results, step_val_now, is_best_epoch = hydra.utils.call(
@@ -1109,8 +1122,8 @@ def main(cfg):
             tb_writer, 
             logger, 
             1,
-            best_score=cfg.best_score,
-            main_metric=cfg.main_metric,
+            best_score=best_score,
+            main_metric=main_metric,
             horizon=cfg.eval_horizons[0],
             probs_to_regression_method=cfg.probs_to_regression_method,
             confidence_threshold= 0.5
@@ -1123,9 +1136,6 @@ def main(cfg):
 
     # Get training metric logger
     stat_loggers = get_default_loggers(tb_writer, start_epoch, logger)
-    best_score = cfg.best_score
-    main_metric = cfg.main_metric
-    main_metric_h = f"{cfg.main_metric}_{cfg.eval_horizons[0]}"
     partial_epoch = start_epoch - int(start_epoch)
     start_epoch = int(start_epoch)
     last_saved_time = datetime.datetime(1, 1, 1, 0, 0)
@@ -1187,13 +1197,14 @@ def main(cfg):
         # Store the best model MINIMIZING the main_metric
         if is_best_epoch:
             store_checkpoint(f'checkpoint_best.pth', model, optimizer, lr_scheduler, epoch + 1)
-            best_score = all_videos_results[main_metric_h]
+            best_score = all_videos_results[main_metric]
         if isinstance(lr_scheduler.base_scheduler, scheduler.ReduceLROnPlateau):
-            lr_scheduler.step(all_videos_results[main_metric_h])
+            lr_scheduler.step(all_videos_results[main_metric])
 
         # reset all meters in the metric logger
         for log in stat_loggers:
             stat_loggers[log].reset_meters()
+    
     # Store the final model to checkpoint
     store_checkpoint([CKPT_FNAME], model, optimizer, lr_scheduler, epoch + 1)
 

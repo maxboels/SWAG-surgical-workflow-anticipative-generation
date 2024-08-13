@@ -1,6 +1,8 @@
-test_only=false
+test_only=true
 
 main_metric=wMAE
+
+num_epochs=60
 
 model_name=skit
 ctx_pooling=global
@@ -11,10 +13,12 @@ eval_horizons=[18]
 max_anticip_time=18
 num_ant_queries=1
 
-loss_w_curr=0.2
+base_rtd_loss=mse
+rtd_weight_type=exponential
+loss_w_curr=0.4
 loss_w_next=0.0
 loss_w_feats=0.0
-loss_w_remaining_time=0.8
+loss_w_remaining_time=1.0
 
 do_classification=false
 do_regression=true

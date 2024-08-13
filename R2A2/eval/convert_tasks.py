@@ -142,14 +142,39 @@ def classification2regression(video_anticipation_probs, horizon_minutes=18, prob
     
 #     return output
 
-
-
 def regression2classification(regression_values, horizon_minutes=18):
+    """Original function (fixed roudning issue)"""
+
+    # If has 3 dimensions and 1 channel, remove the channel dimension
+    if len(regression_values.shape) == 3 and regression_values.shape[1] == 1:
+        regression_values = regression_values.squeeze(1)
+
+    video_length, num_classes = regression_values.shape
+    output = torch.zeros((video_length, horizon_minutes), dtype=torch.long)
+    
+    for t in range(video_length):
+        current_regression = regression_values[t]
+        current_classification = torch.zeros(horizon_minutes, dtype=torch.long)
+        current_class = torch.argmin(current_regression)
+        current_classification[:] = current_class
+        
+        for c in range(num_classes):
+            if c != current_class:
+                minute = current_regression[c]
+                if minute <= horizon_minutes:
+                    minute = round(minute.item())
+                    current_classification[minute:] = c
+        
+        output[t] = current_classification
+    
+    return output
+
+def regression2classification_error(regression_values, horizon_minutes=18):
     """
     Convert regression values to classification sequence for a video sequence.
 
     Args:
-        regression_values (torch.Tensor): Tensor of shape (video_length, 1, num_classes) with regression values
+        regression_values (torch.Tensor): Tensor of shape (video_length, 1, num_classes+1) with regression values
         horizon_minutes (int): The time horizon in minutes
 
     Returns:
@@ -160,9 +185,9 @@ def regression2classification(regression_values, horizon_minutes=18):
     if len(regression_values.shape) == 3 and regression_values.shape[1] == 1:
         regression_values = regression_values.squeeze(1)
 
-    video_length, num_classes = regression_values.shape
+    video_length, _ = regression_values.shape
     
-    # Initialize output tensor
+    # Initialize output tensor for classes (integers)
     output = torch.zeros((video_length, horizon_minutes), dtype=torch.long)
     
     for t in range(video_length):
@@ -170,26 +195,71 @@ def regression2classification(regression_values, horizon_minutes=18):
         current_regression = regression_values[t]
         
         # Initialize the classification for this time step
+        # with the lowest class for each time step
         current_classification = torch.zeros(horizon_minutes, dtype=torch.long)
+
+        current_classification[:] = current_regression.argmin()
         
-        # Find the current active class (class with 0 regression value)
-        current_class = torch.argmin(current_regression)
-        
-        # Fill in the classification from the bottom up
-        current_classification[:] = current_class
-        
-        # Fill in the other classes also from the bottom up
-        for c in range(num_classes):
-            if c != current_class:
-                minute = current_regression[c] # is float
-                if minute < horizon_minutes:
-                    # convert the float into nearest integer
-                    minute = int(minute)
-                    current_classification[minute:] = c
-        
+        # Select the class with the smallest remaining time
+        # and fill the classification sequence from the index of the selected lowest value up to the end
+        # then replace the selected value with the maximum value to avoid selecting it again
+        while current_regression.min() < horizon_minutes:
+            min_index_class = current_regression.argmin()
+            min_index_value = int(current_regression[min_index_class])
+            current_classification[min_index_value:] = min_index_class
+            current_regression[min_index_class] = horizon_minutes
+
         output[t] = current_classification
     
     return output
+
+
+# def regression2classification(regression_values, horizon_minutes=18):
+#     """
+#     Convert regression values to classification sequence for a video sequence.
+
+#     Args:
+#         regression_values (torch.Tensor): Tensor of shape (video_length, 1, num_classes+1) with regression values
+#         horizon_minutes (int): The time horizon in minutes
+
+#     Returns:
+#         torch.Tensor: Tensor of shape (video_length, horizon_minutes) with class labels
+#     """
+
+#     # If has 3 dimensions and 1 channel, remove the channel dimension
+#     if len(regression_values.shape) == 3 and regression_values.shape[1] == 1:
+#         regression_values = regression_values.squeeze(1)
+
+#     video_length, num_classes = regression_values.shape
+    
+#     # Initialize output tensor for classes (integers)
+#     output = torch.zeros((video_length, horizon_minutes), dtype=torch.long)
+    
+#     for t in range(video_length):
+#         # Get the regression values for the current time step
+#         current_regression = regression_values[t]
+        
+#         # Initialize the classification for this time step
+#         current_classification = torch.zeros(horizon_minutes, dtype=torch.long)
+        
+#         # Find the current active class (class with 0 regression value)
+#         current_class = torch.argmin(current_regression)
+        
+#         # Fill in the classification from the bottom up
+#         current_classification[:] = current_class
+        
+#         # Fill in the other classes also from the bottom up
+#         for c in range(num_classes):
+#             if c != current_class:
+#                 minute = current_regression[c] # is float
+#                 if minute < horizon_minutes:
+#                     # convert the float into nearest integer
+#                     minute = int(minute)
+#                     current_classification[minute:] = c
+        
+#         output[t] = current_classification
+    
+#     return output
 
 def classification_to_remaining_time(class_probs, time_steps, h, num_classes=7, method='first_occurrence', confidence_threshold=0.5):
     """

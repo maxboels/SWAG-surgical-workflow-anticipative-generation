@@ -104,6 +104,7 @@ max_anticip_time: 18        # inference: maximum duration (minutes)
 # losses
 feature_loss: false         # default false
 
+gamma: 0.5                  # default 0.5 for the exponential weight decay
 loss_w_curr: 0.5
 loss_w_next: 0.5
 loss_w_feats: 0.0
@@ -118,6 +119,7 @@ train_eval_op:
       _target_: func.train_eval_ops.BasicLossAccuracy
       base_rtd_loss: ${base_rtd_loss}
       weight_type: ${rtd_weight_type}
+      gamma: ${gamma}
       loss_w_curr: ${loss_w_curr}
       loss_w_next: ${loss_w_next}
       loss_w_feats: ${loss_w_feats}

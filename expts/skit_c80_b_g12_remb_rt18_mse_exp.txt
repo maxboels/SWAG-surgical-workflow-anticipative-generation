@@ -1,8 +1,8 @@
-test_only=false
+test_only=true
 
 main_metric=wMAE
 
-num_epochs=30
+num_epochs=60
 
 model_name=skit
 ctx_pooling=global

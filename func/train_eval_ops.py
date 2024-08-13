@@ -36,6 +36,7 @@ class BasicLossAccuracy(nn.Module):
     def __init__(self, dataset, device,
                 base_rtd_loss="mse", # mse, mae, smooth_l1
                 weight_type='exponential',
+                gamma=0.5,
                 mean_normalize_weights=False,
                 time_horizon=5,
                 loss_w_curr=0.5, loss_w_next=0.5, loss_w_feats=0.0, loss_w_remaining_time=1.0,
@@ -82,7 +83,7 @@ class BasicLossAccuracy(nn.Module):
         self.rtd_loss_fn = RemainingTimeLoss(h=time_horizon, 
                                             base_rtd_loss=base_rtd_loss, 
                                             weight_type=weight_type,
-                                            normalize_weights=mean_normalize_weights)
+                                            gamma=gamma)
         
         # loss_fn = RemainingTimeLoss(h=5, weight_type='logarithmic', log_scale=10)
 
