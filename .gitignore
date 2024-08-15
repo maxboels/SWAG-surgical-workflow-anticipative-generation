@@ -37,3 +37,4 @@ OUTPUTS/expts/*.txt/local/*/*.yaml
 OUTPUTS/expts/*.txt/local/plots/*/*/*/*.png
 OUTPUTS/expts/*.txt/local/*/*.npy
 OUTPUTS/expts/*.txt/local/*/*/*.json
+datasets/*/*.npy

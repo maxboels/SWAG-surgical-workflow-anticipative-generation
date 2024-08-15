@@ -142,9 +142,16 @@ def classification2regression(video_anticipation_probs, horizon_minutes=18, prob
     
 #     return output
 
-def regression2classification(regression_values, horizon_minutes=18):
-    """Original function (fixed roudning issue)"""
-
+def regression2classification(regression_values, horizon_minutes=18, buffer_ratio=0.1):
+    """
+    Modified function to filter out classes close to the horizon.
+    
+    Args:
+    - regression_values: Tensor of regression values
+    - horizon_minutes: Maximum horizon in minutes
+    - buffer_ratio: Ratio of the horizon to use as a buffer zone (0.1 = 10% of horizon)
+    """
+    
     # If has 3 dimensions and 1 channel, remove the channel dimension
     if len(regression_values.shape) == 3 and regression_values.shape[1] == 1:
         regression_values = regression_values.squeeze(1)
@@ -152,22 +159,61 @@ def regression2classification(regression_values, horizon_minutes=18):
     video_length, num_classes = regression_values.shape
     output = torch.zeros((video_length, horizon_minutes), dtype=torch.long)
     
+    # Calculate the buffer size in minutes
+    buffer_size = int(horizon_minutes * buffer_ratio)
+    effective_horizon = horizon_minutes - buffer_size
+    
     for t in range(video_length):
         current_regression = regression_values[t]
         current_classification = torch.zeros(horizon_minutes, dtype=torch.long)
-        current_class = torch.argmin(current_regression)
+        
+        # Find the class with the minimum regression value within the effective horizon
+        valid_classes = (current_regression <= effective_horizon)
+        if valid_classes.sum() > 0:
+            current_class = torch.argmin(current_regression * valid_classes.float() + 
+                                         (1 - valid_classes.float()) * float('inf'))
+        else:
+            current_class = torch.argmin(current_regression)
+        
         current_classification[:] = current_class
         
         for c in range(num_classes):
             if c != current_class:
                 minute = current_regression[c]
-                if minute <= horizon_minutes:
+                if minute <= effective_horizon:
                     minute = round(minute.item())
                     current_classification[minute:] = c
         
         output[t] = current_classification
     
     return output
+
+# def regression2classification(regression_values, horizon_minutes=18, threshold=0.25):
+#     """Original function (fixed roudning issue)"""
+
+#     # If has 3 dimensions and 1 channel, remove the channel dimension
+#     if len(regression_values.shape) == 3 and regression_values.shape[1] == 1:
+#         regression_values = regression_values.squeeze(1)
+
+#     video_length, num_classes = regression_values.shape
+#     output = torch.zeros((video_length, horizon_minutes), dtype=torch.long)
+    
+#     for t in range(video_length):
+#         current_regression = regression_values[t]
+#         current_classification = torch.zeros(horizon_minutes, dtype=torch.long)
+#         current_class = torch.argmin(current_regression)
+#         current_classification[:] = current_class
+        
+#         for c in range(num_classes):
+#             if c != current_class:
+#                 minute = current_regression[c]
+#                 if minute <= horizon_minutes:
+#                     minute = round(minute.item())
+#                     current_classification[minute:] = c
+        
+#         output[t] = current_classification
+    
+#     return output
 
 def regression2classification_error(regression_values, horizon_minutes=18):
     """
