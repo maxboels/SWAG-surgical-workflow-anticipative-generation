@@ -2,7 +2,6 @@ test_only=true
 
 model_name=supra
 ctx_pooling=global
-
 num_ctx_tokens=12
 max_seq_len=24
 

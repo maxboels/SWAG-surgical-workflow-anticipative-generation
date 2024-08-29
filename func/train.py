@@ -329,6 +329,8 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
     future_frames = False
     remaining_time = False
 
+    store = True
+
 
     # FOR EACH VIDEO LOADER
     for video_idx, data_loader in enumerate(dataloaders):
@@ -444,12 +446,12 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
                     f"total test time: {test_time/60:.2f} min")
         
         # save video probs to numpy instead of keeping in memory
-        store = False
         if store and cfg.test_only:
             if not os.path.exists(f'./probs'):
                 os.makedirs(f'./probs')
             np.save(f'./probs/video_probs_ep{epoch}_vid{video_id}.npy', video_frame_probs_preds)
             logger.info(f"[TESTING] Saved video probs to: video_probs_ep{epoch}_vid{video_id}.npy")
+            
             # raise error if only zero values in probs
             if np.all(video_frame_probs_preds == 0):
                 raise ValueError(f"video_frame_probs_preds are all zeros")
@@ -470,15 +472,33 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
             video_frame_preds = regression2classification(video_remaining_time_preds, horizon_minutes=max_num_steps)
             logger.info(f"[TESTING] video_frame_preds (regression2classification): {video_frame_preds.shape}")
 
+        if cfg.test_only:
+            # save the classification predictions to numpy
+            if not os.path.exists(f'./class_preds'):
+                os.makedirs(f'./class_preds')
+            np.save(f'./class_preds/video_frame_preds_ep{epoch}_vid{video_id}.npy', video_frame_preds)
+
         # convert the class probabilities to class remaining time regression values
         if future_frames and not remaining_time:            
             for h in eval_horizons:
                 video_remaining_time_preds = find_time_to_next_occurrence(video_frame_probs_preds, horizon_minutes=h)
                 logger.info(f"[TESTING] video_remaining_time_preds (classification2regression) h={h}: {video_remaining_time_preds.shape}")
                 video_remaining_time_preds_h[h] = video_remaining_time_preds
+
+                if cfg.test_only:
+                    # save the remaining time predictions to numpy
+                    if not os.path.exists(f'./rtd_preds'):
+                        os.makedirs(f'./rtd_preds')
+                    np.save(f'./rtd_preds/video_remaining_time_preds_ep{epoch}_vid{video_id}_h{h}.npy', video_remaining_time_preds)
         else:
             for h in eval_horizons:
                 video_remaining_time_preds_h[h] = video_remaining_time_preds
+
+                if cfg.test_only:
+                    # save the remaining time predictions to numpy
+                    if not os.path.exists(f'./rtd_preds'):
+                        os.makedirs(f'./rtd_preds')
+                    np.save(f'./rtd_preds/video_remaining_time_preds_ep{epoch}_vid{video_id}_h{h}.npy', video_remaining_time_preds)
         
         # store the remaining time predictions dict
         all_video_remaining_time_preds[video_id] = video_remaining_time_preds_h
@@ -498,6 +518,17 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
                         f"wMAE_{h}: {wMAE:.4f} | "
                         f"inMAE_{h}: {inMAE:.4f} | "
                         f"outMAE_{h}: {outMAE:.4f}")
+
+        if cfg.test_only and store:
+            if not os.path.exists(f'./class_preds'):
+                os.makedirs(f'./class_preds')
+            if not os.path.exists(f'./class_tgts'):
+                os.makedirs(f'./class_tgts')
+            np.save(f"./class_preds/video_frame_rec_{video_id}_ep{epoch}.npy", video_frame_rec)
+            np.save(f"./class_preds/video_frame_preds_{video_id}_ep{epoch}.npy", video_frame_preds)
+            np.save(f"./class_tgts/video_tgts_rec_{video_id}_ep{epoch}.npy", video_tgts_rec)
+            np.save(f"./class_tgts/video_tgts_preds_{video_id}_ep{epoch}.npy", video_tgts_preds)
+            logger.info(f"[TESTING] video: {video_id} saved numpy arrays")
             
         all_video_frame_rec[video_id]   = video_frame_rec
         all_video_frame_preds[video_id] = video_frame_preds
