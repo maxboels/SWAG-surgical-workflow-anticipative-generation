@@ -22,7 +22,7 @@ import numpy as np
 from R2A2.eval.eval_metrics import accuracy_n_pred
 from R2A2.eval.plot_segments.plot_values import store_append_h5, store_training_videos_max
 from R2A2.train.losses.ce_mse_consistency import CEConsistencyMSE
-from R2A2.train.losses.remaining_time_loss import RemainingTimeLoss
+from R2A2.train.losses.remaining_time_loss import RemainingTimeLoss, ClassicRemainingTimeLoss
 
 class NoLossAccuracy(nn.Module):
     def __init__(self, *args, **kwargs):
@@ -40,28 +40,22 @@ class BasicLossAccuracy(nn.Module):
                 mean_normalize_weights=False,
                 time_horizon=5,
                 loss_w_curr=0.5, loss_w_next=0.5, loss_w_feats=0.0, loss_w_remaining_time=1.0,
-    ):
-
+                regression_loss_scale=0.01):  # Add this parameter
         super().__init__()
         self.device = device
         self.loss_w_curr = loss_w_curr
         self.loss_w_next = loss_w_next
         self.loss_w_remaining_time = loss_w_remaining_time
         self.loss_w_feats = loss_w_feats
+        self.regression_loss_scale = regression_loss_scale  # Initialize it
         #-----------------select params parameters for loss and accuracy-----------------
         self.model = "skit_v_ant" # options: "skit-x-ant", "skit-v-ant", "r2d2-x-ant", "r2d2-v-ant
         self.past_sampling_rate = 1
         self.target_type = "next_target" # options: "future_classes", "next_target", "future_feats"
         #------------------------------------------------------------------
-        # cholec_curr_class_weights = torch.from_numpy(np.asarray([
-        #     1.6411019141231247,
-        #     0.19090963801041133,
-        #     1.0,
-        #     0.2502662616859295,
-        #     1.9176363911137977,
-        #     0.9840248158200853,
-        #     2.174635818337618,
-        #     ])).to(device).float() # removed last weight
+
+        self.time_regression = "full_horizon" # options: "horizon", "full_horizon"
+
 
 
         # Class weights
@@ -80,10 +74,15 @@ class BasicLossAccuracy(nn.Module):
         # Loss functions
         self.ce_loss_fn_curr    = nn.CrossEntropyLoss(weight=curr_class_weights, reduction='none', ignore_index=-1)
 
-        self.rtd_loss_fn = RemainingTimeLoss(h=time_horizon, 
-                                            base_rtd_loss=base_rtd_loss, 
-                                            weight_type=weight_type,
-                                            gamma=gamma)
+        if self.time_regression=="horizon":
+            self.rtd_loss_fn = RemainingTimeLoss(h=time_horizon, 
+                                                base_rtd_loss=base_rtd_loss, 
+                                                weight_type=weight_type,
+                                                gamma=gamma)
+        elif self.time_regression=="full_horizon":
+            self.rtd_loss_fn = ClassicRemainingTimeLoss()
+        else:
+            raise ValueError(f"Unknown time_regression: {self.time_regression}")
         
         # loss_fn = RemainingTimeLoss(h=5, weight_type='logarithmic', log_scale=10)
 
@@ -137,9 +136,8 @@ class BasicLossAccuracy(nn.Module):
                 print(f"[LOSS] {key}_acc: {accuracies[key + '_acc']}")
             
             elif key == "remaining_time":
-                losses[key + '_loss'] = self.rtd_loss_fn(outputs[key], targets[key]).mean() * self.loss_w_remaining_time
+                losses[key + '_loss'] = self.rtd_loss_fn(outputs[key], targets[key]).mean() * self.loss_w_remaining_time * self.regression_loss_scale
                 print(f"[LOSS] {key}_loss: {losses[key + '_loss']}")
-
             else:
                 raise ValueError(f"Unknown key: {key}")
         

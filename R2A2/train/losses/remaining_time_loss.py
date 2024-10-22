@@ -1,6 +1,31 @@
 import torch
 import torch.nn as nn
 
+class ClassicRemainingTimeLoss(nn.Module):
+    def __init__(self, beta=1.0, epsilon=1e-6, weight_type='balanced_exponential', gamma=0.5, normalize_weights=False):
+        super().__init__()
+        self.beta = beta
+        self.epsilon = epsilon
+        self.weight_type = weight_type
+        self.gamma = gamma  # Controls the decay rate of the exponential weighting
+        self.normalize_weights = normalize_weights
+
+    def forward(self, predictions, targets):
+        # Calculate the base loss using MSE
+        base_rtd_loss = (predictions - targets) ** 2
+
+        # Apply balanced exponential weighting
+        weights = torch.exp(-self.gamma * targets)
+        weights += (1 - self.gamma) * targets
+
+        # Normalize weights if required
+        if self.normalize_weights:
+            weights = weights / weights.mean()
+
+        # Calculate the weighted loss
+        weighted_loss = base_rtd_loss * weights
+        return weighted_loss.mean()
+
 class RemainingTimeLoss(nn.Module):
     def __init__(self, h, beta=1.0, epsilon=1e-6, base_rtd_loss='mse', weight_type='exponential', gamma=0.5, normalize_weights=False):
         super().__init__()

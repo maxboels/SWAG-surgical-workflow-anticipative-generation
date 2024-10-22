@@ -309,11 +309,18 @@ class SKITFuture(nn.Module):
             print(f"[SKIT-F] remaining_time_feats (regression): {remaining_time_feats.shape}")
             next_phase_occurrence = self.regression_head(remaining_time_feats)
             print(f"[SKIT-F] remaining_time  (regression): {next_phase_occurrence.shape}")
-            # convert probability to remaining time
-            remaining_time = (1 - self.sigmoid(next_phase_occurrence)) * self.max_anticip_time
-            outputs["remaining_time"] = remaining_time
-            print(f"[SKIT-F] remaining_time (h={self.max_anticip_time}): {remaining_time.shape}")
 
+            self.prob_to_horizon = False
+
+            if self.prob_to_horizon:
+                # convert logits to independent probabilities and then to remaining time (horizon)
+                remaining_time = (1 - self.sigmoid(next_phase_occurrence)) * self.max_anticip_time
+            else:
+                remaining_time = next_phase_occurrence
+
+            outputs["remaining_time"] = remaining_time
+            print(f"[SKIT-F] remaining_time: {remaining_time.shape}")
+            
         # Classification of future segments
         if self.do_classification:
             next_frames_cls = self.future_action_classifier(next_action)

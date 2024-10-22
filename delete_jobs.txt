@@ -1,5 +1,8 @@
-skit-al21-b-g12-remb-rt18-r2c
-skit-c80-b-g12-cpemb-at18-c2r-4080
-skit-c80-b-g12-cpemb-at18-c2r-6080
+skit-al21-b-g12-nemb-rt18-r2c
+skit-al21-base-glob12-ccemb
+skit-al21-base-glob12-nemb
 skit-c80-b-g12-remb-rt18-r2c-4080
-skit-c80-base-glob12-cpemb-mae5
+skit-c80-base-glob12-cpemb-mae
+skit-c80-base-glob12-nemb
+sup-al21-base-glob12-best
+sup-c80-base-glob12-best

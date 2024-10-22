@@ -303,9 +303,10 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
     all_video_mean_cum_acc_future = {}
     # regression remaining time
     
-    for h in eval_horizons:
-        locals()[f"all_video_remaining_time_tgts_{h}"] = {}
     all_video_remaining_time_preds = {}
+    all_video_remaining_time_tgts = {}
+    for h in eval_horizons:
+        all_video_remaining_time_tgts[f'{h}'] = {}
 
     all_vids_acc = []
     all_vids_prec = []
@@ -317,13 +318,18 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
 
     ignore_index = -1 # ignore the EOS class for the metrics (comparing with previous works)
 
-    # init metrics
+    # init metrics fn
     for h in eval_horizons:
         locals()[f"mae_metric_{h}"] = anticipation_mae(h=h, ignore_index=ignore_index)
 
+    # init metrics    
+    MAEs = ["wMAE_class", "inMAE_class", "outMAE_class", "expMAE_class", 
+            "wMAE", "inMAE", "outMAE", "expMAE"]
+
+    all_videos_metrics = {}
     for h in eval_horizons:
-        for metric in ['wMAE', 'inMAE', 'outMAE', 'eMAE']:
-            locals()[f'all_videos_{metric}_{h}'] = []
+        for metric in MAEs:
+            all_videos_metrics[f'{metric}_{h}'] = []
     
     curr_frames = False
     future_frames = False
@@ -366,11 +372,15 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
         # save remaining time gt and predictions
         # NOTE: make sure the targets are floating point values and not integers
         # as they represent the remaining time in minutes (continuous values)
-        for h in eval_horizons:
-            video_remaining_time_tgts_h = torch.full((video_length, 1, num_ant_classes), -1, dtype=torch.float32)
-            locals()[f"video_remaining_time_tgts_{h}"] = video_remaining_time_tgts_h
-        video_remaining_time_preds = torch.full((video_length, 1, num_ant_classes), -1, dtype=torch.float32)
+        video_remaining_time_tgts = {}
         video_remaining_time_preds_h = {}
+        for h in eval_horizons:
+            video_remaining_time_tgts[f'{h}'] = torch.full((video_length, 1, num_ant_classes), -1, dtype=torch.float32)
+        video_remaining_time_preds = torch.full((video_length, 1, num_ant_classes), -1, dtype=torch.float32)
+
+        # # create for full remaining time targets
+        # video_remaining_time_full_tgts = torch.full((video_length, 1, num_ant_classes), -1, dtype=torch.float32)
+        # video_remaining_time_full_preds = torch.full((video_length, 1, num_ant_classes), -1, dtype=torch.float32)
 
         video_mean_cum_iter_time = []
 
@@ -420,11 +430,18 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
                 if "remaining_time" in outputs.keys():
                     video_remaining_time_preds[start_idx:end_idx] = outputs[f'remaining_time'].detach().cpu()
                     remaining_time = True
+                
+                # if "remaining_time_full_tgt" in data.keys():
+                #     video_remaining_time_full_preds[start_idx:end_idx] = outputs[f'remaining_time_full'].detach().cpu()
+                #     remaining_time = True
+
 
                 # save the remaining time targets for regression and classification
+                # if eval_horizons list is not empty
+                # if len(eval_horizons) > 0:
                 for h in eval_horizons:
-                    locals()[f"video_remaining_time_tgts_{h}"][start_idx:end_idx] = data[f'remaining_time_{h}_tgt'].detach().cpu()
-                
+                    video_remaining_time_tgts[f'{h}'][start_idx:end_idx] = data[f'remaining_time_{h}_tgt'].detach().cpu()
+
                 if "iters_time" in outputs.keys():
                     iters_time = outputs["iters_time"]  # list with n AR steps
                     iters_times.append(iters_time)      # list of lists
@@ -505,19 +522,30 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
 
         # compute the metrics for the remaining time regression
         for h in eval_horizons:
-            video_remaining_time_tgts = locals()[f"video_remaining_time_tgts_{h}"]
-            locals()[f"all_video_remaining_time_tgts_{h}"][video_id] = video_remaining_time_tgts
+            video_remaining_time_tgts = video_remaining_time_tgts[f'{h}']
+            all_video_remaining_time_tgts[f'{h}'][video_id] = video_remaining_time_tgts
 
             # compute the metrics for the remaining time regression
-            wMAE, inMAE, outMAE, eMAE = locals()[f'mae_metric_{h}'](video_remaining_time_preds_h[h], video_remaining_time_tgts)
-            for metric, value in zip(['wMAE', 'inMAE', 'outMAE', 'eMAE'], [wMAE, inMAE, outMAE, eMAE]):
-                locals()[f'all_videos_{metric}_{h}'].append(value.item())
+            mae_results = locals()[f'mae_metric_{h}'](video_remaining_time_preds_h[h], video_remaining_time_tgts)
+
+            # store the metrics for the current video
+            for metric, value in mae_results.items():
+                if isinstance(value, torch.Tensor):
+                    value = value.cpu().numpy()
+                all_videos_metrics[f'{metric}_{h}'].append(value)
             
+            # overall metrics (without the excluded class: EOS)
+            wMAE    = mae_results['wMAE']
+            inMAE   = mae_results['inMAE']
+            outMAE  = mae_results['outMAE']
+            expMAE  = mae_results['expMAE'] # within last 10% before event occurrence
+                        
             logger.info(f"[TESTING] video: {video_id} | "
                         f"horizon: {h} | "
                         f"wMAE_{h}: {wMAE:.4f} | "
                         f"inMAE_{h}: {inMAE:.4f} | "
-                        f"outMAE_{h}: {outMAE:.4f}")
+                        f"outMAE_{h}: {outMAE:.4f} | "
+                        f"expMAE_{h}: {expMAE:.4f}")
 
         if cfg.test_only and store:
             if not os.path.exists(f'./class_preds'):
@@ -636,8 +664,10 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
 
     # Regression remaining time
     for h in eval_horizons:
-        for metric in ['wMAE', 'inMAE', 'outMAE', 'eMAE']:
-            all_videos_results[f"{metric}_{h}"] = np.round(np.nanmean(locals()[f'all_videos_{metric}_{h}']), decimals=4).tolist()
+        for metric in mae_results.keys():
+            # take the mean over all videos and keep the class dimension
+            all_videos_results[f"{metric}_{h}"] = np.round(np.nanmean(all_videos_metrics[f'{metric}_{h}'], axis=0), decimals=4).tolist()
+            logger.info(f"[TESTING] {metric}_{h}: {all_videos_results[f'{metric}_{h}']}")
     
     # all_videos_results["rmse_future"]       = np.round(np.nanmean(all_videos_rmse_future), decimals=4).tolist()
 
@@ -702,8 +732,8 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
                 if not os.path.exists(f"./plots/{dataset}/{h}"):
                     os.makedirs(f"./plots/{dataset}/{h}")
                 
-                gt_remaining_time = locals()[f"all_video_remaining_time_tgts_{h}"][video_id]
-                pred_remaining_time = locals()[f"all_video_remaining_time_preds"][video_id][h]
+                gt_remaining_time = all_video_remaining_time_tgts[f'{h}'][video_id]
+                pred_remaining_time = all_video_remaining_time_preds[video_id][h]
 
                 # plot classification task
                 plot_classification_video(gt_classification, pred_classification,

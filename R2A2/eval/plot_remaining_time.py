@@ -167,6 +167,12 @@ def get_color_scheme(scheme_name, num_classes, brightness_factor=1.0, shift_colo
     # Adjust brightness of all colors
     adjusted_colors = [adjust_brightness(color, brightness_factor) for color in colors]
 
+    # Specifically adjust the yellow color if it exists
+    yellow_rgb = np.array([1.0, 1.0, 0.0])  # RGB for yellow
+    for i, color in enumerate(adjusted_colors):
+        if np.allclose(color[:3], yellow_rgb, atol=0.1):  # Check if the color is close to yellow
+            adjusted_colors[i] = adjust_brightness(color, 0.7)  # Darken the yellow color
+
     # Shift colors and assign the first color to EOS class
     if shift_colors:
         eos_color = adjusted_colors[0]

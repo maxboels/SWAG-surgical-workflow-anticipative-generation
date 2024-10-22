@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import json
+import os
 
 
 class TransformerDecoder(nn.Module):
@@ -114,12 +115,15 @@ class ClassConditionedTransformerDecoder(nn.Module):
                 with open(path_class_probs, 'r') as f:
                     class_freq_pos = json.load(f)
                 class_freq_pos = {int(k): [{int(inner_k): inner_v for inner_k, inner_v in freq_dict.items()} for freq_dict in v] for k, v in class_freq_pos.items()}
-                self.sampler = GaussianMixtureSamplerWithPosition(class_freq_pos, lookahead=num_queries)
             elif self.do_regression and self.conditional_probs_embeddings:
-                file_path= f"/nfs/home/mboels/projects/SuPRA/datasets/{dataset}/rem_time_{h}_conditional_probs.npy"
-                self.rt_conditional_probs = np.load(file_path)
-                self.rt_conditional_probs = torch.tensor(self.rt_conditional_probs).to(self.device)
-                print(f"[ClassConditionedTransformerDecoderRegression] rt_conditional_probs: {self.rt_conditional_probs.shape}")
+                file_path = f"/nfs/home/mboels/projects/SuPRA/datasets/{dataset}/rem_time_{h}_conditional_probs.npy"
+                if os.path.exists(file_path):
+                    self.rt_conditional_probs = np.load(file_path)
+                    self.rt_conditional_probs = torch.tensor(self.rt_conditional_probs).to(self.device)
+                    print(f"[ClassConditionedTransformerDecoderRegression] rt_conditional_probs: {self.rt_conditional_probs.shape}")
+                else:
+                    self.conditional_probs_embeddings = False
+                    print(f"[ClassConditionedTransformerDecoderRegression] File not found: {file_path}. Setting conditional_probs_embeddings to False.")
             else:
                 raise ValueError("Multi-task learning not supported yet.")
         else:

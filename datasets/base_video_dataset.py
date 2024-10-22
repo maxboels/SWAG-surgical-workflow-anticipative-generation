@@ -72,9 +72,9 @@ def plot_remaining_time(phase_labels, gt_remaining_time, h, num_obs_classes, vid
     plt.show()
     plt.close()
 
-def ground_truth_remaining_time(phase_labels, h=5, num_classes=7):
+def gt_remaining_time_full(phase_labels, num_classes=7):
     seq_len = phase_labels.shape[0]
-    remaining_time = torch.full((seq_len, num_classes + 1), h, device=phase_labels.device, dtype=torch.float32)
+    remaining_time = torch.full((seq_len, num_classes + 1), float('inf'), device=phase_labels.device, dtype=torch.float32)
     
     for phase in range(num_classes):
         phase_indices = torch.where(phase_labels == phase)[0]
@@ -91,14 +91,49 @@ def ground_truth_remaining_time(phase_labels, h=5, num_classes=7):
         segments.append((segment_start, phase_indices[-1]))
         
         for segment_start, segment_end in segments:
-            pre_segment_start = max(0, segment_start - int(h*60))
-            
-            for i in range(pre_segment_start, segment_start):
+            for i in range(segment_start):
                 remaining_time[i, phase] = min(remaining_time[i, phase], (segment_start - i) / 60.0)
             remaining_time[segment_start:segment_end+1, phase] = 0.0
     
     # Handle EOS class
-    eos_start = seq_len - int(h*60)
+    for i in range(seq_len):
+        remaining_time[i, -1] = (seq_len - i) / 60.0
+    
+    return remaining_time
+
+def gt_remaining_time_capped(phase_labels, h=5, num_classes=7):
+    seq_len = phase_labels.shape[0]
+    remaining_time = torch.full((seq_len, num_classes + 1), h, device=phase_labels.device, dtype=torch.float32)
+    print(f"seq_len: {seq_len}, num_classes: {num_classes}, h: {h}")
+    
+    for phase in range(num_classes):
+        phase_indices = torch.where(phase_labels == phase)[0]
+        if len(phase_indices) == 0:
+            continue
+        
+        # Find contiguous segments
+        segments = []
+        segment_start = phase_indices[0]
+        for i in range(1, len(phase_indices)):
+            if phase_indices[i] != phase_indices[i-1] + 1: # not contiguous
+                segments.append((segment_start, phase_indices[i-1]))
+                segment_start = phase_indices[i]
+        segments.append((segment_start, phase_indices[-1]))
+        print(f"phase: {phase}, segments: {segments}")
+        
+        # Handle segments
+        for segment_start, segment_end in segments:
+            pre_segment_start = max(0, segment_start - int(h*60))
+            
+            # Remaining time before the segment starts
+            for i in range(pre_segment_start, segment_start):
+                # Avoid overwriting if a smaller value is already present
+                remaining_time[i, phase] = min(remaining_time[i, phase], (segment_start - i) / 60.0)
+            remaining_time[segment_start:segment_end+1, phase] = 0.0
+
+    # Handle EOS class
+    eos_start = max(0, seq_len - int(h*60))
+    print(f"eos_start: {eos_start} = {seq_len} - {h*60}")
     for i in range(eos_start, seq_len):
         remaining_time[i, -1] = (seq_len - i) / 60.0
     
@@ -384,6 +419,7 @@ class Medical_Dataset(Dataset):
             self.videos = []
             self.labels = []
             self.gt_remaining_time = []
+            self.gt_remaining_time_full = []
             self.next_segments_class = []
             self.heatmap = []
             self.eos_video_targets = []
@@ -455,11 +491,23 @@ class Medical_Dataset(Dataset):
                 # regression labels (remaining time until occurrence of each phases)
                 gt_remaining_time = {}
                 for h in self.eval_horizons:
-                    gt_remaining_time[h] = ground_truth_remaining_time(phase_labels, h=h, num_classes=self.num_obs_classes)
-                    self.logger.info(f"[DATASET] gt_remaining_time h={h}: {gt_remaining_time[h].size()}")
-                self.gt_remaining_time.append(gt_remaining_time)
+                    if h == 1000:
+                        # remaining time duration for each phase (full duration values)
+                        gt_remaining_time = gt_remaining_time_full(phase_labels, num_classes=self.num_obs_classes)
+                        self.gt_remaining_time.append(gt_remaining_time)
+                        self.logger.info(f"[DATASET] gt_remaining_time h={h}: {gt_remaining_time.size()}")
+                    else:
+                        gt_remaining_time[h] = gt_remaining_time_capped(phase_labels, h=h, num_classes=self.num_obs_classes)
+                        self.logger.info(f"[DATASET] gt_remaining_time h={h}: {gt_remaining_time[h].size()}")
 
+                self.gt_remaining_time.append(gt_remaining_time)
                 self.logger.info(f"\n")
+            
+                # save video gt remaining time to json
+                gt_remaining_time = {k: v.cpu().numpy().tolist() for k, v in gt_remaining_time.items()}
+                with open(f"{self.dataset_local_path}gt_remaining_time_{video_indx}.json", 'w') as f:
+                    json.dump(gt_remaining_time, f)
+                    self.logger.info(f"[DATASET] Saved gt_remaining_time for video {video_indx}")
 
             # End of video loop
             self.avg_video_length = np.mean(video_stats['video_lengths']) / 60
@@ -584,6 +632,7 @@ class Medical_Dataset(Dataset):
             video               = self.videos[video_idx]
             video_targets       = self.labels[video_idx]
             gt_remaining_time   = self.gt_remaining_time[video_idx]
+            # gt_remaining_time_full = self.gt_remaining_time_full[video_idx]
             if self.eos_regression:
                 eos_values = self.eos_video_targets[video_idx]
                 print(f"[DATASET] eos_values: {eos_values.shape}")
@@ -594,6 +643,14 @@ class Medical_Dataset(Dataset):
             
             for h in self.eval_horizons:
                 print(f"[DATASET] gt_remaining_time {h}: {gt_remaining_time[h].size()}")
+            
+            # # print(f"[DATASET] gt_remaining_time_full: {gt_remaining_time_full.size()}")
+            # # save gt remaining time full save to json
+            # # gt_remaining_time_full = gt_remaining_time_full.cpu().numpy()
+            # # save to json
+            # with open(f"{self.dataset_local_path}gt_remaining_time_full_{video_idx}.json", 'w') as f:
+            #     json.dump(gt_remaining_time_full.tolist(), f)
+
 
             # VIDEO FEED
             # NOTE: index 0 is included in the frame id so it is not necessary to add 1 !!!
@@ -652,7 +709,12 @@ class Medical_Dataset(Dataset):
                     data_now[f'remaining_time_{h}_tgt'] = remaining_time.to(self.device).float()
                     print(f"[DATASET] remaining_time_{h}_tgt: {remaining_time.size()}")
                     print(f"[DATASET] remaining_time_{h}_tgt: {remaining_time}")
- 
+                
+                # # FULL REMAINING TIME TARGETS
+                # data_now['remaining_time_full_tgt'] = gt_remaining_time_full[frame_idx, :].unsqueeze(0).to(self.device).float()
+                # print(f"[DATASET] remaining_time_full_tgt: {gt_remaining_time_full[frame_idx, :].unsqueeze(0).size()}")
+
+            
             if self.eos_regression:
                 curr_eos_values = eos_values[starts: ends: self.anticip_time]
                 if missing > 0:
