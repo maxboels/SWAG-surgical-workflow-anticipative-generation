@@ -1,6 +1,6 @@
-test_only=false
+test_only=true
 
-main_metric=acc_curr_future
+main_metric=wMAE
 
 num_epochs=40
 

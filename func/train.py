@@ -507,6 +507,12 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
                     if not os.path.exists(f'./rtd_preds'):
                         os.makedirs(f'./rtd_preds')
                     np.save(f'./rtd_preds/video_remaining_time_preds_ep{epoch}_vid{video_id}_h{h}.npy', video_remaining_time_preds)
+
+                    # save the ground truth remaining time to numpy if not already saved
+                    if not os.path.exists(f'./rtd_tgts'):
+                        os.makedirs(f'./rtd_tgts')
+                        np.save(f'./rtd_tgts/video_remaining_time_tgts_vid{video_id}_h{h}.npy', video_remaining_time_tgts[f'{h}'])
+
         else:
             for h in eval_horizons:
                 video_remaining_time_preds_h[h] = video_remaining_time_preds
@@ -684,12 +690,14 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
     all_videos_results["recall_weighted"]       = np.round(np.nanmean(all_vids_recall), decimals=4).tolist()
     all_videos_results["f1_weighted"]           = np.round(np.nanmean(all_vids_f1), decimals=4).tolist()
     
-    # check if best epoch
-    if main_metric == 'wMAE':
-        main_metric = main_metric + f"_{horizon}"
+    # set metric to optimize
+    h = eval_horizons[0]
+    if main_metric in [f'wMAE_{h}', f'inMAE_{h}', f'outMAE_{h}', f'expMAE_{h}']:
         condition = 'lower'
-    else:
+    elif main_metric in ['acc_curr', 'acc_future', 'acc_curr_future']:
         condition = 'higher'
+    
+    # check if best epoch
     score = all_videos_results[main_metric]
     is_best_epoch = is_better(condition, score, best_score)
     logger.info(f"[TESTING] Epoch: {epoch} | is best epoch: {is_best_epoch}")
@@ -1163,11 +1171,13 @@ def main(cfg):
     # define the score to optimize
     main_metric = cfg.main_metric
     
-    if main_metric == 'wMAE':
-        best_score = 18.0 # minimization
+    if main_metric in ['wMAE', 'inMAE', 'outMAE', 'expMAE']:
+        # minimization
+        best_score = 60.0
         main_metric = f"{cfg.main_metric}_{cfg.eval_horizons[0]}"
-    else:
-        best_score = 0.0 # maximization
+    elif main_metric in ['acc_curr', 'acc_future', 'acc_curr_future']:
+        # maximization
+        best_score = 0.0
     
     # Testing only
     if cfg.test_only:

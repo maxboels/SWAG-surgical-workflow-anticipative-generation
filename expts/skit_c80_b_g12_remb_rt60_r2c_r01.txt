@@ -1,8 +1,8 @@
 test_only=false
 
-main_metric=acc_curr_future
+main_metric=wMAE
 
-num_epochs=60
+num_epochs=50
 
 model_name=skit
 ctx_pooling=global
@@ -19,7 +19,7 @@ loss_w_curr=0.4
 loss_w_next=0.0
 loss_w_feats=0.0
 loss_w_remaining_time=1.0
-regression_loss_scale=0.01
+regression_loss_scale=0.1
 
 do_classification=false
 do_regression=true
