@@ -76,6 +76,71 @@ class RemainingTimeLoss(nn.Module):
         weighted_loss = base_rtd_loss * weights
         return weighted_loss.mean()
 
+
+
+import torch
+import torch.nn as nn
+
+class InMAEZoneSensitiveLoss(nn.Module):
+    def __init__(self, h, high_weight=2.0, low_weight=1.0, gamma=1.0, use_exponential=False, normalize_weights=False):
+        super().__init__()
+        self.h = h  # Horizon defining the inMAE zone
+        self.high_weight = high_weight  # Weight for errors within the inMAE zone
+        self.low_weight = low_weight    # Weight for errors outside the inMAE zone
+        self.gamma = gamma              # Controls the decay rate if exponential weighting is used
+        self.use_exponential = use_exponential  # Flag to use exponential weighting
+        self.normalize_weights = normalize_weights
+
+    def forward(self, predictions, targets):
+        # Calculate the base loss using MSE
+        base_rtd_loss = (predictions - targets) ** 2
+
+        # Define the inMAE zone
+        inMAE_zone = (targets >= 0) & (targets < self.h)
+
+        # Initialize weights with low_weight
+        weights = torch.full_like(targets, self.low_weight)
+
+        if self.use_exponential:
+            # Apply exponential weights within the inMAE zone
+            weights[inMAE_zone] = self.high_weight * torch.exp(-self.gamma * (targets[inMAE_zone] / self.h))
+        else:
+            # Assign high_weight within the inMAE zone
+            weights[inMAE_zone] = self.high_weight
+
+        # Normalize weights if required
+        if self.normalize_weights:
+            weights = weights / weights.mean()
+
+        # Calculate the weighted loss
+        weighted_loss = base_rtd_loss * weights
+        return weighted_loss.mean()
+
+
+
+if __name__ == '__main__':
+
+
+    # Test the loss function
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    h = 5.0
+    targets = torch.linspace(0, 20, steps=100)
+    loss_fn = InMAEZoneSensitiveLoss(h=h, high_weight=2.8, low_weight=1.0, gamma=1.0, use_exponential=True)
+
+    inMAE_zone = (targets >= 0) & (targets < h)
+    weights = torch.full_like(targets, loss_fn.low_weight)
+    weights[inMAE_zone] = loss_fn.high_weight * torch.exp(-loss_fn.gamma * (targets[inMAE_zone] / h))
+
+    plt.plot(targets.numpy(), weights.numpy())
+    plt.xlabel('Target Time')
+    plt.ylabel('Weight')
+    plt.title('Weights vs Target Time')
+    plt.show()
+
+
+
 # class RemainingTimeLoss(nn.Module):
 #     """
 #     Normalizes inputs and targets to [0, 1] range and applies weighting

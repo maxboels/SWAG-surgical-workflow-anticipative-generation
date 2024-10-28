@@ -53,6 +53,8 @@ do_regression: true
 
 base_rtd_loss: l1 # l1 / l2 / smooth_l1
 rtd_weight_type: exponential # linear / exponential / inverse
+rem_time_loss_fn: classic # in_mae_zone_sensitive, horizon
+
 
 ctx_pooling: global
 num_ctx_tokens: 20
@@ -119,6 +121,7 @@ train_eval_op:
     cls_loss_acc_fn:
       _target_: func.train_eval_ops.BasicLossAccuracy
       base_rtd_loss: ${base_rtd_loss}
+      rem_time_loss_fn: ${rem_time_loss_fn}
       weight_type: ${rtd_weight_type}
       gamma: ${gamma}
       loss_w_curr: ${loss_w_curr}

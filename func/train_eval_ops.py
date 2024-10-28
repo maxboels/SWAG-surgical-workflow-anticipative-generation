@@ -22,7 +22,7 @@ import numpy as np
 from R2A2.eval.eval_metrics import accuracy_n_pred
 from R2A2.eval.plot_segments.plot_values import store_append_h5, store_training_videos_max
 from R2A2.train.losses.ce_mse_consistency import CEConsistencyMSE
-from R2A2.train.losses.remaining_time_loss import RemainingTimeLoss, ClassicRemainingTimeLoss
+from R2A2.train.losses.remaining_time_loss import RemainingTimeLoss, ClassicRemainingTimeLoss, InMAEZoneSensitiveLoss
 
 class NoLossAccuracy(nn.Module):
     def __init__(self, *args, **kwargs):
@@ -35,6 +35,7 @@ class NoLossAccuracy(nn.Module):
 class BasicLossAccuracy(nn.Module):
     def __init__(self, dataset, device,
                 base_rtd_loss="mse", # mse, mae, smooth_l1
+                rem_time_loss_fn="horizon", # horizon, full_horizon, in_mae_zone_sensitive
                 weight_type='exponential',
                 gamma=0.5,
                 mean_normalize_weights=False,
@@ -54,10 +55,8 @@ class BasicLossAccuracy(nn.Module):
         self.target_type = "next_target" # options: "future_classes", "next_target", "future_feats"
         #------------------------------------------------------------------
 
-        self.time_regression = "full_horizon" # options: "horizon", "full_horizon"
-
-
-
+        self.rem_time_loss_fn = rem_time_loss_fn
+        self.time_horizon = time_horizon
         # Class weights
         if hasattr(dataset, "curr_class_weights"):
             curr_class_weights = dataset.curr_class_weights.to(device).float()
@@ -74,15 +73,23 @@ class BasicLossAccuracy(nn.Module):
         # Loss functions
         self.ce_loss_fn_curr    = nn.CrossEntropyLoss(weight=curr_class_weights, reduction='none', ignore_index=-1)
 
-        if self.time_regression=="horizon":
+        if self.rem_time_loss_fn=="horizon":
             self.rtd_loss_fn = RemainingTimeLoss(h=time_horizon, 
                                                 base_rtd_loss=base_rtd_loss, 
                                                 weight_type=weight_type,
                                                 gamma=gamma)
-        elif self.time_regression=="full_horizon":
+        elif self.rem_time_loss_fn=="classic":
             self.rtd_loss_fn = ClassicRemainingTimeLoss()
+
+        elif self.rem_time_loss_fn=="in_mae_zone_sensitive":
+            self.rtd_loss_fn = InMAEZoneSensitiveLoss(h=time_horizon, 
+                                                 high_weight=2.8, 
+                                                 low_weight=1.0, 
+                                                 gamma=1.0, 
+                                                 use_exponential=True)
+
         else:
-            raise ValueError(f"Unknown time_regression: {self.time_regression}")
+            raise ValueError(f"Unknown time_regression: {self.rem_time_loss_fn}")
         
         # loss_fn = RemainingTimeLoss(h=5, weight_type='logarithmic', log_scale=10)
 

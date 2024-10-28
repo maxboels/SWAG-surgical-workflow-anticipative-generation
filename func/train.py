@@ -696,6 +696,8 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
         condition = 'lower'
     elif main_metric in ['acc_curr', 'acc_future', 'acc_curr_future']:
         condition = 'higher'
+    else:
+        raise ValueError(f"main_metric: {main_metric} not recognized")
     
     # check if best epoch
     score = all_videos_results[main_metric]
@@ -1178,6 +1180,8 @@ def main(cfg):
     elif main_metric in ['acc_curr', 'acc_future', 'acc_curr_future']:
         # maximization
         best_score = 0.0
+    else:
+        raise ValueError(f"main_metric: {main_metric} not recognized")
     
     # Testing only
     if cfg.test_only:
