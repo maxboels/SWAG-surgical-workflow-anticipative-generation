@@ -316,11 +316,12 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
     all_metrics = []
     all_frame_metrics = []
 
-    ignore_index = -1 # ignore the EOS class for the metrics (comparing with previous works)
+    # ignore the EOS class for the metrics (comparing with previous works)
+    ignore_classes = [-1, 7]
 
     # init metrics fn
     for h in eval_horizons:
-        locals()[f"mae_metric_{h}"] = anticipation_mae(h=h, ignore_index=ignore_index)
+        locals()[f"mae_metric_{h}"] = anticipation_mae(h=h, ignore_index=ignore_classes)
 
     # init metrics    
     MAEs = ["wMAE_class", "inMAE_class", "outMAE_class", "expMAE_class", 
@@ -511,7 +512,7 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
                     # save the ground truth remaining time to numpy if not already saved
                     if not os.path.exists(f'./rtd_tgts'):
                         os.makedirs(f'./rtd_tgts')
-                        np.save(f'./rtd_tgts/video_remaining_time_tgts_vid{video_id}_h{h}.npy', video_remaining_time_tgts[f'{h}'])
+                    np.save(f'./rtd_tgts/video_remaining_time_tgts_vid{video_id}_h{h}.npy', video_remaining_time_tgts[f'{h}'])
 
         else:
             for h in eval_horizons:
@@ -523,6 +524,11 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
                         os.makedirs(f'./rtd_preds')
                     np.save(f'./rtd_preds/video_remaining_time_preds_ep{epoch}_vid{video_id}_h{h}.npy', video_remaining_time_preds)
         
+                    # save the ground truth remaining time to numpy if not already saved
+                    if not os.path.exists(f'./rtd_tgts'):
+                        os.makedirs(f'./rtd_tgts')
+                    np.save(f'./rtd_tgts/video_remaining_time_tgts_vid{video_id}_h{h}.npy', video_remaining_time_tgts[f'{h}'])
+
         # store the remaining time predictions dict
         all_video_remaining_time_preds[video_id] = video_remaining_time_preds_h
 
@@ -1039,6 +1045,10 @@ def main(cfg):
             collate_fn=collate_fn_remove_audio)
         for dataset_test in datasets_test
     ]
+
+    # Save video durations for the test set
+    output_file = 'test_video_durations.json'
+    dataset_train.save_video_durations(test_videos_ids, output_file)
 
     num_classes = {'one': 7 } # todo: remove in base model and class_mappings
     logger.info('Creating model with %s classes', num_classes)

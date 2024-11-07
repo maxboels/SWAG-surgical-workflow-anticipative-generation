@@ -64,7 +64,8 @@ def plot_classification_video(gt_classification, pred_classification,
 
     ax1.set_title('Single-Pass Decoding')
     ax2.set_title('Ground Truth Classes')
-    ax2.set_xlabel("Video Time Steps (seconds)")
+    # add sampling rate to x-axis label
+    ax2.set_xlabel(f"Video Time Steps (seconds, x{int(x_sampling_rate)})")
     
     # Add colorbar with adjusted size
     cbar = plt.colorbar(scatter_gt_classification, cax=cbar_ax, orientation='horizontal', aspect=25)

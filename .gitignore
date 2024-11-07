@@ -40,3 +40,4 @@ OUTPUTS/expts/*.txt/local/*/*/*.json
 datasets/*/*.npy
 
 datasets/*/gt_remaining_time_*.json
+datasets/cholec80/video_durations*.json

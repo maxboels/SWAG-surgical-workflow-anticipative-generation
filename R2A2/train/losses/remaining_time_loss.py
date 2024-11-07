@@ -82,7 +82,10 @@ import torch
 import torch.nn as nn
 
 class InMAEZoneSensitiveLoss(nn.Module):
-    def __init__(self, h, high_weight=2.0, low_weight=1.0, gamma=1.0, use_exponential=False, normalize_weights=False):
+    def __init__(self, h, high_weight=2.0, low_weight=1.0, gamma=1.0, 
+                 use_exponential=False, 
+                 normalize_weights=False,
+                 rsd_weight=2.0):
         super().__init__()
         self.h = h  # Horizon defining the inMAE zone
         self.high_weight = high_weight  # Weight for errors within the inMAE zone
@@ -90,6 +93,7 @@ class InMAEZoneSensitiveLoss(nn.Module):
         self.gamma = gamma              # Controls the decay rate if exponential weighting is used
         self.use_exponential = use_exponential  # Flag to use exponential weighting
         self.normalize_weights = normalize_weights
+        self.rsd_weight = rsd_weight
 
     def forward(self, predictions, targets):
         # Calculate the base loss using MSE
@@ -107,6 +111,9 @@ class InMAEZoneSensitiveLoss(nn.Module):
         else:
             # Assign high_weight within the inMAE zone
             weights[inMAE_zone] = self.high_weight
+
+        # Multiply the weight for the last class by rsd_weight to increase its importance
+        weights[-1] *= self.rsd_weight
 
         # Normalize weights if required
         if self.normalize_weights:

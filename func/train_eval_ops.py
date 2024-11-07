@@ -86,7 +86,8 @@ class BasicLossAccuracy(nn.Module):
                                                  high_weight=2.8, 
                                                  low_weight=1.0, 
                                                  gamma=1.0, 
-                                                 use_exponential=True)
+                                                 use_exponential=True,
+                                                 rsd_weight=2.0)
 
         else:
             raise ValueError(f"Unknown time_regression: {self.rem_time_loss_fn}")

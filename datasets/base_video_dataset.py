@@ -403,6 +403,20 @@ class Medical_Dataset(Dataset):
             if self.train_mode == 'train':
                 random.shuffle(self.data_order)
 
+        def save_video_durations(self, video_indices, output_file):
+            video_durations = self.get_video_durations(video_indices)
+            with open(output_file, 'w') as f:
+                json.dump(video_durations, f)
+            self.logger.info(f"Saved video durations to {output_file}")
+
+        def get_video_durations(self, video_indices):
+            video_durations = {}
+            for video_indx in video_indices:
+                df_video = self.df_split[self.df_split.video_idx == video_indx]
+                video_length = len(df_video)
+                video_durations[video_indx] = video_length
+            return video_durations
+
         def get_data_split(self, dataset_name="cholec80", split="train", video_indices=None):
             """
                 autolapro21: 0-14, 14-21
@@ -426,9 +440,7 @@ class Medical_Dataset(Dataset):
             # mb added
             self.target_feats = []
             new_id = 0  
-            video_stats = {
-                "video_lengths": [],
-            }
+            video_durations = {}
 
             # initialize class counts for 1fps
             train_class_count_1fps = {}
@@ -443,7 +455,7 @@ class Medical_Dataset(Dataset):
                 df_video = df_video[df_video.frame % self.frames_fps==0].reset_index(drop = True)
                 self.logger.info(f"[DATASET] Sampled video_idx: {video_indx} at {self.frames_fps} fps to {len(df_video)} frames")
                 video_length = len(df_video)
-                video_stats['video_lengths'].append(video_length)
+                video_durations[video_indx] = video_length
                 if video_length==0:
                     print(f'[SKIP] video_idx:{video_indx} video_length:{video_length}') 
                     continue
@@ -507,12 +519,24 @@ class Medical_Dataset(Dataset):
                 gt_remaining_time = {k: v.cpu().numpy().tolist() for k, v in gt_remaining_time.items()}
                 with open(f"{self.dataset_local_path}gt_remaining_time_{video_indx}.json", 'w') as f:
                     json.dump(gt_remaining_time, f)
-                    self.logger.info(f"[DATASET] Saved gt_remaining_time for video {video_indx}")
+                    self.logger.info(f"[DATASET] Saved gt_remaining_time for video {video_indx}")    
+
+            # save video durations to json
+            video_durations_file = f"{self.dataset_local_path}video_durations.json"
+            if os.path.exists(video_durations_file):
+                with open(video_durations_file, 'r') as f:
+                    existing_video_durations = json.load(f)
+            else:
+                existing_video_durations = {}
+            existing_video_durations.update(video_durations)
+            with open(video_durations_file, 'w') as f:
+                json.dump(existing_video_durations, f)
+                self.logger.info(f"[DATASET] Saved video durations")
 
             # End of video loop
-            self.avg_video_length = np.mean(video_stats['video_lengths']) / 60
+            self.avg_video_length = np.mean(list(video_durations.values())) / 60
             self.logger.info(f"[DATASET] number of {self.train_mode} videos: {len(self.videos)}")
-            self.logger.info(f"[DATASET] avg video length: {np.mean(video_stats['video_lengths']) / 60:.2f} minutes")
+            self.logger.info(f"[DATASET] avg video length: {self.avg_video_length:.2f} minutes")
 
             # PADDING VALUES based on video dims
             self.zeros = torch.zeros([video.size(0), self.ctx_length, video.size(2), video.size(3)]).float().to(self.device)
