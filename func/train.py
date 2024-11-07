@@ -680,6 +680,11 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
             # take the mean over all videos and keep the class dimension
             all_videos_results[f"{metric}_{h}"] = np.round(np.nanmean(all_videos_metrics[f'{metric}_{h}'], axis=0), decimals=4).tolist()
             logger.info(f"[TESTING] {metric}_{h}: {all_videos_results[f'{metric}_{h}']}")
+
+            # get standard deviation over all videos
+            std_metric = np.round(np.nanstd(all_videos_metrics[f'{metric}_{h}'], axis=0), decimals=4).tolist()
+            all_videos_results[f"{metric}_{h}_std"] = std_metric
+            logger.info(f"[TESTING] {metric}_{h}_std: {std_metric}")
     
     # all_videos_results["rmse_future"]       = np.round(np.nanmean(all_videos_rmse_future), decimals=4).tolist()
 

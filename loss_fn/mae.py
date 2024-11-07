@@ -11,10 +11,7 @@ class anticipation_mae(nn.Module):
     """
     def __init__(self, h=None, ignore_index=None):
         super(anticipation_mae, self).__init__()
-        if self.h is not None:
-            self.h = torch.tensor(h).float()
-        else:
-            self.h = None
+        self.h = torch.tensor(h).float()
         
         # Ensure ignore_index is a list if not None
         if ignore_index is not None and not isinstance(ignore_index, list):
