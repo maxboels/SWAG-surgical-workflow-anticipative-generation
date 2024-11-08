@@ -10,6 +10,8 @@ class ClassicRemainingTimeLoss(nn.Module):
         self.gamma = gamma  # Controls the decay rate of the exponential weighting
         self.normalize_weights = normalize_weights
 
+        self.rsd_weight = 1.5
+
     def forward(self, predictions, targets):
         # Calculate the base loss using MSE
         base_rtd_loss = (predictions - targets) ** 2
@@ -21,6 +23,9 @@ class ClassicRemainingTimeLoss(nn.Module):
         # Normalize weights if required
         if self.normalize_weights:
             weights = weights / weights.mean()
+
+        if self.rsd_weight > 1:
+            weights[-1] *= self.rsd_weight # focus a bit more on the end of surgery class
 
         # Calculate the weighted loss
         weighted_loss = base_rtd_loss * weights
@@ -36,6 +41,8 @@ class RemainingTimeLoss(nn.Module):
         self.gamma = gamma  # Controls the decay rate of the exponential weighting
         self.normalize_weights = normalize_weights
         self.base_rtd_loss = base_rtd_loss
+
+        self.rsd_weight = 1.5
 
     def normalize(self, x):
         return x / self.h
@@ -70,6 +77,9 @@ class RemainingTimeLoss(nn.Module):
         else:
             raise ValueError("Invalid weight_type. Choose 'balanced_exponential', 'inverse', 'exponential', or 'linear'.")
 
+        if self.rsd_weight > 1:
+            weights[-1] *= self.rsd_weight # focus a bit more on the end of surgery class
+
         if self.normalize_weights:
             weights = weights / weights.mean()
 
@@ -85,7 +95,7 @@ class InMAEZoneSensitiveLoss(nn.Module):
     def __init__(self, h, high_weight=2.0, low_weight=1.0, gamma=1.0, 
                  use_exponential=False, 
                  normalize_weights=False,
-                 rsd_weight=2.0):
+                 rsd_weight=1.5):
         super().__init__()
         self.h = h  # Horizon defining the inMAE zone
         self.high_weight = high_weight  # Weight for errors within the inMAE zone

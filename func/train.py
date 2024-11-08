@@ -534,17 +534,18 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
 
         # compute the metrics for the remaining time regression
         for h in eval_horizons:
-            video_remaining_time_tgts = video_remaining_time_tgts[f'{h}']
-            all_video_remaining_time_tgts[f'{h}'][video_id] = video_remaining_time_tgts
+            video_remaining_time_tgts_h = video_remaining_time_tgts[f'{h}']
+            all_video_remaining_time_tgts[f'{h}'][video_id] = video_remaining_time_tgts_h
 
             # compute the metrics for the remaining time regression
-            mae_results = locals()[f'mae_metric_{h}'](video_remaining_time_preds_h[h], video_remaining_time_tgts)
+            mae_results = locals()[f'mae_metric_{h}'](video_remaining_time_preds_h[h], video_remaining_time_tgts_h)
 
             # store the metrics for the current video
             for metric, value in mae_results.items():
                 if isinstance(value, torch.Tensor):
                     value = value.cpu().numpy()
                 all_videos_metrics[f'{metric}_{h}'].append(value)
+
             
             # overall metrics (without the excluded class: EOS)
             wMAE    = mae_results['wMAE']
@@ -702,7 +703,7 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
     all_videos_results["f1_weighted"]           = np.round(np.nanmean(all_vids_f1), decimals=4).tolist()
     
     # set metric to optimize
-    h = eval_horizons[0]
+    h = eval_horizons[-1]
     if main_metric in [f'wMAE_{h}', f'inMAE_{h}', f'outMAE_{h}', f'expMAE_{h}']:
         condition = 'lower'
     elif main_metric in ['acc_curr', 'acc_future', 'acc_curr_future']:
@@ -727,19 +728,20 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
             video_mean_curr_acc         = all_video_mean_curr_acc[video_id]
             video_mean_cum_acc_future   = all_video_mean_cum_acc_future[video_id]
             
-            plot_video_scatter_3D(video_frame_preds, video_frame_rec, video_tgts_preds, video_tgts_rec, 
-                                anticip_time, 
-                                horizon=cfg.eval_horizons[-1],
-                                video_idx=video_id, 
-                                dataset=dataset,
-                                epoch=epoch,
-                                sampling_rate=60, # current frames axis (seconds to minutes)
-                                padding_class=-1, # padding class
-                                eos_class=7,
-                                num_classes=7,
-                                video_mean_curr_acc=video_mean_curr_acc,
-                                video_mean_cum_acc_future=video_mean_cum_acc_future,
-                                )    # don't include the eos class which is assigned to -1
+            # plot_video_scatter_3D(video_frame_preds, video_frame_rec, video_tgts_preds, video_tgts_rec, 
+            #                     anticip_time, 
+            #                     horizon=cfg.eval_horizons[-1],
+            #                     video_idx=video_id, 
+            #                     dataset=dataset,
+            #                     epoch=epoch,
+            #                     sampling_rate=60, # current frames axis (seconds to minutes)
+            #                     padding_class=-1, # padding class
+            #                     eos_class=7,
+            #                     num_classes=7,
+            #                     video_mean_curr_acc=video_mean_curr_acc,
+            #                     video_mean_cum_acc_future=video_mean_cum_acc_future,
+            #                     )
+            
             
             # merge recognition and anticipation tasks
             gt_classification = np.concatenate((video_tgts_rec, video_tgts_preds), axis=1)
@@ -823,11 +825,15 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
     logger.info(f"[TESTING] Epoch: {epoch} | "
                 f"acc_curr: {all_videos_results['acc_curr']} | "
                 f"acc_future: {all_videos_results['acc_future']} | "
-                f"acc_curr_future: {all_videos_results['acc_curr_future']} | "
-                f"wMAE_{eval_horizons[0]}: {all_videos_results[f'wMAE_{eval_horizons[0]}']} | "
-                f"inMAE_{eval_horizons[0]}: {all_videos_results[f'inMAE_{eval_horizons[0]}']} | "
-                f"outMAE_{eval_horizons[0]}: {all_videos_results[f'outMAE_{eval_horizons[0]}']}"
-    )
+                f"acc_curr_future: {all_videos_results['acc_curr_future']}"
+                )
+
+    for h in eval_horizons:    
+        logger.info(f"[TESTING] "
+                    f"wMAE_{h}: {all_videos_results[f'wMAE_{h}']} | "
+                    f"inMAE_{h}: {all_videos_results[f'inMAE_{h}']} | "
+                    f"outMAE_{h}: {all_videos_results[f'outMAE_{h}']} | "
+        )
 
     return all_videos_results, step_now+1, is_best_epoch
 
@@ -1051,10 +1057,6 @@ def main(cfg):
         for dataset_test in datasets_test
     ]
 
-    # Save video durations for the test set
-    output_file = 'test_video_durations.json'
-    dataset_train.save_video_durations(test_videos_ids, output_file)
-
     num_classes = {'one': 7 } # todo: remove in base model and class_mappings
     logger.info('Creating model with %s classes', num_classes)
     model = base_model.BaseModel(cfg.model,
@@ -1180,7 +1182,7 @@ def main(cfg):
     # weights for classes etc.
     train_eval_op = hydra.utils.instantiate(cfg.train_eval_op,
                                             model,
-                                            cfg.eval_horizons[0],
+                                            cfg.eval_horizons,
                                             device,
                                             dataset_train,
                                             _recursive_=False)
@@ -1191,7 +1193,7 @@ def main(cfg):
     if main_metric in ['wMAE', 'inMAE', 'outMAE', 'expMAE']:
         # minimization
         best_score = 60.0
-        main_metric = f"{cfg.main_metric}_{cfg.eval_horizons[0]}"
+        main_metric = f"{cfg.main_metric}_{cfg.eval_horizons[-1]}"
     elif main_metric in ['acc_curr', 'acc_future', 'acc_curr_future']:
         # maximization
         best_score = 0.0
@@ -1214,7 +1216,7 @@ def main(cfg):
             1,
             best_score=best_score,
             main_metric=main_metric,
-            horizon=cfg.eval_horizons[0],
+            horizon=cfg.eval_horizons[:],
             probs_to_regression_method=cfg.probs_to_regression_method,
             confidence_threshold= 0.5
         )
@@ -1238,6 +1240,7 @@ def main(cfg):
             train_sampler.set_epoch(epoch)
         
         if epoch>=0:
+            # Train the model
             last_saved_time, step_now = hydra.utils.call(
                 cfg.train.train_one_epoch_fn,
                 model,
@@ -1256,7 +1259,8 @@ def main(cfg):
             partial_epoch = 0  # Reset, for future epochs
             store_checkpoint([CKPT_FNAME], model, optimizer, lr_scheduler,
                             epoch + 1)
-                      
+
+        # Evaluate the model     
         all_videos_results, step_val_now, is_best_epoch = hydra.utils.call(
             cfg.eval.eval_fn,
             cfg,
@@ -1270,7 +1274,7 @@ def main(cfg):
             epoch + 1,
             best_score=best_score,
             main_metric=main_metric,
-            horizon=cfg.eval_horizons[0],
+            horizon=cfg.eval_horizons[:], # previously [0]
             probs_to_regression_method=cfg.probs_to_regression_method,
             confidence_threshold= 0.5
         )

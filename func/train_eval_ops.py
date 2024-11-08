@@ -39,7 +39,7 @@ class BasicLossAccuracy(nn.Module):
                 weight_type='exponential',
                 gamma=0.5,
                 mean_normalize_weights=False,
-                time_horizon=5,
+                max_time_horizon=5,
                 loss_w_curr=0.5, loss_w_next=0.5, loss_w_feats=0.0, loss_w_remaining_time=1.0,
                 regression_loss_scale=0.01):  # Add this parameter
         super().__init__()
@@ -56,7 +56,7 @@ class BasicLossAccuracy(nn.Module):
         #------------------------------------------------------------------
 
         self.rem_time_loss_fn = rem_time_loss_fn
-        self.time_horizon = time_horizon
+        self.max_time_horizon = max_time_horizon
         # Class weights
         if hasattr(dataset, "curr_class_weights"):
             curr_class_weights = dataset.curr_class_weights.to(device).float()
@@ -74,7 +74,7 @@ class BasicLossAccuracy(nn.Module):
         self.ce_loss_fn_curr    = nn.CrossEntropyLoss(weight=curr_class_weights, reduction='none', ignore_index=-1)
 
         if self.rem_time_loss_fn=="horizon":
-            self.rtd_loss_fn = RemainingTimeLoss(h=time_horizon, 
+            self.rtd_loss_fn = RemainingTimeLoss(h=max_time_horizon, 
                                                 base_rtd_loss=base_rtd_loss, 
                                                 weight_type=weight_type,
                                                 gamma=gamma)
@@ -82,12 +82,12 @@ class BasicLossAccuracy(nn.Module):
             self.rtd_loss_fn = ClassicRemainingTimeLoss()
 
         elif self.rem_time_loss_fn=="in_mae_zone_sensitive":
-            self.rtd_loss_fn = InMAEZoneSensitiveLoss(h=time_horizon, 
+            self.rtd_loss_fn = InMAEZoneSensitiveLoss(h=max_time_horizon, 
                                                  high_weight=2.8, 
                                                  low_weight=1.0, 
                                                  gamma=1.0, 
                                                  use_exponential=True,
-                                                 rsd_weight=2.0)
+                                                 rsd_weight=1.2)
 
         else:
             raise ValueError(f"Unknown time_regression: {self.rem_time_loss_fn}")
@@ -161,7 +161,7 @@ class BasicLossAccuracy(nn.Module):
 class Basic:
     def __init__(self,
         model,
-        horizon,
+        horizons,
         device,
         dataset,
         cls_loss_acc_fn: TargetConf,
@@ -169,11 +169,13 @@ class Basic:
         super().__init__()
         
         self.model = model
-        self.h = horizon
+        self.horizons = horizons # previously and integer, now a list
         self.device = device
+        self.max_time_horizon = max(horizons)
         self.cls_loss_acc_fn = hydra.utils.instantiate(cls_loss_acc_fn,
                                                         dataset, device,
-                                                        time_horizon=horizon)
+                                                        max_time_horizon=self.max_time_horizon # full range loss
+                                                        )
 
                                                        
     def __call__(
@@ -195,7 +197,8 @@ class Basic:
                 if key == "feature_loss":
                     continue
                 elif key == "remaining_time":
-                    targets[key] = data[key+f"_{self.h}_tgt"]
+                    # we only compute the loss for the maximum horizon as upper limit
+                    targets[key] = data[key+f"_{self.max_time_horizon}_tgt"]
                 else:
                     targets[key] = data[key+"_tgt"]
                 
