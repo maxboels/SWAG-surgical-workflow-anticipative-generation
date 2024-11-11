@@ -22,7 +22,7 @@ import numpy as np
 from R2A2.eval.eval_metrics import accuracy_n_pred
 from R2A2.eval.plot_segments.plot_values import store_append_h5, store_training_videos_max
 from R2A2.train.losses.ce_mse_consistency import CEConsistencyMSE
-from R2A2.train.losses.remaining_time_loss import RemainingTimeLoss, ClassicRemainingTimeLoss, InMAEZoneSensitiveLoss
+from R2A2.train.losses.remaining_time_loss import RemainingTimeLoss, ExponentialRemainingTimeLoss, InMAEZoneSensitiveLoss
 
 class NoLossAccuracy(nn.Module):
     def __init__(self, *args, **kwargs):
@@ -35,7 +35,8 @@ class NoLossAccuracy(nn.Module):
 class BasicLossAccuracy(nn.Module):
     def __init__(self, dataset, device,
                 base_rtd_loss="mse", # mse, mae, smooth_l1
-                rem_time_loss_fn="horizon", # horizon, full_horizon, in_mae_zone_sensitive
+                rem_time_loss_fn="exponential", # horizon, full_horizon, in_mae_zone_sensitive
+                rsd_loss_gamma=5.0,
                 weight_type='exponential',
                 gamma=0.5,
                 mean_normalize_weights=False,
@@ -56,6 +57,7 @@ class BasicLossAccuracy(nn.Module):
         #------------------------------------------------------------------
 
         self.rem_time_loss_fn = rem_time_loss_fn
+        self.rsd_loss_gamma = rsd_loss_gamma
         self.max_time_horizon = max_time_horizon
         # Class weights
         if hasattr(dataset, "curr_class_weights"):
@@ -78,8 +80,12 @@ class BasicLossAccuracy(nn.Module):
                                                 base_rtd_loss=base_rtd_loss, 
                                                 weight_type=weight_type,
                                                 gamma=gamma)
-        elif self.rem_time_loss_fn=="classic":
-            self.rtd_loss_fn = ClassicRemainingTimeLoss()
+        elif self.rem_time_loss_fn=="exponential":
+            self.rtd_loss_fn = ExponentialRemainingTimeLoss(h=max_time_horizon,
+                                                            max_weight=2.0, 
+                                                            gamma=rsd_loss_gamma, 
+                                                            normalize_weights=False,
+                                                            rsd_weight=1.5)
 
         elif self.rem_time_loss_fn=="in_mae_zone_sensitive":
             self.rtd_loss_fn = InMAEZoneSensitiveLoss(h=max_time_horizon, 

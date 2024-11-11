@@ -18,6 +18,8 @@ test_only: false
 
 eval_horizons: [5, 10, 15, 30, 60] # in minutes
 
+split_idx: 1 # 4-splits with indices [1, 2, 3, 4]
+
 num_epochs: 20
 best_score: 18.0
 main_metric: "acc_curr_future" # wMAE
@@ -53,7 +55,8 @@ do_regression: true
 
 base_rtd_loss: l1 # l1 / l2 / smooth_l1
 rtd_weight_type: exponential # linear / exponential / inverse
-rem_time_loss_fn: classic # in_mae_zone_sensitive, horizon
+rem_time_loss_fn: exponential # in_mae_zone_sensitive, horizon
+rsd_loss_gamma: 4.0
 
 
 ctx_pooling: global
@@ -122,6 +125,7 @@ train_eval_op:
       _target_: func.train_eval_ops.BasicLossAccuracy
       base_rtd_loss: ${base_rtd_loss}
       rem_time_loss_fn: ${rem_time_loss_fn}
+      rsd_loss_gamma: ${rsd_loss_gamma}
       weight_type: ${rtd_weight_type}
       gamma: ${gamma}
       loss_w_curr: ${loss_w_curr}
