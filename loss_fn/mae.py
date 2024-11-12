@@ -24,15 +24,11 @@ class anticipation_mae(nn.Module):
         output_rsd = output_rsd.squeeze(1)
         target_rsd = target_rsd.squeeze(1)
 
-        # Clip target values to be within [0, h] if h is not None
-        if self.h is not None:
-            target_rsd = torch.clamp(target_rsd, 0, self.h)
-
         # Compute pairwise MAE (keeping the same shape)
         mae = torch.abs(output_rsd - target_rsd)  # shape (B, C)
 
         # Compute masks for different conditions
-        mask_out = (target_rsd == self.h)  # shape (B, C)
+        mask_out = (target_rsd >= self.h)
         mask_in = (target_rsd < self.h) & (target_rsd > 0)
         mask_exp = (target_rsd < 0.1 * self.h) & (target_rsd > 0)  # expected
 
