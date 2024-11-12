@@ -6,8 +6,8 @@ import matplotlib.colors as mcolors
 import os
 
 def plot_classification_video(gt_classification, pred_classification,
-                        h, num_obs_classes, video_idx, epoch, dataset, save_video=True,
-                        x_sampling_rate=5, gif_fps=40, use_scatter=True):
+                             h, num_obs_classes, video_idx, epoch, dataset, save_video=True,
+                             x_sampling_rate=5, gif_fps=40, use_scatter=True):
     
     # Configuration
     n_yticks = 3
@@ -16,9 +16,14 @@ def plot_classification_video(gt_classification, pred_classification,
     color_scheme = 'plasma'
     shift_colors = False
 
+    # get video length in minutes
+    total_frames = gt_classification.shape[0]
+    total_plotted_frames = total_frames // x_sampling_rate
+    # video_length = total_frames / 60
+
     # Classification task
-    gt_classification = gt_classification[::x_sampling_rate, :h+1]     # +1 since recognition class is at index 0
-    pred_classification = pred_classification[::x_sampling_rate, :h+1] # +1 since recognition class is at index 0
+    gt_classification = gt_classification[:, :h+1]     # +1 since recognition class is at index 0
+    pred_classification = pred_classification[:, :h+1] # +1 since recognition class is at index 0
 
     # Set figure size and layout
     fig = plt.figure(figsize=(18, 8))
@@ -49,23 +54,31 @@ def plot_classification_video(gt_classification, pred_classification,
             return scatter
         else:
             im = ax.imshow(data.T, aspect='auto', cmap=cmap, interpolation='nearest', vmin=0, vmax=num_obs_classes, 
-                        extent=[0, data.shape[0], 0, h], origin='lower')
+                          extent=[0, data.shape[0], 0, h], origin='lower')
             return im
 
-    scatter_pred_classification = plot_classification_data(pred_classification, ax1)
-    scatter_gt_classification = plot_classification_data(gt_classification, ax2)
+    # Set the x-ticks and x-tick labels
+    num_xticks = 5
+    x_ticks = np.linspace(0, total_frames, num_xticks)
+    x_ticks_minutes = x_ticks / 60
+    x_tick_labels = [f"{int(x / 60)}:{int(x % 60):02d}" for x in x_ticks]
+
+    scatter_pred_classification = plot_classification_data(pred_classification[::x_sampling_rate, :], ax1)
+    scatter_gt_classification = plot_classification_data(gt_classification[::x_sampling_rate, :], ax2)
 
     for ax in [ax1, ax2]:
+        ax.set_xlim(0, total_plotted_frames)
+        ax.set_xticks(x_ticks / x_sampling_rate)
+        ax.set_xticklabels(x_tick_labels)
         ax.set_ylim(0, h)
         ax.set_yticks(np.linspace(0, h, n_yticks))
         ax.set_yticklabels([f'{y:.0f}' for y in np.linspace(0, h, n_yticks)])
-        ax.set_ylabel("Future (m)")
+        ax.set_ylabel("Future Time (m)")
         ax.grid(True, linestyle='--', alpha=0.7)
 
     ax1.set_title('Single-Pass Decoding')
     ax2.set_title('Ground Truth Classes')
-    # add sampling rate to x-axis label
-    ax2.set_xlabel(f"Video Time Steps (seconds, x{int(x_sampling_rate)})")
+    ax.set_xlabel("Current Time in Surgery (minutes)")
     
     # Add colorbar with adjusted size
     cbar = plt.colorbar(scatter_gt_classification, cax=cbar_ax, orientation='horizontal', aspect=25)
@@ -83,20 +96,20 @@ def plot_classification_video(gt_classification, pred_classification,
     else:
         def animate(t):
             if use_scatter:
-                x_values = np.repeat(np.arange(t+1), pred_classification.shape[1])
-                y_values = np.tile(np.arange(pred_classification.shape[1]), t+1) * h / pred_classification.shape[1]
+                x_values = np.repeat(time_steps[t], pred_classification.shape[1])
+                y_values = np.tile(np.arange(pred_classification.shape[1]), 1) * h / pred_classification.shape[1]
 
                 scatter_pred_classification.set_offsets(np.column_stack((x_values, y_values)))
                 scatter_gt_classification.set_offsets(np.column_stack((x_values, y_values)))
 
-                scatter_pred_classification.set_array(pred_classification[:t+1].flatten())
-                scatter_gt_classification.set_array(gt_classification[:t+1].flatten())
+                scatter_pred_classification.set_array(pred_classification[t].flatten())
+                scatter_gt_classification.set_array(gt_classification[t].flatten())
             else:
-                scatter_pred_classification.set_extent([0, t+1, 0, h])
-                scatter_gt_classification.set_extent([0, t+1, 0, h])
+                scatter_pred_classification.set_extent([time_steps[t], time_steps[t] + 1, 0, h])
+                scatter_gt_classification.set_extent([time_steps[t], time_steps[t] + 1, 0, h])
                 
-                scatter_pred_classification.set_data(pred_classification[:t+1].T)
-                scatter_gt_classification.set_data(gt_classification[:t+1].T)
+                scatter_pred_classification.set_data(pred_classification[t].T)
+                scatter_gt_classification.set_data(gt_classification[t].T)
             
             if t % 10 == 0:
                 print(f"Video {video_idx} - Rendering frame {t}/{len(time_steps)}")

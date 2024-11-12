@@ -110,9 +110,9 @@ import torch
 import torch.nn as nn
 
 class ExponentialRemainingTimeLoss(nn.Module):
-    def __init__(self, h, max_weight=2.0, gamma=5.0, 
+    def __init__(self, h, max_weight=2.0, gamma=2.0, 
                  normalize_weights=False,
-                 rsd_weight=1.5):
+                 rsd_weight=1.2):
         super().__init__()
         self.h = h  # Total horizon
         self.max_weight = max_weight  # Maximum weight at targets=0

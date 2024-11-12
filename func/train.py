@@ -1006,13 +1006,22 @@ def main(cfg):
     # --------------------------------------------------
 
     # Define the splits with 60-20 for train-test
-    splits = [
-        ([],[]),
-        (np.arange(1, 61).tolist(), np.arange(61, 81).tolist()),
-        (np.arange(21, 81).tolist(), np.arange(1, 21).tolist()),
-        (np.concatenate((np.arange(1, 21), np.arange(41, 81))).tolist(), np.arange(21, 41).tolist()),
-        (np.concatenate((np.arange(1, 41), np.arange(61, 81))).tolist(), np.arange(41, 61).tolist())
-    ]
+    if dataset_name == 'cholec80':
+        splits = [
+            ([],[]),
+            (np.arange(1, 61).tolist(), np.arange(61, 81).tolist()),
+            (np.arange(21, 81).tolist(), np.arange(1, 21).tolist()),
+            (np.concatenate((np.arange(1, 21), np.arange(41, 81))).tolist(), np.arange(21, 41).tolist()),
+            (np.concatenate((np.arange(1, 41), np.arange(61, 81))).tolist(), np.arange(41, 61).tolist())
+        ]
+    elif dataset_name == 'autolaparo21':
+        # 14-7 split
+        splits = [
+            (np.arange(1, 15).tolist(), np.arange(15, 22).tolist()),
+            (np.arange(1, 15).tolist(), np.arange(15, 22).tolist()),
+        ]
+    else:
+        raise ValueError(f"Dataset: {dataset_name} not recognized")
 
     # if cfg.split_idx == 0 then use the first split
     if cfg.split_idx == 0:

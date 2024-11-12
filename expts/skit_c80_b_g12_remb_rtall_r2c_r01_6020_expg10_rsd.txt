@@ -14,7 +14,7 @@ ctx_pooling=global
 num_ctx_tokens=12
 max_seq_len=24
 
-eval_horizons=[5, 10, 15, 30, 45, 60, 90]
+eval_horizons=[5, 15, 30, 45, 60, 75, 90]
 max_anticip_time=90
 num_ant_queries=1
 

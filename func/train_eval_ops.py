@@ -85,7 +85,7 @@ class BasicLossAccuracy(nn.Module):
                                                             max_weight=2.0, 
                                                             gamma=rsd_loss_gamma, 
                                                             normalize_weights=False,
-                                                            rsd_weight=1.5)
+                                                            rsd_weight=1.2)
 
         elif self.rem_time_loss_fn=="in_mae_zone_sensitive":
             self.rtd_loss_fn = InMAEZoneSensitiveLoss(h=max_time_horizon, 
