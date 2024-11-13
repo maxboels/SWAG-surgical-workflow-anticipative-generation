@@ -247,9 +247,9 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
     store=False, 
     store_endpoint='logits', 
     only_run_featext=False,
-    best_score=18.0,
-    main_metric='wMAE',
-    horizon=18,
+    best_score=np.inf,
+    main_metric='inMAE',
+    horizon=90,
     probs_to_regression_method: str = 'first_occurrence',
     confidence_threshold: float = 0.5,
     do_classification: bool = True,
@@ -320,6 +320,7 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
     ignore_classes = [-1, 7]
 
     # init metrics fn
+    max_horizon = max(eval_horizons)
     for h in eval_horizons:
         locals()[f"mae_metric_{h}"] = anticipation_mae(h=h, ignore_index=ignore_classes)
 
@@ -441,7 +442,8 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
                 # if eval_horizons list is not empty
                 # if len(eval_horizons) > 0:
                 for h in eval_horizons:
-                    video_remaining_time_tgts[f'{h}'][start_idx:end_idx] = data[f'remaining_time_{h}_tgt'].detach().cpu()
+                    max_horizon = max(eval_horizons)
+                    video_remaining_time_tgts[f'{h}'][start_idx:end_idx] = data[f'remaining_time_{max_horizon}_tgt'].detach().cpu()
 
                 if "iters_time" in outputs.keys():
                     iters_time = outputs["iters_time"]  # list with n AR steps
@@ -497,9 +499,10 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
             np.save(f'./class_preds/video_frame_preds_ep{epoch}_vid{video_id}.npy', video_frame_preds)
 
         # convert the class probabilities to class remaining time regression values
-        if future_frames and not remaining_time:            
+        if future_frames and not remaining_time:      
+            max_horizon = max(eval_horizons)      
             for h in eval_horizons:
-                video_remaining_time_preds = find_time_to_next_occurrence(video_frame_probs_preds, horizon_minutes=h)
+                video_remaining_time_preds = find_time_to_next_occurrence(video_frame_probs_preds, horizon_minutes=max_horizon)
                 logger.info(f"[TESTING] video_remaining_time_preds (classification2regression) h={h}: {video_remaining_time_preds.shape}")
                 video_remaining_time_preds_h[h] = video_remaining_time_preds
 
@@ -515,6 +518,7 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
                     np.save(f'./rtd_tgts/video_remaining_time_tgts_vid{video_id}_h{h}.npy', video_remaining_time_tgts[f'{h}'])
 
         else:
+            # same preds for all horizons
             for h in eval_horizons:
                 video_remaining_time_preds_h[h] = video_remaining_time_preds
 
@@ -711,10 +715,19 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
     else:
         raise ValueError(f"main_metric: {main_metric} not recognized")
     
+    main_score_per_horizon = []
+    mean_main_metric = "inMAE"
+    for h in eval_horizons:
+        main_score_per_horizon.append(all_videos_results[f'{mean_main_metric}_{h}'])
+    score = np.mean(main_score_per_horizon)
+    logger.info(f"[TESTING] Epoch: {epoch} |" 
+                f"mean_main_metric: {mean_main_metric} |"
+                f"mean score: {score}")
+
     # check if best epoch
-    score = all_videos_results[main_metric]
+    # score = all_videos_results[main_metric]
     is_best_epoch = is_better(condition, score, best_score)
-    logger.info(f"[TESTING] Epoch: {epoch} | is best epoch: {is_best_epoch}")
+    logger.info(f"[TESTING] Epoch: {epoch} | is best epoch: {is_best_epoch} with {mean_main_metric}: {score}")
 
     if epoch % plot_video_freq == 0 or is_best_epoch:
         # PLOT AND SAVE VIDEO DATA if best
@@ -1219,7 +1232,7 @@ def main(cfg):
     
     if main_metric in ['wMAE', 'inMAE', 'outMAE', 'expMAE']:
         # minimization
-        best_score = 60.0
+        best_score = np.inf
         main_metric = f"{cfg.main_metric}_{cfg.eval_horizons[-1]}"
     elif main_metric in ['acc_curr', 'acc_future', 'acc_curr_future']:
         # maximization

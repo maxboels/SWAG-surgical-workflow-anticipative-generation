@@ -502,15 +502,16 @@ class Medical_Dataset(Dataset):
                 
                 # regression labels (remaining time until occurrence of each phases)
                 gt_remaining_time = {}
-                for h in self.eval_horizons:
-                    if h == 1000:
-                        # remaining time duration for each phase (full duration values)
-                        gt_remaining_time = gt_remaining_time_full(phase_labels, num_classes=self.num_obs_classes)
-                        self.gt_remaining_time.append(gt_remaining_time)
-                        self.logger.info(f"[DATASET] gt_remaining_time h={h}: {gt_remaining_time.size()}")
-                    else:
-                        gt_remaining_time[h] = gt_remaining_time_capped(phase_labels, h=h, num_classes=self.num_obs_classes)
-                        self.logger.info(f"[DATASET] gt_remaining_time h={h}: {gt_remaining_time[h].size()}")
+                # for h in self.eval_horizons[-1]:
+                max_horizon = self.eval_horizons[-1]
+                if max_horizon == 1000:
+                    # remaining time duration for each phase (full duration values)
+                    gt_remaining_time = gt_remaining_time_full(phase_labels, num_classes=self.num_obs_classes)
+                    self.gt_remaining_time.append(gt_remaining_time)
+                    self.logger.info(f"[DATASET] gt_remaining_time h={max_horizon}: {gt_remaining_time.size()}")
+                else:
+                    gt_remaining_time[max_horizon] = gt_remaining_time_capped(phase_labels, h=max_horizon, num_classes=self.num_obs_classes)
+                    self.logger.info(f"[DATASET] gt_remaining_time h={max_horizon}: {gt_remaining_time[max_horizon].size()}")
 
                 self.gt_remaining_time.append(gt_remaining_time)
                 self.logger.info(f"\n")
@@ -665,8 +666,8 @@ class Medical_Dataset(Dataset):
             print(f"[DATASET] video targets: {video_targets.size()}")
             # print(f"[DATASET] full video_next_seg_targets: {video_next_seg_targets.size()}")
             
-            for h in self.eval_horizons:
-                print(f"[DATASET] gt_remaining_time {h}: {gt_remaining_time[h].size()}")
+            # for h in self.eval_horizons:
+            print(f"[DATASET] gt_remaining_time {self.eval_horizons[-1]}: {gt_remaining_time[self.eval_horizons[-1]].size()}")
             
             # # print(f"[DATASET] gt_remaining_time_full: {gt_remaining_time_full.size()}")
             # # save gt remaining time full save to json
@@ -728,11 +729,12 @@ class Medical_Dataset(Dataset):
 
             # REGRESSION REMAINING TIME TARGETS
             if self.do_regression or self.do_classification:
-                for h in self.eval_horizons:
-                    remaining_time = gt_remaining_time[h][frame_idx, :].unsqueeze(0)
-                    data_now[f'remaining_time_{h}_tgt'] = remaining_time.to(self.device).float()
-                    print(f"[DATASET] remaining_time_{h}_tgt: {remaining_time.size()}")
-                    print(f"[DATASET] remaining_time_{h}_tgt: {remaining_time}")
+                # for h in self.eval_horizons:
+                h = self.eval_horizons[-1]
+                remaining_time = gt_remaining_time[h][frame_idx, :].unsqueeze(0)
+                data_now[f'remaining_time_{h}_tgt'] = remaining_time.to(self.device).float()
+                print(f"[DATASET] remaining_time_{h}_tgt: {remaining_time.size()}")
+                print(f"[DATASET] remaining_time_{h}_tgt: {remaining_time}")
                 
                 # # FULL REMAINING TIME TARGETS
                 # data_now['remaining_time_full_tgt'] = gt_remaining_time_full[frame_idx, :].unsqueeze(0).to(self.device).float()
