@@ -537,9 +537,13 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
         all_video_remaining_time_preds[video_id] = video_remaining_time_preds_h
 
         # compute the metrics for the remaining time regression
+        max_horizon = max(eval_horizons)
         for h in eval_horizons:
             video_remaining_time_tgts_h = video_remaining_time_tgts[f'{h}']
             all_video_remaining_time_tgts[f'{h}'][video_id] = video_remaining_time_tgts_h
+
+            # fixed to max horizon limit
+            video_remaining_time_tgts_h = video_remaining_time_tgts[f'{max_horizon}']
 
             # compute the metrics for the remaining time regression
             mae_results = locals()[f'mae_metric_{h}'](video_remaining_time_preds_h[h], video_remaining_time_tgts_h)
