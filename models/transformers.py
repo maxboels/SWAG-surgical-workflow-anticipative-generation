@@ -81,7 +81,7 @@ class PositionalEncoding(nn.Module):
 
 
 class ClassConditionedTransformerDecoder(nn.Module):
-    def __init__(self, cfg, num_queries, input_dim, hidden_dim, n_heads, n_layers, num_classes, 
+    def __init__(self, cfg, num_queries, input_dim, hidden_dim, n_heads, n_layers, num_classes,
                     conditional_probs_embeddings=True,
                     normalize_priors=False, dim_feedforward=2048, dropout=0.1):
         super(ClassConditionedTransformerDecoder, self).__init__()
@@ -105,7 +105,7 @@ class ClassConditionedTransformerDecoder(nn.Module):
         decoder_layer = nn.TransformerDecoderLayer(d_model=hidden_dim, nhead=n_heads, dim_feedforward=dim_feedforward, dropout=dropout)
         self.transformer_decoder = nn.TransformerDecoder(decoder_layer, num_layers=n_layers)
         self.output_layer = nn.Linear(hidden_dim, hidden_dim)
-
+        
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         if self.conditional_probs_embeddings:
             if self.do_classification:
@@ -115,6 +115,10 @@ class ClassConditionedTransformerDecoder(nn.Module):
                 with open(path_class_probs, 'r') as f:
                     class_freq_pos = json.load(f)
                 class_freq_pos = {int(k): [{int(inner_k): inner_v for inner_k, inner_v in freq_dict.items()} for freq_dict in v] for k, v in class_freq_pos.items()}
+                # added 12 march 2025
+                print(f"[ClassConditionedTransformerDecoder] class_freq_pos: {class_freq_pos}")
+                self.sampler = GaussianMixtureSamplerWithPosition(class_freq_pos, lookahead=18)
+                # end added 12 march 2025            
             elif self.do_regression and self.conditional_probs_embeddings:
                 file_path = f"/nfs/home/mboels/projects/SuPRA/datasets/{dataset}/rem_time_{h}_conditional_probs.npy"
                 if os.path.exists(file_path):

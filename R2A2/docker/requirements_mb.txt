@@ -40,7 +40,6 @@ termcolor
 terminado
 testpath
 timm
-tokenizers
 toml
 tornado
 traitlets
