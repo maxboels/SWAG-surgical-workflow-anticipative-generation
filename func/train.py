@@ -1018,36 +1018,43 @@ def main(cfg):
     
     # ------------- SELECT VIDEOS MANNUALLY -------------
     dataset_name = cfg.dataset_name # 'cholec80'
-    # train_videos_ids = np.arange(cfg.train_start, cfg.train_end + 1).tolist() # 1, 40+1).tolist() # 1-40 ( last is not included)
-    # test_videos_ids  = np.arange(cfg.test_start, cfg.test_end + 1).tolist() # 40, 80+1).tolist() # 41-80 ( last is not included)
+    train_videos_ids = np.arange(cfg.train_start, cfg.train_end + 1).tolist() # 1, 40+1).tolist() # 1-40 ( last is not included)
+    test_videos_ids  = np.arange(cfg.test_start, cfg.test_end + 1).tolist() # 40, 80+1).tolist() # 41-80 ( last is not included)
+    logger.info(f"Train videos: {train_videos_ids}")
+    logger.info(f"Test videos: {test_videos_ids}")
     # --------------------------------------------------
 
     # Define the splits with 60-20 for train-test
-    if dataset_name == 'cholec80':
-        splits = [
-            ([],[]),
-            (np.arange(1, 61).tolist(), np.arange(61, 81).tolist()),
-            (np.arange(21, 81).tolist(), np.arange(1, 21).tolist()),
-            (np.concatenate((np.arange(1, 21), np.arange(41, 81))).tolist(), np.arange(21, 41).tolist()),
-            (np.concatenate((np.arange(1, 41), np.arange(61, 81))).tolist(), np.arange(41, 61).tolist())
-        ]
-    elif dataset_name == 'autolaparo21':
-        # 14-7 split
-        splits = [
-            (np.arange(1, 15).tolist(), np.arange(15, 22).tolist()),
-            (np.arange(1, 15).tolist(), np.arange(15, 22).tolist()),
-        ]
-    else:
-        raise ValueError(f"Dataset: {dataset_name} not recognized")
+    # if dataset_name == 'cholec80':
+    #     splits = [
+    #         # ([],[]),
+    #         # (np.arange(1, 61).tolist(), np.arange(61, 81).tolist()),
+    #         # (np.arange(21, 81).tolist(), np.arange(1, 21).tolist()),
+    #         # (np.concatenate((np.arange(1, 21), np.arange(41, 81))).tolist(), np.arange(21, 41).tolist()),
+    #         # (np.concatenate((np.arange(1, 41), np.arange(61, 81))).tolist(), np.arange(41, 61).tolist())
+    #     ]
+    # elif dataset_name == 'autolaparo21':
+    #     # Official splits is: [1-10], [11-14], [15-21]
+    #     splits = [
+    #         # (np.arange(1, 11).tolist(), np.arange(15, 22).tolist()),
+    #         (np.arange(1, 11).tolist(), np.arange(15, 22).tolist()),
+    #     ]
+    #     # 14-7 split is WRONG !!!
+    #     # splits = [
+    #     #     (np.arange(1, 15).tolist(), np.arange(15, 22).tolist()),
+    #     #     (np.arange(1, 15).tolist(), np.arange(15, 22).tolist()),
+    #     # ]
+    # else:
+    #     raise ValueError(f"Dataset: {dataset_name} not recognized")
 
     # if cfg.split_idx == 0 then use the first split
-    if cfg.split_idx == 0:
-        train_videos_ids, test_videos_ids = splits[1]
+    # if cfg.split_idx == 0:
+    #     train_videos_ids, test_videos_ids = splits[1]
+    # train_videos_ids, test_videos_ids = splits[cfg.split_idx]
 
-    train_videos_ids, test_videos_ids = splits[cfg.split_idx]
-    logger.info(f"Running split {cfg.split_idx}")
-    logger.info(f"Train videos: {train_videos_ids}")
-    logger.info(f"Test videos: {test_videos_ids}")
+    # logger.info(f"Running split {cfg.split_idx}")
+    # logger.info(f"Train videos: {train_videos_ids}")
+    # logger.info(f"Test videos: {test_videos_ids}")
 
     # read dataframe once
     dataset = SelectDataset(dataset_name, logger)

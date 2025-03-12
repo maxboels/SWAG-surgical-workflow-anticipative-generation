@@ -419,7 +419,7 @@ class Medical_Dataset(Dataset):
 
         def get_data_split(self, dataset_name="cholec80", split="train", video_indices=None):
             """
-                autolapro21: 0-14, 14-21
+                autolapro21: 0-14, 14-21 (Official splits should be 0-11, 11-15, 15-22)
                 cholec80: 1-41, 41-81
             """
             self.logger.info(f"[DATASET] df unique videos: {self.df.video_idx.unique()}")

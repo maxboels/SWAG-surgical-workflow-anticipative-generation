@@ -32,7 +32,7 @@ input_tokens=normal
 dataset_name=autolaparo21
 pooling_dim=64
 train_start=1
-train_end=14
+train_end=10
 test_start=15
 test_end=21
 

@@ -26,12 +26,12 @@ main_metric: "acc_curr_future" # wMAE
 finetune_ckpt: best # or best
 
 # dataset
-dataset_name: cholec80 # cholec80 / autolaparo21
-pooling_dim: 64
-train_start: 1      # cholec80: 1-41, 
-train_end: 41       # last not included
-test_start: 41      # cholec80: 41-81, 
-test_end: 81        # last not included
+dataset_name: autolaparo21 # cholec80 / autolaparo21
+pooling_dim: 32
+train_start: 1
+train_end: 10
+test_start: 15      
+test_end: 21
 save_video_labels_to_npy: false
 
 # Comparison with other models
