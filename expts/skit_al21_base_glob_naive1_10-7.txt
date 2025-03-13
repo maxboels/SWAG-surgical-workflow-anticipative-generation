@@ -1,7 +1,8 @@
-test_only=false
+test_only=true
 
 model_name=skit
 naive1=true
+naive2=false
 
 ctx_pooling=global
 

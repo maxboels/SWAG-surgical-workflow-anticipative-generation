@@ -419,7 +419,7 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
                 # FUTURE FRAMES CLASSIFICATION
                 if "future_frames" in outputs.keys():
                     probs = torch.softmax(outputs['future_frames'], dim=2).detach().cpu().numpy() # shape (N, T, C+1)
-                    # print(f"future_frames (probs): {probs}")
+                    print(f"future_frames (probs): {probs.shape}")
                     # logger.info(f"[EVAL] future_frames (logits): {outputs['future_frames'].shape}")
                     # logger.info(f"[EVAL] future_frames (probs): {probs.shape}")
                     video_frame_preds[start_idx:end_idx] = np.argmax(probs, axis=2)

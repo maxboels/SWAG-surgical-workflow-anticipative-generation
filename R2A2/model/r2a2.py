@@ -550,9 +550,15 @@ class R2A2(nn.Module):
                 iter_times = [start_time] * max_num_steps
                 # if true then use curr_frames_cls and duplicate it for the future predictions
                 # this is a naive approach to predict the future frames
-                outputs["future_frames"] = curr_frames_cls[:, -1:, :].repeat(1, max_num_steps, 1)
+                future_frames = curr_frames_cls[:, -1:, :].repeat(1, max_num_steps, 1)
+                # if not equal to num_next_classes then add a new class with all zeros
+                if future_frames.shape[-1] != self.num_next_classes:
+                    new_class_dim = torch.zeros(future_frames.size(0), future_frames.size(1), 1).to(future_frames.device)
+                    future_frames = torch.cat((future_frames, new_class_dim), dim=-1)
+                outputs["future_frames"] = future_frames
                 outputs["iter_times"] = iter_times
                 return outputs
+
             elif self.naive2:
                 start_time = time.time() - time.time()
                 iter_times = [start_time] * max_num_steps
