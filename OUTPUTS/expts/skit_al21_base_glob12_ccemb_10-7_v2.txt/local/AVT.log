@@ -24489,3 +24489,19 @@
 [2025-03-14 10:18:16,059][func.train][INFO] - [TESTING] expMAE_class_60_std: [nan, 13.9368, 1.2932, 7.0068, 5.7169, 20.4628, 10.9443, 2.295]
 [2025-03-14 10:18:16,061][func.train][INFO] - [TESTING] Epoch: 13 |mean_main_metric: inMAE |mean score: 18.33586
 [2025-03-14 10:18:16,061][func.train][INFO] - [TESTING] Epoch: 13 | is best epoch: True with inMAE: 18.33586
+[2025-03-14 10:42:37,495][func.train][INFO] - [TESTING] Best epoch: 13 | New Best score: 18.33586
+[2025-03-14 10:42:37,512][func.train][INFO] - [TESTING] Epoch: 13 | acc_curr: 0.7045 | acc_future: 0.5327 | acc_curr_future: 0.5418
+[2025-03-14 10:42:37,513][func.train][INFO] - [TESTING] wMAE_5: 16.1493 | inMAE_5: 19.3659 | outMAE_5: 12.9327 | 
+[2025-03-14 10:42:37,514][func.train][INFO] - [TESTING] wMAE_10: 16.0201 | inMAE_10: 19.4522 | outMAE_10: 12.588 | 
+[2025-03-14 10:42:37,514][func.train][INFO] - [TESTING] wMAE_15: 15.564 | inMAE_15: 18.699 | outMAE_15: 12.4289 | 
+[2025-03-14 10:42:37,514][func.train][INFO] - [TESTING] wMAE_30: 14.7601 | inMAE_30: 17.4444 | outMAE_30: 12.0758 | 
+[2025-03-14 10:42:37,515][func.train][INFO] - [TESTING] wMAE_60: 13.7009 | inMAE_60: 16.7178 | outMAE_60: 10.684 | 
+[2025-03-14 10:42:37,547][root][INFO] - Storing ckpt at epoch 13.000000 to checkpoint_best.pth
+[2025-03-14 10:42:40,262][func.train][INFO] - Logging: resseting all meters
+[2025-03-14 10:42:40,264][func.train][INFO] - Logging: resseting all meters done, updating epoch to %d
+[2025-03-14 10:42:40,264][func.train][INFO] - Logging: resseting all meters
+[2025-03-14 10:42:40,265][func.train][INFO] - Logging: resseting all meters done, updating epoch to %d
+[2025-03-14 10:42:40,293][func.train][INFO] - Storing checkpoints every 60.00 mins
+[2025-03-14 10:42:41,707][func.train][INFO] - [TRAINING] Step 0/629 | Loss: 0.30 | Acc (curr_frames): 0.99 | time-left: 14.78 min
+[2025-03-14 10:45:47,122][func.train][INFO] - [TRAINING] Step 100/629 | Loss: 0.26 | Acc (curr_frames): 0.96 | time-left: 16.28 min
+[2025-03-14 10:48:21,612][func.train][INFO] - [TRAINING] Step 200/629 | Loss: 0.29 | Acc (curr_frames): 0.95 | time-left: 12.11 min
