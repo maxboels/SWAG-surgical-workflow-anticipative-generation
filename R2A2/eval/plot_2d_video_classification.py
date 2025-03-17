@@ -30,7 +30,6 @@ def plot_classification_video(gt_classification, pred_classification,
     gs = fig.add_gridspec(3, 1, height_ratios=[1, 1, 0.05], hspace=0.3)
     ax1 = fig.add_subplot(gs[0])
     ax2 = fig.add_subplot(gs[1], sharex=ax1)
-    cbar_ax = fig.add_subplot(gs[2])
 
     # Create color scheme with increased contrast
     if color_scheme == 'plasma':
@@ -78,16 +77,23 @@ def plot_classification_video(gt_classification, pred_classification,
 
     ax1.set_title('Single-Pass Decoding')
     ax2.set_title('Ground Truth Classes')
-    ax.set_xlabel("Current Time in Surgery (minutes)")
+    ax2.set_xlabel("Current Time in Surgery (minutes)")
     
-    # Add colorbar with adjusted size
-    cbar = plt.colorbar(scatter_gt_classification, cax=cbar_ax, orientation='horizontal', aspect=25)
-    cbar.set_label('Classes')
+    # Create a single legend and place it outside the plots
+    legend_elements = [plt.Line2D([0], [0], marker='o', color='w', label=f'Class {i}',
+                                  markerfacecolor=cmap(i), markersize=12) for i in range(num_obs_classes)]
+    legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', label='EOS',
+                                      markerfacecolor=cmap(num_obs_classes), markersize=12))
+    
+    # Place legend below the plots - removed frame and made it bigger
+    ncol = min(len(legend_elements), 8)  # Adjust number of columns for better fit
+    fig.legend(handles=legend_elements, loc='lower center', bbox_to_anchor=(0.5, 0.01), 
+               fontsize=12, title='Classes', title_fontsize=14, ncol=ncol, frameon=False)
 
-    plt.tight_layout()
+    # Adjust layout to accommodate the larger legend at the bottom
+    plt.tight_layout(rect=[0, 0.10, 1, 0.98])
     
     if not save_video:
-        plt.tight_layout()
         output_file = f"./plots/{dataset}/{h}/classification/video{video_idx}_ep{epoch}_h{h}_sr{x_sampling_rate}_classification.png"
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
         plt.show()
@@ -185,11 +191,11 @@ def get_color_scheme(scheme_name, num_classes, brightness_factor=1.0, shift_colo
     return mcolors.ListedColormap(adjusted_colors)
 
 
-def load_data(video_idx, dataset, folder):
-    preds_file_name = f"video_frame_preds_{video_idx}_ep1.npy"
-    recs_file_name = f"video_frame_rec_{video_idx}_ep1.npy"
-    tgt_preds_file_name = f"video_tgts_preds_{video_idx}_ep1.npy"
-    tgt_recs_file_name = f"video_tgts_rec_{video_idx}_ep1.npy"
+def load_data(video_idx, dataset, folder, skit_exp_name):
+    preds_file_name = f"class_preds/video_frame_preds_{video_idx}_ep1.npy"
+    recs_file_name = f"class_preds/video_frame_rec_{video_idx}_ep1.npy"
+    tgt_preds_file_name = f"class_tgts/video_tgts_preds_{video_idx}_ep1.npy"
+    tgt_recs_file_name = f"class_tgts/video_tgts_rec_{video_idx}_ep1.npy"
 
     # Method 1: SKiT - Single Pass
     preds_baseline = np.load(os.path.join(folder, skit_exp_name, preds_file_name))
@@ -197,16 +203,16 @@ def load_data(video_idx, dataset, folder):
     sp = np.concatenate([recs_baseline, preds_baseline], axis=1)
 
     # Method 2: SuPRA - Auto-Regressive
-    preds2 = np.load(os.path.join(folder, supra_exp_name, preds_file_name))
-    recs = np.load(os.path.join(folder, supra_exp_name, recs_file_name))
-    ar = np.concatenate([recs, preds2], axis=1)
+    # preds2 = np.load(os.path.join(folder, supra_exp_name, preds_file_name))
+    # recs = np.load(os.path.join(folder, supra_exp_name, recs_file_name))
+    # ar = np.concatenate([recs, preds2], axis=1)
 
     # Ground Truth
     tgt_preds = np.load(os.path.join(folder, supra_exp_name, tgt_preds_file_name))
     tgt_recs = np.load(os.path.join(folder, supra_exp_name, tgt_recs_file_name))
     gt = np.concatenate([tgt_recs, tgt_preds], axis=1)
 
-    return sp, ar, gt
+    return sp, gt
 
 def ground_truth_remaining_time(phase_labels, h=5, num_classes=7):
     seq_len = phase_labels.shape[0]
@@ -270,7 +276,7 @@ if __name__ == "__main__":
     dataset_short = "al21"
     model_name = "sup"
     num_obs_classes = 7
-    h = 5  # Horizon in minutes
+    h = 15  # Horizon in minutes
     sampling_rate = 5
     epoch = 0
     video_idx = 21
@@ -279,16 +285,29 @@ if __name__ == "__main__":
     use_scatter = True
 
     folder = f"./supra/best_models/{dataset}/"
+    folder = f"./results/{dataset}/"
 
-    # Experiment names
-    supra_exp_name = "sup_best_al21_ct144_at60_ls442.txt/local/"
-    skit_exp_name = "skit_best_al21_ct144_at60_ls442_eosw1.txt/local/"
+    skit_exp_name = "skit_al21_b_g12_remb_rtall_r2c_r01_14-7_expg2_uncap.txt/local/"
+    
+    preds_file_name = f"class_preds/video_frame_preds_{video_idx}_ep1.npy"
+    recs_file_name = f"class_preds/video_frame_rec_{video_idx}_ep1.npy"
+    tgt_preds_file_name = f"class_tgts/video_tgts_preds_{video_idx}_ep1.npy"
+    tgt_recs_file_name = f"class_tgts/video_tgts_rec_{video_idx}_ep1.npy"
 
-    # Load classification data
-    sp_data, ar_data, gt_data = load_data(video_idx, dataset, folder)
+    # Method 1: SKiT - Single Pass
+    preds_baseline = np.load(os.path.join(folder, skit_exp_name, preds_file_name))
+    recs_baseline = np.load(os.path.join(folder, skit_exp_name, recs_file_name))
+    pred_classification = np.concatenate([recs_baseline, preds_baseline], axis=1)
 
-    pred_classification = sp_data
-    gt_classification = gt_data
+    # Method 2: SuPRA - Auto-Regressive
+    # preds2 = np.load(os.path.join(folder, supra_exp_name, preds_file_name))
+    # recs = np.load(os.path.join(folder, supra_exp_name, recs_file_name))
+    # ar = np.concatenate([recs, preds2], axis=1)
+
+    # Ground Truth
+    tgt_preds = np.load(os.path.join(folder, skit_exp_name, tgt_preds_file_name))
+    tgt_recs = np.load(os.path.join(folder, skit_exp_name, tgt_recs_file_name))
+    gt_classification = np.concatenate([tgt_recs, tgt_preds], axis=1)
 
     print(f"GT Classification: {gt_classification.shape}")
     print(f"Pred Classification: {pred_classification.shape}")
