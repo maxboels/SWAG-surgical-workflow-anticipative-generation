@@ -270,6 +270,7 @@ def compute_num_eos_values(anticip_time=60, full_anticip_time_minutes=18, auto_r
 class Medical_Dataset(Dataset):
         def __init__(self, cfg, dataframe, train_mode='train', dataset_name="cholec80", video_indices=None,
                     transform=None, device=None, logger=None, **kwargs):
+            self.cfg = cfg
             self.df = dataframe
             self.label_type = ['one']
             self.train_mode = train_mode
@@ -571,7 +572,7 @@ class Medical_Dataset(Dataset):
                     class_freq_positions = {int(k): [{int(inner_k): inner_v for inner_k, inner_v in freq_dict.items()} for freq_dict in v] for k, v in class_freq_positions.items()}
                     self.logger.info(f"[DATASET] class_freq_positions: {class_freq_positions}")
                     # convert the probabilities to class weights
-                    self.sampler_with_position = GaussianMixtureSamplerWithPosition(class_freq_positions, lookahead=18)
+                    self.sampler_with_position = GaussianMixtureSamplerWithPosition(class_freq_positions, lookahead=self.cfg.max_anticip_time)
                     
                     # self.logger.info(f"[DATASET] next_class_weights: {self.next_class_weights}")
                 else:

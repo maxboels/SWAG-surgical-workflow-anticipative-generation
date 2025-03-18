@@ -241,9 +241,9 @@ def is_better(condition, score, best_score):
 
 
 def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_writer, logger, epoch: float,
-    eval_horizons: int = [18],
+    eval_horizons: int = [30],
     anticip_time: int = 60,
-    max_anticip_time: int = 18,
+    max_anticip_time: int = 30,
     store=False, 
     store_endpoint='logits', 
     only_run_featext=False,
@@ -337,7 +337,7 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
     future_frames = False
     remaining_time = False
 
-    store = True
+    store = True # keep as True since it also needs test_only as True
 
 
     # FOR EACH VIDEO LOADER
@@ -763,8 +763,8 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
             # merge recognition and anticipation tasks
             gt_classification = np.concatenate((video_tgts_rec, video_tgts_preds), axis=1)
             pred_classification = np.concatenate((video_frame_rec, video_frame_preds), axis=1)
-            # print(f"[TESTING] gt_classification: {gt_classification.shape}")
-            # print(f"[TESTING] pred_classification: {pred_classification.shape}")
+            print(f"[TESTING] VID {video_id} gt_classification: {gt_classification.shape}")
+            print(f"[TESTING] VID {video_id} pred_classification: {pred_classification.shape}")
 
             for h in eval_horizons:
 

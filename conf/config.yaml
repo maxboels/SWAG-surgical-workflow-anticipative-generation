@@ -16,7 +16,7 @@ dist_backend: nccl
 # run mode
 test_only: false
 
-eval_horizons: [5, 10, 15, 30, 60] # in minutes
+eval_horizons: [15, 30, 60] # in minutes
 
 split_idx: 1 # 4-splits with indices [1, 2, 3, 4]
 
@@ -62,7 +62,7 @@ rsd_loss_gamma: 4.0
 ctx_pooling: global
 num_ctx_tokens: 20
 max_seq_len: 24
-num_ant_queries: 18 # int(self.max_anticip_time * 60 / self.anticip_time)
+num_ant_queries: 30 # int(self.max_anticip_time * 60 / self.anticip_time)
 
 # 1. SKiT
 # base:     512  /  x   / x     /   x     /   x     /   true  / KeyRecorder
@@ -105,7 +105,7 @@ class_weight: frequency # frequency / positional_inverse_frequency or positional
 ctx_length: 1440            # 1500s = 25min, 3000s = 50min (avg video is 34min)
 # NOTE: we need long anticipation time to increase the number of transition samples for predicting transitions at inference.
 anticip_time: 60            # training: 30s / 60s / 120s / 240s / 300s / 600s (10min)
-max_anticip_time: 18        # inference: maximum duration (minutes)
+max_anticip_time: 30        # inference: maximum duration (minutes)
 # losses
 feature_loss: false         # default false
 
@@ -388,7 +388,7 @@ model:
       fixed_ctx_length: ${fixed_ctx_length}
       input_dim: 768
       present_length: 20
-      num_ant_queries: 6
+      num_ant_queries: 30
       past_sampling_rate: 10
       d_model: ${informer.d_model}
       num_curr_classes: ${num_curr_classes} # possible obseved classes
