@@ -12,7 +12,6 @@ def plot_classification_video(gt_classification, pred_classification,
     # Configuration
     n_yticks = 3
     # scale plot
-    font_size = 14
     scatter_size = 180 * (18 / h)**2
     color_scheme = 'plasma'
     shift_colors = False
@@ -75,25 +74,21 @@ def plot_classification_video(gt_classification, pred_classification,
         ax.set_yticklabels([f'{y:.0f}' for y in np.linspace(0, h, n_yticks)])
         ax.set_ylabel("Future Time (m)")
         ax.grid(True, linestyle='--', alpha=0.7)
-        # font size
-        # ax.tick_params(axis='both', which='major', labelsize=font_size)
-        # ax.tick_params(axis='both', which='minor', labelsize=font_size)
 
-    # set title in bold
-    ax1.set_title('SWAG-SP*', fontweight='bold')
-    ax2.set_title('Ground Truth Classes', fontweight='bold')
+    ax1.set_title('Single-Pass Decoding')
+    ax2.set_title('Ground Truth Classes')
     ax2.set_xlabel("Current Time in Surgery (minutes)")
     
     # Create a single legend and place it outside the plots
-    legend_elements = [plt.Line2D([0], [0], marker='o', color='w', label=f'Phase {i}',
+    legend_elements = [plt.Line2D([0], [0], marker='o', color='w', label=f'Class {i}',
                                   markerfacecolor=cmap(i), markersize=12) for i in range(num_obs_classes)]
     legend_elements.append(plt.Line2D([0], [0], marker='o', color='w', label='EOS',
                                       markerfacecolor=cmap(num_obs_classes), markersize=12))
     
     # Place legend below the plots - removed frame and made it bigger
     ncol = min(len(legend_elements), 8)  # Adjust number of columns for better fit
-    fig.legend(handles=legend_elements, loc='lower center', bbox_to_anchor=(0.5, 0.05), 
-               fontsize=12, ncol=ncol, frameon=False)
+    fig.legend(handles=legend_elements, loc='lower center', bbox_to_anchor=(0.5, 0.01), 
+               fontsize=12, title='Classes', title_fontsize=14, ncol=ncol, frameon=False)
 
     # Adjust layout to accommodate the larger legend at the bottom
     plt.tight_layout(rect=[0, 0.10, 1, 0.98])
@@ -277,14 +272,14 @@ def print_mean_remaining_times(mean_remaining_times):
 
 if __name__ == "__main__":
     # Parameters
-    dataset = "cholec80" # autolaparo21
-    dataset_short = "c80" # al21
-    # model_name = "sup"
+    dataset = "autolaparo21"
+    dataset_short = "al21"
+    model_name = "sup"
     num_obs_classes = 7
     h = 15  # Horizon in minutes
     sampling_rate = 5
     epoch = 0
-    video_idx = 73 # 21
+    video_idx = 21
     save_video = False
     gif_fps = 40
     use_scatter = True
@@ -292,11 +287,8 @@ if __name__ == "__main__":
     folder = f"./supra/best_models/{dataset}/"
     folder = f"./results/{dataset}/"
 
-    # skit_exp_name = "skit_al21_b_g12_remb_rtall_r2c_r01_14-7_expg2_uncap.txt/local/"
-    # skit_exp_name = "skit_c80_b_g12_remb_rt18_r2c_4080.txt/local/"
-    skit_exp_name = "skit_c80_b_g12_remb_rtall_r2c_r01_6020_expg2_rsd.txt/local/"
-    skit_exp_name = "skit_c80_b_g12_remb_rtall_r2c_r01_6020_expg10_rsd.txt/local/"
-
+    skit_exp_name = "skit_al21_b_g12_remb_rtall_r2c_r01_14-7_expg2_uncap.txt/local/"
+    
     preds_file_name = f"class_preds/video_frame_preds_{video_idx}_ep1.npy"
     recs_file_name = f"class_preds/video_frame_rec_{video_idx}_ep1.npy"
     tgt_preds_file_name = f"class_tgts/video_tgts_preds_{video_idx}_ep1.npy"

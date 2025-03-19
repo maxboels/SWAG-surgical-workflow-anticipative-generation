@@ -95,14 +95,13 @@ def check_numpy_to_list(dictionay):
     return dictionay
 
 def store_checkpoint(fpaths: Union[str, Sequence[str]], model, optimizer,
-                     lr_scheduler, epoch, additional_data=None):
+                     lr_scheduler, epoch):
     """
     Args:
         fpaths: List of paths or a single path, where to store.
         model: the model to be stored
         optimizer, lr_scheduler
         epoch: How many epochs have elapsed when this model is being stored.
-        additional_data: Additional data to include in the checkpoint.
     """
     model_without_ddp = model
     if isinstance(model, nn.parallel.DistributedDataParallel):
@@ -113,8 +112,6 @@ def store_checkpoint(fpaths: Union[str, Sequence[str]], model, optimizer,
         "lr_scheduler": lr_scheduler.state_dict(),
         "epoch": epoch,
     }
-    if additional_data:
-        checkpoint.update(additional_data)
     if not isinstance(fpaths, list):
         fpaths = [fpaths]
     for fpath in fpaths:
@@ -251,8 +248,8 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
     store_endpoint='logits', 
     only_run_featext=False,
     best_score=np.inf,
-    main_metric='acc_curr_future', # inMAE', # acc_curr_future
-    horizon=60,
+    main_metric='inMAE',
+    horizon=90,
     probs_to_regression_method: str = 'first_occurrence',
     confidence_threshold: float = 0.5,
     do_classification: bool = True,
@@ -330,8 +327,6 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
     # init metrics    
     MAEs = ["wMAE_class", "inMAE_class", "outMAE_class", "expMAE_class", 
             "wMAE", "inMAE", "outMAE", "expMAE"]
-    
-    # mean_main_metric = main_metric # "inMAE"
 
     all_videos_metrics = {}
     for h in eval_horizons:
@@ -724,19 +719,19 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
     else:
         raise ValueError(f"main_metric: {main_metric} not recognized")
     
-    # main_score_per_horizon = []
-    # for h in eval_horizons:
-    #     main_score_per_horizon.append(all_videos_results[f'{mean_main_metric}_{h}'])
-
-    score = np.mean(all_videos_mean_acc_future_t[:30]) # mean over all horizons
+    main_score_per_horizon = []
+    mean_main_metric = "inMAE"
+    for h in eval_horizons:
+        main_score_per_horizon.append(all_videos_results[f'{mean_main_metric}_{h}'])
+    score = np.mean(main_score_per_horizon)
     logger.info(f"[TESTING] Epoch: {epoch} |" 
-                f"main_metric: {main_metric} |"
+                f"mean_main_metric: {mean_main_metric} |"
                 f"mean score: {score}")
 
     # check if best epoch
     # score = all_videos_results[main_metric]
     is_best_epoch = is_better(condition, score, best_score)
-    logger.info(f"[TESTING] Epoch: {epoch} | is best epoch: {is_best_epoch} with {main_metric}: {score}")
+    logger.info(f"[TESTING] Epoch: {epoch} | is best epoch: {is_best_epoch} with {mean_main_metric}: {score}")
 
     if epoch % plot_video_freq == 0 or is_best_epoch:
         # PLOT AND SAVE VIDEO DATA if best
@@ -823,12 +818,12 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
             np.save(f"all_videos_mean_acc_future_t_ep{epoch}.npy", all_videos_acc_future)
             np.save(f"all_videos_mean_cum_acc_future_t_ep{epoch}.npy", all_videos_cum_acc_future)
         
-        if save_best_video_preds:
-            np.save(f"video_frame_rec_{video_id}_ep{epoch}.npy", video_frame_rec)
-            np.save(f"video_tgts_rec_{video_id}_ep{epoch}.npy", video_tgts_rec)
-            np.save(f"video_frame_preds_{video_id}_ep{epoch}.npy", video_frame_preds)
-            np.save(f"video_tgts_preds_{video_id}_ep{epoch}.npy", video_tgts_preds)
-            logger.info(f"[TESTING] video: {video_id} saved numpy arrays")
+            if save_best_video_preds:
+                np.save(f"video_frame_rec_{video_id}_ep{epoch}.npy", video_frame_rec)
+                np.save(f"video_tgts_rec_{video_id}_ep{epoch}.npy", video_tgts_rec)
+                np.save(f"video_frame_preds_{video_id}_ep{epoch}.npy", video_frame_preds)
+                np.save(f"video_tgts_preds_{video_id}_ep{epoch}.npy", video_tgts_preds)
+                logger.info(f"[TESTING] video: {video_id} saved numpy arrays")
 
 
     tb_writer.add_scalar(f'test/acc_curr', all_videos_results["acc_curr"], step_now)
@@ -1245,7 +1240,6 @@ def main(cfg):
 
     # define the score to optimize
     main_metric = cfg.main_metric
-    logger.info(f"Main metric: {main_metric}")
     
     if main_metric in ['wMAE', 'inMAE', 'outMAE', 'expMAE']:
         # minimization
@@ -1347,8 +1341,8 @@ def main(cfg):
         
         # Store the best model MINIMIZING the main_metric
         if is_best_epoch:
-            best_score = all_videos_results[main_metric]
             store_checkpoint(f'checkpoint_best.pth', model, optimizer, lr_scheduler, epoch + 1)
+            best_score = all_videos_results[main_metric]
         if isinstance(lr_scheduler.base_scheduler, scheduler.ReduceLROnPlateau):
             lr_scheduler.step(all_videos_results[main_metric])
 
