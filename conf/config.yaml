@@ -16,11 +16,11 @@ dist_backend: nccl
 # run mode
 test_only: false
 
-eval_horizons: [15, 30] # in minutes
+eval_horizons: [30] # in minutes
 
 split_idx: 1 # 4-splits with indices [1, 2, 3, 4]
 
-num_epochs: 25
+num_epochs: 40
 best_score: 18.0
 main_metric: "acc_curr_future" # wMAE
 finetune_ckpt: best # or best
