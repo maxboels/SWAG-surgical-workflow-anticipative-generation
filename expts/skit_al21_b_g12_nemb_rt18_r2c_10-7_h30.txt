@@ -1,9 +1,33 @@
 test_only=false
-max_anticip_time=30
+
+main_metric=acc_curr_future
+
+num_epochs=40
 
 model_name=skit
+ctx_pooling=global
+num_ctx_tokens=12
+max_seq_len=24
 
+eval_horizons=[30]
+max_anticip_time=30
+num_ant_queries=1
+
+base_rtd_loss=mse
+rtd_weight_type=exponential
+loss_w_curr=0.4
+loss_w_next=0.0
+loss_w_feats=0.0
+loss_w_remaining_time=1.0
+
+do_classification=false
+do_regression=true
+
+probs_to_regression_method=first_occurrence
 eos_weight=mean
+
+class_weight=frequency
+input_tokens=normal
 
 dataset_name=autolaparo21
 pooling_dim=64
@@ -29,10 +53,6 @@ eos_classification=true
 num_curr_classes=7
 num_next_classes=8
 eos_class=7
-
-loss_w_curr=0.4
-loss_w_next=0.4
-loss_w_feats=0.2
 
 
 

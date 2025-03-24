@@ -1,9 +1,16 @@
 test_only=false
-max_anticip_time=30
 
 model_name=skit
+ctx_pooling=global
+num_ctx_tokens=12
+max_seq_len=24
 
 eos_weight=mean
+
+class_weight=frequency
+input_tokens=normal
+
+conditional_probs_embeddings=false
 
 dataset_name=autolaparo21
 pooling_dim=64
@@ -23,6 +30,7 @@ n_head=8
 fixed_ctx_length=true
 ctx_length=1440
 anticip_time=60
+max_anticip_time=18
 feature_loss=true
 
 eos_classification=true

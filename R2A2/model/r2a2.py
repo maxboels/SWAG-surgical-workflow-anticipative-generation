@@ -38,7 +38,7 @@ class GaussianMixtureSamplerWithPosition:
                 probabilities[int(cls)].append({int(k): v / total_count for k, v in freq_dict.items()})
         return probabilities
     
-    def sample(self, current_class, num_samples=18):
+    def sample(self, current_class, num_samples=30):
         if current_class not in self.probabilities:
             raise ValueError(f"Class {current_class} not found in class frequencies.")
         
@@ -328,7 +328,7 @@ class R2A2(nn.Module):
         d_model: int = 512,
         num_curr_classes: int = 7,
         num_next_classes: int = 8,
-        max_anticip_time: int = 20,
+        max_anticip_time: int = 30,
         anticip_time: int = 60,
         pooling_dim: int = 64,
         ctx_pooling: str = "global",
@@ -359,11 +359,11 @@ class R2A2(nn.Module):
 
         if self.naive2:
             # load the class frequencies
-            with open(f"/nfs/home/mboels/projects/SuPRA/datasets/{dataset}/naive2_{dataset}_class_freq_positions.json", "r") as f:
+            with open(f"/nfs/home/mboels/projects/SuPRA/datasets/{dataset}/naive2_{dataset}_class_probs_at{max_anticip_time}.json", "r") as f:
                 class_freq_positions = json.load(f)
             class_freq_positions = {int(k): [{int(inner_k): inner_v for inner_k, inner_v in freq_dict.items()} for freq_dict in v] for k, v in class_freq_positions.items()}
             print(f"[R2A2] class_freq_positions: {class_freq_positions}")
-            self.sampler_with_position = GaussianMixtureSamplerWithPosition(class_freq_positions, lookahead=18)
+            self.sampler_with_position = GaussianMixtureSamplerWithPosition(class_freq_positions, lookahead=max_anticip_time)
 
 
         # other params

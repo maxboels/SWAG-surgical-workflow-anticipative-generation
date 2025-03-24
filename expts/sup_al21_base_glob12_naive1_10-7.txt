@@ -1,4 +1,5 @@
 test_only=true
+max_anticip_time=30
 
 model_name=supra
 naive1=true
@@ -30,7 +31,6 @@ n_head=8
 fixed_ctx_length=true
 ctx_length=1440
 anticip_time=60
-max_anticip_time=18
 feature_loss=true
 
 eos_classification=true
