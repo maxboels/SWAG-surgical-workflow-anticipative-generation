@@ -1,15 +1,15 @@
-test_only=false
+test_only=true
 
 main_metric=wMAE
 
-num_epochs=50
+num_epochs=40
 
 model_name=skit
 ctx_pooling=global
 num_ctx_tokens=12
 max_seq_len=24
 
-eval_horizons=[5, 15, 30]
+eval_horizons=[30]
 max_anticip_time=30
 num_ant_queries=1
 

@@ -1,8 +1,9 @@
 test_only=true
 
-max_anticip_time=60
-num_ant_queries=60
+max_anticip_time=30
+num_ant_queries=30
 num_epochs=40
+
 model_name=skit
 ctx_pooling=global
 num_ctx_tokens=12

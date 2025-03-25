@@ -1,4 +1,4 @@
-test_only=false
+test_only=true
 
 model_name=skit
 ctx_pooling=global
@@ -7,7 +7,7 @@ max_seq_len=24
 
 main_metric=wMAE
 
-num_epochs=60
+num_epochs=40
 
 eval_horizons=[18]
 max_anticip_time=18

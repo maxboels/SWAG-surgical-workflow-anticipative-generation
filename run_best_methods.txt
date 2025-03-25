@@ -1,0 +1,27 @@
+\\ Cholec80
+\\ Naive_1:
+sup_c80_base_glob12_naive1_32-40_h30
+\\ Naive_2:
+sup_c80_base_glob12_naive2_32-40_h30
+\\AR:
+sup_c80_base_glob12_best_32-40_h30
+\\SP:
+skit_c80_base_glob12_nemb_32-40_h30
+\\SP*:
+skit_c80_base_glob12_cpemb_mae_32-40_h30
+\\R2C:
+skit_c80_b_g12_remb_rt18_r2c_r01_32-40
+
+\\ AutoLaparo21
+\\ Naive_1:
+sup_al21_base_glob12_naive1_10-7
+\\ Naive_2:
+sup_al21_base_glob12_naive2_10-7
+\\ AR:
+sup_al21_base_glob12_best_10-7_h30
+\\SP:
+skit_al21_ct144_at60_ls442_eosw1_10-7_h30
+\\SP*:
+skit_al21_base_glob12_ccemb_10-7_v6
+\\R2C:
+skit_al21_b_g12_nemb_rt18_r2c_10-7_h30

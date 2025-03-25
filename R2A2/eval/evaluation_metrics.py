@@ -15,6 +15,281 @@ import json
 import os
 import numpy as np
 
+import numpy as np
+from collections import Counter
+from sklearn.metrics import precision_score, recall_score, f1_score
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation, writers
+from matplotlib.patheffects import withStroke
+import matplotlib.colors as mcolors
+import os
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+
+
+def compute_sequence_metrics(targets, predictions, 
+                            metric_types=None,
+                            mode='standard',
+                            class_weights=None,
+                            keep_time_dim=True,
+                            padding_value=-1,
+                            ignore_class=None,
+                            average='macro',
+                            return_dict=True):
+    """
+    Compute classification metrics for sequential data with anticipated classes.
+    
+    Parameters:
+    -----------
+    targets : array-like
+        Ground truth values with shape [num_frames, anticipation_time] or 
+        [num_frames, anticipation_time, num_classes]
+    predictions : array-like
+        Predicted values with same shape as targets
+    metric_types : list, optional
+        List of metrics to compute. Default: ['accuracy', 'precision', 'recall', 'f1']
+    mode : str, optional
+        Type of accuracy to compute: 'standard', 'weighted', or 'macro'
+    class_weights : array-like or dict, optional
+        Class weights for weighted metrics. If None and mode='weighted', weights are calculated 
+        inversely proportional to class frequencies
+    keep_time_dim : bool, optional
+        If True, compute metrics separately for each time step.
+        If False, compute metrics aggregated across all time steps.
+    padding_value : int, optional
+        Value indicating padded elements to ignore in calculations
+    ignore_class : int or list, optional
+        Additional class(es) to ignore in metrics calculation
+    average : str, optional
+        Averaging method for precision, recall, and F1 score: 'micro', 'macro', 'weighted'.
+        Only applies when mode='standard'.
+    return_dict : bool, optional
+        Whether to return results as a dictionary or tuple
+        
+    Returns:
+    --------
+    dict or tuple
+        Metrics based on specified parameters.
+        If keep_time_dim=True, returns metrics per time step.
+        If keep_time_dim=False, returns aggregated metrics.
+    """
+    # Ensure inputs are numpy arrays
+    targets = np.array(targets)
+    predictions = np.array(predictions)
+    
+    # Set default metrics if not provided
+    if metric_types is None:
+        metric_types = ['accuracy', 'precision', 'recall', 'f1']
+        
+    # Convert ignore_class to list if it's a single value
+    if ignore_class is not None and not isinstance(ignore_class, (list, tuple, np.ndarray)):
+        ignore_class = [ignore_class]
+    
+    # Create mask for valid (non-padded and non-ignored) elements
+    mask = targets != padding_value
+    if ignore_class is not None:
+        for cls in ignore_class:
+            mask &= (targets != cls)
+    
+    # Get data dimensions
+    if len(targets.shape) == 3:  # [num_frames, anticipation_time, num_classes]
+        num_frames, anticipation_time, num_classes = targets.shape
+    else:  # [num_frames, anticipation_time]
+        num_frames, anticipation_time = targets.shape
+        num_classes = len(np.unique(targets[mask]))
+    
+    # Initialize dictionary to store results
+    results = {}
+    
+    # Compute metrics based on keep_time_dim
+    if keep_time_dim:
+        # Initialize metrics arrays for each time step
+        time_metrics = {metric: np.zeros(anticipation_time) for metric in metric_types}
+        
+        # Compute metrics for each time step
+        for t in range(anticipation_time):
+            # Get data for current time step
+            if len(targets.shape) == 3:
+                t_targets = targets[:, t, :]
+                t_preds = predictions[:, t, :]
+            else:
+                t_targets = targets[:, t]
+                t_preds = predictions[:, t]
+            
+            # Get mask for current time step
+            t_mask = mask[:, t] if len(mask.shape) == 2 else mask[:, t, :]
+            
+            # Skip if no valid data
+            if not np.any(t_mask):
+                for metric in metric_types:
+                    time_metrics[metric][t] = np.nan
+                continue
+            
+            # Filter data using mask
+            if len(t_targets.shape) > 1:  # For multi-dimensional targets
+                valid_t_targets = t_targets[t_mask]
+                valid_t_preds = t_preds[t_mask]
+            else:
+                valid_t_targets = t_targets[t_mask]
+                valid_t_preds = t_preds[t_mask]
+            
+            # Compute metrics
+            time_metrics = compute_metrics_for_data(
+                valid_t_targets, valid_t_preds, 
+                time_metrics, t, metric_types, 
+                mode, class_weights, average
+            )
+        
+        # Store time-specific metrics
+        for metric in metric_types:
+            results[metric] = time_metrics[metric]
+    
+    else:  # Aggregate across all time steps
+        # Flatten the arrays to compute metrics across all predictions
+        flat_targets = targets.reshape(-1) if len(targets.shape) == 2 else targets.reshape(-1, targets.shape[-1])
+        flat_preds = predictions.reshape(-1) if len(predictions.shape) == 2 else predictions.reshape(-1, predictions.shape[-1])
+        flat_mask = mask.reshape(-1) if len(mask.shape) == 2 else mask.reshape(-1, mask.shape[-1])
+        
+        # Filter data using mask
+        valid_targets = flat_targets[flat_mask]
+        valid_preds = flat_preds[flat_mask]
+        
+        # Skip if no valid data
+        if len(valid_targets) == 0:
+            for metric in metric_types:
+                results[metric] = np.nan
+        else:
+            # Compute aggregated metrics
+            agg_metrics = {metric: 0.0 for metric in metric_types}
+            compute_metrics_for_data(
+                valid_targets, valid_preds, 
+                agg_metrics, 0, metric_types, 
+                mode, class_weights, average
+            )
+            
+            # Store aggregated metrics
+            for metric in metric_types:
+                results[metric] = agg_metrics[metric]
+    
+    return results if return_dict else tuple(results[metric] for metric in metric_types)
+
+
+def compute_metrics_for_data(targets, predictions, metrics_dict, time_idx, 
+                            metric_types, mode, class_weights, average):
+    """
+    Helper function to compute metrics for a specific subset of data.
+    
+    Parameters:
+    -----------
+    targets : array-like
+        Ground truth values
+    predictions : array-like
+        Predicted values
+    metrics_dict : dict
+        Dictionary to store computed metrics
+    time_idx : int
+        Time index for storing metrics (only used when keep_time_dim=True)
+    metric_types : list
+        List of metrics to compute
+    mode : str
+        Type of accuracy to compute: 'standard', 'weighted', or 'macro'
+    class_weights : array-like or dict
+        Class weights for weighted metrics
+    average : str
+        Averaging method for sklearn metrics
+        
+    Returns:
+    --------
+    dict
+        Updated metrics dictionary
+    """
+    # Compute accuracy based on mode
+    if 'accuracy' in metric_types:
+        if mode == 'standard':
+            metrics_dict['accuracy'][time_idx] = np.mean(predictions == targets)
+        
+        elif mode == 'weighted':
+            # Get unique classes
+            unique_classes = np.unique(targets)
+            
+            # Calculate class weights if not provided
+            if class_weights is None:
+                # Count occurrences of each class
+                class_counts = Counter(targets.flatten() if hasattr(targets, 'flatten') else targets)
+                total = sum(class_counts.values())
+                
+                # Inverse frequency weighting
+                weights = {cls: total / count for cls, count in class_counts.items()}
+                
+                # Normalize weights to sum to 1
+                weight_sum = sum(weights.values())
+                weights = {cls: w / weight_sum for cls, w in weights.items()}
+            else:
+                weights = class_weights
+            
+            # Compute weighted accuracy
+            weighted_acc = 0.0
+            for cls in unique_classes:
+                # Get mask for current class
+                cls_mask = targets == cls
+                
+                # Skip if no samples for this class
+                if not np.any(cls_mask):
+                    continue
+                
+                # Compute accuracy for this class
+                cls_acc = np.mean(predictions[cls_mask] == targets[cls_mask])
+                
+                # Get weight for this class
+                cls_weight = weights[cls] if isinstance(weights, dict) else weights[cls]
+                
+                # Add weighted accuracy contribution
+                weighted_acc += cls_acc * cls_weight
+            
+            metrics_dict['accuracy'][time_idx] = weighted_acc
+        
+        elif mode == 'macro':
+            # Get unique classes
+            unique_classes = np.unique(targets)
+            
+            # Compute accuracy for each class
+            class_accs = []
+            for cls in unique_classes:
+                # Get mask for current class
+                cls_mask = targets == cls
+                
+                # Skip if no samples for this class
+                if not np.any(cls_mask):
+                    continue
+                
+                # Compute accuracy for this class
+                cls_acc = np.mean(predictions[cls_mask] == targets[cls_mask])
+                class_accs.append(cls_acc)
+            
+            # Macro accuracy is the mean of per-class accuracies
+            metrics_dict['accuracy'][time_idx] = np.mean(class_accs) if class_accs else np.nan
+        
+        else:
+            raise ValueError(f"Unknown mode: {mode}. Choose from 'standard', 'weighted', or 'macro'")
+    
+    # Compute other metrics using sklearn
+    # Note: sklearn's metrics don't directly support 'standard', 'weighted', 'macro' modes in the same way
+    # as our custom accuracy implementation, so we use the 'average' parameter instead
+    
+    if 'precision' in metric_types:
+        metrics_dict['precision'][time_idx] = precision_score(
+            targets, predictions, average=average, zero_division=0)
+    
+    if 'recall' in metric_types:
+        metrics_dict['recall'][time_idx] = recall_score(
+            targets, predictions, average=average, zero_division=0)
+    
+    if 'f1' in metric_types:
+        metrics_dict['f1'][time_idx] = f1_score(
+            targets, predictions, average=average, zero_division=0)
+    
+    return metrics_dict
+
 
 def compute_accuracy(inputs, targets, return_list=True, ignore_index=-1, return_mean=True):
     # Ensure inputs and targets are numpy arrays

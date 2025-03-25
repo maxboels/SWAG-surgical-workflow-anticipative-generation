@@ -77,7 +77,8 @@ from R2A2.eval.evaluation_metrics import compute_f1_score, compute_rmse_transiti
                                         compute_transition_times, compute_accuracy, \
                                         calculate_metrics, plot_performance_over_time, \
                                         segment_continuity_score, temporal_consistency_score, \
-                                        class_distribution_divergence, aggregate_metrics
+                                        class_distribution_divergence, aggregate_metrics, \
+                                        compute_sequence_metrics
 
 
 #--maxence boels- debugging cuda error
@@ -280,6 +281,10 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
     num_classes = 7
     plot_video_freq = 5
     # -----------------select params----------------- #
+    new_videos_metrics_accs = []
+    new_videos_metrics_precs = []
+    new_videos_metrics_recalls = []
+    new_videos_metrics_f1s = []
 
     # init video metrics
     all_videos_results = OrderedDict()
@@ -613,6 +618,7 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
         for i in range(video_frame_preds.shape[0]):
             y_true_i = y_true[i]
             y_pred_i = y_pred[i]
+            # Using weighted increases the importance of majority classes
             precision, recall, f1, _ = precision_recall_fscore_support(y_true_i, y_pred_i, average='weighted', zero_division=0)
             video_prec.append(precision)
             video_recall.append(recall)
@@ -624,6 +630,34 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
         # Accuracy for recognition and predictions (Keep Time Dimension)
         acc_curr_frames         = compute_accuracy(video_frame_rec, video_tgts_rec, return_mean=False)
         acc_future_frames       = compute_accuracy(video_frame_preds, video_tgts_preds, return_mean=False)
+
+        # class based accuracy (Keep Time Dimension), each class has the same weight
+        average_type = 'macro' # 'micro: raw sum', 'macro: mean', 'weighted: inverse class frequency'
+        gt = np.concatenate((video_tgts_rec, video_tgts_preds), axis=1)
+        pred = np.concatenate((video_frame_rec, video_frame_preds), axis=1)
+        metrics = compute_sequence_metrics(gt, pred,
+                                            mode='macro', # macro=standard
+                                            average=average_type, # 'micro', 'macro', 'weighted'
+                                            keep_time_dim=True,
+                                            padding_value=-1,
+                                            ignore_class=None # if decide to ignore the EOS class
+        )
+        print(f"Accuracy: {metrics['accuracy']}")
+        print(f"Precision: {metrics['precision']}")
+        print(f"Recall: {metrics['recall']}")
+        print(f"F1 Score: {metrics['f1']}")
+        # both current and future time indices in the sequence
+        new_videos_metrics_accs.append(metrics['accuracy'])
+        new_videos_metrics_precs.append(metrics['precision'])
+        new_videos_metrics_recalls.append(metrics['recall'])
+        new_videos_metrics_f1s.append(metrics['f1'])
+
+        # mean metrics
+        mean_metrics = {f"{average_type}_{key}": np.nanmean(metrics[key]) for key in metrics.keys()}
+        print(f"Mean Accuracy: {mean_metrics[f'{average_type}_accuracy']}")
+        print(f"Mean Precision: {mean_metrics[f'{average_type}_precision']}")
+        print(f"Mean Recall: {mean_metrics[f'{average_type}_recall']}")
+        print(f"Mean F1 Score: {mean_metrics[f'{average_type}_f1']}")
 
         # Compute Root Mean Squared Error
         # Concatenate recognition and predictions
@@ -687,6 +721,12 @@ def evaluate(cfg, model, train_eval_op, device, step_now, dataloaders: list, tb_
     all_videos_results["acc_curr"]          = acc_curr
     all_videos_results["acc_future"]        = acc_future
     all_videos_results["acc_curr_future"]   = acc_curr_and_future_t
+
+    # keep the temporal dimension over all videos (new metrics)
+    all_videos_results[f"{average_type}_accs"]  = np.round(np.nanmean(new_videos_metrics_accs, axis=0), decimals=4).tolist()
+    all_videos_results[f"{average_type}_precs"] = np.round(np.nanmean(new_videos_metrics_precs, axis=0), decimals=4).tolist()
+    all_videos_results[f"{average_type}_recs"]  = np.round(np.nanmean(new_videos_metrics_recalls, axis=0), decimals=4).tolist()
+    all_videos_results[f"{average_type}_f1s"]   = np.round(np.nanmean(new_videos_metrics_f1s, axis=0), decimals=4).tolist()
 
     # Regression remaining time
     for h in eval_horizons:

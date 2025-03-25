@@ -32,4 +32,4 @@ runai submit $JOB_NAME \
 
 # wait for 3 seconds and list the jobs
 sleep 3
-watch runai list
+# watch runai list
