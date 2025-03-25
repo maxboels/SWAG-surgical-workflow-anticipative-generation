@@ -2,6 +2,7 @@ test_only=true
 max_anticip_time=30
 
 model_name=supra
+
 ctx_pooling=global
 num_ctx_tokens=12
 max_seq_len=24

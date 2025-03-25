@@ -750,44 +750,108 @@ class Medical_Dataset(Dataset):
                 print(f"[DATASET] curr_time2eos_tgt: {curr_eos_values.size()}")
 
             assert curr_frames_tgt.size(0) == self.num_ctx_tokens, f"num_ctx_tokens size not equal to curr_frames_tgt: {curr_frames_tgt.size(0)}"
-
+                
+                
             if self.train_mode == 'train':
-
-                # NEXT FRAMES TARGETS (SHIFTED BY 2x Window size or 2x Frames per tokens)
+                # NEXT FRAMES TARGETS
+                
                 if self.next_frames_tgt=="next":
-                    excess_right = max(0, (frame_idx + self.anticip_time + 1) - video_targets.size(0))
-                    ends = min(video_targets.size(0), frame_idx + self.anticip_time + 1)
-                    if self.ctx_pooling=="local":
-                        start_offset = frame_idx  % self.anticip_time
-                        starts = max(start_offset, frame_idx - self.ctx_length + (2*self.anticip_time))
-                        print(f"[DATASET] next_frames_tgt starts: {starts}, ends: {ends}")
-                    elif self.ctx_pooling=="global":
-                        starts = frame_idx + self.anticip_time
-                        print(f"[DATASET] next_frames_tgt starts: {starts}, ends: {ends}")
-                    else:
-                        raise ValueError("next_frames_tgt not found")
+                    # NEXT FRAMES TARGETS FOR GPT-2 CAUSAL APPROACH
+                    # For GPT-2 style causal prediction:
+                    # - Each minute predicts the next minute
+                    # - num_ctx_tokens is in minutes (e.g., 12 means 12 minutes of context)
+                    # - anticip_time is the step size in seconds (e.g., 60 means 1 minute)
                     
-                    next_frames_tgt = video_targets[starts: ends: self.anticip_time].to(self.device)
+                    # Create target indices for the input context tokens (each representing a minute)
+                    input_indices = []
+                    for i in range(self.num_ctx_tokens):
+                        # Start from (current frame - (num_minutes-1)*seconds_per_minute)
+                        # and move forward in steps of anticip_time
+                        idx = frame_idx - (self.num_ctx_tokens - 1 - i) * self.anticip_time
+                        input_indices.append(idx)
+                    
+                    # Then create the target indices - shifted by one minute
+                    # Each position i should predict i+1
+                    target_indices = []
+                    for i in range(self.num_ctx_tokens):
+                        if i < self.num_ctx_tokens - 1:
+                            # For all but the last position, target is the next input position
+                            target_indices.append(input_indices[i + 1])
+                        else:
+                            # For the last position, target is one minute ahead of the current frame
+                            target_idx = frame_idx + self.anticip_time
+                            # Ensure the target index doesn't exceed video length
+                            if target_idx >= len(video_targets):
+                                target_idx = len(video_targets) - 1  # Use last valid frame
+                            target_indices.append(target_idx)
+                    
+                    print(f"[DATASET] input frame indices: {input_indices}")
+                    print(f"[DATASET] target frame indices: {target_indices}")
+                    
+                    # Create tensor for targets with padding value
+                    next_frames_tgt = -1 * torch.ones(self.num_ctx_tokens, dtype=torch.long).to(self.device)
+                    
+                    # Inside your target creation code
+                    for i, idx in enumerate(target_indices):
+                        if 0 <= idx < len(video_targets):
+                            # Check if we're near the end of the video (e.g., last few frames)
+                            if idx >= len(video_targets) - self.anticip_time:
+                                # Set as EOS class (assuming self.eos_class is defined)
+                                next_frames_tgt[i] = self.eos_class
+                            else:
+                                next_frames_tgt[i] = video_targets[idx].to(self.device).long()
+                        # If index is invalid, you could also set EOS
+                        else:
+                            next_frames_tgt[i] = self.eos_class
+                    
                     print(f"[DATASET] next_frames_tgt: {next_frames_tgt.size()}")
-                    if starts < ends:
-                        print(f"[DATASET] next_frames_tgt: {torch.arange(starts, ends, self.anticip_time)}")
+                    
+                    # Store in data dictionary
+                    data_now['next_frames_tgt'] = next_frames_tgt
+                    
+                    # Create causal mask for training
+                    causal_mask = torch.tril(torch.ones(self.num_ctx_tokens, self.num_ctx_tokens)).to(self.device)
+                    data_now['causal_mask'] = causal_mask
+                
+                    # OLD version for 
+                    # NEW next frames targets for gpt2 training
+                    # so we need to shift the targets by 60 seconds from the current frame
 
-                    # We keep all the tokens for the training with supra
-                    # if self.ctx_pooling=="local":
-                    #     next_frames_tgt = next_frames_tgt[-self.num_ctx_tokens:]
-                    #     print(f"[DATASET] next_frames_tgt (trimmed to num_ctx_tokens): {next_frames_tgt.size()}")
+                    # NEXT FRAMES TARGETS (SHIFTED BY 2x Window size or 2x Frames per tokens)
+                    # if self.next_frames_tgt=="next":
+                    #     excess_right = max(0, (frame_idx + self.anticip_time + 1) - video_targets.size(0))
+                    #     ends = min(video_targets.size(0), frame_idx + self.anticip_time + 1)
+                    #     if self.ctx_pooling=="local":
+                    #         start_offset = frame_idx  % self.anticip_time
+                    #         starts = max(start_offset, frame_idx - self.ctx_length + (2*self.anticip_time))
+                    #         print(f"[DATASET] next_frames_tgt starts: {starts}, ends: {ends}")
+                    #     elif self.ctx_pooling=="global":
+                    #         starts = frame_idx + self.anticip_time
+                    #         print(f"[DATASET] next_frames_tgt starts: {starts}, ends: {ends}")
+                    #     else:
+                    #         raise ValueError("next_frames_tgt not found")
+                        
+                    #     next_frames_tgt = video_targets[starts: ends: self.anticip_time].to(self.device)
+                    #     print(f"[DATASET] next_frames_tgt: {next_frames_tgt.size()}")
+                    #     if starts < ends:
+                    #         print(f"[DATASET] next_frames_tgt: {torch.arange(starts, ends, self.anticip_time)}")
 
-                    if excess_right > 0:
-                        # only add 1 eos token since we use anticip window size
-                        next_frames_tgt = torch.cat((next_frames_tgt, self.eos[:1].long()), 0)
-                        print(f"[DATASET] EOS padding for next_frames_tgt: {excess_right}")
-                    missing = self.num_ctx_tokens - next_frames_tgt.size(0)
-                    if missing > 0:
-                        next_frames_tgt = torch.cat(( -self.ones[:missing].long(), next_frames_tgt), 0)
-                    data_now['next_frames_tgt'] = next_frames_tgt.to(self.device).long()
-                    print(f"[DATASET] next_frames_tgt: {next_frames_tgt.size()}")
+                    #     # We keep all the tokens for the training with supra
+                    #     # if self.ctx_pooling=="local":
+                    #     #     next_frames_tgt = next_frames_tgt[-self.num_ctx_tokens:]
+                    #     #     print(f"[DATASET] next_frames_tgt (trimmed to num_ctx_tokens): {next_frames_tgt.size()}")
 
-                    assert next_frames_tgt.size(0) == self.num_ctx_tokens, f"next_frames_tgt size not equal to num_ctx_tokens: {next_frames_tgt.size(0)}"
+                    #     if excess_right > 0:
+                    #         # only add 1 eos token since we use anticip window size
+                    #         next_frames_tgt = torch.cat((next_frames_tgt, self.eos[:1].long()), 0)
+                    #         print(f"[DATASET] EOS padding for next_frames_tgt: {excess_right}")
+                    #     missing = self.num_ctx_tokens - next_frames_tgt.size(0)
+                    #     if missing > 0:
+                    #         next_frames_tgt = torch.cat(( -self.ones[:missing].long(), next_frames_tgt), 0)
+                    #     data_now['next_frames_tgt'] = next_frames_tgt.to(self.device).long()
+                    #     print(f"[DATASET] next_frames_tgt: {next_frames_tgt.size()}")
+
+                    #     assert next_frames_tgt.size(0) == self.num_ctx_tokens, f"next_frames_tgt size not equal to num_ctx_tokens: {next_frames_tgt.size(0)}"
 
                 elif self.next_frames_tgt=="future":
                     # FUTURE FRAMES TARGETS (SHIFTED BY WINDOW SIZE FROM CURRENT FRAME)

@@ -356,6 +356,7 @@ class R2A2(nn.Module):
 
         self.multi_token = multi_token
 
+        self.eos_class = num_next_classes - 1
 
         if self.naive2:
             # load the class frequencies
@@ -474,51 +475,12 @@ class R2A2(nn.Module):
                 print(f"[R2A2] keep only the last num_ctx_tokens: {enc_out_pooled.shape}")
 
 
-        enc_out = self.fusion_head1(enc_out_pooled, enc_out_local)
-        print(f"[R2A2] enc_out_fused: {enc_out.shape}")
+        enc_out_fused = self.fusion_head1(enc_out_pooled, enc_out_local)
+        print(f"[R2A2] enc_out_fused: {enc_out_fused.shape}")
 
-        curr_frames_cls = self.curr_frames_classifier(enc_out)
+        curr_frames_cls = self.curr_frames_classifier(enc_out_fused)
         print(f"[R2A2] curr_frames: {curr_frames_cls.shape}")
         outputs["curr_frames"] = curr_frames_cls
-
-        # # Class Conditioned Transformer Decoder
-        # num_classes = 7 + 1
-        # root = "/nfs/home/mboels/projects/SuPRA/datasets"
-        # path_class_freq = root + f"/{self.dataset}/naive2_{self.dataset}_class_freq_positions.json"
-        # with open(path_class_freq, 'r') as f:
-        #     class_freq_pos = json.load(f)
-        # class_freq_pos = {int(k): [{int(inner_k): inner_v for inner_k, inner_v in freq_dict.items()} for freq_dict in v] for k, v in class_freq_pos.items()}
-        # self.frame_decoder = hydra.utils.instantiate(decoder_cc,
-        #                                             num_classes=num_classes, 
-        #                                             class_freq_positions=class_freq_pos, 
-        #                                             _recursive_=False)
-        # self.sampler = GaussianMixtureSamplerWithPosition(class_freq_positions, lookahead=18)
-        # self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        # batch_size, seq_len, _ = query_embeddings.size()
-        # # Positional encoding for query_embeddings
-        # query_embeddings = self.positional_encoding(query_embeddings)
-        # # Embedding for memory 
-        # memory_embedded = self.embedding(memory) + self.positional_encoding(memory) # NOTE: no need for embedding layer
-        # # Initialize combined embeddings
-        # combined_embeddings = query_embeddings.clone().to(self.device)
-        # # Initialize future class probabilities
-        # future_class_probs = torch.zeros(batch_size, seq_len, self.num_classes, device=self.device) + 1e-6
-        # for i in range(batch_size):
-        #     for j in range(seq_len):
-        #         if current_gt is not None:
-        #             current_class = current_gt[i, -1].item()
-        #             # Use ground truth class for teacher forcing
-        #             class_probs = self.sampler.class_probs(current_class, j)
-        #             for k, v in class_probs.items():
-        #                 future_class_probs[i, j, k] = v
-        #         elif current_pred is not None:
-        #             # Use predicted class for inference
-        #             current_class = torch.argmax(F.softmax(current_pred[i], dim=-1), dim=-1).item()
-        #             class_probs = self.sampler.class_probs(current_class, j)
-        #             for k, v in class_probs.items():
-        #                 future_class_probs[i, j, k] = v
-        #         else:
-        #             raise ValueError("Either current_pred or current_gt must be provided.")
 
         if train_mode:
             # GPT-2 decoder takes a single sequence as input prompt and predicts the next token.
@@ -529,7 +491,8 @@ class R2A2(nn.Module):
             # A single token is represented by all the phases activations from previous frames.
             # So it should predict if new phase features activations are going to appear in the next frames.
 
-            dec_in = self.proj_layer(enc_out)
+            dec_in = self.proj_layer(enc_out[:, self.anticip_time::self.anticip_time, :][:, -self.num_ctx_tokens:, :])
+            print(f"[R2A2] [GPT2] dec_in: {dec_in.shape}")
             next_action = self.frame_decoder(inputs_embeds=dec_in)  # next frame-level prediction
             next_frames_cls = self.next_action_classifier(next_action.last_hidden_state)
             outputs["next_frames"] = next_frames_cls
@@ -592,37 +555,65 @@ class R2A2(nn.Module):
 
     
             frames_cls_preds = []
-            dec_in = self.proj_layer(enc_out)
+            dec_in = self.proj_layer(enc_out[:, self.anticip_time::self.anticip_time, :][:, -self.num_ctx_tokens:, :])
+            print(f"[R2A2] dec_in: {dec_in.shape}")
+            batch_size = dec_in.size(0)
+
+            # Track which samples have predicted EOS
+            eos_predicted = torch.zeros(batch_size, dtype=torch.bool, device=dec_in.device)
 
             start_time = time.time()
             iter_times = [] # in seconds
-            for _ in range(max_num_steps):
-
+            for i in range(max_num_steps):
+                # Run the model - we don't need to worry about position IDs 
+                # as long as we maintain a fixed context length
                 next_frames = self.frame_decoder(inputs_embeds=dec_in)
                 next_frame_embed = next_frames.last_hidden_state[:, -1:, :]
                 next_frame_cls = self.next_action_classifier(next_frame_embed) # (B, 1, num_curr_classes)
                 frames_cls_preds.append(next_frame_cls)
 
-                # NOTE: if the input sequence becomes longer than the context length used during training
-                # the model will not be confused since the context length is fixed during training.
-                # shift the input sequence by one frame if fixed context length
-                if self.fixed_ctx_length:
-                    if dec_in.size(1) == self.max_seq_len:
-                        dec_in = dec_in[:, 1:]
-                # else:
-                #     dec_in = dec_in[:, 1:]
-                dec_in = torch.cat((dec_in, next_frame_embed), dim=1) # (B, T, D)
-                print(f"[R2A2] dec_in: {dec_in.shape}")
+                # Update EOS tracking
+                current_eos = (torch.argmax(next_frame_cls, dim=-1).squeeze(1) == self.eos_class)
+                eos_predicted = eos_predicted | current_eos
+                
+                # Early stopping if all sequences have predicted EOS
+                if eos_predicted.all():
+                    print(f"[R2A2] All sequences predicted EOS by step {i}, stopping inference")
+                    break
+
+                # Always maintain fixed context length by shifting window
+                # This is critical to avoid position embedding issues
+                if dec_in.size(1) >= self.num_ctx_tokens:
+                    # Keep exactly num_ctx_tokens by removing the oldest token
+                    dec_in = dec_in[:, -(self.num_ctx_tokens-1):]
+                    print(f"[R2A2] maintaining fixed context window of {self.num_ctx_tokens-1} tokens")
+                
+                # Add new token to context
+                dec_in = torch.cat((dec_in, next_frame_embed), dim=1)
+                print(f"[R2A2] iter {i} dec_in: {dec_in.shape}")
 
                 iter_times.append(time.time() - start_time)
 
-                # break if the model predicts the EOS token
-                # if torch.argmax(next_frame_cls, dim=-1) == num_curr_classes - 1:
-                #     break
+            # Stack all predictions so far
+            predictions_so_far = torch.cat(frames_cls_preds, dim=1)
+            steps_done = predictions_so_far.size(1)
 
-            outputs["future_frames"] = torch.cat(frames_cls_preds, dim=1) # (B, num_future_preds, num_curr_classes)
+            # If we stopped early, pad remaining steps with EOS predictions
+            if steps_done < max_num_steps:
+                # Create EOS one-hot vectors
+                eos_vector = torch.zeros(1, 1, self.num_next_classes, device=dec_in.device)
+                eos_vector[0, 0, self.eos_class] = 1.0
+                
+                # Create padding tensor
+                padding_steps = max_num_steps - steps_done
+                padding = eos_vector.repeat(batch_size, padding_steps, 1)
+                
+                # Concatenate existing predictions with padding
+                outputs["future_frames"] = torch.cat([predictions_so_far, padding], dim=1)
+            else:
+                outputs["future_frames"] = predictions_so_far
+
             print(f"[R2A2] future_frames: {outputs['future_frames'].shape}")
-
             outputs["iter_times"] = iter_times
 
         return outputs

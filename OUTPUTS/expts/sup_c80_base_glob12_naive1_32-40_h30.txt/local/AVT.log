@@ -10453,3 +10453,1050 @@
 [2025-03-25 17:12:07,392][func.train][INFO] - [TESTING] video: 67 | start_idx: 2353 | end_idx: 2417
 [2025-03-25 17:12:07,393][func.train][INFO] - [TESTING] video: 67 | video test time: 0.25 min | total test time: 30.37 min
 [2025-03-25 17:12:07,401][func.train][INFO] - [TESTING] Saved video probs to: video_probs_ep1_vid67.npy
+[2025-03-25 17:12:56,363][func.train][INFO] - [TESTING] video_remaining_time_preds (classification2regression) h=30: torch.Size([2353, 8])
+[2025-03-25 17:12:56,377][func.train][INFO] - [TESTING] video: 67 | horizon: 30 | wMAE_30: 9.4058 | inMAE_30: 18.7603 | outMAE_30: 0.0513 | expMAE_30: 25.6198
+[2025-03-25 17:12:56,404][func.train][INFO] - [TESTING] video: 67 saved numpy arrays
+[2025-03-25 17:12:59,427][func.train][INFO] - [TESTING] video: 67 | video_mean_curr_acc: 0.9405 | mean_acc_future_frames: 0.2024 | video_mean_cum_acc_future: 0.4331
+[2025-03-25 17:12:59,427][func.train][INFO] - [EVAL] video (i=27) id=68 | video_length=1972
+[2025-03-25 17:12:59,879][func.train][INFO] - [TESTING] video: 68 | frame: 63 / 1972
+[2025-03-25 17:12:59,880][func.train][INFO] - [TESTING] video: 68 | start_idx: 64 | end_idx: 128
+[2025-03-25 17:13:00,251][func.train][INFO] - [TESTING] video: 68 | frame: 127 / 1972
+[2025-03-25 17:13:00,251][func.train][INFO] - [TESTING] video: 68 | start_idx: 128 | end_idx: 192
+[2025-03-25 17:13:00,622][func.train][INFO] - [TESTING] video: 68 | frame: 191 / 1972
+[2025-03-25 17:13:00,622][func.train][INFO] - [TESTING] video: 68 | start_idx: 192 | end_idx: 256
+[2025-03-25 17:13:01,004][func.train][INFO] - [TESTING] video: 68 | frame: 255 / 1972
+[2025-03-25 17:13:01,004][func.train][INFO] - [TESTING] video: 68 | start_idx: 256 | end_idx: 320
+[2025-03-25 17:13:01,383][func.train][INFO] - [TESTING] video: 68 | frame: 319 / 1972
+[2025-03-25 17:13:01,383][func.train][INFO] - [TESTING] video: 68 | start_idx: 320 | end_idx: 384
+[2025-03-25 17:13:01,795][func.train][INFO] - [TESTING] video: 68 | frame: 383 / 1972
+[2025-03-25 17:13:01,796][func.train][INFO] - [TESTING] video: 68 | start_idx: 384 | end_idx: 448
+[2025-03-25 17:13:02,187][func.train][INFO] - [TESTING] video: 68 | frame: 447 / 1972
+[2025-03-25 17:13:02,187][func.train][INFO] - [TESTING] video: 68 | start_idx: 448 | end_idx: 512
+[2025-03-25 17:13:02,615][func.train][INFO] - [TESTING] video: 68 | frame: 511 / 1972
+[2025-03-25 17:13:02,616][func.train][INFO] - [TESTING] video: 68 | start_idx: 512 | end_idx: 576
+[2025-03-25 17:13:02,988][func.train][INFO] - [TESTING] video: 68 | frame: 575 / 1972
+[2025-03-25 17:13:02,988][func.train][INFO] - [TESTING] video: 68 | start_idx: 576 | end_idx: 640
+[2025-03-25 17:13:03,398][func.train][INFO] - [TESTING] video: 68 | frame: 639 / 1972
+[2025-03-25 17:13:03,399][func.train][INFO] - [TESTING] video: 68 | start_idx: 640 | end_idx: 704
+[2025-03-25 17:13:03,796][func.train][INFO] - [TESTING] video: 68 | frame: 703 / 1972
+[2025-03-25 17:13:03,797][func.train][INFO] - [TESTING] video: 68 | start_idx: 704 | end_idx: 768
+[2025-03-25 17:13:04,205][func.train][INFO] - [TESTING] video: 68 | frame: 767 / 1972
+[2025-03-25 17:13:04,205][func.train][INFO] - [TESTING] video: 68 | start_idx: 768 | end_idx: 832
+[2025-03-25 17:13:04,594][func.train][INFO] - [TESTING] video: 68 | frame: 831 / 1972
+[2025-03-25 17:13:04,594][func.train][INFO] - [TESTING] video: 68 | start_idx: 832 | end_idx: 896
+[2025-03-25 17:13:04,996][func.train][INFO] - [TESTING] video: 68 | frame: 895 / 1972
+[2025-03-25 17:13:04,997][func.train][INFO] - [TESTING] video: 68 | start_idx: 896 | end_idx: 960
+[2025-03-25 17:13:05,357][func.train][INFO] - [TESTING] video: 68 | frame: 959 / 1972
+[2025-03-25 17:13:05,357][func.train][INFO] - [TESTING] video: 68 | start_idx: 960 | end_idx: 1024
+[2025-03-25 17:13:05,737][func.train][INFO] - [TESTING] video: 68 | frame: 1023 / 1972
+[2025-03-25 17:13:05,738][func.train][INFO] - [TESTING] video: 68 | start_idx: 1024 | end_idx: 1088
+[2025-03-25 17:13:06,166][func.train][INFO] - [TESTING] video: 68 | frame: 1087 / 1972
+[2025-03-25 17:13:06,166][func.train][INFO] - [TESTING] video: 68 | start_idx: 1088 | end_idx: 1152
+[2025-03-25 17:13:06,537][func.train][INFO] - [TESTING] video: 68 | frame: 1151 / 1972
+[2025-03-25 17:13:06,537][func.train][INFO] - [TESTING] video: 68 | start_idx: 1152 | end_idx: 1216
+[2025-03-25 17:13:06,947][func.train][INFO] - [TESTING] video: 68 | frame: 1215 / 1972
+[2025-03-25 17:13:06,947][func.train][INFO] - [TESTING] video: 68 | start_idx: 1216 | end_idx: 1280
+[2025-03-25 17:13:07,331][func.train][INFO] - [TESTING] video: 68 | frame: 1279 / 1972
+[2025-03-25 17:13:07,331][func.train][INFO] - [TESTING] video: 68 | start_idx: 1280 | end_idx: 1344
+[2025-03-25 17:13:07,729][func.train][INFO] - [TESTING] video: 68 | frame: 1343 / 1972
+[2025-03-25 17:13:07,729][func.train][INFO] - [TESTING] video: 68 | start_idx: 1344 | end_idx: 1408
+[2025-03-25 17:13:08,110][func.train][INFO] - [TESTING] video: 68 | frame: 1407 / 1972
+[2025-03-25 17:13:08,111][func.train][INFO] - [TESTING] video: 68 | start_idx: 1408 | end_idx: 1472
+[2025-03-25 17:13:08,512][func.train][INFO] - [TESTING] video: 68 | frame: 1471 / 1972
+[2025-03-25 17:13:08,513][func.train][INFO] - [TESTING] video: 68 | start_idx: 1472 | end_idx: 1536
+[2025-03-25 17:13:08,873][func.train][INFO] - [TESTING] video: 68 | frame: 1535 / 1972
+[2025-03-25 17:13:08,874][func.train][INFO] - [TESTING] video: 68 | start_idx: 1536 | end_idx: 1600
+[2025-03-25 17:13:09,242][func.train][INFO] - [TESTING] video: 68 | frame: 1599 / 1972
+[2025-03-25 17:13:09,242][func.train][INFO] - [TESTING] video: 68 | start_idx: 1600 | end_idx: 1664
+[2025-03-25 17:13:09,602][func.train][INFO] - [TESTING] video: 68 | frame: 1663 / 1972
+[2025-03-25 17:13:09,602][func.train][INFO] - [TESTING] video: 68 | start_idx: 1664 | end_idx: 1728
+[2025-03-25 17:13:09,972][func.train][INFO] - [TESTING] video: 68 | frame: 1727 / 1972
+[2025-03-25 17:13:09,973][func.train][INFO] - [TESTING] video: 68 | start_idx: 1728 | end_idx: 1792
+[2025-03-25 17:13:10,377][func.train][INFO] - [TESTING] video: 68 | frame: 1791 / 1972
+[2025-03-25 17:13:10,377][func.train][INFO] - [TESTING] video: 68 | start_idx: 1792 | end_idx: 1856
+[2025-03-25 17:13:10,754][func.train][INFO] - [TESTING] video: 68 | frame: 1855 / 1972
+[2025-03-25 17:13:10,755][func.train][INFO] - [TESTING] video: 68 | start_idx: 1856 | end_idx: 1920
+[2025-03-25 17:13:11,134][func.train][INFO] - [TESTING] video: 68 | frame: 1919 / 1972
+[2025-03-25 17:13:11,134][func.train][INFO] - [TESTING] video: 68 | start_idx: 1920 | end_idx: 1984
+[2025-03-25 17:13:12,168][func.train][INFO] - [TESTING] video: 68 | frame: 1971 / 1972
+[2025-03-25 17:13:12,169][func.train][INFO] - [TESTING] video: 68 | start_idx: 1972 | end_idx: 2036
+[2025-03-25 17:13:12,169][func.train][INFO] - [TESTING] video: 68 | video test time: 0.21 min | total test time: 31.45 min
+[2025-03-25 17:13:12,180][func.train][INFO] - [TESTING] Saved video probs to: video_probs_ep1_vid68.npy
+[2025-03-25 17:13:52,739][func.train][INFO] - [TESTING] video_remaining_time_preds (classification2regression) h=30: torch.Size([1972, 8])
+[2025-03-25 17:13:52,755][func.train][INFO] - [TESTING] video: 68 | horizon: 30 | wMAE_30: 9.9539 | inMAE_30: 19.5764 | outMAE_30: 0.3314 | expMAE_30: 25.4633
+[2025-03-25 17:13:52,773][func.train][INFO] - [TESTING] video: 68 saved numpy arrays
+[2025-03-25 17:13:55,286][func.train][INFO] - [TESTING] video: 68 | video_mean_curr_acc: 0.9173 | mean_acc_future_frames: 0.1297 | video_mean_cum_acc_future: 0.3217
+[2025-03-25 17:13:55,287][func.train][INFO] - [EVAL] video (i=28) id=69 | video_length=4575
+[2025-03-25 17:13:55,742][func.train][INFO] - [TESTING] video: 69 | frame: 63 / 4575
+[2025-03-25 17:13:55,742][func.train][INFO] - [TESTING] video: 69 | start_idx: 64 | end_idx: 128
+[2025-03-25 17:13:56,179][func.train][INFO] - [TESTING] video: 69 | frame: 127 / 4575
+[2025-03-25 17:13:56,180][func.train][INFO] - [TESTING] video: 69 | start_idx: 128 | end_idx: 192
+[2025-03-25 17:13:56,605][func.train][INFO] - [TESTING] video: 69 | frame: 191 / 4575
+[2025-03-25 17:13:56,606][func.train][INFO] - [TESTING] video: 69 | start_idx: 192 | end_idx: 256
+[2025-03-25 17:13:57,021][func.train][INFO] - [TESTING] video: 69 | frame: 255 / 4575
+[2025-03-25 17:13:57,021][func.train][INFO] - [TESTING] video: 69 | start_idx: 256 | end_idx: 320
+[2025-03-25 17:13:57,404][func.train][INFO] - [TESTING] video: 69 | frame: 319 / 4575
+[2025-03-25 17:13:57,404][func.train][INFO] - [TESTING] video: 69 | start_idx: 320 | end_idx: 384
+[2025-03-25 17:13:57,800][func.train][INFO] - [TESTING] video: 69 | frame: 383 / 4575
+[2025-03-25 17:13:57,801][func.train][INFO] - [TESTING] video: 69 | start_idx: 384 | end_idx: 448
+[2025-03-25 17:13:58,220][func.train][INFO] - [TESTING] video: 69 | frame: 447 / 4575
+[2025-03-25 17:13:58,220][func.train][INFO] - [TESTING] video: 69 | start_idx: 448 | end_idx: 512
+[2025-03-25 17:13:58,605][func.train][INFO] - [TESTING] video: 69 | frame: 511 / 4575
+[2025-03-25 17:13:58,606][func.train][INFO] - [TESTING] video: 69 | start_idx: 512 | end_idx: 576
+[2025-03-25 17:13:58,971][func.train][INFO] - [TESTING] video: 69 | frame: 575 / 4575
+[2025-03-25 17:13:58,971][func.train][INFO] - [TESTING] video: 69 | start_idx: 576 | end_idx: 640
+[2025-03-25 17:13:59,351][func.train][INFO] - [TESTING] video: 69 | frame: 639 / 4575
+[2025-03-25 17:13:59,352][func.train][INFO] - [TESTING] video: 69 | start_idx: 640 | end_idx: 704
+[2025-03-25 17:13:59,730][func.train][INFO] - [TESTING] video: 69 | frame: 703 / 4575
+[2025-03-25 17:13:59,730][func.train][INFO] - [TESTING] video: 69 | start_idx: 704 | end_idx: 768
+[2025-03-25 17:14:00,113][func.train][INFO] - [TESTING] video: 69 | frame: 767 / 4575
+[2025-03-25 17:14:00,114][func.train][INFO] - [TESTING] video: 69 | start_idx: 768 | end_idx: 832
+[2025-03-25 17:14:00,494][func.train][INFO] - [TESTING] video: 69 | frame: 831 / 4575
+[2025-03-25 17:14:00,495][func.train][INFO] - [TESTING] video: 69 | start_idx: 832 | end_idx: 896
+[2025-03-25 17:14:00,899][func.train][INFO] - [TESTING] video: 69 | frame: 895 / 4575
+[2025-03-25 17:14:00,899][func.train][INFO] - [TESTING] video: 69 | start_idx: 896 | end_idx: 960
+[2025-03-25 17:14:01,275][func.train][INFO] - [TESTING] video: 69 | frame: 959 / 4575
+[2025-03-25 17:14:01,275][func.train][INFO] - [TESTING] video: 69 | start_idx: 960 | end_idx: 1024
+[2025-03-25 17:14:01,669][func.train][INFO] - [TESTING] video: 69 | frame: 1023 / 4575
+[2025-03-25 17:14:01,669][func.train][INFO] - [TESTING] video: 69 | start_idx: 1024 | end_idx: 1088
+[2025-03-25 17:14:02,064][func.train][INFO] - [TESTING] video: 69 | frame: 1087 / 4575
+[2025-03-25 17:14:02,065][func.train][INFO] - [TESTING] video: 69 | start_idx: 1088 | end_idx: 1152
+[2025-03-25 17:14:02,434][func.train][INFO] - [TESTING] video: 69 | frame: 1151 / 4575
+[2025-03-25 17:14:02,434][func.train][INFO] - [TESTING] video: 69 | start_idx: 1152 | end_idx: 1216
+[2025-03-25 17:14:02,809][func.train][INFO] - [TESTING] video: 69 | frame: 1215 / 4575
+[2025-03-25 17:14:02,809][func.train][INFO] - [TESTING] video: 69 | start_idx: 1216 | end_idx: 1280
+[2025-03-25 17:14:03,221][func.train][INFO] - [TESTING] video: 69 | frame: 1279 / 4575
+[2025-03-25 17:14:03,222][func.train][INFO] - [TESTING] video: 69 | start_idx: 1280 | end_idx: 1344
+[2025-03-25 17:14:03,585][func.train][INFO] - [TESTING] video: 69 | frame: 1343 / 4575
+[2025-03-25 17:14:03,586][func.train][INFO] - [TESTING] video: 69 | start_idx: 1344 | end_idx: 1408
+[2025-03-25 17:14:03,969][func.train][INFO] - [TESTING] video: 69 | frame: 1407 / 4575
+[2025-03-25 17:14:03,970][func.train][INFO] - [TESTING] video: 69 | start_idx: 1408 | end_idx: 1472
+[2025-03-25 17:14:04,397][func.train][INFO] - [TESTING] video: 69 | frame: 1471 / 4575
+[2025-03-25 17:14:04,397][func.train][INFO] - [TESTING] video: 69 | start_idx: 1472 | end_idx: 1536
+[2025-03-25 17:14:04,760][func.train][INFO] - [TESTING] video: 69 | frame: 1535 / 4575
+[2025-03-25 17:14:04,760][func.train][INFO] - [TESTING] video: 69 | start_idx: 1536 | end_idx: 1600
+[2025-03-25 17:14:05,126][func.train][INFO] - [TESTING] video: 69 | frame: 1599 / 4575
+[2025-03-25 17:14:05,127][func.train][INFO] - [TESTING] video: 69 | start_idx: 1600 | end_idx: 1664
+[2025-03-25 17:14:05,486][func.train][INFO] - [TESTING] video: 69 | frame: 1663 / 4575
+[2025-03-25 17:14:05,486][func.train][INFO] - [TESTING] video: 69 | start_idx: 1664 | end_idx: 1728
+[2025-03-25 17:14:05,840][func.train][INFO] - [TESTING] video: 69 | frame: 1727 / 4575
+[2025-03-25 17:14:05,840][func.train][INFO] - [TESTING] video: 69 | start_idx: 1728 | end_idx: 1792
+[2025-03-25 17:14:06,195][func.train][INFO] - [TESTING] video: 69 | frame: 1791 / 4575
+[2025-03-25 17:14:06,195][func.train][INFO] - [TESTING] video: 69 | start_idx: 1792 | end_idx: 1856
+[2025-03-25 17:14:06,565][func.train][INFO] - [TESTING] video: 69 | frame: 1855 / 4575
+[2025-03-25 17:14:06,565][func.train][INFO] - [TESTING] video: 69 | start_idx: 1856 | end_idx: 1920
+[2025-03-25 17:14:06,940][func.train][INFO] - [TESTING] video: 69 | frame: 1919 / 4575
+[2025-03-25 17:14:06,940][func.train][INFO] - [TESTING] video: 69 | start_idx: 1920 | end_idx: 1984
+[2025-03-25 17:14:07,334][func.train][INFO] - [TESTING] video: 69 | frame: 1983 / 4575
+[2025-03-25 17:14:07,334][func.train][INFO] - [TESTING] video: 69 | start_idx: 1984 | end_idx: 2048
+[2025-03-25 17:14:07,702][func.train][INFO] - [TESTING] video: 69 | frame: 2047 / 4575
+[2025-03-25 17:14:07,703][func.train][INFO] - [TESTING] video: 69 | start_idx: 2048 | end_idx: 2112
+[2025-03-25 17:14:08,106][func.train][INFO] - [TESTING] video: 69 | frame: 2111 / 4575
+[2025-03-25 17:14:08,107][func.train][INFO] - [TESTING] video: 69 | start_idx: 2112 | end_idx: 2176
+[2025-03-25 17:14:08,495][func.train][INFO] - [TESTING] video: 69 | frame: 2175 / 4575
+[2025-03-25 17:14:08,496][func.train][INFO] - [TESTING] video: 69 | start_idx: 2176 | end_idx: 2240
+[2025-03-25 17:14:08,875][func.train][INFO] - [TESTING] video: 69 | frame: 2239 / 4575
+[2025-03-25 17:14:08,875][func.train][INFO] - [TESTING] video: 69 | start_idx: 2240 | end_idx: 2304
+[2025-03-25 17:14:09,252][func.train][INFO] - [TESTING] video: 69 | frame: 2303 / 4575
+[2025-03-25 17:14:09,252][func.train][INFO] - [TESTING] video: 69 | start_idx: 2304 | end_idx: 2368
+[2025-03-25 17:14:09,625][func.train][INFO] - [TESTING] video: 69 | frame: 2367 / 4575
+[2025-03-25 17:14:09,625][func.train][INFO] - [TESTING] video: 69 | start_idx: 2368 | end_idx: 2432
+[2025-03-25 17:14:09,996][func.train][INFO] - [TESTING] video: 69 | frame: 2431 / 4575
+[2025-03-25 17:14:09,997][func.train][INFO] - [TESTING] video: 69 | start_idx: 2432 | end_idx: 2496
+[2025-03-25 17:14:10,363][func.train][INFO] - [TESTING] video: 69 | frame: 2495 / 4575
+[2025-03-25 17:14:10,364][func.train][INFO] - [TESTING] video: 69 | start_idx: 2496 | end_idx: 2560
+[2025-03-25 17:14:10,753][func.train][INFO] - [TESTING] video: 69 | frame: 2559 / 4575
+[2025-03-25 17:14:10,754][func.train][INFO] - [TESTING] video: 69 | start_idx: 2560 | end_idx: 2624
+[2025-03-25 17:14:11,116][func.train][INFO] - [TESTING] video: 69 | frame: 2623 / 4575
+[2025-03-25 17:14:11,117][func.train][INFO] - [TESTING] video: 69 | start_idx: 2624 | end_idx: 2688
+[2025-03-25 17:14:11,492][func.train][INFO] - [TESTING] video: 69 | frame: 2687 / 4575
+[2025-03-25 17:14:11,492][func.train][INFO] - [TESTING] video: 69 | start_idx: 2688 | end_idx: 2752
+[2025-03-25 17:14:11,856][func.train][INFO] - [TESTING] video: 69 | frame: 2751 / 4575
+[2025-03-25 17:14:11,857][func.train][INFO] - [TESTING] video: 69 | start_idx: 2752 | end_idx: 2816
+[2025-03-25 17:14:12,212][func.train][INFO] - [TESTING] video: 69 | frame: 2815 / 4575
+[2025-03-25 17:14:12,212][func.train][INFO] - [TESTING] video: 69 | start_idx: 2816 | end_idx: 2880
+[2025-03-25 17:14:12,597][func.train][INFO] - [TESTING] video: 69 | frame: 2879 / 4575
+[2025-03-25 17:14:12,597][func.train][INFO] - [TESTING] video: 69 | start_idx: 2880 | end_idx: 2944
+[2025-03-25 17:14:12,978][func.train][INFO] - [TESTING] video: 69 | frame: 2943 / 4575
+[2025-03-25 17:14:12,979][func.train][INFO] - [TESTING] video: 69 | start_idx: 2944 | end_idx: 3008
+[2025-03-25 17:14:13,385][func.train][INFO] - [TESTING] video: 69 | frame: 3007 / 4575
+[2025-03-25 17:14:13,385][func.train][INFO] - [TESTING] video: 69 | start_idx: 3008 | end_idx: 3072
+[2025-03-25 17:14:13,758][func.train][INFO] - [TESTING] video: 69 | frame: 3071 / 4575
+[2025-03-25 17:14:13,758][func.train][INFO] - [TESTING] video: 69 | start_idx: 3072 | end_idx: 3136
+[2025-03-25 17:14:14,127][func.train][INFO] - [TESTING] video: 69 | frame: 3135 / 4575
+[2025-03-25 17:14:14,127][func.train][INFO] - [TESTING] video: 69 | start_idx: 3136 | end_idx: 3200
+[2025-03-25 17:14:14,532][func.train][INFO] - [TESTING] video: 69 | frame: 3199 / 4575
+[2025-03-25 17:14:14,532][func.train][INFO] - [TESTING] video: 69 | start_idx: 3200 | end_idx: 3264
+[2025-03-25 17:14:14,893][func.train][INFO] - [TESTING] video: 69 | frame: 3263 / 4575
+[2025-03-25 17:14:14,894][func.train][INFO] - [TESTING] video: 69 | start_idx: 3264 | end_idx: 3328
+[2025-03-25 17:14:15,254][func.train][INFO] - [TESTING] video: 69 | frame: 3327 / 4575
+[2025-03-25 17:14:15,255][func.train][INFO] - [TESTING] video: 69 | start_idx: 3328 | end_idx: 3392
+[2025-03-25 17:14:15,632][func.train][INFO] - [TESTING] video: 69 | frame: 3391 / 4575
+[2025-03-25 17:14:15,632][func.train][INFO] - [TESTING] video: 69 | start_idx: 3392 | end_idx: 3456
+[2025-03-25 17:14:16,026][func.train][INFO] - [TESTING] video: 69 | frame: 3455 / 4575
+[2025-03-25 17:14:16,027][func.train][INFO] - [TESTING] video: 69 | start_idx: 3456 | end_idx: 3520
+[2025-03-25 17:14:16,388][func.train][INFO] - [TESTING] video: 69 | frame: 3519 / 4575
+[2025-03-25 17:14:16,389][func.train][INFO] - [TESTING] video: 69 | start_idx: 3520 | end_idx: 3584
+[2025-03-25 17:14:16,744][func.train][INFO] - [TESTING] video: 69 | frame: 3583 / 4575
+[2025-03-25 17:14:16,744][func.train][INFO] - [TESTING] video: 69 | start_idx: 3584 | end_idx: 3648
+[2025-03-25 17:14:17,150][func.train][INFO] - [TESTING] video: 69 | frame: 3647 / 4575
+[2025-03-25 17:14:17,150][func.train][INFO] - [TESTING] video: 69 | start_idx: 3648 | end_idx: 3712
+[2025-03-25 17:14:17,514][func.train][INFO] - [TESTING] video: 69 | frame: 3711 / 4575
+[2025-03-25 17:14:17,514][func.train][INFO] - [TESTING] video: 69 | start_idx: 3712 | end_idx: 3776
+[2025-03-25 17:14:17,886][func.train][INFO] - [TESTING] video: 69 | frame: 3775 / 4575
+[2025-03-25 17:14:17,887][func.train][INFO] - [TESTING] video: 69 | start_idx: 3776 | end_idx: 3840
+[2025-03-25 17:14:18,277][func.train][INFO] - [TESTING] video: 69 | frame: 3839 / 4575
+[2025-03-25 17:14:18,278][func.train][INFO] - [TESTING] video: 69 | start_idx: 3840 | end_idx: 3904
+[2025-03-25 17:14:18,655][func.train][INFO] - [TESTING] video: 69 | frame: 3903 / 4575
+[2025-03-25 17:14:18,655][func.train][INFO] - [TESTING] video: 69 | start_idx: 3904 | end_idx: 3968
+[2025-03-25 17:14:19,076][func.train][INFO] - [TESTING] video: 69 | frame: 3967 / 4575
+[2025-03-25 17:14:19,077][func.train][INFO] - [TESTING] video: 69 | start_idx: 3968 | end_idx: 4032
+[2025-03-25 17:14:19,479][func.train][INFO] - [TESTING] video: 69 | frame: 4031 / 4575
+[2025-03-25 17:14:19,480][func.train][INFO] - [TESTING] video: 69 | start_idx: 4032 | end_idx: 4096
+[2025-03-25 17:14:19,854][func.train][INFO] - [TESTING] video: 69 | frame: 4095 / 4575
+[2025-03-25 17:14:19,855][func.train][INFO] - [TESTING] video: 69 | start_idx: 4096 | end_idx: 4160
+[2025-03-25 17:14:20,249][func.train][INFO] - [TESTING] video: 69 | frame: 4159 / 4575
+[2025-03-25 17:14:20,250][func.train][INFO] - [TESTING] video: 69 | start_idx: 4160 | end_idx: 4224
+[2025-03-25 17:14:20,647][func.train][INFO] - [TESTING] video: 69 | frame: 4223 / 4575
+[2025-03-25 17:14:20,648][func.train][INFO] - [TESTING] video: 69 | start_idx: 4224 | end_idx: 4288
+[2025-03-25 17:14:21,015][func.train][INFO] - [TESTING] video: 69 | frame: 4287 / 4575
+[2025-03-25 17:14:21,015][func.train][INFO] - [TESTING] video: 69 | start_idx: 4288 | end_idx: 4352
+[2025-03-25 17:14:21,400][func.train][INFO] - [TESTING] video: 69 | frame: 4351 / 4575
+[2025-03-25 17:14:21,400][func.train][INFO] - [TESTING] video: 69 | start_idx: 4352 | end_idx: 4416
+[2025-03-25 17:14:21,835][func.train][INFO] - [TESTING] video: 69 | frame: 4415 / 4575
+[2025-03-25 17:14:21,836][func.train][INFO] - [TESTING] video: 69 | start_idx: 4416 | end_idx: 4480
+[2025-03-25 17:14:22,231][func.train][INFO] - [TESTING] video: 69 | frame: 4479 / 4575
+[2025-03-25 17:14:22,232][func.train][INFO] - [TESTING] video: 69 | start_idx: 4480 | end_idx: 4544
+[2025-03-25 17:14:22,587][func.train][INFO] - [TESTING] video: 69 | frame: 4543 / 4575
+[2025-03-25 17:14:22,587][func.train][INFO] - [TESTING] video: 69 | start_idx: 4544 | end_idx: 4608
+[2025-03-25 17:14:22,794][func.train][INFO] - [TESTING] video: 69 | frame: 4574 / 4575
+[2025-03-25 17:14:22,795][func.train][INFO] - [TESTING] video: 69 | start_idx: 4575 | end_idx: 4639
+[2025-03-25 17:14:22,795][func.train][INFO] - [TESTING] video: 69 | video test time: 0.46 min | total test time: 32.62 min
+[2025-03-25 17:14:22,813][func.train][INFO] - [TESTING] Saved video probs to: video_probs_ep1_vid69.npy
+[2025-03-25 17:15:56,079][func.train][INFO] - [TESTING] video_remaining_time_preds (classification2regression) h=30: torch.Size([4575, 8])
+[2025-03-25 17:15:56,210][func.train][INFO] - [TESTING] video: 69 | horizon: 30 | wMAE_30: 8.9029 | inMAE_30: 17.7163 | outMAE_30: 0.0895 | expMAE_30: 26.7245
+[2025-03-25 17:15:56,260][func.train][INFO] - [TESTING] video: 69 saved numpy arrays
+[2025-03-25 17:16:01,658][func.train][INFO] - [TESTING] video: 69 | video_mean_curr_acc: 0.9624 | mean_acc_future_frames: 0.4194 | video_mean_cum_acc_future: 0.6359
+[2025-03-25 17:16:01,659][func.train][INFO] - [EVAL] video (i=29) id=70 | video_length=1194
+[2025-03-25 17:16:02,078][func.train][INFO] - [TESTING] video: 70 | frame: 63 / 1194
+[2025-03-25 17:16:02,078][func.train][INFO] - [TESTING] video: 70 | start_idx: 64 | end_idx: 128
+[2025-03-25 17:16:02,564][func.train][INFO] - [TESTING] video: 70 | frame: 127 / 1194
+[2025-03-25 17:16:02,565][func.train][INFO] - [TESTING] video: 70 | start_idx: 128 | end_idx: 192
+[2025-03-25 17:16:02,985][func.train][INFO] - [TESTING] video: 70 | frame: 191 / 1194
+[2025-03-25 17:16:02,985][func.train][INFO] - [TESTING] video: 70 | start_idx: 192 | end_idx: 256
+[2025-03-25 17:16:03,372][func.train][INFO] - [TESTING] video: 70 | frame: 255 / 1194
+[2025-03-25 17:16:03,373][func.train][INFO] - [TESTING] video: 70 | start_idx: 256 | end_idx: 320
+[2025-03-25 17:16:03,810][func.train][INFO] - [TESTING] video: 70 | frame: 319 / 1194
+[2025-03-25 17:16:03,810][func.train][INFO] - [TESTING] video: 70 | start_idx: 320 | end_idx: 384
+[2025-03-25 17:16:04,195][func.train][INFO] - [TESTING] video: 70 | frame: 383 / 1194
+[2025-03-25 17:16:04,196][func.train][INFO] - [TESTING] video: 70 | start_idx: 384 | end_idx: 448
+[2025-03-25 17:16:04,581][func.train][INFO] - [TESTING] video: 70 | frame: 447 / 1194
+[2025-03-25 17:16:04,582][func.train][INFO] - [TESTING] video: 70 | start_idx: 448 | end_idx: 512
+[2025-03-25 17:16:04,946][func.train][INFO] - [TESTING] video: 70 | frame: 511 / 1194
+[2025-03-25 17:16:04,946][func.train][INFO] - [TESTING] video: 70 | start_idx: 512 | end_idx: 576
+[2025-03-25 17:16:05,318][func.train][INFO] - [TESTING] video: 70 | frame: 575 / 1194
+[2025-03-25 17:16:05,318][func.train][INFO] - [TESTING] video: 70 | start_idx: 576 | end_idx: 640
+[2025-03-25 17:16:05,729][func.train][INFO] - [TESTING] video: 70 | frame: 639 / 1194
+[2025-03-25 17:16:05,730][func.train][INFO] - [TESTING] video: 70 | start_idx: 640 | end_idx: 704
+[2025-03-25 17:16:06,154][func.train][INFO] - [TESTING] video: 70 | frame: 703 / 1194
+[2025-03-25 17:16:06,155][func.train][INFO] - [TESTING] video: 70 | start_idx: 704 | end_idx: 768
+[2025-03-25 17:16:06,531][func.train][INFO] - [TESTING] video: 70 | frame: 767 / 1194
+[2025-03-25 17:16:06,532][func.train][INFO] - [TESTING] video: 70 | start_idx: 768 | end_idx: 832
+[2025-03-25 17:16:06,931][func.train][INFO] - [TESTING] video: 70 | frame: 831 / 1194
+[2025-03-25 17:16:06,931][func.train][INFO] - [TESTING] video: 70 | start_idx: 832 | end_idx: 896
+[2025-03-25 17:16:07,303][func.train][INFO] - [TESTING] video: 70 | frame: 895 / 1194
+[2025-03-25 17:16:07,303][func.train][INFO] - [TESTING] video: 70 | start_idx: 896 | end_idx: 960
+[2025-03-25 17:16:07,727][func.train][INFO] - [TESTING] video: 70 | frame: 959 / 1194
+[2025-03-25 17:16:07,727][func.train][INFO] - [TESTING] video: 70 | start_idx: 960 | end_idx: 1024
+[2025-03-25 17:16:08,106][func.train][INFO] - [TESTING] video: 70 | frame: 1023 / 1194
+[2025-03-25 17:16:08,106][func.train][INFO] - [TESTING] video: 70 | start_idx: 1024 | end_idx: 1088
+[2025-03-25 17:16:08,476][func.train][INFO] - [TESTING] video: 70 | frame: 1087 / 1194
+[2025-03-25 17:16:08,477][func.train][INFO] - [TESTING] video: 70 | start_idx: 1088 | end_idx: 1152
+[2025-03-25 17:16:08,869][func.train][INFO] - [TESTING] video: 70 | frame: 1151 / 1194
+[2025-03-25 17:16:08,869][func.train][INFO] - [TESTING] video: 70 | start_idx: 1152 | end_idx: 1216
+[2025-03-25 17:16:09,119][func.train][INFO] - [TESTING] video: 70 | frame: 1193 / 1194
+[2025-03-25 17:16:09,119][func.train][INFO] - [TESTING] video: 70 | start_idx: 1194 | end_idx: 1258
+[2025-03-25 17:16:09,119][func.train][INFO] - [TESTING] video: 70 | video test time: 0.12 min | total test time: 34.40 min
+[2025-03-25 17:16:09,126][func.train][INFO] - [TESTING] Saved video probs to: video_probs_ep1_vid70.npy
+[2025-03-25 17:16:34,920][func.train][INFO] - [TESTING] video_remaining_time_preds (classification2regression) h=30: torch.Size([1194, 8])
+[2025-03-25 17:16:34,943][func.train][INFO] - [TESTING] video: 70 | horizon: 30 | wMAE_30: 12.2213 | inMAE_30: 22.5777 | outMAE_30: 1.8648 | expMAE_30: 24.4734
+[2025-03-25 17:16:34,976][func.train][INFO] - [TESTING] video: 70 saved numpy arrays
+[2025-03-25 17:16:36,546][func.train][INFO] - [TESTING] video: 70 | video_mean_curr_acc: 0.7864 | mean_acc_future_frames: 0.1026 | video_mean_cum_acc_future: 0.2728
+[2025-03-25 17:16:36,547][func.train][INFO] - [EVAL] video (i=30) id=71 | video_length=2515
+[2025-03-25 17:16:37,000][func.train][INFO] - [TESTING] video: 71 | frame: 63 / 2515
+[2025-03-25 17:16:37,001][func.train][INFO] - [TESTING] video: 71 | start_idx: 64 | end_idx: 128
+[2025-03-25 17:16:37,386][func.train][INFO] - [TESTING] video: 71 | frame: 127 / 2515
+[2025-03-25 17:16:37,387][func.train][INFO] - [TESTING] video: 71 | start_idx: 128 | end_idx: 192
+[2025-03-25 17:16:37,763][func.train][INFO] - [TESTING] video: 71 | frame: 191 / 2515
+[2025-03-25 17:16:37,764][func.train][INFO] - [TESTING] video: 71 | start_idx: 192 | end_idx: 256
+[2025-03-25 17:16:38,134][func.train][INFO] - [TESTING] video: 71 | frame: 255 / 2515
+[2025-03-25 17:16:38,134][func.train][INFO] - [TESTING] video: 71 | start_idx: 256 | end_idx: 320
+[2025-03-25 17:16:38,520][func.train][INFO] - [TESTING] video: 71 | frame: 319 / 2515
+[2025-03-25 17:16:38,520][func.train][INFO] - [TESTING] video: 71 | start_idx: 320 | end_idx: 384
+[2025-03-25 17:16:38,891][func.train][INFO] - [TESTING] video: 71 | frame: 383 / 2515
+[2025-03-25 17:16:38,892][func.train][INFO] - [TESTING] video: 71 | start_idx: 384 | end_idx: 448
+[2025-03-25 17:16:39,297][func.train][INFO] - [TESTING] video: 71 | frame: 447 / 2515
+[2025-03-25 17:16:39,297][func.train][INFO] - [TESTING] video: 71 | start_idx: 448 | end_idx: 512
+[2025-03-25 17:16:39,742][func.train][INFO] - [TESTING] video: 71 | frame: 511 / 2515
+[2025-03-25 17:16:39,743][func.train][INFO] - [TESTING] video: 71 | start_idx: 512 | end_idx: 576
+[2025-03-25 17:16:40,116][func.train][INFO] - [TESTING] video: 71 | frame: 575 / 2515
+[2025-03-25 17:16:40,116][func.train][INFO] - [TESTING] video: 71 | start_idx: 576 | end_idx: 640
+[2025-03-25 17:16:40,488][func.train][INFO] - [TESTING] video: 71 | frame: 639 / 2515
+[2025-03-25 17:16:40,488][func.train][INFO] - [TESTING] video: 71 | start_idx: 640 | end_idx: 704
+[2025-03-25 17:16:40,865][func.train][INFO] - [TESTING] video: 71 | frame: 703 / 2515
+[2025-03-25 17:16:40,865][func.train][INFO] - [TESTING] video: 71 | start_idx: 704 | end_idx: 768
+[2025-03-25 17:16:41,272][func.train][INFO] - [TESTING] video: 71 | frame: 767 / 2515
+[2025-03-25 17:16:41,272][func.train][INFO] - [TESTING] video: 71 | start_idx: 768 | end_idx: 832
+[2025-03-25 17:16:41,661][func.train][INFO] - [TESTING] video: 71 | frame: 831 / 2515
+[2025-03-25 17:16:41,662][func.train][INFO] - [TESTING] video: 71 | start_idx: 832 | end_idx: 896
+[2025-03-25 17:16:42,033][func.train][INFO] - [TESTING] video: 71 | frame: 895 / 2515
+[2025-03-25 17:16:42,034][func.train][INFO] - [TESTING] video: 71 | start_idx: 896 | end_idx: 960
+[2025-03-25 17:16:42,415][func.train][INFO] - [TESTING] video: 71 | frame: 959 / 2515
+[2025-03-25 17:16:42,415][func.train][INFO] - [TESTING] video: 71 | start_idx: 960 | end_idx: 1024
+[2025-03-25 17:16:42,792][func.train][INFO] - [TESTING] video: 71 | frame: 1023 / 2515
+[2025-03-25 17:16:42,792][func.train][INFO] - [TESTING] video: 71 | start_idx: 1024 | end_idx: 1088
+[2025-03-25 17:16:43,166][func.train][INFO] - [TESTING] video: 71 | frame: 1087 / 2515
+[2025-03-25 17:16:43,166][func.train][INFO] - [TESTING] video: 71 | start_idx: 1088 | end_idx: 1152
+[2025-03-25 17:16:43,590][func.train][INFO] - [TESTING] video: 71 | frame: 1151 / 2515
+[2025-03-25 17:16:43,590][func.train][INFO] - [TESTING] video: 71 | start_idx: 1152 | end_idx: 1216
+[2025-03-25 17:16:43,987][func.train][INFO] - [TESTING] video: 71 | frame: 1215 / 2515
+[2025-03-25 17:16:43,988][func.train][INFO] - [TESTING] video: 71 | start_idx: 1216 | end_idx: 1280
+[2025-03-25 17:16:44,360][func.train][INFO] - [TESTING] video: 71 | frame: 1279 / 2515
+[2025-03-25 17:16:44,360][func.train][INFO] - [TESTING] video: 71 | start_idx: 1280 | end_idx: 1344
+[2025-03-25 17:16:44,764][func.train][INFO] - [TESTING] video: 71 | frame: 1343 / 2515
+[2025-03-25 17:16:44,764][func.train][INFO] - [TESTING] video: 71 | start_idx: 1344 | end_idx: 1408
+[2025-03-25 17:16:45,149][func.train][INFO] - [TESTING] video: 71 | frame: 1407 / 2515
+[2025-03-25 17:16:45,149][func.train][INFO] - [TESTING] video: 71 | start_idx: 1408 | end_idx: 1472
+[2025-03-25 17:16:45,541][func.train][INFO] - [TESTING] video: 71 | frame: 1471 / 2515
+[2025-03-25 17:16:45,542][func.train][INFO] - [TESTING] video: 71 | start_idx: 1472 | end_idx: 1536
+[2025-03-25 17:16:45,968][func.train][INFO] - [TESTING] video: 71 | frame: 1535 / 2515
+[2025-03-25 17:16:45,969][func.train][INFO] - [TESTING] video: 71 | start_idx: 1536 | end_idx: 1600
+[2025-03-25 17:16:46,349][func.train][INFO] - [TESTING] video: 71 | frame: 1599 / 2515
+[2025-03-25 17:16:46,349][func.train][INFO] - [TESTING] video: 71 | start_idx: 1600 | end_idx: 1664
+[2025-03-25 17:16:46,768][func.train][INFO] - [TESTING] video: 71 | frame: 1663 / 2515
+[2025-03-25 17:16:46,768][func.train][INFO] - [TESTING] video: 71 | start_idx: 1664 | end_idx: 1728
+[2025-03-25 17:16:47,145][func.train][INFO] - [TESTING] video: 71 | frame: 1727 / 2515
+[2025-03-25 17:16:47,146][func.train][INFO] - [TESTING] video: 71 | start_idx: 1728 | end_idx: 1792
+[2025-03-25 17:16:47,534][func.train][INFO] - [TESTING] video: 71 | frame: 1791 / 2515
+[2025-03-25 17:16:47,535][func.train][INFO] - [TESTING] video: 71 | start_idx: 1792 | end_idx: 1856
+[2025-03-25 17:16:47,946][func.train][INFO] - [TESTING] video: 71 | frame: 1855 / 2515
+[2025-03-25 17:16:47,946][func.train][INFO] - [TESTING] video: 71 | start_idx: 1856 | end_idx: 1920
+[2025-03-25 17:16:48,332][func.train][INFO] - [TESTING] video: 71 | frame: 1919 / 2515
+[2025-03-25 17:16:48,332][func.train][INFO] - [TESTING] video: 71 | start_idx: 1920 | end_idx: 1984
+[2025-03-25 17:16:48,701][func.train][INFO] - [TESTING] video: 71 | frame: 1983 / 2515
+[2025-03-25 17:16:48,701][func.train][INFO] - [TESTING] video: 71 | start_idx: 1984 | end_idx: 2048
+[2025-03-25 17:16:49,067][func.train][INFO] - [TESTING] video: 71 | frame: 2047 / 2515
+[2025-03-25 17:16:49,067][func.train][INFO] - [TESTING] video: 71 | start_idx: 2048 | end_idx: 2112
+[2025-03-25 17:16:49,464][func.train][INFO] - [TESTING] video: 71 | frame: 2111 / 2515
+[2025-03-25 17:16:49,464][func.train][INFO] - [TESTING] video: 71 | start_idx: 2112 | end_idx: 2176
+[2025-03-25 17:16:49,829][func.train][INFO] - [TESTING] video: 71 | frame: 2175 / 2515
+[2025-03-25 17:16:49,829][func.train][INFO] - [TESTING] video: 71 | start_idx: 2176 | end_idx: 2240
+[2025-03-25 17:16:50,202][func.train][INFO] - [TESTING] video: 71 | frame: 2239 / 2515
+[2025-03-25 17:16:50,203][func.train][INFO] - [TESTING] video: 71 | start_idx: 2240 | end_idx: 2304
+[2025-03-25 17:16:50,591][func.train][INFO] - [TESTING] video: 71 | frame: 2303 / 2515
+[2025-03-25 17:16:50,592][func.train][INFO] - [TESTING] video: 71 | start_idx: 2304 | end_idx: 2368
+[2025-03-25 17:16:50,959][func.train][INFO] - [TESTING] video: 71 | frame: 2367 / 2515
+[2025-03-25 17:16:50,959][func.train][INFO] - [TESTING] video: 71 | start_idx: 2368 | end_idx: 2432
+[2025-03-25 17:16:51,336][func.train][INFO] - [TESTING] video: 71 | frame: 2431 / 2515
+[2025-03-25 17:16:51,336][func.train][INFO] - [TESTING] video: 71 | start_idx: 2432 | end_idx: 2496
+[2025-03-25 17:16:51,704][func.train][INFO] - [TESTING] video: 71 | frame: 2495 / 2515
+[2025-03-25 17:16:51,705][func.train][INFO] - [TESTING] video: 71 | start_idx: 2496 | end_idx: 2560
+[2025-03-25 17:16:51,836][func.train][INFO] - [TESTING] video: 71 | frame: 2514 / 2515
+[2025-03-25 17:16:51,836][func.train][INFO] - [TESTING] video: 71 | start_idx: 2515 | end_idx: 2579
+[2025-03-25 17:16:51,837][func.train][INFO] - [TESTING] video: 71 | video test time: 0.25 min | total test time: 35.11 min
+[2025-03-25 17:16:51,850][func.train][INFO] - [TESTING] Saved video probs to: video_probs_ep1_vid71.npy
+[2025-03-25 17:17:45,595][func.train][INFO] - [TESTING] video_remaining_time_preds (classification2regression) h=30: torch.Size([2515, 8])
+[2025-03-25 17:17:45,612][func.train][INFO] - [TESTING] video: 71 | horizon: 30 | wMAE_30: 9.6529 | inMAE_30: 19.0749 | outMAE_30: 0.2309 | expMAE_30: 24.9590
+[2025-03-25 17:17:45,652][func.train][INFO] - [TESTING] video: 71 saved numpy arrays
+[2025-03-25 17:17:48,658][func.train][INFO] - [TESTING] video: 71 | video_mean_curr_acc: 0.9368 | mean_acc_future_frames: 0.2583 | video_mean_cum_acc_future: 0.5168
+[2025-03-25 17:17:48,659][func.train][INFO] - [EVAL] video (i=31) id=72 | video_length=3106
+[2025-03-25 17:17:49,053][func.train][INFO] - [TESTING] video: 72 | frame: 63 / 3106
+[2025-03-25 17:17:49,054][func.train][INFO] - [TESTING] video: 72 | start_idx: 64 | end_idx: 128
+[2025-03-25 17:17:49,417][func.train][INFO] - [TESTING] video: 72 | frame: 127 / 3106
+[2025-03-25 17:17:49,418][func.train][INFO] - [TESTING] video: 72 | start_idx: 128 | end_idx: 192
+[2025-03-25 17:17:49,776][func.train][INFO] - [TESTING] video: 72 | frame: 191 / 3106
+[2025-03-25 17:17:49,776][func.train][INFO] - [TESTING] video: 72 | start_idx: 192 | end_idx: 256
+[2025-03-25 17:17:50,131][func.train][INFO] - [TESTING] video: 72 | frame: 255 / 3106
+[2025-03-25 17:17:50,131][func.train][INFO] - [TESTING] video: 72 | start_idx: 256 | end_idx: 320
+[2025-03-25 17:17:50,495][func.train][INFO] - [TESTING] video: 72 | frame: 319 / 3106
+[2025-03-25 17:17:50,496][func.train][INFO] - [TESTING] video: 72 | start_idx: 320 | end_idx: 384
+[2025-03-25 17:17:50,869][func.train][INFO] - [TESTING] video: 72 | frame: 383 / 3106
+[2025-03-25 17:17:50,870][func.train][INFO] - [TESTING] video: 72 | start_idx: 384 | end_idx: 448
+[2025-03-25 17:17:51,227][func.train][INFO] - [TESTING] video: 72 | frame: 447 / 3106
+[2025-03-25 17:17:51,227][func.train][INFO] - [TESTING] video: 72 | start_idx: 448 | end_idx: 512
+[2025-03-25 17:17:51,582][func.train][INFO] - [TESTING] video: 72 | frame: 511 / 3106
+[2025-03-25 17:17:51,582][func.train][INFO] - [TESTING] video: 72 | start_idx: 512 | end_idx: 576
+[2025-03-25 17:17:51,951][func.train][INFO] - [TESTING] video: 72 | frame: 575 / 3106
+[2025-03-25 17:17:51,951][func.train][INFO] - [TESTING] video: 72 | start_idx: 576 | end_idx: 640
+[2025-03-25 17:17:52,312][func.train][INFO] - [TESTING] video: 72 | frame: 639 / 3106
+[2025-03-25 17:17:52,312][func.train][INFO] - [TESTING] video: 72 | start_idx: 640 | end_idx: 704
+[2025-03-25 17:17:52,666][func.train][INFO] - [TESTING] video: 72 | frame: 703 / 3106
+[2025-03-25 17:17:52,666][func.train][INFO] - [TESTING] video: 72 | start_idx: 704 | end_idx: 768
+[2025-03-25 17:17:53,027][func.train][INFO] - [TESTING] video: 72 | frame: 767 / 3106
+[2025-03-25 17:17:53,027][func.train][INFO] - [TESTING] video: 72 | start_idx: 768 | end_idx: 832
+[2025-03-25 17:17:53,381][func.train][INFO] - [TESTING] video: 72 | frame: 831 / 3106
+[2025-03-25 17:17:53,381][func.train][INFO] - [TESTING] video: 72 | start_idx: 832 | end_idx: 896
+[2025-03-25 17:17:53,742][func.train][INFO] - [TESTING] video: 72 | frame: 895 / 3106
+[2025-03-25 17:17:53,742][func.train][INFO] - [TESTING] video: 72 | start_idx: 896 | end_idx: 960
+[2025-03-25 17:17:54,109][func.train][INFO] - [TESTING] video: 72 | frame: 959 / 3106
+[2025-03-25 17:17:54,110][func.train][INFO] - [TESTING] video: 72 | start_idx: 960 | end_idx: 1024
+[2025-03-25 17:17:54,500][func.train][INFO] - [TESTING] video: 72 | frame: 1023 / 3106
+[2025-03-25 17:17:54,501][func.train][INFO] - [TESTING] video: 72 | start_idx: 1024 | end_idx: 1088
+[2025-03-25 17:17:54,859][func.train][INFO] - [TESTING] video: 72 | frame: 1087 / 3106
+[2025-03-25 17:17:54,859][func.train][INFO] - [TESTING] video: 72 | start_idx: 1088 | end_idx: 1152
+[2025-03-25 17:17:55,223][func.train][INFO] - [TESTING] video: 72 | frame: 1151 / 3106
+[2025-03-25 17:17:55,224][func.train][INFO] - [TESTING] video: 72 | start_idx: 1152 | end_idx: 1216
+[2025-03-25 17:17:55,613][func.train][INFO] - [TESTING] video: 72 | frame: 1215 / 3106
+[2025-03-25 17:17:55,614][func.train][INFO] - [TESTING] video: 72 | start_idx: 1216 | end_idx: 1280
+[2025-03-25 17:17:55,974][func.train][INFO] - [TESTING] video: 72 | frame: 1279 / 3106
+[2025-03-25 17:17:55,974][func.train][INFO] - [TESTING] video: 72 | start_idx: 1280 | end_idx: 1344
+[2025-03-25 17:17:56,360][func.train][INFO] - [TESTING] video: 72 | frame: 1343 / 3106
+[2025-03-25 17:17:56,360][func.train][INFO] - [TESTING] video: 72 | start_idx: 1344 | end_idx: 1408
+[2025-03-25 17:17:56,738][func.train][INFO] - [TESTING] video: 72 | frame: 1407 / 3106
+[2025-03-25 17:17:56,738][func.train][INFO] - [TESTING] video: 72 | start_idx: 1408 | end_idx: 1472
+[2025-03-25 17:17:57,105][func.train][INFO] - [TESTING] video: 72 | frame: 1471 / 3106
+[2025-03-25 17:17:57,105][func.train][INFO] - [TESTING] video: 72 | start_idx: 1472 | end_idx: 1536
+[2025-03-25 17:17:57,465][func.train][INFO] - [TESTING] video: 72 | frame: 1535 / 3106
+[2025-03-25 17:17:57,466][func.train][INFO] - [TESTING] video: 72 | start_idx: 1536 | end_idx: 1600
+[2025-03-25 17:17:57,855][func.train][INFO] - [TESTING] video: 72 | frame: 1599 / 3106
+[2025-03-25 17:17:57,855][func.train][INFO] - [TESTING] video: 72 | start_idx: 1600 | end_idx: 1664
+[2025-03-25 17:17:58,213][func.train][INFO] - [TESTING] video: 72 | frame: 1663 / 3106
+[2025-03-25 17:17:58,213][func.train][INFO] - [TESTING] video: 72 | start_idx: 1664 | end_idx: 1728
+[2025-03-25 17:17:58,570][func.train][INFO] - [TESTING] video: 72 | frame: 1727 / 3106
+[2025-03-25 17:17:58,570][func.train][INFO] - [TESTING] video: 72 | start_idx: 1728 | end_idx: 1792
+[2025-03-25 17:17:58,932][func.train][INFO] - [TESTING] video: 72 | frame: 1791 / 3106
+[2025-03-25 17:17:58,932][func.train][INFO] - [TESTING] video: 72 | start_idx: 1792 | end_idx: 1856
+[2025-03-25 17:17:59,323][func.train][INFO] - [TESTING] video: 72 | frame: 1855 / 3106
+[2025-03-25 17:17:59,323][func.train][INFO] - [TESTING] video: 72 | start_idx: 1856 | end_idx: 1920
+[2025-03-25 17:17:59,679][func.train][INFO] - [TESTING] video: 72 | frame: 1919 / 3106
+[2025-03-25 17:17:59,679][func.train][INFO] - [TESTING] video: 72 | start_idx: 1920 | end_idx: 1984
+[2025-03-25 17:18:00,041][func.train][INFO] - [TESTING] video: 72 | frame: 1983 / 3106
+[2025-03-25 17:18:00,042][func.train][INFO] - [TESTING] video: 72 | start_idx: 1984 | end_idx: 2048
+[2025-03-25 17:18:00,428][func.train][INFO] - [TESTING] video: 72 | frame: 2047 / 3106
+[2025-03-25 17:18:00,428][func.train][INFO] - [TESTING] video: 72 | start_idx: 2048 | end_idx: 2112
+[2025-03-25 17:18:00,782][func.train][INFO] - [TESTING] video: 72 | frame: 2111 / 3106
+[2025-03-25 17:18:00,783][func.train][INFO] - [TESTING] video: 72 | start_idx: 2112 | end_idx: 2176
+[2025-03-25 17:18:01,147][func.train][INFO] - [TESTING] video: 72 | frame: 2175 / 3106
+[2025-03-25 17:18:01,147][func.train][INFO] - [TESTING] video: 72 | start_idx: 2176 | end_idx: 2240
+[2025-03-25 17:18:01,532][func.train][INFO] - [TESTING] video: 72 | frame: 2239 / 3106
+[2025-03-25 17:18:01,532][func.train][INFO] - [TESTING] video: 72 | start_idx: 2240 | end_idx: 2304
+[2025-03-25 17:18:01,885][func.train][INFO] - [TESTING] video: 72 | frame: 2303 / 3106
+[2025-03-25 17:18:01,885][func.train][INFO] - [TESTING] video: 72 | start_idx: 2304 | end_idx: 2368
+[2025-03-25 17:18:02,236][func.train][INFO] - [TESTING] video: 72 | frame: 2367 / 3106
+[2025-03-25 17:18:02,236][func.train][INFO] - [TESTING] video: 72 | start_idx: 2368 | end_idx: 2432
+[2025-03-25 17:18:02,593][func.train][INFO] - [TESTING] video: 72 | frame: 2431 / 3106
+[2025-03-25 17:18:02,594][func.train][INFO] - [TESTING] video: 72 | start_idx: 2432 | end_idx: 2496
+[2025-03-25 17:18:02,948][func.train][INFO] - [TESTING] video: 72 | frame: 2495 / 3106
+[2025-03-25 17:18:02,949][func.train][INFO] - [TESTING] video: 72 | start_idx: 2496 | end_idx: 2560
+[2025-03-25 17:18:03,323][func.train][INFO] - [TESTING] video: 72 | frame: 2559 / 3106
+[2025-03-25 17:18:03,323][func.train][INFO] - [TESTING] video: 72 | start_idx: 2560 | end_idx: 2624
+[2025-03-25 17:18:03,684][func.train][INFO] - [TESTING] video: 72 | frame: 2623 / 3106
+[2025-03-25 17:18:03,684][func.train][INFO] - [TESTING] video: 72 | start_idx: 2624 | end_idx: 2688
+[2025-03-25 17:18:04,066][func.train][INFO] - [TESTING] video: 72 | frame: 2687 / 3106
+[2025-03-25 17:18:04,066][func.train][INFO] - [TESTING] video: 72 | start_idx: 2688 | end_idx: 2752
+[2025-03-25 17:18:04,422][func.train][INFO] - [TESTING] video: 72 | frame: 2751 / 3106
+[2025-03-25 17:18:04,423][func.train][INFO] - [TESTING] video: 72 | start_idx: 2752 | end_idx: 2816
+[2025-03-25 17:18:04,782][func.train][INFO] - [TESTING] video: 72 | frame: 2815 / 3106
+[2025-03-25 17:18:04,782][func.train][INFO] - [TESTING] video: 72 | start_idx: 2816 | end_idx: 2880
+[2025-03-25 17:18:05,187][func.train][INFO] - [TESTING] video: 72 | frame: 2879 / 3106
+[2025-03-25 17:18:05,188][func.train][INFO] - [TESTING] video: 72 | start_idx: 2880 | end_idx: 2944
+[2025-03-25 17:18:05,571][func.train][INFO] - [TESTING] video: 72 | frame: 2943 / 3106
+[2025-03-25 17:18:05,571][func.train][INFO] - [TESTING] video: 72 | start_idx: 2944 | end_idx: 3008
+[2025-03-25 17:18:05,930][func.train][INFO] - [TESTING] video: 72 | frame: 3007 / 3106
+[2025-03-25 17:18:05,930][func.train][INFO] - [TESTING] video: 72 | start_idx: 3008 | end_idx: 3072
+[2025-03-25 17:18:06,305][func.train][INFO] - [TESTING] video: 72 | frame: 3071 / 3106
+[2025-03-25 17:18:06,305][func.train][INFO] - [TESTING] video: 72 | start_idx: 3072 | end_idx: 3136
+[2025-03-25 17:18:07,869][func.train][INFO] - [TESTING] video: 72 | frame: 3105 / 3106
+[2025-03-25 17:18:07,870][func.train][INFO] - [TESTING] video: 72 | start_idx: 3106 | end_idx: 3170
+[2025-03-25 17:18:07,870][func.train][INFO] - [TESTING] video: 72 | video test time: 0.32 min | total test time: 36.37 min
+[2025-03-25 17:18:07,880][func.train][INFO] - [TESTING] Saved video probs to: video_probs_ep1_vid72.npy
+[2025-03-25 17:19:13,859][func.train][INFO] - [TESTING] video_remaining_time_preds (classification2regression) h=30: torch.Size([3106, 8])
+[2025-03-25 17:19:13,887][func.train][INFO] - [TESTING] video: 72 | horizon: 30 | wMAE_30: 8.9050 | inMAE_30: 17.4680 | outMAE_30: 0.3420 | expMAE_30: 26.8624
+[2025-03-25 17:19:13,921][func.train][INFO] - [TESTING] video: 72 saved numpy arrays
+[2025-03-25 17:19:17,692][func.train][INFO] - [TESTING] video: 72 | video_mean_curr_acc: 0.8719 | mean_acc_future_frames: 0.23 | video_mean_cum_acc_future: 0.4481
+[2025-03-25 17:19:17,693][func.train][INFO] - [EVAL] video (i=32) id=73 | video_length=1356
+[2025-03-25 17:19:18,161][func.train][INFO] - [TESTING] video: 73 | frame: 63 / 1356
+[2025-03-25 17:19:18,161][func.train][INFO] - [TESTING] video: 73 | start_idx: 64 | end_idx: 128
+[2025-03-25 17:19:18,525][func.train][INFO] - [TESTING] video: 73 | frame: 127 / 1356
+[2025-03-25 17:19:18,525][func.train][INFO] - [TESTING] video: 73 | start_idx: 128 | end_idx: 192
+[2025-03-25 17:19:18,932][func.train][INFO] - [TESTING] video: 73 | frame: 191 / 1356
+[2025-03-25 17:19:18,932][func.train][INFO] - [TESTING] video: 73 | start_idx: 192 | end_idx: 256
+[2025-03-25 17:19:19,293][func.train][INFO] - [TESTING] video: 73 | frame: 255 / 1356
+[2025-03-25 17:19:19,294][func.train][INFO] - [TESTING] video: 73 | start_idx: 256 | end_idx: 320
+[2025-03-25 17:19:19,668][func.train][INFO] - [TESTING] video: 73 | frame: 319 / 1356
+[2025-03-25 17:19:19,669][func.train][INFO] - [TESTING] video: 73 | start_idx: 320 | end_idx: 384
+[2025-03-25 17:19:20,040][func.train][INFO] - [TESTING] video: 73 | frame: 383 / 1356
+[2025-03-25 17:19:20,041][func.train][INFO] - [TESTING] video: 73 | start_idx: 384 | end_idx: 448
+[2025-03-25 17:19:20,453][func.train][INFO] - [TESTING] video: 73 | frame: 447 / 1356
+[2025-03-25 17:19:20,454][func.train][INFO] - [TESTING] video: 73 | start_idx: 448 | end_idx: 512
+[2025-03-25 17:19:20,834][func.train][INFO] - [TESTING] video: 73 | frame: 511 / 1356
+[2025-03-25 17:19:20,834][func.train][INFO] - [TESTING] video: 73 | start_idx: 512 | end_idx: 576
+[2025-03-25 17:19:21,205][func.train][INFO] - [TESTING] video: 73 | frame: 575 / 1356
+[2025-03-25 17:19:21,205][func.train][INFO] - [TESTING] video: 73 | start_idx: 576 | end_idx: 640
+[2025-03-25 17:19:21,595][func.train][INFO] - [TESTING] video: 73 | frame: 639 / 1356
+[2025-03-25 17:19:21,595][func.train][INFO] - [TESTING] video: 73 | start_idx: 640 | end_idx: 704
+[2025-03-25 17:19:21,998][func.train][INFO] - [TESTING] video: 73 | frame: 703 / 1356
+[2025-03-25 17:19:21,998][func.train][INFO] - [TESTING] video: 73 | start_idx: 704 | end_idx: 768
+[2025-03-25 17:19:22,383][func.train][INFO] - [TESTING] video: 73 | frame: 767 / 1356
+[2025-03-25 17:19:22,384][func.train][INFO] - [TESTING] video: 73 | start_idx: 768 | end_idx: 832
+[2025-03-25 17:19:22,819][func.train][INFO] - [TESTING] video: 73 | frame: 831 / 1356
+[2025-03-25 17:19:22,820][func.train][INFO] - [TESTING] video: 73 | start_idx: 832 | end_idx: 896
+[2025-03-25 17:19:23,308][func.train][INFO] - [TESTING] video: 73 | frame: 895 / 1356
+[2025-03-25 17:19:23,308][func.train][INFO] - [TESTING] video: 73 | start_idx: 896 | end_idx: 960
+[2025-03-25 17:19:23,673][func.train][INFO] - [TESTING] video: 73 | frame: 959 / 1356
+[2025-03-25 17:19:23,674][func.train][INFO] - [TESTING] video: 73 | start_idx: 960 | end_idx: 1024
+[2025-03-25 17:19:24,043][func.train][INFO] - [TESTING] video: 73 | frame: 1023 / 1356
+[2025-03-25 17:19:24,043][func.train][INFO] - [TESTING] video: 73 | start_idx: 1024 | end_idx: 1088
+[2025-03-25 17:19:24,444][func.train][INFO] - [TESTING] video: 73 | frame: 1087 / 1356
+[2025-03-25 17:19:24,444][func.train][INFO] - [TESTING] video: 73 | start_idx: 1088 | end_idx: 1152
+[2025-03-25 17:19:24,810][func.train][INFO] - [TESTING] video: 73 | frame: 1151 / 1356
+[2025-03-25 17:19:24,810][func.train][INFO] - [TESTING] video: 73 | start_idx: 1152 | end_idx: 1216
+[2025-03-25 17:19:25,190][func.train][INFO] - [TESTING] video: 73 | frame: 1215 / 1356
+[2025-03-25 17:19:25,190][func.train][INFO] - [TESTING] video: 73 | start_idx: 1216 | end_idx: 1280
+[2025-03-25 17:19:25,600][func.train][INFO] - [TESTING] video: 73 | frame: 1279 / 1356
+[2025-03-25 17:19:25,601][func.train][INFO] - [TESTING] video: 73 | start_idx: 1280 | end_idx: 1344
+[2025-03-25 17:19:26,013][func.train][INFO] - [TESTING] video: 73 | frame: 1343 / 1356
+[2025-03-25 17:19:26,013][func.train][INFO] - [TESTING] video: 73 | start_idx: 1344 | end_idx: 1408
+[2025-03-25 17:19:26,441][func.train][INFO] - [TESTING] video: 73 | frame: 1355 / 1356
+[2025-03-25 17:19:26,441][func.train][INFO] - [TESTING] video: 73 | start_idx: 1356 | end_idx: 1420
+[2025-03-25 17:19:26,441][func.train][INFO] - [TESTING] video: 73 | video test time: 0.15 min | total test time: 37.68 min
+[2025-03-25 17:19:26,449][func.train][INFO] - [TESTING] Saved video probs to: video_probs_ep1_vid73.npy
+[2025-03-25 17:19:55,114][func.train][INFO] - [TESTING] video_remaining_time_preds (classification2regression) h=30: torch.Size([1356, 8])
+[2025-03-25 17:19:55,126][func.train][INFO] - [TESTING] video: 73 | horizon: 30 | wMAE_30: 11.7000 | inMAE_30: 22.6864 | outMAE_30: 0.7135 | expMAE_30: 28.3361
+[2025-03-25 17:19:55,159][func.train][INFO] - [TESTING] video: 73 saved numpy arrays
+[2025-03-25 17:19:56,935][func.train][INFO] - [TESTING] video: 73 | video_mean_curr_acc: 0.9838 | mean_acc_future_frames: 0.0911 | video_mean_cum_acc_future: 0.2443
+[2025-03-25 17:19:56,935][func.train][INFO] - [EVAL] video (i=33) id=74 | video_length=1634
+[2025-03-25 17:19:57,384][func.train][INFO] - [TESTING] video: 74 | frame: 63 / 1634
+[2025-03-25 17:19:57,384][func.train][INFO] - [TESTING] video: 74 | start_idx: 64 | end_idx: 128
+[2025-03-25 17:19:57,768][func.train][INFO] - [TESTING] video: 74 | frame: 127 / 1634
+[2025-03-25 17:19:57,769][func.train][INFO] - [TESTING] video: 74 | start_idx: 128 | end_idx: 192
+[2025-03-25 17:19:58,171][func.train][INFO] - [TESTING] video: 74 | frame: 191 / 1634
+[2025-03-25 17:19:58,171][func.train][INFO] - [TESTING] video: 74 | start_idx: 192 | end_idx: 256
+[2025-03-25 17:19:58,547][func.train][INFO] - [TESTING] video: 74 | frame: 255 / 1634
+[2025-03-25 17:19:58,547][func.train][INFO] - [TESTING] video: 74 | start_idx: 256 | end_idx: 320
+[2025-03-25 17:19:58,934][func.train][INFO] - [TESTING] video: 74 | frame: 319 / 1634
+[2025-03-25 17:19:58,934][func.train][INFO] - [TESTING] video: 74 | start_idx: 320 | end_idx: 384
+[2025-03-25 17:19:59,315][func.train][INFO] - [TESTING] video: 74 | frame: 383 / 1634
+[2025-03-25 17:19:59,315][func.train][INFO] - [TESTING] video: 74 | start_idx: 384 | end_idx: 448
+[2025-03-25 17:19:59,676][func.train][INFO] - [TESTING] video: 74 | frame: 447 / 1634
+[2025-03-25 17:19:59,677][func.train][INFO] - [TESTING] video: 74 | start_idx: 448 | end_idx: 512
+[2025-03-25 17:20:00,044][func.train][INFO] - [TESTING] video: 74 | frame: 511 / 1634
+[2025-03-25 17:20:00,045][func.train][INFO] - [TESTING] video: 74 | start_idx: 512 | end_idx: 576
+[2025-03-25 17:20:00,428][func.train][INFO] - [TESTING] video: 74 | frame: 575 / 1634
+[2025-03-25 17:20:00,429][func.train][INFO] - [TESTING] video: 74 | start_idx: 576 | end_idx: 640
+[2025-03-25 17:20:00,835][func.train][INFO] - [TESTING] video: 74 | frame: 639 / 1634
+[2025-03-25 17:20:00,836][func.train][INFO] - [TESTING] video: 74 | start_idx: 640 | end_idx: 704
+[2025-03-25 17:20:01,270][func.train][INFO] - [TESTING] video: 74 | frame: 703 / 1634
+[2025-03-25 17:20:01,270][func.train][INFO] - [TESTING] video: 74 | start_idx: 704 | end_idx: 768
+[2025-03-25 17:20:01,681][func.train][INFO] - [TESTING] video: 74 | frame: 767 / 1634
+[2025-03-25 17:20:01,681][func.train][INFO] - [TESTING] video: 74 | start_idx: 768 | end_idx: 832
+[2025-03-25 17:20:02,077][func.train][INFO] - [TESTING] video: 74 | frame: 831 / 1634
+[2025-03-25 17:20:02,078][func.train][INFO] - [TESTING] video: 74 | start_idx: 832 | end_idx: 896
+[2025-03-25 17:20:02,462][func.train][INFO] - [TESTING] video: 74 | frame: 895 / 1634
+[2025-03-25 17:20:02,462][func.train][INFO] - [TESTING] video: 74 | start_idx: 896 | end_idx: 960
+[2025-03-25 17:20:02,878][func.train][INFO] - [TESTING] video: 74 | frame: 959 / 1634
+[2025-03-25 17:20:02,878][func.train][INFO] - [TESTING] video: 74 | start_idx: 960 | end_idx: 1024
+[2025-03-25 17:20:03,265][func.train][INFO] - [TESTING] video: 74 | frame: 1023 / 1634
+[2025-03-25 17:20:03,266][func.train][INFO] - [TESTING] video: 74 | start_idx: 1024 | end_idx: 1088
+[2025-03-25 17:20:03,670][func.train][INFO] - [TESTING] video: 74 | frame: 1087 / 1634
+[2025-03-25 17:20:03,670][func.train][INFO] - [TESTING] video: 74 | start_idx: 1088 | end_idx: 1152
+[2025-03-25 17:20:04,028][func.train][INFO] - [TESTING] video: 74 | frame: 1151 / 1634
+[2025-03-25 17:20:04,028][func.train][INFO] - [TESTING] video: 74 | start_idx: 1152 | end_idx: 1216
+[2025-03-25 17:20:04,397][func.train][INFO] - [TESTING] video: 74 | frame: 1215 / 1634
+[2025-03-25 17:20:04,397][func.train][INFO] - [TESTING] video: 74 | start_idx: 1216 | end_idx: 1280
+[2025-03-25 17:20:04,769][func.train][INFO] - [TESTING] video: 74 | frame: 1279 / 1634
+[2025-03-25 17:20:04,770][func.train][INFO] - [TESTING] video: 74 | start_idx: 1280 | end_idx: 1344
+[2025-03-25 17:20:05,133][func.train][INFO] - [TESTING] video: 74 | frame: 1343 / 1634
+[2025-03-25 17:20:05,133][func.train][INFO] - [TESTING] video: 74 | start_idx: 1344 | end_idx: 1408
+[2025-03-25 17:20:05,496][func.train][INFO] - [TESTING] video: 74 | frame: 1407 / 1634
+[2025-03-25 17:20:05,496][func.train][INFO] - [TESTING] video: 74 | start_idx: 1408 | end_idx: 1472
+[2025-03-25 17:20:05,863][func.train][INFO] - [TESTING] video: 74 | frame: 1471 / 1634
+[2025-03-25 17:20:05,864][func.train][INFO] - [TESTING] video: 74 | start_idx: 1472 | end_idx: 1536
+[2025-03-25 17:20:06,237][func.train][INFO] - [TESTING] video: 74 | frame: 1535 / 1634
+[2025-03-25 17:20:06,238][func.train][INFO] - [TESTING] video: 74 | start_idx: 1536 | end_idx: 1600
+[2025-03-25 17:20:06,601][func.train][INFO] - [TESTING] video: 74 | frame: 1599 / 1634
+[2025-03-25 17:20:06,601][func.train][INFO] - [TESTING] video: 74 | start_idx: 1600 | end_idx: 1664
+[2025-03-25 17:20:06,796][func.train][INFO] - [TESTING] video: 74 | frame: 1633 / 1634
+[2025-03-25 17:20:06,796][func.train][INFO] - [TESTING] video: 74 | start_idx: 1634 | end_idx: 1698
+[2025-03-25 17:20:06,796][func.train][INFO] - [TESTING] video: 74 | video test time: 0.16 min | total test time: 38.36 min
+[2025-03-25 17:20:06,815][func.train][INFO] - [TESTING] Saved video probs to: video_probs_ep1_vid74.npy
+[2025-03-25 17:20:40,685][func.train][INFO] - [TESTING] video_remaining_time_preds (classification2regression) h=30: torch.Size([1634, 8])
+[2025-03-25 17:20:40,711][func.train][INFO] - [TESTING] video: 74 | horizon: 30 | wMAE_30: 12.5734 | inMAE_30: 21.9653 | outMAE_30: 3.1815 | expMAE_30: 27.2734
+[2025-03-25 17:20:40,735][func.train][INFO] - [TESTING] video: 74 saved numpy arrays
+[2025-03-25 17:20:42,743][func.train][INFO] - [TESTING] video: 74 | video_mean_curr_acc: 0.7938 | mean_acc_future_frames: 0.0874 | video_mean_cum_acc_future: 0.2256
+[2025-03-25 17:20:42,743][func.train][INFO] - [EVAL] video (i=34) id=75 | video_length=1923
+[2025-03-25 17:20:43,156][func.train][INFO] - [TESTING] video: 75 | frame: 63 / 1923
+[2025-03-25 17:20:43,157][func.train][INFO] - [TESTING] video: 75 | start_idx: 64 | end_idx: 128
+[2025-03-25 17:20:43,524][func.train][INFO] - [TESTING] video: 75 | frame: 127 / 1923
+[2025-03-25 17:20:43,524][func.train][INFO] - [TESTING] video: 75 | start_idx: 128 | end_idx: 192
+[2025-03-25 17:20:43,903][func.train][INFO] - [TESTING] video: 75 | frame: 191 / 1923
+[2025-03-25 17:20:43,903][func.train][INFO] - [TESTING] video: 75 | start_idx: 192 | end_idx: 256
+[2025-03-25 17:20:44,287][func.train][INFO] - [TESTING] video: 75 | frame: 255 / 1923
+[2025-03-25 17:20:44,287][func.train][INFO] - [TESTING] video: 75 | start_idx: 256 | end_idx: 320
+[2025-03-25 17:20:44,703][func.train][INFO] - [TESTING] video: 75 | frame: 319 / 1923
+[2025-03-25 17:20:44,703][func.train][INFO] - [TESTING] video: 75 | start_idx: 320 | end_idx: 384
+[2025-03-25 17:20:45,098][func.train][INFO] - [TESTING] video: 75 | frame: 383 / 1923
+[2025-03-25 17:20:45,098][func.train][INFO] - [TESTING] video: 75 | start_idx: 384 | end_idx: 448
+[2025-03-25 17:20:45,479][func.train][INFO] - [TESTING] video: 75 | frame: 447 / 1923
+[2025-03-25 17:20:45,479][func.train][INFO] - [TESTING] video: 75 | start_idx: 448 | end_idx: 512
+[2025-03-25 17:20:45,868][func.train][INFO] - [TESTING] video: 75 | frame: 511 / 1923
+[2025-03-25 17:20:45,868][func.train][INFO] - [TESTING] video: 75 | start_idx: 512 | end_idx: 576
+[2025-03-25 17:20:46,237][func.train][INFO] - [TESTING] video: 75 | frame: 575 / 1923
+[2025-03-25 17:20:46,237][func.train][INFO] - [TESTING] video: 75 | start_idx: 576 | end_idx: 640
+[2025-03-25 17:20:46,597][func.train][INFO] - [TESTING] video: 75 | frame: 639 / 1923
+[2025-03-25 17:20:46,597][func.train][INFO] - [TESTING] video: 75 | start_idx: 640 | end_idx: 704
+[2025-03-25 17:20:46,959][func.train][INFO] - [TESTING] video: 75 | frame: 703 / 1923
+[2025-03-25 17:20:46,959][func.train][INFO] - [TESTING] video: 75 | start_idx: 704 | end_idx: 768
+[2025-03-25 17:20:47,339][func.train][INFO] - [TESTING] video: 75 | frame: 767 / 1923
+[2025-03-25 17:20:47,340][func.train][INFO] - [TESTING] video: 75 | start_idx: 768 | end_idx: 832
+[2025-03-25 17:20:47,737][func.train][INFO] - [TESTING] video: 75 | frame: 831 / 1923
+[2025-03-25 17:20:47,737][func.train][INFO] - [TESTING] video: 75 | start_idx: 832 | end_idx: 896
+[2025-03-25 17:20:48,144][func.train][INFO] - [TESTING] video: 75 | frame: 895 / 1923
+[2025-03-25 17:20:48,144][func.train][INFO] - [TESTING] video: 75 | start_idx: 896 | end_idx: 960
+[2025-03-25 17:20:48,601][func.train][INFO] - [TESTING] video: 75 | frame: 959 / 1923
+[2025-03-25 17:20:48,601][func.train][INFO] - [TESTING] video: 75 | start_idx: 960 | end_idx: 1024
+[2025-03-25 17:20:48,992][func.train][INFO] - [TESTING] video: 75 | frame: 1023 / 1923
+[2025-03-25 17:20:48,992][func.train][INFO] - [TESTING] video: 75 | start_idx: 1024 | end_idx: 1088
+[2025-03-25 17:20:49,386][func.train][INFO] - [TESTING] video: 75 | frame: 1087 / 1923
+[2025-03-25 17:20:49,387][func.train][INFO] - [TESTING] video: 75 | start_idx: 1088 | end_idx: 1152
+[2025-03-25 17:20:49,761][func.train][INFO] - [TESTING] video: 75 | frame: 1151 / 1923
+[2025-03-25 17:20:49,762][func.train][INFO] - [TESTING] video: 75 | start_idx: 1152 | end_idx: 1216
+[2025-03-25 17:20:50,144][func.train][INFO] - [TESTING] video: 75 | frame: 1215 / 1923
+[2025-03-25 17:20:50,144][func.train][INFO] - [TESTING] video: 75 | start_idx: 1216 | end_idx: 1280
+[2025-03-25 17:20:50,524][func.train][INFO] - [TESTING] video: 75 | frame: 1279 / 1923
+[2025-03-25 17:20:50,524][func.train][INFO] - [TESTING] video: 75 | start_idx: 1280 | end_idx: 1344
+[2025-03-25 17:20:50,959][func.train][INFO] - [TESTING] video: 75 | frame: 1343 / 1923
+[2025-03-25 17:20:50,960][func.train][INFO] - [TESTING] video: 75 | start_idx: 1344 | end_idx: 1408
+[2025-03-25 17:20:51,326][func.train][INFO] - [TESTING] video: 75 | frame: 1407 / 1923
+[2025-03-25 17:20:51,327][func.train][INFO] - [TESTING] video: 75 | start_idx: 1408 | end_idx: 1472
+[2025-03-25 17:20:51,725][func.train][INFO] - [TESTING] video: 75 | frame: 1471 / 1923
+[2025-03-25 17:20:51,725][func.train][INFO] - [TESTING] video: 75 | start_idx: 1472 | end_idx: 1536
+[2025-03-25 17:20:52,097][func.train][INFO] - [TESTING] video: 75 | frame: 1535 / 1923
+[2025-03-25 17:20:52,098][func.train][INFO] - [TESTING] video: 75 | start_idx: 1536 | end_idx: 1600
+[2025-03-25 17:20:52,527][func.train][INFO] - [TESTING] video: 75 | frame: 1599 / 1923
+[2025-03-25 17:20:52,528][func.train][INFO] - [TESTING] video: 75 | start_idx: 1600 | end_idx: 1664
+[2025-03-25 17:20:52,901][func.train][INFO] - [TESTING] video: 75 | frame: 1663 / 1923
+[2025-03-25 17:20:52,901][func.train][INFO] - [TESTING] video: 75 | start_idx: 1664 | end_idx: 1728
+[2025-03-25 17:20:53,304][func.train][INFO] - [TESTING] video: 75 | frame: 1727 / 1923
+[2025-03-25 17:20:53,305][func.train][INFO] - [TESTING] video: 75 | start_idx: 1728 | end_idx: 1792
+[2025-03-25 17:20:53,672][func.train][INFO] - [TESTING] video: 75 | frame: 1791 / 1923
+[2025-03-25 17:20:53,672][func.train][INFO] - [TESTING] video: 75 | start_idx: 1792 | end_idx: 1856
+[2025-03-25 17:20:54,063][func.train][INFO] - [TESTING] video: 75 | frame: 1855 / 1923
+[2025-03-25 17:20:54,063][func.train][INFO] - [TESTING] video: 75 | start_idx: 1856 | end_idx: 1920
+[2025-03-25 17:20:54,411][func.train][INFO] - [TESTING] video: 75 | frame: 1919 / 1923
+[2025-03-25 17:20:54,411][func.train][INFO] - [TESTING] video: 75 | start_idx: 1920 | end_idx: 1984
+[2025-03-25 17:20:54,614][func.train][INFO] - [TESTING] video: 75 | frame: 1922 / 1923
+[2025-03-25 17:20:54,614][func.train][INFO] - [TESTING] video: 75 | start_idx: 1923 | end_idx: 1987
+[2025-03-25 17:20:54,615][func.train][INFO] - [TESTING] video: 75 | video test time: 0.20 min | total test time: 39.15 min
+[2025-03-25 17:20:54,623][func.train][INFO] - [TESTING] Saved video probs to: video_probs_ep1_vid75.npy
+[2025-03-25 17:21:36,922][func.train][INFO] - [TESTING] video_remaining_time_preds (classification2regression) h=30: torch.Size([1923, 8])
+[2025-03-25 17:21:36,935][func.train][INFO] - [TESTING] video: 75 | horizon: 30 | wMAE_30: 11.0900 | inMAE_30: 22.0310 | outMAE_30: 0.1491 | expMAE_30: 27.8868
+[2025-03-25 17:21:36,960][func.train][INFO] - [TESTING] video: 75 saved numpy arrays
+[2025-03-25 17:21:39,192][func.train][INFO] - [TESTING] video: 75 | video_mean_curr_acc: 0.9537 | mean_acc_future_frames: 0.203 | video_mean_cum_acc_future: 0.417
+[2025-03-25 17:21:39,193][func.train][INFO] - [EVAL] video (i=35) id=76 | video_length=2649
+[2025-03-25 17:21:39,648][func.train][INFO] - [TESTING] video: 76 | frame: 63 / 2649
+[2025-03-25 17:21:39,649][func.train][INFO] - [TESTING] video: 76 | start_idx: 64 | end_idx: 128
+[2025-03-25 17:21:40,063][func.train][INFO] - [TESTING] video: 76 | frame: 127 / 2649
+[2025-03-25 17:21:40,064][func.train][INFO] - [TESTING] video: 76 | start_idx: 128 | end_idx: 192
+[2025-03-25 17:21:40,443][func.train][INFO] - [TESTING] video: 76 | frame: 191 / 2649
+[2025-03-25 17:21:40,443][func.train][INFO] - [TESTING] video: 76 | start_idx: 192 | end_idx: 256
+[2025-03-25 17:21:40,894][func.train][INFO] - [TESTING] video: 76 | frame: 255 / 2649
+[2025-03-25 17:21:40,894][func.train][INFO] - [TESTING] video: 76 | start_idx: 256 | end_idx: 320
+[2025-03-25 17:21:41,283][func.train][INFO] - [TESTING] video: 76 | frame: 319 / 2649
+[2025-03-25 17:21:41,283][func.train][INFO] - [TESTING] video: 76 | start_idx: 320 | end_idx: 384
+[2025-03-25 17:21:41,686][func.train][INFO] - [TESTING] video: 76 | frame: 383 / 2649
+[2025-03-25 17:21:41,687][func.train][INFO] - [TESTING] video: 76 | start_idx: 384 | end_idx: 448
+[2025-03-25 17:21:42,057][func.train][INFO] - [TESTING] video: 76 | frame: 447 / 2649
+[2025-03-25 17:21:42,057][func.train][INFO] - [TESTING] video: 76 | start_idx: 448 | end_idx: 512
+[2025-03-25 17:21:42,431][func.train][INFO] - [TESTING] video: 76 | frame: 511 / 2649
+[2025-03-25 17:21:42,432][func.train][INFO] - [TESTING] video: 76 | start_idx: 512 | end_idx: 576
+[2025-03-25 17:21:42,820][func.train][INFO] - [TESTING] video: 76 | frame: 575 / 2649
+[2025-03-25 17:21:42,820][func.train][INFO] - [TESTING] video: 76 | start_idx: 576 | end_idx: 640
+[2025-03-25 17:21:43,235][func.train][INFO] - [TESTING] video: 76 | frame: 639 / 2649
+[2025-03-25 17:21:43,235][func.train][INFO] - [TESTING] video: 76 | start_idx: 640 | end_idx: 704
+[2025-03-25 17:21:43,604][func.train][INFO] - [TESTING] video: 76 | frame: 703 / 2649
+[2025-03-25 17:21:43,605][func.train][INFO] - [TESTING] video: 76 | start_idx: 704 | end_idx: 768
+[2025-03-25 17:21:44,032][func.train][INFO] - [TESTING] video: 76 | frame: 767 / 2649
+[2025-03-25 17:21:44,033][func.train][INFO] - [TESTING] video: 76 | start_idx: 768 | end_idx: 832
+[2025-03-25 17:21:44,413][func.train][INFO] - [TESTING] video: 76 | frame: 831 / 2649
+[2025-03-25 17:21:44,413][func.train][INFO] - [TESTING] video: 76 | start_idx: 832 | end_idx: 896
+[2025-03-25 17:21:44,782][func.train][INFO] - [TESTING] video: 76 | frame: 895 / 2649
+[2025-03-25 17:21:44,782][func.train][INFO] - [TESTING] video: 76 | start_idx: 896 | end_idx: 960
+[2025-03-25 17:21:45,188][func.train][INFO] - [TESTING] video: 76 | frame: 959 / 2649
+[2025-03-25 17:21:45,189][func.train][INFO] - [TESTING] video: 76 | start_idx: 960 | end_idx: 1024
+[2025-03-25 17:21:45,562][func.train][INFO] - [TESTING] video: 76 | frame: 1023 / 2649
+[2025-03-25 17:21:45,562][func.train][INFO] - [TESTING] video: 76 | start_idx: 1024 | end_idx: 1088
+[2025-03-25 17:21:45,941][func.train][INFO] - [TESTING] video: 76 | frame: 1087 / 2649
+[2025-03-25 17:21:45,941][func.train][INFO] - [TESTING] video: 76 | start_idx: 1088 | end_idx: 1152
+[2025-03-25 17:21:46,313][func.train][INFO] - [TESTING] video: 76 | frame: 1151 / 2649
+[2025-03-25 17:21:46,314][func.train][INFO] - [TESTING] video: 76 | start_idx: 1152 | end_idx: 1216
+[2025-03-25 17:21:46,713][func.train][INFO] - [TESTING] video: 76 | frame: 1215 / 2649
+[2025-03-25 17:21:46,714][func.train][INFO] - [TESTING] video: 76 | start_idx: 1216 | end_idx: 1280
+[2025-03-25 17:21:47,075][func.train][INFO] - [TESTING] video: 76 | frame: 1279 / 2649
+[2025-03-25 17:21:47,075][func.train][INFO] - [TESTING] video: 76 | start_idx: 1280 | end_idx: 1344
+[2025-03-25 17:21:47,443][func.train][INFO] - [TESTING] video: 76 | frame: 1343 / 2649
+[2025-03-25 17:21:47,443][func.train][INFO] - [TESTING] video: 76 | start_idx: 1344 | end_idx: 1408
+[2025-03-25 17:21:47,815][func.train][INFO] - [TESTING] video: 76 | frame: 1407 / 2649
+[2025-03-25 17:21:47,815][func.train][INFO] - [TESTING] video: 76 | start_idx: 1408 | end_idx: 1472
+[2025-03-25 17:21:48,187][func.train][INFO] - [TESTING] video: 76 | frame: 1471 / 2649
+[2025-03-25 17:21:48,188][func.train][INFO] - [TESTING] video: 76 | start_idx: 1472 | end_idx: 1536
+[2025-03-25 17:21:48,546][func.train][INFO] - [TESTING] video: 76 | frame: 1535 / 2649
+[2025-03-25 17:21:48,546][func.train][INFO] - [TESTING] video: 76 | start_idx: 1536 | end_idx: 1600
+[2025-03-25 17:21:48,915][func.train][INFO] - [TESTING] video: 76 | frame: 1599 / 2649
+[2025-03-25 17:21:48,916][func.train][INFO] - [TESTING] video: 76 | start_idx: 1600 | end_idx: 1664
+[2025-03-25 17:21:49,315][func.train][INFO] - [TESTING] video: 76 | frame: 1663 / 2649
+[2025-03-25 17:21:49,316][func.train][INFO] - [TESTING] video: 76 | start_idx: 1664 | end_idx: 1728
+[2025-03-25 17:21:49,693][func.train][INFO] - [TESTING] video: 76 | frame: 1727 / 2649
+[2025-03-25 17:21:49,694][func.train][INFO] - [TESTING] video: 76 | start_idx: 1728 | end_idx: 1792
+[2025-03-25 17:21:50,057][func.train][INFO] - [TESTING] video: 76 | frame: 1791 / 2649
+[2025-03-25 17:21:50,058][func.train][INFO] - [TESTING] video: 76 | start_idx: 1792 | end_idx: 1856
+[2025-03-25 17:21:50,447][func.train][INFO] - [TESTING] video: 76 | frame: 1855 / 2649
+[2025-03-25 17:21:50,447][func.train][INFO] - [TESTING] video: 76 | start_idx: 1856 | end_idx: 1920
+[2025-03-25 17:21:50,802][func.train][INFO] - [TESTING] video: 76 | frame: 1919 / 2649
+[2025-03-25 17:21:50,803][func.train][INFO] - [TESTING] video: 76 | start_idx: 1920 | end_idx: 1984
+[2025-03-25 17:21:51,177][func.train][INFO] - [TESTING] video: 76 | frame: 1983 / 2649
+[2025-03-25 17:21:51,178][func.train][INFO] - [TESTING] video: 76 | start_idx: 1984 | end_idx: 2048
+[2025-03-25 17:21:51,550][func.train][INFO] - [TESTING] video: 76 | frame: 2047 / 2649
+[2025-03-25 17:21:51,550][func.train][INFO] - [TESTING] video: 76 | start_idx: 2048 | end_idx: 2112
+[2025-03-25 17:21:51,934][func.train][INFO] - [TESTING] video: 76 | frame: 2111 / 2649
+[2025-03-25 17:21:51,934][func.train][INFO] - [TESTING] video: 76 | start_idx: 2112 | end_idx: 2176
+[2025-03-25 17:21:52,306][func.train][INFO] - [TESTING] video: 76 | frame: 2175 / 2649
+[2025-03-25 17:21:52,306][func.train][INFO] - [TESTING] video: 76 | start_idx: 2176 | end_idx: 2240
+[2025-03-25 17:21:52,686][func.train][INFO] - [TESTING] video: 76 | frame: 2239 / 2649
+[2025-03-25 17:21:52,686][func.train][INFO] - [TESTING] video: 76 | start_idx: 2240 | end_idx: 2304
+[2025-03-25 17:21:53,057][func.train][INFO] - [TESTING] video: 76 | frame: 2303 / 2649
+[2025-03-25 17:21:53,057][func.train][INFO] - [TESTING] video: 76 | start_idx: 2304 | end_idx: 2368
+[2025-03-25 17:21:53,449][func.train][INFO] - [TESTING] video: 76 | frame: 2367 / 2649
+[2025-03-25 17:21:53,449][func.train][INFO] - [TESTING] video: 76 | start_idx: 2368 | end_idx: 2432
+[2025-03-25 17:21:53,832][func.train][INFO] - [TESTING] video: 76 | frame: 2431 / 2649
+[2025-03-25 17:21:53,832][func.train][INFO] - [TESTING] video: 76 | start_idx: 2432 | end_idx: 2496
+[2025-03-25 17:21:54,191][func.train][INFO] - [TESTING] video: 76 | frame: 2495 / 2649
+[2025-03-25 17:21:54,192][func.train][INFO] - [TESTING] video: 76 | start_idx: 2496 | end_idx: 2560
+[2025-03-25 17:21:54,562][func.train][INFO] - [TESTING] video: 76 | frame: 2559 / 2649
+[2025-03-25 17:21:54,562][func.train][INFO] - [TESTING] video: 76 | start_idx: 2560 | end_idx: 2624
+[2025-03-25 17:21:54,927][func.train][INFO] - [TESTING] video: 76 | frame: 2623 / 2649
+[2025-03-25 17:21:54,927][func.train][INFO] - [TESTING] video: 76 | start_idx: 2624 | end_idx: 2688
+[2025-03-25 17:21:56,363][func.train][INFO] - [TESTING] video: 76 | frame: 2648 / 2649
+[2025-03-25 17:21:56,364][func.train][INFO] - [TESTING] video: 76 | start_idx: 2649 | end_idx: 2713
+[2025-03-25 17:21:56,365][func.train][INFO] - [TESTING] video: 76 | video test time: 0.29 min | total test time: 40.18 min
+[2025-03-25 17:21:56,378][func.train][INFO] - [TESTING] Saved video probs to: video_probs_ep1_vid76.npy
+[2025-03-25 17:22:53,226][func.train][INFO] - [TESTING] video_remaining_time_preds (classification2regression) h=30: torch.Size([2649, 8])
+[2025-03-25 17:22:53,264][func.train][INFO] - [TESTING] video: 76 | horizon: 30 | wMAE_30: 7.9073 | inMAE_30: 15.6435 | outMAE_30: 0.1711 | expMAE_30: 22.6875
+[2025-03-25 17:22:53,280][func.train][INFO] - [TESTING] video: 76 saved numpy arrays
+[2025-03-25 17:22:56,474][func.train][INFO] - [TESTING] video: 76 | video_mean_curr_acc: 0.8792 | mean_acc_future_frames: 0.2462 | video_mean_cum_acc_future: 0.4824
+[2025-03-25 17:22:56,474][func.train][INFO] - [EVAL] video (i=36) id=77 | video_length=2502
+[2025-03-25 17:22:56,892][func.train][INFO] - [TESTING] video: 77 | frame: 63 / 2502
+[2025-03-25 17:22:56,893][func.train][INFO] - [TESTING] video: 77 | start_idx: 64 | end_idx: 128
+[2025-03-25 17:22:57,285][func.train][INFO] - [TESTING] video: 77 | frame: 127 / 2502
+[2025-03-25 17:22:57,286][func.train][INFO] - [TESTING] video: 77 | start_idx: 128 | end_idx: 192
+[2025-03-25 17:22:57,703][func.train][INFO] - [TESTING] video: 77 | frame: 191 / 2502
+[2025-03-25 17:22:57,704][func.train][INFO] - [TESTING] video: 77 | start_idx: 192 | end_idx: 256
+[2025-03-25 17:22:58,088][func.train][INFO] - [TESTING] video: 77 | frame: 255 / 2502
+[2025-03-25 17:22:58,089][func.train][INFO] - [TESTING] video: 77 | start_idx: 256 | end_idx: 320
+[2025-03-25 17:22:58,482][func.train][INFO] - [TESTING] video: 77 | frame: 319 / 2502
+[2025-03-25 17:22:58,482][func.train][INFO] - [TESTING] video: 77 | start_idx: 320 | end_idx: 384
+[2025-03-25 17:22:58,844][func.train][INFO] - [TESTING] video: 77 | frame: 383 / 2502
+[2025-03-25 17:22:58,845][func.train][INFO] - [TESTING] video: 77 | start_idx: 384 | end_idx: 448
+[2025-03-25 17:22:59,210][func.train][INFO] - [TESTING] video: 77 | frame: 447 / 2502
+[2025-03-25 17:22:59,211][func.train][INFO] - [TESTING] video: 77 | start_idx: 448 | end_idx: 512
+[2025-03-25 17:22:59,619][func.train][INFO] - [TESTING] video: 77 | frame: 511 / 2502
+[2025-03-25 17:22:59,620][func.train][INFO] - [TESTING] video: 77 | start_idx: 512 | end_idx: 576
+[2025-03-25 17:22:59,992][func.train][INFO] - [TESTING] video: 77 | frame: 575 / 2502
+[2025-03-25 17:22:59,993][func.train][INFO] - [TESTING] video: 77 | start_idx: 576 | end_idx: 640
+[2025-03-25 17:23:00,355][func.train][INFO] - [TESTING] video: 77 | frame: 639 / 2502
+[2025-03-25 17:23:00,355][func.train][INFO] - [TESTING] video: 77 | start_idx: 640 | end_idx: 704
+[2025-03-25 17:23:00,725][func.train][INFO] - [TESTING] video: 77 | frame: 703 / 2502
+[2025-03-25 17:23:00,726][func.train][INFO] - [TESTING] video: 77 | start_idx: 704 | end_idx: 768
+[2025-03-25 17:23:01,095][func.train][INFO] - [TESTING] video: 77 | frame: 767 / 2502
+[2025-03-25 17:23:01,096][func.train][INFO] - [TESTING] video: 77 | start_idx: 768 | end_idx: 832
+[2025-03-25 17:23:01,476][func.train][INFO] - [TESTING] video: 77 | frame: 831 / 2502
+[2025-03-25 17:23:01,476][func.train][INFO] - [TESTING] video: 77 | start_idx: 832 | end_idx: 896
+[2025-03-25 17:23:01,866][func.train][INFO] - [TESTING] video: 77 | frame: 895 / 2502
+[2025-03-25 17:23:01,867][func.train][INFO] - [TESTING] video: 77 | start_idx: 896 | end_idx: 960
+[2025-03-25 17:23:02,269][func.train][INFO] - [TESTING] video: 77 | frame: 959 / 2502
+[2025-03-25 17:23:02,270][func.train][INFO] - [TESTING] video: 77 | start_idx: 960 | end_idx: 1024
+[2025-03-25 17:23:02,645][func.train][INFO] - [TESTING] video: 77 | frame: 1023 / 2502
+[2025-03-25 17:23:02,646][func.train][INFO] - [TESTING] video: 77 | start_idx: 1024 | end_idx: 1088
+[2025-03-25 17:23:03,012][func.train][INFO] - [TESTING] video: 77 | frame: 1087 / 2502
+[2025-03-25 17:23:03,012][func.train][INFO] - [TESTING] video: 77 | start_idx: 1088 | end_idx: 1152
+[2025-03-25 17:23:03,399][func.train][INFO] - [TESTING] video: 77 | frame: 1151 / 2502
+[2025-03-25 17:23:03,399][func.train][INFO] - [TESTING] video: 77 | start_idx: 1152 | end_idx: 1216
+[2025-03-25 17:23:03,767][func.train][INFO] - [TESTING] video: 77 | frame: 1215 / 2502
+[2025-03-25 17:23:03,767][func.train][INFO] - [TESTING] video: 77 | start_idx: 1216 | end_idx: 1280
+[2025-03-25 17:23:04,143][func.train][INFO] - [TESTING] video: 77 | frame: 1279 / 2502
+[2025-03-25 17:23:04,144][func.train][INFO] - [TESTING] video: 77 | start_idx: 1280 | end_idx: 1344
+[2025-03-25 17:23:04,582][func.train][INFO] - [TESTING] video: 77 | frame: 1343 / 2502
+[2025-03-25 17:23:04,583][func.train][INFO] - [TESTING] video: 77 | start_idx: 1344 | end_idx: 1408
+[2025-03-25 17:23:05,018][func.train][INFO] - [TESTING] video: 77 | frame: 1407 / 2502
+[2025-03-25 17:23:05,019][func.train][INFO] - [TESTING] video: 77 | start_idx: 1408 | end_idx: 1472
+[2025-03-25 17:23:05,379][func.train][INFO] - [TESTING] video: 77 | frame: 1471 / 2502
+[2025-03-25 17:23:05,379][func.train][INFO] - [TESTING] video: 77 | start_idx: 1472 | end_idx: 1536
+[2025-03-25 17:23:05,734][func.train][INFO] - [TESTING] video: 77 | frame: 1535 / 2502
+[2025-03-25 17:23:05,734][func.train][INFO] - [TESTING] video: 77 | start_idx: 1536 | end_idx: 1600
+[2025-03-25 17:23:06,099][func.train][INFO] - [TESTING] video: 77 | frame: 1599 / 2502
+[2025-03-25 17:23:06,100][func.train][INFO] - [TESTING] video: 77 | start_idx: 1600 | end_idx: 1664
+[2025-03-25 17:23:06,471][func.train][INFO] - [TESTING] video: 77 | frame: 1663 / 2502
+[2025-03-25 17:23:06,472][func.train][INFO] - [TESTING] video: 77 | start_idx: 1664 | end_idx: 1728
+[2025-03-25 17:23:06,844][func.train][INFO] - [TESTING] video: 77 | frame: 1727 / 2502
+[2025-03-25 17:23:06,845][func.train][INFO] - [TESTING] video: 77 | start_idx: 1728 | end_idx: 1792
+[2025-03-25 17:23:07,204][func.train][INFO] - [TESTING] video: 77 | frame: 1791 / 2502
+[2025-03-25 17:23:07,205][func.train][INFO] - [TESTING] video: 77 | start_idx: 1792 | end_idx: 1856
+[2025-03-25 17:23:07,600][func.train][INFO] - [TESTING] video: 77 | frame: 1855 / 2502
+[2025-03-25 17:23:07,601][func.train][INFO] - [TESTING] video: 77 | start_idx: 1856 | end_idx: 1920
+[2025-03-25 17:23:07,981][func.train][INFO] - [TESTING] video: 77 | frame: 1919 / 2502
+[2025-03-25 17:23:07,982][func.train][INFO] - [TESTING] video: 77 | start_idx: 1920 | end_idx: 1984
+[2025-03-25 17:23:08,393][func.train][INFO] - [TESTING] video: 77 | frame: 1983 / 2502
+[2025-03-25 17:23:08,393][func.train][INFO] - [TESTING] video: 77 | start_idx: 1984 | end_idx: 2048
+[2025-03-25 17:23:08,756][func.train][INFO] - [TESTING] video: 77 | frame: 2047 / 2502
+[2025-03-25 17:23:08,756][func.train][INFO] - [TESTING] video: 77 | start_idx: 2048 | end_idx: 2112
+[2025-03-25 17:23:09,124][func.train][INFO] - [TESTING] video: 77 | frame: 2111 / 2502
+[2025-03-25 17:23:09,124][func.train][INFO] - [TESTING] video: 77 | start_idx: 2112 | end_idx: 2176
+[2025-03-25 17:23:09,485][func.train][INFO] - [TESTING] video: 77 | frame: 2175 / 2502
+[2025-03-25 17:23:09,486][func.train][INFO] - [TESTING] video: 77 | start_idx: 2176 | end_idx: 2240
+[2025-03-25 17:23:09,846][func.train][INFO] - [TESTING] video: 77 | frame: 2239 / 2502
+[2025-03-25 17:23:09,846][func.train][INFO] - [TESTING] video: 77 | start_idx: 2240 | end_idx: 2304
+[2025-03-25 17:23:10,208][func.train][INFO] - [TESTING] video: 77 | frame: 2303 / 2502
+[2025-03-25 17:23:10,208][func.train][INFO] - [TESTING] video: 77 | start_idx: 2304 | end_idx: 2368
+[2025-03-25 17:23:10,566][func.train][INFO] - [TESTING] video: 77 | frame: 2367 / 2502
+[2025-03-25 17:23:10,566][func.train][INFO] - [TESTING] video: 77 | start_idx: 2368 | end_idx: 2432
+[2025-03-25 17:23:10,919][func.train][INFO] - [TESTING] video: 77 | frame: 2431 / 2502
+[2025-03-25 17:23:10,919][func.train][INFO] - [TESTING] video: 77 | start_idx: 2432 | end_idx: 2496
+[2025-03-25 17:23:11,264][func.train][INFO] - [TESTING] video: 77 | frame: 2495 / 2502
+[2025-03-25 17:23:11,264][func.train][INFO] - [TESTING] video: 77 | start_idx: 2496 | end_idx: 2560
+[2025-03-25 17:23:11,330][func.train][INFO] - [TESTING] video: 77 | frame: 2501 / 2502
+[2025-03-25 17:23:11,330][func.train][INFO] - [TESTING] video: 77 | start_idx: 2502 | end_idx: 2566
+[2025-03-25 17:23:11,331][func.train][INFO] - [TESTING] video: 77 | video test time: 0.25 min | total test time: 41.43 min
+[2025-03-25 17:23:11,345][func.train][INFO] - [TESTING] Saved video probs to: video_probs_ep1_vid77.npy
+[2025-03-25 17:24:01,467][func.train][INFO] - [TESTING] video_remaining_time_preds (classification2regression) h=30: torch.Size([2502, 8])
+[2025-03-25 17:24:01,490][func.train][INFO] - [TESTING] video: 77 | horizon: 30 | wMAE_30: 9.8878 | inMAE_30: 19.4360 | outMAE_30: 0.3395 | expMAE_30: 26.5562
+[2025-03-25 17:24:01,507][func.train][INFO] - [TESTING] video: 77 saved numpy arrays
+[2025-03-25 17:24:04,629][func.train][INFO] - [TESTING] video: 77 | video_mean_curr_acc: 0.9464 | mean_acc_future_frames: 0.1533 | video_mean_cum_acc_future: 0.3641
+[2025-03-25 17:24:04,629][func.train][INFO] - [EVAL] video (i=37) id=78 | video_length=739
+[2025-03-25 17:24:05,053][func.train][INFO] - [TESTING] video: 78 | frame: 63 / 739
+[2025-03-25 17:24:05,054][func.train][INFO] - [TESTING] video: 78 | start_idx: 64 | end_idx: 128
+[2025-03-25 17:24:05,409][func.train][INFO] - [TESTING] video: 78 | frame: 127 / 739
+[2025-03-25 17:24:05,409][func.train][INFO] - [TESTING] video: 78 | start_idx: 128 | end_idx: 192
+[2025-03-25 17:24:05,775][func.train][INFO] - [TESTING] video: 78 | frame: 191 / 739
+[2025-03-25 17:24:05,776][func.train][INFO] - [TESTING] video: 78 | start_idx: 192 | end_idx: 256
+[2025-03-25 17:24:06,158][func.train][INFO] - [TESTING] video: 78 | frame: 255 / 739
+[2025-03-25 17:24:06,158][func.train][INFO] - [TESTING] video: 78 | start_idx: 256 | end_idx: 320
+[2025-03-25 17:24:06,549][func.train][INFO] - [TESTING] video: 78 | frame: 319 / 739
+[2025-03-25 17:24:06,550][func.train][INFO] - [TESTING] video: 78 | start_idx: 320 | end_idx: 384
+[2025-03-25 17:24:06,924][func.train][INFO] - [TESTING] video: 78 | frame: 383 / 739
+[2025-03-25 17:24:06,925][func.train][INFO] - [TESTING] video: 78 | start_idx: 384 | end_idx: 448
+[2025-03-25 17:24:07,296][func.train][INFO] - [TESTING] video: 78 | frame: 447 / 739
+[2025-03-25 17:24:07,296][func.train][INFO] - [TESTING] video: 78 | start_idx: 448 | end_idx: 512
+[2025-03-25 17:24:07,685][func.train][INFO] - [TESTING] video: 78 | frame: 511 / 739
+[2025-03-25 17:24:07,686][func.train][INFO] - [TESTING] video: 78 | start_idx: 512 | end_idx: 576
+[2025-03-25 17:24:08,049][func.train][INFO] - [TESTING] video: 78 | frame: 575 / 739
+[2025-03-25 17:24:08,049][func.train][INFO] - [TESTING] video: 78 | start_idx: 576 | end_idx: 640
+[2025-03-25 17:24:08,486][func.train][INFO] - [TESTING] video: 78 | frame: 639 / 739
+[2025-03-25 17:24:08,486][func.train][INFO] - [TESTING] video: 78 | start_idx: 640 | end_idx: 704
+[2025-03-25 17:24:08,868][func.train][INFO] - [TESTING] video: 78 | frame: 703 / 739
+[2025-03-25 17:24:08,868][func.train][INFO] - [TESTING] video: 78 | start_idx: 704 | end_idx: 768
+[2025-03-25 17:24:10,490][func.train][INFO] - [TESTING] video: 78 | frame: 738 / 739
+[2025-03-25 17:24:10,490][func.train][INFO] - [TESTING] video: 78 | start_idx: 739 | end_idx: 803
+[2025-03-25 17:24:10,491][func.train][INFO] - [TESTING] video: 78 | video test time: 0.10 min | total test time: 42.42 min
+[2025-03-25 17:24:10,496][func.train][INFO] - [TESTING] Saved video probs to: video_probs_ep1_vid78.npy
+[2025-03-25 17:24:26,002][func.train][INFO] - [TESTING] video_remaining_time_preds (classification2regression) h=30: torch.Size([739, 8])
+[2025-03-25 17:24:26,014][func.train][INFO] - [TESTING] video: 78 | horizon: 30 | wMAE_30: 13.3340 | inMAE_30: 25.8449 | outMAE_30: 0.8231 | expMAE_30: 27.1829
+[2025-03-25 17:24:26,029][func.train][INFO] - [TESTING] video: 78 saved numpy arrays
+[2025-03-25 17:24:27,161][func.train][INFO] - [TESTING] video: 78 | video_mean_curr_acc: 0.889 | mean_acc_future_frames: 0.0343 | video_mean_cum_acc_future: 0.1141
+[2025-03-25 17:24:27,162][func.train][INFO] - [EVAL] video (i=38) id=79 | video_length=3414
+[2025-03-25 17:24:27,601][func.train][INFO] - [TESTING] video: 79 | frame: 63 / 3414
+[2025-03-25 17:24:27,602][func.train][INFO] - [TESTING] video: 79 | start_idx: 64 | end_idx: 128
+[2025-03-25 17:24:28,008][func.train][INFO] - [TESTING] video: 79 | frame: 127 / 3414
+[2025-03-25 17:24:28,008][func.train][INFO] - [TESTING] video: 79 | start_idx: 128 | end_idx: 192
+[2025-03-25 17:24:28,396][func.train][INFO] - [TESTING] video: 79 | frame: 191 / 3414
+[2025-03-25 17:24:28,397][func.train][INFO] - [TESTING] video: 79 | start_idx: 192 | end_idx: 256
+[2025-03-25 17:24:28,764][func.train][INFO] - [TESTING] video: 79 | frame: 255 / 3414
+[2025-03-25 17:24:28,764][func.train][INFO] - [TESTING] video: 79 | start_idx: 256 | end_idx: 320
+[2025-03-25 17:24:29,123][func.train][INFO] - [TESTING] video: 79 | frame: 319 / 3414
+[2025-03-25 17:24:29,124][func.train][INFO] - [TESTING] video: 79 | start_idx: 320 | end_idx: 384
+[2025-03-25 17:24:29,512][func.train][INFO] - [TESTING] video: 79 | frame: 383 / 3414
+[2025-03-25 17:24:29,513][func.train][INFO] - [TESTING] video: 79 | start_idx: 384 | end_idx: 448
+[2025-03-25 17:24:29,872][func.train][INFO] - [TESTING] video: 79 | frame: 447 / 3414
+[2025-03-25 17:24:29,873][func.train][INFO] - [TESTING] video: 79 | start_idx: 448 | end_idx: 512
+[2025-03-25 17:24:30,248][func.train][INFO] - [TESTING] video: 79 | frame: 511 / 3414
+[2025-03-25 17:24:30,249][func.train][INFO] - [TESTING] video: 79 | start_idx: 512 | end_idx: 576
+[2025-03-25 17:24:30,631][func.train][INFO] - [TESTING] video: 79 | frame: 575 / 3414
+[2025-03-25 17:24:30,631][func.train][INFO] - [TESTING] video: 79 | start_idx: 576 | end_idx: 640
+[2025-03-25 17:24:30,992][func.train][INFO] - [TESTING] video: 79 | frame: 639 / 3414
+[2025-03-25 17:24:30,993][func.train][INFO] - [TESTING] video: 79 | start_idx: 640 | end_idx: 704
+[2025-03-25 17:24:31,368][func.train][INFO] - [TESTING] video: 79 | frame: 703 / 3414
+[2025-03-25 17:24:31,368][func.train][INFO] - [TESTING] video: 79 | start_idx: 704 | end_idx: 768
+[2025-03-25 17:24:31,781][func.train][INFO] - [TESTING] video: 79 | frame: 767 / 3414
+[2025-03-25 17:24:31,782][func.train][INFO] - [TESTING] video: 79 | start_idx: 768 | end_idx: 832
+[2025-03-25 17:24:32,199][func.train][INFO] - [TESTING] video: 79 | frame: 831 / 3414
+[2025-03-25 17:24:32,199][func.train][INFO] - [TESTING] video: 79 | start_idx: 832 | end_idx: 896
+[2025-03-25 17:24:32,572][func.train][INFO] - [TESTING] video: 79 | frame: 895 / 3414
+[2025-03-25 17:24:32,572][func.train][INFO] - [TESTING] video: 79 | start_idx: 896 | end_idx: 960
+[2025-03-25 17:24:32,979][func.train][INFO] - [TESTING] video: 79 | frame: 959 / 3414
+[2025-03-25 17:24:32,979][func.train][INFO] - [TESTING] video: 79 | start_idx: 960 | end_idx: 1024
+[2025-03-25 17:24:33,347][func.train][INFO] - [TESTING] video: 79 | frame: 1023 / 3414
+[2025-03-25 17:24:33,348][func.train][INFO] - [TESTING] video: 79 | start_idx: 1024 | end_idx: 1088
+[2025-03-25 17:24:33,726][func.train][INFO] - [TESTING] video: 79 | frame: 1087 / 3414
+[2025-03-25 17:24:33,726][func.train][INFO] - [TESTING] video: 79 | start_idx: 1088 | end_idx: 1152
+[2025-03-25 17:24:34,102][func.train][INFO] - [TESTING] video: 79 | frame: 1151 / 3414
+[2025-03-25 17:24:34,102][func.train][INFO] - [TESTING] video: 79 | start_idx: 1152 | end_idx: 1216
+[2025-03-25 17:24:34,480][func.train][INFO] - [TESTING] video: 79 | frame: 1215 / 3414
+[2025-03-25 17:24:34,480][func.train][INFO] - [TESTING] video: 79 | start_idx: 1216 | end_idx: 1280
+[2025-03-25 17:24:34,898][func.train][INFO] - [TESTING] video: 79 | frame: 1279 / 3414
+[2025-03-25 17:24:34,898][func.train][INFO] - [TESTING] video: 79 | start_idx: 1280 | end_idx: 1344
+[2025-03-25 17:24:35,273][func.train][INFO] - [TESTING] video: 79 | frame: 1343 / 3414
+[2025-03-25 17:24:35,273][func.train][INFO] - [TESTING] video: 79 | start_idx: 1344 | end_idx: 1408
+[2025-03-25 17:24:35,661][func.train][INFO] - [TESTING] video: 79 | frame: 1407 / 3414
+[2025-03-25 17:24:35,661][func.train][INFO] - [TESTING] video: 79 | start_idx: 1408 | end_idx: 1472
+[2025-03-25 17:24:36,035][func.train][INFO] - [TESTING] video: 79 | frame: 1471 / 3414
+[2025-03-25 17:24:36,035][func.train][INFO] - [TESTING] video: 79 | start_idx: 1472 | end_idx: 1536
+[2025-03-25 17:24:36,413][func.train][INFO] - [TESTING] video: 79 | frame: 1535 / 3414
+[2025-03-25 17:24:36,414][func.train][INFO] - [TESTING] video: 79 | start_idx: 1536 | end_idx: 1600
+[2025-03-25 17:24:36,784][func.train][INFO] - [TESTING] video: 79 | frame: 1599 / 3414
+[2025-03-25 17:24:36,784][func.train][INFO] - [TESTING] video: 79 | start_idx: 1600 | end_idx: 1664
+[2025-03-25 17:24:37,155][func.train][INFO] - [TESTING] video: 79 | frame: 1663 / 3414
+[2025-03-25 17:24:37,155][func.train][INFO] - [TESTING] video: 79 | start_idx: 1664 | end_idx: 1728
+[2025-03-25 17:24:37,530][func.train][INFO] - [TESTING] video: 79 | frame: 1727 / 3414
+[2025-03-25 17:24:37,530][func.train][INFO] - [TESTING] video: 79 | start_idx: 1728 | end_idx: 1792
+[2025-03-25 17:24:37,900][func.train][INFO] - [TESTING] video: 79 | frame: 1791 / 3414
+[2025-03-25 17:24:37,901][func.train][INFO] - [TESTING] video: 79 | start_idx: 1792 | end_idx: 1856
+[2025-03-25 17:24:38,274][func.train][INFO] - [TESTING] video: 79 | frame: 1855 / 3414
+[2025-03-25 17:24:38,274][func.train][INFO] - [TESTING] video: 79 | start_idx: 1856 | end_idx: 1920
+[2025-03-25 17:24:38,651][func.train][INFO] - [TESTING] video: 79 | frame: 1919 / 3414
+[2025-03-25 17:24:38,651][func.train][INFO] - [TESTING] video: 79 | start_idx: 1920 | end_idx: 1984
+[2025-03-25 17:24:39,033][func.train][INFO] - [TESTING] video: 79 | frame: 1983 / 3414
+[2025-03-25 17:24:39,033][func.train][INFO] - [TESTING] video: 79 | start_idx: 1984 | end_idx: 2048
+[2025-03-25 17:24:39,411][func.train][INFO] - [TESTING] video: 79 | frame: 2047 / 3414
+[2025-03-25 17:24:39,412][func.train][INFO] - [TESTING] video: 79 | start_idx: 2048 | end_idx: 2112
+[2025-03-25 17:24:39,820][func.train][INFO] - [TESTING] video: 79 | frame: 2111 / 3414
+[2025-03-25 17:24:39,821][func.train][INFO] - [TESTING] video: 79 | start_idx: 2112 | end_idx: 2176
+[2025-03-25 17:24:40,204][func.train][INFO] - [TESTING] video: 79 | frame: 2175 / 3414
+[2025-03-25 17:24:40,204][func.train][INFO] - [TESTING] video: 79 | start_idx: 2176 | end_idx: 2240
+[2025-03-25 17:24:40,611][func.train][INFO] - [TESTING] video: 79 | frame: 2239 / 3414
+[2025-03-25 17:24:40,611][func.train][INFO] - [TESTING] video: 79 | start_idx: 2240 | end_idx: 2304
+[2025-03-25 17:24:40,982][func.train][INFO] - [TESTING] video: 79 | frame: 2303 / 3414
+[2025-03-25 17:24:40,982][func.train][INFO] - [TESTING] video: 79 | start_idx: 2304 | end_idx: 2368
+[2025-03-25 17:24:41,391][func.train][INFO] - [TESTING] video: 79 | frame: 2367 / 3414
+[2025-03-25 17:24:41,391][func.train][INFO] - [TESTING] video: 79 | start_idx: 2368 | end_idx: 2432
+[2025-03-25 17:24:41,761][func.train][INFO] - [TESTING] video: 79 | frame: 2431 / 3414
+[2025-03-25 17:24:41,762][func.train][INFO] - [TESTING] video: 79 | start_idx: 2432 | end_idx: 2496
+[2025-03-25 17:24:42,163][func.train][INFO] - [TESTING] video: 79 | frame: 2495 / 3414
+[2025-03-25 17:24:42,163][func.train][INFO] - [TESTING] video: 79 | start_idx: 2496 | end_idx: 2560
+[2025-03-25 17:24:42,527][func.train][INFO] - [TESTING] video: 79 | frame: 2559 / 3414
+[2025-03-25 17:24:42,527][func.train][INFO] - [TESTING] video: 79 | start_idx: 2560 | end_idx: 2624
+[2025-03-25 17:24:42,923][func.train][INFO] - [TESTING] video: 79 | frame: 2623 / 3414
+[2025-03-25 17:24:42,924][func.train][INFO] - [TESTING] video: 79 | start_idx: 2624 | end_idx: 2688
+[2025-03-25 17:24:43,297][func.train][INFO] - [TESTING] video: 79 | frame: 2687 / 3414
+[2025-03-25 17:24:43,297][func.train][INFO] - [TESTING] video: 79 | start_idx: 2688 | end_idx: 2752
+[2025-03-25 17:24:43,686][func.train][INFO] - [TESTING] video: 79 | frame: 2751 / 3414
+[2025-03-25 17:24:43,686][func.train][INFO] - [TESTING] video: 79 | start_idx: 2752 | end_idx: 2816
+[2025-03-25 17:24:44,069][func.train][INFO] - [TESTING] video: 79 | frame: 2815 / 3414
+[2025-03-25 17:24:44,070][func.train][INFO] - [TESTING] video: 79 | start_idx: 2816 | end_idx: 2880
+[2025-03-25 17:24:44,465][func.train][INFO] - [TESTING] video: 79 | frame: 2879 / 3414
+[2025-03-25 17:24:44,466][func.train][INFO] - [TESTING] video: 79 | start_idx: 2880 | end_idx: 2944
+[2025-03-25 17:24:44,887][func.train][INFO] - [TESTING] video: 79 | frame: 2943 / 3414
+[2025-03-25 17:24:44,887][func.train][INFO] - [TESTING] video: 79 | start_idx: 2944 | end_idx: 3008
+[2025-03-25 17:24:45,267][func.train][INFO] - [TESTING] video: 79 | frame: 3007 / 3414
+[2025-03-25 17:24:45,267][func.train][INFO] - [TESTING] video: 79 | start_idx: 3008 | end_idx: 3072
+[2025-03-25 17:24:45,633][func.train][INFO] - [TESTING] video: 79 | frame: 3071 / 3414
+[2025-03-25 17:24:45,634][func.train][INFO] - [TESTING] video: 79 | start_idx: 3072 | end_idx: 3136
+[2025-03-25 17:24:46,032][func.train][INFO] - [TESTING] video: 79 | frame: 3135 / 3414
+[2025-03-25 17:24:46,032][func.train][INFO] - [TESTING] video: 79 | start_idx: 3136 | end_idx: 3200
+[2025-03-25 17:24:46,390][func.train][INFO] - [TESTING] video: 79 | frame: 3199 / 3414
+[2025-03-25 17:24:46,390][func.train][INFO] - [TESTING] video: 79 | start_idx: 3200 | end_idx: 3264
+[2025-03-25 17:24:46,789][func.train][INFO] - [TESTING] video: 79 | frame: 3263 / 3414
+[2025-03-25 17:24:46,789][func.train][INFO] - [TESTING] video: 79 | start_idx: 3264 | end_idx: 3328
+[2025-03-25 17:24:47,180][func.train][INFO] - [TESTING] video: 79 | frame: 3327 / 3414
+[2025-03-25 17:24:47,181][func.train][INFO] - [TESTING] video: 79 | start_idx: 3328 | end_idx: 3392
+[2025-03-25 17:24:47,566][func.train][INFO] - [TESTING] video: 79 | frame: 3391 / 3414
+[2025-03-25 17:24:47,566][func.train][INFO] - [TESTING] video: 79 | start_idx: 3392 | end_idx: 3456
+[2025-03-25 17:24:47,712][func.train][INFO] - [TESTING] video: 79 | frame: 3413 / 3414
+[2025-03-25 17:24:47,713][func.train][INFO] - [TESTING] video: 79 | start_idx: 3414 | end_idx: 3478
+[2025-03-25 17:24:47,713][func.train][INFO] - [TESTING] video: 79 | video test time: 0.34 min | total test time: 43.04 min
+[2025-03-25 17:24:47,725][func.train][INFO] - [TESTING] Saved video probs to: video_probs_ep1_vid79.npy
+[2025-03-25 17:25:59,901][func.train][INFO] - [TESTING] video_remaining_time_preds (classification2regression) h=30: torch.Size([3414, 8])
+[2025-03-25 17:25:59,936][func.train][INFO] - [TESTING] video: 79 | horizon: 30 | wMAE_30: 8.7648 | inMAE_30: 16.9921 | outMAE_30: 0.5375 | expMAE_30: 25.9787
+[2025-03-25 17:25:59,973][func.train][INFO] - [TESTING] video: 79 saved numpy arrays
+[2025-03-25 17:26:04,141][func.train][INFO] - [TESTING] video: 79 | video_mean_curr_acc: 0.7958 | mean_acc_future_frames: 0.3352 | video_mean_cum_acc_future: 0.5303
+[2025-03-25 17:26:04,142][func.train][INFO] - [EVAL] video (i=39) id=80 | video_length=1724
+[2025-03-25 17:26:04,550][func.train][INFO] - [TESTING] video: 80 | frame: 63 / 1724
+[2025-03-25 17:26:04,551][func.train][INFO] - [TESTING] video: 80 | start_idx: 64 | end_idx: 128
+[2025-03-25 17:26:04,957][func.train][INFO] - [TESTING] video: 80 | frame: 127 / 1724
+[2025-03-25 17:26:04,957][func.train][INFO] - [TESTING] video: 80 | start_idx: 128 | end_idx: 192
+[2025-03-25 17:26:05,337][func.train][INFO] - [TESTING] video: 80 | frame: 191 / 1724
+[2025-03-25 17:26:05,337][func.train][INFO] - [TESTING] video: 80 | start_idx: 192 | end_idx: 256
+[2025-03-25 17:26:05,712][func.train][INFO] - [TESTING] video: 80 | frame: 255 / 1724
+[2025-03-25 17:26:05,713][func.train][INFO] - [TESTING] video: 80 | start_idx: 256 | end_idx: 320
+[2025-03-25 17:26:06,086][func.train][INFO] - [TESTING] video: 80 | frame: 319 / 1724
+[2025-03-25 17:26:06,087][func.train][INFO] - [TESTING] video: 80 | start_idx: 320 | end_idx: 384
+[2025-03-25 17:26:06,498][func.train][INFO] - [TESTING] video: 80 | frame: 383 / 1724
+[2025-03-25 17:26:06,499][func.train][INFO] - [TESTING] video: 80 | start_idx: 384 | end_idx: 448
+[2025-03-25 17:26:06,904][func.train][INFO] - [TESTING] video: 80 | frame: 447 / 1724
+[2025-03-25 17:26:06,905][func.train][INFO] - [TESTING] video: 80 | start_idx: 448 | end_idx: 512
+[2025-03-25 17:26:07,268][func.train][INFO] - [TESTING] video: 80 | frame: 511 / 1724
+[2025-03-25 17:26:07,268][func.train][INFO] - [TESTING] video: 80 | start_idx: 512 | end_idx: 576
+[2025-03-25 17:26:07,658][func.train][INFO] - [TESTING] video: 80 | frame: 575 / 1724
+[2025-03-25 17:26:07,659][func.train][INFO] - [TESTING] video: 80 | start_idx: 576 | end_idx: 640
+[2025-03-25 17:26:08,088][func.train][INFO] - [TESTING] video: 80 | frame: 639 / 1724
+[2025-03-25 17:26:08,089][func.train][INFO] - [TESTING] video: 80 | start_idx: 640 | end_idx: 704
+[2025-03-25 17:26:08,459][func.train][INFO] - [TESTING] video: 80 | frame: 703 / 1724
+[2025-03-25 17:26:08,459][func.train][INFO] - [TESTING] video: 80 | start_idx: 704 | end_idx: 768
+[2025-03-25 17:26:08,834][func.train][INFO] - [TESTING] video: 80 | frame: 767 / 1724
+[2025-03-25 17:26:08,835][func.train][INFO] - [TESTING] video: 80 | start_idx: 768 | end_idx: 832
+[2025-03-25 17:26:09,254][func.train][INFO] - [TESTING] video: 80 | frame: 831 / 1724
+[2025-03-25 17:26:09,254][func.train][INFO] - [TESTING] video: 80 | start_idx: 832 | end_idx: 896
+[2025-03-25 17:26:09,629][func.train][INFO] - [TESTING] video: 80 | frame: 895 / 1724
+[2025-03-25 17:26:09,630][func.train][INFO] - [TESTING] video: 80 | start_idx: 896 | end_idx: 960
+[2025-03-25 17:26:10,003][func.train][INFO] - [TESTING] video: 80 | frame: 959 / 1724
+[2025-03-25 17:26:10,004][func.train][INFO] - [TESTING] video: 80 | start_idx: 960 | end_idx: 1024
+[2025-03-25 17:26:10,409][func.train][INFO] - [TESTING] video: 80 | frame: 1023 / 1724
+[2025-03-25 17:26:10,410][func.train][INFO] - [TESTING] video: 80 | start_idx: 1024 | end_idx: 1088
+[2025-03-25 17:26:10,787][func.train][INFO] - [TESTING] video: 80 | frame: 1087 / 1724
+[2025-03-25 17:26:10,788][func.train][INFO] - [TESTING] video: 80 | start_idx: 1088 | end_idx: 1152
+[2025-03-25 17:26:11,194][func.train][INFO] - [TESTING] video: 80 | frame: 1151 / 1724
+[2025-03-25 17:26:11,194][func.train][INFO] - [TESTING] video: 80 | start_idx: 1152 | end_idx: 1216
+[2025-03-25 17:26:11,575][func.train][INFO] - [TESTING] video: 80 | frame: 1215 / 1724
+[2025-03-25 17:26:11,576][func.train][INFO] - [TESTING] video: 80 | start_idx: 1216 | end_idx: 1280
+[2025-03-25 17:26:11,979][func.train][INFO] - [TESTING] video: 80 | frame: 1279 / 1724
+[2025-03-25 17:26:11,980][func.train][INFO] - [TESTING] video: 80 | start_idx: 1280 | end_idx: 1344
+[2025-03-25 17:26:12,338][func.train][INFO] - [TESTING] video: 80 | frame: 1343 / 1724
+[2025-03-25 17:26:12,339][func.train][INFO] - [TESTING] video: 80 | start_idx: 1344 | end_idx: 1408
+[2025-03-25 17:26:12,724][func.train][INFO] - [TESTING] video: 80 | frame: 1407 / 1724
+[2025-03-25 17:26:12,725][func.train][INFO] - [TESTING] video: 80 | start_idx: 1408 | end_idx: 1472
+[2025-03-25 17:26:13,117][func.train][INFO] - [TESTING] video: 80 | frame: 1471 / 1724
+[2025-03-25 17:26:13,117][func.train][INFO] - [TESTING] video: 80 | start_idx: 1472 | end_idx: 1536
+[2025-03-25 17:26:13,480][func.train][INFO] - [TESTING] video: 80 | frame: 1535 / 1724
+[2025-03-25 17:26:13,480][func.train][INFO] - [TESTING] video: 80 | start_idx: 1536 | end_idx: 1600
+[2025-03-25 17:26:13,873][func.train][INFO] - [TESTING] video: 80 | frame: 1599 / 1724
+[2025-03-25 17:26:13,873][func.train][INFO] - [TESTING] video: 80 | start_idx: 1600 | end_idx: 1664
+[2025-03-25 17:26:14,259][func.train][INFO] - [TESTING] video: 80 | frame: 1663 / 1724
+[2025-03-25 17:26:14,260][func.train][INFO] - [TESTING] video: 80 | start_idx: 1664 | end_idx: 1728
+[2025-03-25 17:26:15,444][func.train][INFO] - [TESTING] video: 80 | frame: 1723 / 1724
+[2025-03-25 17:26:15,444][func.train][INFO] - [TESTING] video: 80 | start_idx: 1724 | end_idx: 1788
+[2025-03-25 17:26:15,445][func.train][INFO] - [TESTING] video: 80 | video test time: 0.19 min | total test time: 44.50 min
+[2025-03-25 17:26:15,454][func.train][INFO] - [TESTING] Saved video probs to: video_probs_ep1_vid80.npy
+[2025-03-25 17:26:51,483][func.train][INFO] - [TESTING] video_remaining_time_preds (classification2regression) h=30: torch.Size([1724, 8])
+[2025-03-25 17:26:51,494][func.train][INFO] - [TESTING] video: 80 | horizon: 30 | wMAE_30: 9.9301 | inMAE_30: 17.5430 | outMAE_30: 2.3171 | expMAE_30: 22.9868
+[2025-03-25 17:26:51,523][func.train][INFO] - [TESTING] video: 80 saved numpy arrays
+[2025-03-25 17:26:53,772][func.train][INFO] - [TESTING] video: 80 | video_mean_curr_acc: 0.815 | mean_acc_future_frames: 0.21 | video_mean_cum_acc_future: 0.429
+[2025-03-25 17:26:53,777][func.train][INFO] - [TESTING] wMAE_30: 10.0111
+[2025-03-25 17:26:53,777][func.train][INFO] - [TESTING] wMAE_30_std: 1.4106
+[2025-03-25 17:26:53,777][func.train][INFO] - [TESTING] inMAE_30: 19.4563
+[2025-03-25 17:26:53,778][func.train][INFO] - [TESTING] inMAE_30_std: 2.4503
+[2025-03-25 17:26:53,778][func.train][INFO] - [TESTING] outMAE_30: 0.5659
+[2025-03-25 17:26:53,778][func.train][INFO] - [TESTING] outMAE_30_std: 0.7136
+[2025-03-25 17:26:53,779][func.train][INFO] - [TESTING] expMAE_30: 26.091
+[2025-03-25 17:26:53,779][func.train][INFO] - [TESTING] expMAE_30_std: 1.9962
+[2025-03-25 17:26:53,780][func.train][INFO] - [TESTING] wMAE_class_30: [nan, 13.6282, 10.6201, 10.1863, 8.5174, 9.1176, 7.2788, 7.5]
+[2025-03-25 17:26:53,782][func.train][INFO] - [TESTING] wMAE_class_30_std: [nan, 1.97, 1.8944, 2.0263, 1.5605, 2.4871, 0.3632, 0.0]
+[2025-03-25 17:26:53,782][func.train][INFO] - [TESTING] inMAE_class_30: [nan, 27.1233, 20.8486, 19.6415, 16.3784, 16.4109, 15.8382, 16.0088]
+[2025-03-25 17:26:53,783][func.train][INFO] - [TESTING] inMAE_class_30_std: [nan, 3.8976, 3.6828, 3.8327, 2.6646, 2.9066, 2.5612, 2.2107]
+[2025-03-25 17:26:53,784][func.train][INFO] - [TESTING] outMAE_class_30: [0.0551, 0.1331, 0.3917, 0.7311, 0.6564, 1.625, 0.0, 0.0]
+[2025-03-25 17:26:53,784][func.train][INFO] - [TESTING] outMAE_class_30_std: [0.0848, 0.2395, 0.7554, 1.573, 1.4382, 2.8605, 0.0, 0.0]
+[2025-03-25 17:26:53,785][func.train][INFO] - [TESTING] expMAE_class_30: [nan, 27.2465, 25.47, 24.7835, 26.0612, 27.097, 25.9385, 28.5]
+[2025-03-25 17:26:53,786][func.train][INFO] - [TESTING] expMAE_class_30_std: [nan, 3.9052, 5.3048, 5.8617, 2.2475, 3.3709, 5.1879, 0.0]
+[2025-03-25 17:26:53,787][func.train][INFO] - [TESTING] Epoch: 1 |main_metric: acc_curr_future |mean score: 0.2020733333333333
+[2025-03-25 17:26:53,787][func.train][INFO] - [TESTING] Epoch: 1 | is best epoch: True with acc_curr_future: 0.2020733333333333
+[2025-03-25 17:45:12,995][func.train][INFO] - [TESTING] Best epoch: 1 | New Best score: 0.2020733333333333
+[2025-03-25 17:45:13,044][func.train][INFO] - [TESTING] video: 80 saved numpy arrays
+[2025-03-25 17:45:13,054][func.train][INFO] - [TESTING] Epoch: 1 | acc_curr: 0.9082 | acc_future: 0.2021 | acc_curr_future: 0.2249
+[2025-03-25 17:45:13,054][func.train][INFO] - [TESTING] wMAE_30: 10.0111 | inMAE_30: 19.4563 | outMAE_30: 0.5659 | 

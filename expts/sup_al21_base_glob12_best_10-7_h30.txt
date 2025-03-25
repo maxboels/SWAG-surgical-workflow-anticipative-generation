@@ -5,7 +5,7 @@ model_name=supra
 
 ctx_pooling=global
 num_ctx_tokens=12
-max_seq_len=24
+max_seq_len=30
 
 eos_weight=count
 
