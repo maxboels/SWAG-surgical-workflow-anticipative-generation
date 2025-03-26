@@ -1,4 +1,4 @@
-test_only=false
+test_only=true
 
 max_anticip_time=30
 num_ant_queries=30
