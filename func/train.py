@@ -1386,7 +1386,8 @@ def main(cfg):
             f.write(',\n')
         
         # Store the best model MINIMIZING the main_metric
-        if is_best_epoch:
+        new_score = all_videos_results[main_metric]
+        if new_score > best_score:
             best_score = all_videos_results[main_metric]
             store_checkpoint(f'checkpoint_best.pth', model, optimizer, lr_scheduler, epoch + 1)
         if isinstance(lr_scheduler.base_scheduler, scheduler.ReduceLROnPlateau):
