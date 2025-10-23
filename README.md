@@ -70,32 +70,33 @@ SWAG-surgical-workflow-anticipative-generation/
 │   ├── opt/                   # Optimizer configs
 │   └── train_eval_op/         # Training operation configs
 │
-├── models/                     # Model architectures
-│   ├── supra.py               # SWAG-SP/SP* implementation
-│   ├── lstm.py                # LSTM-based AR model
-│   ├── transformers.py        # Transformer decoder variants
-│   └── base_model.py          # Base model class
-│
-├── datasets/                   # Dataset loaders
-│   ├── cholec80/              # Cholec80 dataset utilities
-│   ├── autolaparo21/          # AutoLaparo21 dataset utilities
-│   └── base_video_dataset.py # Base video dataset class
-│
-├── func/                       # Training and evaluation functions
-│   ├── train.py               # Main training loop
-│   └── train_eval_ops.py      # Training operations
-│
-├── loss_fn/                    # Loss function implementations
-│   ├── multidim_xentropy.py   # Multi-dimensional cross-entropy
-│   ├── remaining_time_loss.py # Remaining time regression loss
-│   ├── mse.py                 # Mean squared error
-│   └── mae.py                 # Mean absolute error
-│
-├── common/                     # Common utilities
-│   ├── utils.py               # General utilities
-│   ├── transforms.py          # Data transformations
-│   ├── sampler.py             # Data samplers
-│   └── scheduler.py           # Learning rate schedulers
+├── src/                        # Source code (all Python modules)
+│   ├── models/                # Model architectures
+│   │   ├── supra.py          # SWAG-SP/SP* implementation
+│   │   ├── lstm.py           # LSTM-based AR model
+│   │   ├── transformers.py   # Transformer decoder variants
+│   │   └── base_model.py     # Base model class
+│   │
+│   ├── datasets/              # Dataset loaders
+│   │   ├── cholec80/         # Cholec80 dataset utilities
+│   │   ├── autolaparo21/     # AutoLaparo21 dataset utilities
+│   │   └── base_video_dataset.py # Base video dataset class
+│   │
+│   ├── func/                  # Training and evaluation functions
+│   │   ├── train.py          # Main training loop
+│   │   └── train_eval_ops.py # Training operations
+│   │
+│   ├── loss_fn/               # Loss function implementations
+│   │   ├── multidim_xentropy.py   # Multi-dimensional cross-entropy
+│   │   ├── remaining_time_loss.py # Remaining time regression loss
+│   │   ├── mse.py            # Mean squared error
+│   │   └── mae.py            # Mean absolute error
+│   │
+│   └── common/                # Common utilities
+│       ├── utils.py          # General utilities
+│       ├── transforms.py     # Data transformations
+│       ├── sampler.py        # Data samplers
+│       └── scheduler.py      # Learning rate schedulers
 │
 ├── scripts/                    # Execution scripts
 │   ├── launch.py              # Experiment launcher
@@ -103,23 +104,19 @@ SWAG-surgical-workflow-anticipative-generation/
 │   └── runai.sh               # Cluster deployment script
 │
 ├── experiments/                # Experiment tracking
+│   ├── configs/               # Experiment configuration files (formerly expts/)
 │   ├── top_runs*.json         # Best experiment results
 │   └── run_*.txt              # Experiment logs
 │
-├── expts/                      # Experiment configuration files
-│   └── *.txt                  # Hydra override files for experiments
-│
-├── assets/                     # Media files
-│   └── *.gif                  # Visualization GIFs
-│
 ├── docs/                       # Documentation
+│   ├── README files and guides
 │   ├── CODE_OF_CONDUCT.md     # Code of conduct
-│   └── CONTRIBUTING.md        # Contribution guidelines
+│   ├── CONTRIBUTING.md        # Contribution guidelines
+│   └── assets/                # Media files (GIFs, images)
 │
-├── R2A2/                       # R2A2 baseline implementation
-│   ├── model/                 # R2A2 model architecture
-│   ├── train/                 # R2A2 training scripts
-│   └── eval/                  # R2A2 evaluation scripts
+├── baselines/                  # Baseline implementations
+│   ├── R2A2/                  # R2A2 baseline
+│   └── Informer2020/          # Informer baseline
 │
 └── OUTPUTS/                    # Training outputs (gitignored)
     └── expts/                 # Experiment outputs
@@ -270,17 +267,17 @@ python train_net.py \
 For running multiple experiments or hyperparameter sweeps:
 
 ```bash
-# Create an experiment config file in expts/
-# e.g., expts/my_experiment.txt with Hydra overrides
+# Create an experiment config file in experiments/configs/
+# e.g., experiments/configs/my_experiment.txt with Hydra overrides
 
 # Run locally
-python scripts/launch.py -c expts/my_experiment.txt -l
+python scripts/launch.py -c experiments/configs/my_experiment.txt -l
 
 # Run on cluster (SLURM)
-python scripts/launch.py -c expts/my_experiment.txt -p gpu_partition
+python scripts/launch.py -c experiments/configs/my_experiment.txt -p gpu_partition
 
 # Debug mode (single GPU)
-python scripts/launch.py -c expts/my_experiment.txt -l -g
+python scripts/launch.py -c experiments/configs/my_experiment.txt -l -g
 ```
 
 ### Evaluation

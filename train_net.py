@@ -7,6 +7,7 @@ import pathlib
 #curPath = os.path.abspath(os.path.dirname(__file__))
 rootPath = str(pathlib.Path(__file__).parent.resolve())
 sys.path.append(rootPath)
+sys.path.append(os.path.join(rootPath, 'src'))
 import logging
 import random
 import subprocess

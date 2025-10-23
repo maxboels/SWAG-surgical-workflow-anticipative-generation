@@ -92,20 +92,21 @@ python train_net.py model.hidden_dim=512 opt.lr=0.0001
 | Directory | Purpose |
 |-----------|---------|
 | `conf/` | Configuration files (Hydra) |
-| `models/` | Model architectures |
-| `datasets/` | Dataset loaders |
-| `func/` | Training/evaluation code |
-| `loss_fn/` | Loss functions |
-| `common/` | Utilities and helpers |
+| `src/models/` | Model architectures |
+| `src/datasets/` | Dataset loaders |
+| `src/func/` | Training/evaluation code |
+| `src/loss_fn/` | Loss functions |
+| `src/common/` | Utilities and helpers |
 | `scripts/` | Execution scripts |
-| `expts/` | Experiment config files |
+| `experiments/configs/` | Experiment config files (formerly expts/) |
 | `experiments/` | Results tracking |
+| `docs/` | Documentation and assets |
+| `baselines/` | Baseline implementations (R2A2, Informer) |
 | `OUTPUTS/` | Training outputs (auto-generated) |
-| `R2A2/` | Baseline implementation |
 
 ## File Naming Conventions
 
-### Experiment Config Files (`expts/`)
+### Experiment Config Files (`experiments/configs/`)
 Format: `{model}_{dataset}_{description}.txt`
 
 Examples:
@@ -131,8 +132,8 @@ Format: `{config_file_name}/local/`
 
 ### Launch Multiple Experiments
 ```bash
-# Create config file: expts/my_sweep.txt
-python scripts/launch.py -c expts/my_sweep.txt -l
+# Create config file: experiments/configs/my_sweep.txt
+python scripts/launch.py -c experiments/configs/my_sweep.txt -l
 ```
 
 ### Monitor Training
