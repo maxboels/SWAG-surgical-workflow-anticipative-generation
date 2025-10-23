@@ -1,43 +1,92 @@
+# Python artifacts
 *.pyc
-*.cpp
-*.pth
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
 
+# Model checkpoints and weights
+*.pth
+*.ckpt
+*.weights
+
+# C/C++ compiled files
+*.cpp
+*.o
+
+# Data and features
 LFB/*
 LFB/*.json
 LFB/*/*/video*.json
 LFB/dataset_feature/*.pkl
 LFB/dataset_feature/*/*.pkl
+datasets/*/*.npy
+datasets/*/labels/video_*_labels.npy
+datasets/*/gt_remaining_time_*.json
+datasets/cholec80/video_durations*.json
 
-
-OUTPUTS/expts/*.txt/local/logs/events.out.tfevents.*
-
-R2A2/dataset/*
-R2A2/expts/*
-R2A2/outputs/*
-
-
-OUTPUTS/expts/*/local/per_video_ep*.json
-
+# External dependencies and datasets
 external/*
 external/*/*
-OUTPUTS/expts/*/local/*.npy
-OUTPUTS/expts/*/local/*.png
-OUTPUTS/expts/*/local/plots/*/rtd/*.png
-
 external/epic-kitchens-55-annotations
 external/epic-kitchens-100-annotations
 external/rulstm
-datasets/*/labels/video_*_labels.npy
 
-
+# Outputs and experiments
+OUTPUTS/
+OUTPUTS/expts/
+OUTPUTS/expts/*.txt/local/logs/events.out.tfevents.*
+OUTPUTS/expts/*/local/per_video_ep*.json
+OUTPUTS/expts/*/local/*.npy
+OUTPUTS/expts/*/local/*.png
+OUTPUTS/expts/*/local/plots/*/rtd/*.png
 OUTPUTS/expts/*.txt/local/plots/*/*/*.png
 OUTPUTS/expts/*.txt/local/*/*.json
-OUTPUTS/expts/*.txt/local/*/*.yaml
 OUTPUTS/expts/*.txt/local/*/*.yaml
 OUTPUTS/expts/*.txt/local/plots/*/*/*/*.png
 OUTPUTS/expts/*.txt/local/*/*.npy
 OUTPUTS/expts/*.txt/local/*/*/*.json
-datasets/*/*.npy
 
-datasets/*/gt_remaining_time_*.json
-datasets/cholec80/video_durations*.json
+# R2A2 specific
+R2A2/dataset/*
+R2A2/expts/*
+R2A2/outputs/*
+
+# Hydra outputs
+.hydra/
+.hydra.orig/
+multirun/
+
+# Temporary and duplicate files
+*copy*.py
+*copy*.txt
+*copy*.json
+*_old.py
+*_backup.py
+*.tmp
+*.bak
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
