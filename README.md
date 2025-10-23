@@ -35,16 +35,6 @@ For contribution guidelines and community standards, see the [docs/](docs/) dire
 
 ## 🏗️ Architecture Overview
 
-```
-Input Video Frames → Vision Encoder (ViT) → 
-    ↓
-Windowed Self-Attention (WSA) →
-    ↓
-Compression & Pooling (CP) →
-    ├─→ Recognition Head → Current Phase
-    └─→ Decoder (SP/AR) → Future Phases (N × 60s intervals)
-```
-
 **Key Components:**
 - **Vision Encoder**: Fine-tuned ViT with AVT approach for spatial-temporal features
 - **WSA**: Sliding window self-attention (W=20, L=1440 frames)
@@ -339,41 +329,6 @@ This work builds upon and compares with several state-of-the-art methods:
 
 Our R2A2 baseline implementation is included in the `R2A2/` directory.
 
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**Import Errors**
-```bash
-# Ensure you're in the correct conda environment
-conda activate avt
-
-# Verify Python can find the modules
-export PYTHONPATH="${PYTHONPATH}:/path/to/SWAG-surgical-workflow-anticipative-generation"
-```
-
-**CUDA Out of Memory**
-- Reduce batch size in config: `batch_size=2`
-- Reduce sequence length: Modify window size in config
-- Use gradient accumulation steps
-
-**Dataset Not Found**
-- Check dataset paths in `conf/data/` configs
-- Ensure datasets are properly extracted
-- Verify file permissions
-
-**Hydra Configuration Errors**
-- Check syntax in override files (`.txt` in `expts/`)
-- Ensure all referenced config groups exist in `conf/`
-- Use `--cfg job` to print resolved config
-
-### Performance Tips
-
-- Use multiple workers for data loading: `num_workers=4`
-- Enable mixed precision training for faster training
-- Use distributed training for multi-GPU setups
-- Cache preprocessed features to speed up subsequent runs
-
 ## 📚 Additional Resources
 
 - [Project Page](https://maxboels.com/research/swag) - Visualizations and supplementary materials
@@ -395,10 +350,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 For questions or collaboration inquiries:
 - Maxence Boels: maxence.boels@kcl.ac.uk
 - Project Page: https://maxboels.com/research/swag
-
-## 🔮 Future Directions
-
-- Uncertainty estimation for stochastic workflow modeling
-- Multi-trajectory anticipation frameworks
-- Scaling to larger surgical datasets with fine-grained annotations
-- Integration with robotic surgical systems for proactive assistance
